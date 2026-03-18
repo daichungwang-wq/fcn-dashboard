@@ -1,100 +1,107 @@
 {
-  "updated_at": "2026-03-18 13:44",
+  "updated_at": "2026-03-18 23:56",
   "summary": {
     "active_fcn_count": 24,
     "top_risk_code": "FCN710H",
     "worst_of": "ORCL",
-    "market_env": "保守做",
-    "main_conclusion": "今天可保守做 FCN，建議以 TSM / MSFT 為主，避免進攻型標的過重。"
+    "market_env": "可做",
+    "main_conclusion": "今天可做 FCN，優先配置 NVDA / AVGO / TSM / MSFT，並持續監控 ORCL / COIN 風險集中。"
   },
   "morning_brief": {
     "international_news": [
       {
-        "title": "WATCH: Banksy unmasked?",
-        "summary": "Reuters reports it may have identified the reclusive British artist as 51-year-old Robin Gunningham.",
-        "content": "<ul><li>Trump says US doesn't 'need' NATO allies for Iran war </li><li>TSA agent callouts doubled since partial government shutdown </li><li>TSA union leader warns agents wont keep working without … [+4277 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "'Bielle-Biarrey's pace spooked me' - Chessum on intercept try finish",
+        "summary": "England back row Ollie Chessum says the fear of being run down by Louis Bielle Biarrey prevented him from run…",
+        "content": "England back row Ollie Chessum says the fear of being chased down by Louis Bielle-Biarrey, France's free-scoring, high-speed wing, spooked him as he went in for a 60m intercept try in England's 48-46… [+4656 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Purchasing power of mid-income earners remains weak",
-        "summary": "Many middle-income earners are living hand to mouth, according to the white-collar confederation STTK.",
-        "content": "Despite a recent uptick in real wages, Finland's middle earners are still feeling financially squeezed. The white-collar confederation STTK argues that the spending capacity of middle- and low-incom… [+1148 chars]｜分類：地緣政治｜解讀：利率壓力若下降，FCN 環境通常較有利",
-        "affects_fcn": true,
-        "impact_score": 1
-      },
-      {
-        "title": "Canada Rules Out Joining Military Operations Against Iran",
-        "summary": "Canada has no intention of joining military operations against Iran, the country’s foreign minister Anita Ana…",
-        "content": "(Bloomberg) Canada has no intention of joining military operations against Iran, the countrys foreign minister Anita Anand told Bloomberg on Tuesday. THIS CONTENT IS RESERVED FOR SUBSCRIBERS ONLY … [+3715 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "How Much Pain Is Trump Really Willing to Endure?",
+        "summary": "The outcome of the war in Iran may come down to just how much risk he can take.",
+        "content": "It was supposed to be easy. In the weeks after President Trump authorized the military raid to snatch Nicolás Maduro from Venezuela, he would tell pretty much any audience about how flawlessly the op… [+11947 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Americans could get up to $8,000 in Tax credits, but only if they act by April 1",
-        "summary": "Vermont property tax: Up to $8,000 property tax credit Vermont 2026 is now within reach for eligible homeowne…",
-        "content": "Vermont property tax: Up to $8,000 in property tax credits is set to reach eligible homeowners in April 2026, but only those who meet strict eligibility rules by the April 1 homestead deadline will b… [+6278 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "2026 MLB Draft Notebook 2.0",
+        "summary": "In the second update from The Sporting Tribune, our draft team takes a continued look at UCLA Baseball, UC-Ir…",
+        "content": "While most Division-1 programs are simmering around the 1/3 mark of their regular season, California high schools are a month-and-a-half out of playoffs themselves with large decision-making tourname… [+6181 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "US stocks today: US stocks open higher as investors weigh energy costs before Fed rate decision",
-        "summary": "Wall ​Street's main ​indexes opened higher on ​Tuesday with financial stocks in the lead, ‌while investors ⁠w…",
-        "content": "Wall Street's main indexes opened higher on Tuesday with financial stocks in the lead, while investors weighed the impact of the Middle East conflict on energy costs, putting inflation risks back in … [+298 chars]｜分類：地緣政治｜解讀：利率壓力若下降，FCN 環境通常較有利",
-        "affects_fcn": true,
-        "impact_score": 1
-      },
-      {
-        "title": "Nine most intriguing defensive additions during 2026 NFL free agency so far",
-        "summary": "Can Minkah Fitzpatrick and T'Vondre Sweat help reboot the Jets defense?",
-        "content": "The first wave of free agency is passed, with most of the top players already off the market. Even the middle and lower rungs of free agency are largely picked over, and last week we walked you throu… [+8467 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "Canucks 2020 & 2021 Draft Classes Have Produced 0 NHL Games",
+        "summary": "No player drafted from the Vancouver Canucks in 2020 or 2021 has played an NHL game.",
+        "content": "Developing prospects drafted after the first round can be complicated at times. Unlike top picks, those selected in the second or later rounds statistically have a smaller chance of becoming impactfu… [+3128 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Context Anchoring",
-        "summary": "Externalize decision context into a living document shared between model sessions",
-        "content": "When I work with a colleague on a feature that spans several days, we keep a shared document. Not formal documentation: a working record. What we decided, why, what we rejected, what questions re… [+15298 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "Inside the room: More relaxed and assured - but it was still hard for Martin to get a word in",
+        "summary": "Coming out of the meeting with Trump relatively unscathed, for a second time, is probably the most Martin cou…",
+        "content": "AN IRISH TAOISEACH coming to the defence of a British prime minister in the Oval Office. That was, perhaps, not on the bingo card for this years St Patricks Day in the White House. Micheál Martin … [+8460 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Just One Week Away. C-Level Technology Leadership and the Rise of Iconic Leaders Will Shape the Conversation at HMG Str…",
-        "summary": "C‑level technology leaders gather in New Jersey for HMG’s 18th annual summit to explore iconic leadership, AI…",
-        "content": "FAIRFIELD, Conn., March 17, 2026 (GLOBE NEWSWIRE) -- HMG Strategy, the worlds leading platform for inspiring technology executives to lead boldly and shape the future of business, will bring New Jers… [+6818 chars]｜分類：全球經濟｜解讀：影響有限",
+        "title": "Real Grooves Audio THE STRAWBERRY WHEEL — A Songwriter's Guide to Open String Harmony",
+        "summary": "THE STRAWBERRY WHEEL — A Songwriter's Guide to Open String Harmony. PDF chord wheel and songwriting reference…",
+        "content": "THE STRAWBERRY WHEEL A Songwriter's Guide to Open String Harmony. PDF chord wheel and songwriting reference for guitar. 80 progressions across 56 chords in 8 keys. Standard tuning. Standard chord sh… [+1298 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "IPO shake-up ahead; 5G phones drive data boom",
-        "summary": "Due to valuation gaps and market volatility, several new-age startups will rethink their public listing plans…",
-        "content": "Due to valuation gaps and market volatility, several new-age startups will rethink their public listing plans. This and more in today's ETtech Top 5.Also in the letter: Steadview's new India execNvid… [+5721 chars]｜分類：全球經濟｜解讀：波動升高，FCN 敲入風險增加",
-        "affects_fcn": true,
-        "impact_score": -2
-      },
-      {
-        "title": "INE Earns G2 Spring 2026 Leader Badges and Breaks Into Top 10 for SMB Skills Training",
-        "summary": "Momentum recognition and small-business growth highlight expanding demand for INE’s cybersecurity and IT trai…",
-        "content": "Cary, NC, March 17, 2026 (GLOBE NEWSWIRE) -- INE has been recognized with three G2 Spring 2026 badges, highlighting its continued momentum in online course delivery and technical skills development. … [+4680 chars]｜分類：全球經濟｜解讀：影響有限",
+        "title": "Foxconn sees AI server market splitting GPU-ASIC 8:2 as CSP demand surges",
+        "summary": "Buoyed by sustained high capital expenditure by global cloud service providers (CSPs), AI servers and data ce…",
+        "content": "Save my User ID and Password Some subscribers prefer to save their log-in information so they do not have to enter their User ID and Password each time they visit the site. To activate this function… [+307 chars]｜分類：全球經濟｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "A Blueprint For Structuring A Borderless Digital Business",
-        "summary": "The traditional corporate model, where operations are tethered to a single physical headquarters, is rapidly…",
-        "content": "The traditional corporate model, where operations are tethered to a single physical headquarters, is rapidly giving way to a more agile, global approach. Today, forward-thinking digital entrepreneurs… [+5823 chars]｜分類：全球經濟｜解讀：影響有限",
+        "title": "Search Referral Traffic Down 60% For Small Publishers, Data Shows via @sejournal, @MattGSouthern",
+        "summary": "Chartbeat data shows search referral traffic fell 60% for small publishers over two years, compared with 22%…",
+        "content": "Search referral traffic to small publishers dropped 60% over two years, according to Chartbeat data reported exclusively by Axios. That’s nearly three times the decline at large publishers. The anal… [+3455 chars]｜分類：全球經濟｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "PayPal expands PYUSD stablecoin to users in 70 countries",
-        "summary": "PayPal is rolling out its PYUSD stablecoin in 68 additional countries beyond the US and UK, aiming to reduce…",
-        "content": "Payments giant PayPal is expanding access to its US-dollar stablecoin, PayPal USD, adding 68 more markets globally in its latest stablecoin push. PayPal USD (PYUSD) will be made available to custome… [+2450 chars]｜分類：全球經濟｜解讀：影響有限",
+        "title": "JC Tretter has been elected the new executive director for the NFL Players Association",
+        "summary": "JC Tretter is the new executive director for the NFL Players Association. The 35-year-old former center for t…",
+        "content": "JC Tretter is the new executive director for the NFL Players Association. The 35-year-old former center for the Packers and Browns was elected by the unions board of player representatives on Tuesda… [+3313 chars]｜分類：全球經濟｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "NFLPA elects former Browns OL JC Tretter as union's next executive director",
+        "summary": "Tretter played nine seasons in the NFL with the Packers and Browns",
+        "content": "The NFL Players Association announced on Tuesday that former Cleveland Browns offensive lineman JC Tretter has been elected by the Board of Player Representatives to be the union's next executive dir… [+2862 chars]｜分類：全球經濟｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "NFLPA names J.C. Tretter as new executive director, 8 months after his scandal-driven resignation",
+        "summary": "The NFLPA's self-described Tyrion Lannister has taken the Iron Throne.",
+        "content": "J.C. Tretter is the new executive director of the NFL Players Association, eight months after resigning amid massive scandal inside the union. The NFLPA announced Tretters election on Tuesday evenin… [+3575 chars]｜分類：全球經濟｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "NFL Commissioner Roger Goodell congratulates new NFLPA executive director JC Tretter",
+        "summary": "Twenty years after Bryant Gumbel characterized the NFL Players Association executive director as the \"persona…",
+        "content": "Twenty years after Bryant Gumbel characterized the NFL Players Association executive director as the personal pet of Commissioner Paul Tagliabue, the man whom Gumbel advised to figure out where [Tagl… [+1810 chars]｜分類：全球經濟｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       }
     ],
     "financial_news": [
+      {
+        "title": "Morgan Stanley Sticks With June Rate Cut Call as Oil Surges",
+        "summary": "Morgan Stanley is sticking with a forecast that sees the Federal Reserve resuming interest rates cuts in June…",
+        "content": "(Bloomberg) Morgan Stanley is sticking with a forecast that sees the Federal Reserve resuming interest rates cuts in June and delivering another reduction in September, even as soaring oil prices pro… [+4787 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
+        "affects_fcn": true,
+        "impact_score": 1
+      },
       {
         "title": "OraLabs, Inc. - 720690 - 03/11/2026",
         "summary": "CGMP/Finished Pharmaceuticals/Adulterated",
@@ -138,102 +145,95 @@
         "impact_score": 1
       },
       {
-        "title": "calesthio/Crucix",
-        "summary": "Your personal intelligence agent. Watches the world from multiple data sources and pings you when something c…",
-        "content": "Crucix pulls satellite fire detection, flight tracking, radiation monitoring, satellite constellation tracking, economic indicators, live market prices, conflict data, sanctions lists, and social sen… [+22735 chars]｜分類：Fed / 利率｜解讀：影響有限",
+        "title": "Search Referral Traffic Down 60% For Small Publishers, Data Shows via @sejournal, @MattGSouthern",
+        "summary": "Chartbeat data shows search referral traffic fell 60% for small publishers over two years, compared with 22%…",
+        "content": "Search referral traffic to small publishers dropped 60% over two years, according to Chartbeat data reported exclusively by Axios. That’s nearly three times the decline at large publishers. The anal… [+3455 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "WATCH: Banksy unmasked?",
-        "summary": "Reuters reports it may have identified the reclusive British artist as 51-year-old Robin Gunningham.",
-        "content": "<ul><li>Trump says US doesn't 'need' NATO allies for Iran war </li><li>TSA agent callouts doubled since partial government shutdown </li><li>TSA union leader warns agents wont keep working without … [+4277 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "title": "JC Tretter has been elected the new executive director for the NFL Players Association",
+        "summary": "JC Tretter is the new executive director for the NFL Players Association. The 35-year-old former center for t…",
+        "content": "JC Tretter is the new executive director for the NFL Players Association. The 35-year-old former center for the Packers and Browns was elected by the unions board of player representatives on Tuesda… [+3313 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "461 school physical-restraint incidents involving children with special needs since September",
-        "summary": "A number of the documented incidents resulted in injury",
-        "content": "Children with special needs have been physically restrained in schools more than 460 times since the beginning of the academic year, with a number of the incidents resulting in injury. New guidelin… [+2982 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "title": "'Deeply troubling' allegations against Cesar Chavez prompt United Farm Workers to cancel celebrations - ABC7 Los Angeles",
+        "summary": "'Deeply troubling' allegations against Cesar Chavez prompt United Farm Workers to cancel celebrationsABC7 Los…",
+        "content": "When bad men combine, the good must associate; else they will fall one by one, an unpitied sacrifice in a contemptible struggle. - Edmund Burke｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Research: Enhancing Seafood Traceability {MMO1425}",
-        "summary": "This project reviews the traceability research the Marine Management Organisation (MMO) has undertaken to dat…",
-        "content": "We use some essential cookies to make this website work. Wed like to set additional cookies to understand how you use GOV.UK, remember your settings and improve government services. We also use coo… [+70 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "title": "Senate Majority leader warns Dems are putting cyber operations at risk as Iran threat looms",
+        "summary": "Senate Majority Leader John Thune accused Democrats of holding government agencies hostage during a partial s…",
+        "content": "Senate Majority Leader John Thune, R-S.D., accused Democrats of holding the government hostage during a dangerous time as the party refuses to budge in a gridlocked funding battle. \"They are holding… [+3075 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Americans could get up to $8,000 in Tax credits, but only if they act by April 1",
-        "summary": "Vermont property tax: Up to $8,000 property tax credit Vermont 2026 is now within reach for eligible homeowne…",
-        "content": "Vermont property tax: Up to $8,000 in property tax credits is set to reach eligible homeowners in April 2026, but only those who meet strict eligibility rules by the April 1 homestead deadline will b… [+6278 chars]｜分類：通膨 / 就業｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Eid-el-Fitr: Sultan urges Muslims to look for Shawwal crescent Wednesday",
-        "summary": "The Sultan of Sokoto urges Nigerian Muslims to look for the Shawwal crescent sighting on Wednesday, March 18,…",
-        "content": "The Sultan of Sokoto, Muhammad Saad Abubakar, has urged Muslims across Nigeria to begin the search for the crescent moon that will mark the end of the holy month of Ramadan and signal the beginning o… [+1751 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "title": "What Is Intent-Based Marketing? A Practical Guide for Revenue Teams",
+        "summary": "A practical guide to intent-based marketing, how it differs from traditional demand generation, and how reven…",
+        "content": "Intent-based marketing is the practice of using real buyer behavior to decide who to prioritize, what message to show, and what next step to offer before the buyer fills out a form. It matters becaus… [+11885 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       }
     ],
     "ai_trend": [
       {
-        "title": "WATCH: Banksy unmasked?",
-        "summary": "Reuters reports it may have identified the reclusive British artist as 51-year-old Robin Gunningham.",
-        "content": "<ul><li>Trump says US doesn't 'need' NATO allies for Iran war </li><li>TSA agent callouts doubled since partial government shutdown </li><li>TSA union leader warns agents wont keep working without … [+4277 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "grover 0.0.8",
-        "summary": "The agentic filesystem. Safe file operations, knowledge graphs, and semantic search — unified for AI agents.",
+        "title": "rankigi 1.0.0",
+        "summary": "RANKIGI Python SDK — tamper-evident audit trails for AI agents",
         "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "agenttool-sdk 0.5.0",
-        "summary": "Python SDK for agenttool.dev — memory and tools for AI agents",
+        "title": "rankigi added to PyPI",
+        "summary": "RANKIGI Python SDK — tamper-evident audit trails for AI agents",
         "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "ace-framework 0.8.7",
-        "summary": "Build self-improving AI agents that learn from experience",
+        "title": "Show HN: ToolGuard – Pytest for AI agent tool calls",
+        "summary": "I got tired of my AI agents crashing because the LLM hallucinated a JSON key or passed a string instead of an…",
+        "content": "I got tired of my AI agents crashing because the LLM hallucinated a JSON key or passed a string instead of an int. So I built ToolGuard it fuzzes your Python tool functions with edge-cases (nulls, mi… [+446 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Show HN: Xecai, a minimal Python interface for LLM providers for RAG systems",
+        "summary": "A small python library to simplify LLM calls, database retrieval, reranking, conversation storage & embedding…",
+        "content": "Develop code for different LLMs and AI services, change very few lines. Easily customise the behaviour so that it fits your requirements. This library is currently focused on RAG purposes, no Agent … [+4606 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "agent-control-sdk 7.0.0",
+        "summary": "Python SDK for Agent Control - protect your AI agents with controls",
         "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "“My one big tip for any of these business side roles is you still need to get close to the product. Nothing bothers me…",
-        "summary": "It’s fun to watch folks without engineering backgrounds go DIY with AI taking the lead. My friend Austin John…",
-        "content": "It’s fun to watch folks without engineering backgrounds go DIY with AI taking the lead. My friend Austin Johnsen leads CorpDev at Zapier and in recent months I noticed his LinkedIn posts detailing th… [+13092 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "smrti 0.4.6",
+        "summary": "AtomSpace-inspired memory + personality engine for AI agents",
+        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Ticket Fairy gets AI-powered update after $300m of ticket sales",
-        "summary": "Tech firm Ticket Fairy says it has processed more than $300m in ticket sales across thousands of events so fa…",
-        "content": "Tech firm Ticket Fairy says it has processed more than $300m in ticket sales across thousands of events so far. Now it has launched version 3.0 of its platform with an emphasis on AI-powered features… [+1201 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "Foxconn sees AI server market splitting GPU-ASIC 8:2 as CSP demand surges",
+        "summary": "Buoyed by sustained high capital expenditure by global cloud service providers (CSPs), AI servers and data ce…",
+        "content": "Save my User ID and Password Some subscribers prefer to save their log-in information so they do not have to enter their User ID and Password each time they visit the site. To activate this function… [+307 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "swival 0.1.30",
-        "summary": "A small, powerful CLI coding agent for open AI models",
-        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Just One Week Away. C-Level Technology Leadership and the Rise of Iconic Leaders Will Shape the Conversation at HMG Str…",
-        "summary": "C‑level technology leaders gather in New Jersey for HMG’s 18th annual summit to explore iconic leadership, AI…",
-        "content": "FAIRFIELD, Conn., March 17, 2026 (GLOBE NEWSWIRE) -- HMG Strategy, the worlds leading platform for inspiring technology executives to lead boldly and shape the future of business, will bring New Jers… [+6818 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "Search Referral Traffic Down 60% For Small Publishers, Data Shows via @sejournal, @MattGSouthern",
+        "summary": "Chartbeat data shows search referral traffic fell 60% for small publishers over two years, compared with 22%…",
+        "content": "Search referral traffic to small publishers dropped 60% over two years, according to Chartbeat data reported exclusively by Axios. That’s nearly three times the decline at large publishers. The anal… [+3455 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       }
@@ -261,14 +261,14 @@
         "impact_score": -2
       },
       {
-        "title": "10Y / 20Y：4.23%（-0.05%） / 4.83%（-0.06%）",
+        "title": "10Y / 20Y：4.20%（-0.03%） / 4.81%（-0.02%）",
         "summary": "中長期利率上升會壓抑科技估值。",
         "content": "科技與 AI 核心股會受中長債殖利率影響。",
         "affects_fcn": true,
         "impact_score": -1
       },
       {
-        "title": "油價 / 黃金：94.65（+3.88） / N/A",
+        "title": "油價 / 黃金：93.39（-5.09） / N/A",
         "summary": "油價與黃金反映通膨與避險情緒。",
         "content": "若兩者同步走升，通常代表市場更保守。",
         "affects_fcn": true,
@@ -299,7 +299,7 @@
     {
       "title": "優先核心池",
       "action": "可配置",
-      "reason": "目前建議先看：TSM / MSFT。",
+      "reason": "目前建議先看：NVDA / AVGO / TSM / MSFT。",
       "level": "ok"
     }
   ],
@@ -310,11 +310,11 @@
     },
     {
       "label": "總經環境",
-      "text": "總經環境中性，FCN 可做但需偏保守，優先核心股。"
+      "text": "總經環境中性偏有利，FCN 可做，但仍需避免風險集中在單一高敏感標的。"
     },
     {
       "label": "今日推薦",
-      "text": "可加入：TSM / MSFT；觀察：NVDA / AVGO / UNH；避免：AMD / ORCL / AMAT。"
+      "text": "可加入：NVDA / AVGO / TSM / MSFT；觀察：AMD / AMAT / MRVL；避免：ORCL / PLTR / COIN。"
     }
   ],
   "risk_radar": [
@@ -335,8 +335,8 @@
     },
     {
       "label": "AI 核心股安全度",
-      "value": 62,
-      "type": "watch"
+      "value": 78,
+      "type": "ok"
     }
   ],
   "fcn_rankings": [
@@ -434,9 +434,9 @@
         "eki": "80%",
         "day_change": "",
         "five_day": "",
-        "today": "持續觀察",
-        "reason": "可列觀察，但不宜重壓。",
-        "level": "watch"
+        "today": "可加入",
+        "reason": "屬核心池 / 防守池，且現階段環境允許配置。",
+        "level": "ok"
       },
       {
         "symbol": "AVGO",
@@ -447,9 +447,9 @@
         "eki": "80%",
         "day_change": "",
         "five_day": "",
-        "today": "持續觀察",
-        "reason": "可列觀察，但不宜重壓。",
-        "level": "watch"
+        "today": "可加入",
+        "reason": "屬核心池 / 防守池，且現階段環境允許配置。",
+        "level": "ok"
       },
       {
         "symbol": "TSM",
@@ -473,9 +473,9 @@
         "eki": "80%",
         "day_change": "",
         "five_day": "",
-        "today": "暫不建議",
-        "reason": "現階段波動或集中風險偏高。",
-        "level": "risk"
+        "today": "持續觀察",
+        "reason": "可列觀察，但不宜重壓。",
+        "level": "watch"
       },
       {
         "symbol": "ORCL",
@@ -512,9 +512,9 @@
         "eki": "80%",
         "day_change": "",
         "five_day": "",
-        "today": "暫不建議",
-        "reason": "現階段波動或集中風險偏高。",
-        "level": "risk"
+        "today": "持續觀察",
+        "reason": "可列觀察，但不宜重壓。",
+        "level": "watch"
       },
       {
         "symbol": "PLTR",
@@ -592,9 +592,9 @@
         "eki": "75%",
         "day_change": "",
         "five_day": "",
-        "today": "暫不建議",
-        "reason": "現階段波動或集中風險偏高。",
-        "level": "risk"
+        "today": "持續觀察",
+        "reason": "可列觀察，但不宜重壓。",
+        "level": "watch"
       },
       {
         "symbol": "ARM",
@@ -605,9 +605,9 @@
         "eki": "70%",
         "day_change": "",
         "five_day": "",
-        "today": "暫不建議",
-        "reason": "現階段波動或集中風險偏高。",
-        "level": "risk"
+        "today": "持續觀察",
+        "reason": "可列觀察，但不宜重壓。",
+        "level": "watch"
       },
       {
         "symbol": "LVS",
@@ -618,9 +618,9 @@
         "eki": "80%",
         "day_change": "",
         "five_day": "",
-        "today": "暫不建議",
-        "reason": "現階段波動或集中風險偏高。",
-        "level": "risk"
+        "today": "持續觀察",
+        "reason": "可列觀察，但不宜重壓。",
+        "level": "watch"
       },
       {
         "symbol": "UNH",
@@ -640,6 +640,14 @@
   "today_recommendations": {
     "add": [
       {
+        "symbol": "NVDA",
+        "reason": "屬核心池 / 防守池，且現階段環境允許配置。"
+      },
+      {
+        "symbol": "AVGO",
+        "reason": "屬核心池 / 防守池，且現階段環境允許配置。"
+      },
+      {
         "symbol": "TSM",
         "reason": "屬核心池 / 防守池，且現階段環境允許配置。"
       },
@@ -650,29 +658,29 @@
     ],
     "watch": [
       {
-        "symbol": "NVDA",
+        "symbol": "AMD",
         "reason": "可列觀察，但不宜重壓。"
       },
       {
-        "symbol": "AVGO",
+        "symbol": "AMAT",
         "reason": "可列觀察，但不宜重壓。"
       },
       {
-        "symbol": "UNH",
+        "symbol": "MRVL",
+        "reason": "可列觀察，但不宜重壓。"
+      },
+      {
+        "symbol": "ARM",
+        "reason": "可列觀察，但不宜重壓。"
+      },
+      {
+        "symbol": "LVS",
         "reason": "可列觀察，但不宜重壓。"
       }
     ],
     "avoid": [
       {
-        "symbol": "AMD",
-        "reason": "現階段波動或集中風險偏高。"
-      },
-      {
         "symbol": "ORCL",
-        "reason": "現階段波動或集中風險偏高。"
-      },
-      {
-        "symbol": "AMAT",
         "reason": "現階段波動或集中風險偏高。"
       },
       {
@@ -681,6 +689,14 @@
       },
       {
         "symbol": "COIN",
+        "reason": "現階段波動或集中風險偏高。"
+      },
+      {
+        "symbol": "TSLA",
+        "reason": "現階段波動或集中風險偏高。"
+      },
+      {
+        "symbol": "CRDO",
         "reason": "現階段波動或集中風險偏高。"
       }
     ]
@@ -695,17 +711,28 @@
       ],
       "eki": "80%–85%",
       "tenor": "6–12個月",
-      "goal": "防守優先"
+      "goal": "低波動穩定收息"
     },
     {
       "name": "平衡收益",
       "targets": [
         "NVDA",
-        "AVGO"
+        "AVGO",
+        "AMD"
       ],
-      "eki": "75%–80%",
-      "tenor": "3–6個月",
-      "goal": "只留主力池"
+      "eki": "70%–80%",
+      "tenor": "3–9個月",
+      "goal": "主力配置"
+    },
+    {
+      "name": "進攻型",
+      "targets": [
+        "PLTR",
+        "ARM"
+      ],
+      "eki": "60%–70%",
+      "tenor": "1–3個月",
+      "goal": "部位小、追求收益"
     }
   ]
 }
