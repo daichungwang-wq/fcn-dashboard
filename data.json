@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-03-18 03:43",
+  "updated_at": "2026-03-18 03:53",
   "summary": {
     "active_fcn_count": 24,
     "top_risk_code": "FCN710H",
@@ -9,6 +9,48 @@
   },
   "morning_brief": {
     "international_news": [
+      {
+        "title": "WNBA champion A’ja Wilson: ‘I want to win everything’",
+        "summary": "As the three-time WNBA champion Launches her second signature Nike shoe, she talks to Dazed about the rise of…",
+        "content": "You know youve got a successful commercial on your hands when people are making whole TikTok videos about how great it is (not to mention the New York Times calling it the best TV commercial of the y… [+12623 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Planning to sell Nifty amid Iran war? Here's why analysts think it is a bad idea",
+        "summary": "Analysts advise against shorting the Nifty despite geopolitical tensions, citing historical data and technica…",
+        "content": "The sharp correction in Indian equities triggered by rising geopolitical tensions in West Asia could have prompted some traders to consider aggressive bearish bets on the Nifty. However, analysts say… [+3763 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
+        "affects_fcn": true,
+        "impact_score": -1
+      },
+      {
+        "title": "Minky Couture Week 33 high school star athletes of the week",
+        "summary": "Minky Couture Week 33 high school star athletes of the week",
+        "content": "Alex Brannigan, Park City (Sr.) Its been a busy start to the season for Park City with back-to-back tournaments in St. George, and last weekend Alex Brannigan played a key role in leading the Miners… [+8027 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Bhojshala mosque caretaker claims Kamal Maula lineage; files plea in Madhya Pradesh high court",
+        "summary": "A descendant of Kamal Maulana Chisti has filed an intervention application in the Indore High Court regarding…",
+        "content": "<ul><li>News</li> <li>Legal News</li> <li>Bhojshala mosque caretaker claims Kamal Maula lineage; files plea in Madhya Pradesh high court</li></ul> Follow Us On Social Media Jane Fonda feels Barbr… [+1958 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "SK Group chairman says wafer shortage to last until 2030, trying to stabilise memory prices",
+        "summary": "Speaking to reporters on the sidelines of Nvidia's GTC Conference in San Jose, California, Chey said ​that SK…",
+        "content": "South Korea's SK Group Chairman Chey Tae-won saidon Monday the global chip wafer shortage is likely to persist until 2030, as demand driven by artificial intelligence continues to outpace supply.Spea… [+1966 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Breaking: RBA lifts interest rates by 0.25pc for second time this year",
+        "summary": "The Reserve Bank has lifted interest rates by 0.25 percentage points as the war in the Middle East sends oil,…",
+        "content": "The Reserve Bank has increased interest rates by 0.25 percentage points. The new cash rate is 4.1 per cent, up from 3.85 per cent. The RBA has now lifted rates twice in two months (once in February… [+4151 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
+        "affects_fcn": true,
+        "impact_score": -1
+      },
       {
         "title": "NYC City Council's Unbelievable Plan to Tackle Self-Checkout Retail Theft - Punish Business Owners?",
         "summary": "As was predicted by many, New York City Mayor Zohran Mamdani is the gift that keeps on giving when it comes t…",
@@ -22,48 +64,6 @@
         "content": "Authorities in multiple states initiated a crackdown on Monday against hoarding and black marketing of LPG cylinders, even as the issue of the West Asia crisis affecting the cooking gas supply was ra… [+5453 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
-      },
-      {
-        "title": "Jon Stewart Says ‘Opera and Ballet Have Defeated Timothée Chalamet’ After Misty Copeland’s Oscars Performance: ‘No Cont…",
-        "summary": "On this week’s episode of “The Daily Show,” Jon Stewart weighed in on Timothée Chalamet’s viral take-down of…",
-        "content": "On this week’s episode of “The Daily Show,” Jon Stewart weighed in on Timothée Chalamet’s viral take-down of ballet and opera. “As you are well aware, a terrible war has been raging for two weeks no… [+1520 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "As the war drags on, what does victory look like for the US, Israel and Iran?",
-        "summary": "There are two possible ways the fighting might end.",
-        "content": "As the Middle East war enters its third week, there is no sign from either Iran or the United States and Israel that they will stop the fighting any time soon. It is getting more violent and nasty by… [+6520 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
-        "affects_fcn": true,
-        "impact_score": -1
-      },
-      {
-        "title": "Climate change could drive millions globally into physical inactivity by 2050: Lancet study",
-        "summary": "Physical inactivity is already a major global health problem, with about one in three adults failing to meet…",
-        "content": "High temperatures caused by climate change could drive millions around the world into physical inactivity by 2050 and be linked to up to 7,00,000 additional premature deaths yearly and $3.68 billion … [+3000 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Australia central bank raises rates by 25 basis points to a near 1-year high",
-        "summary": "The 25 basis points hike was in line with expectations from analysts polled by Reuters",
-        "content": "Australia's central bank on Tuesday raised benchmark policy rates for a second straight time, pushing them to their highest since April 2025 at 4.1%. The 25 basis points hike was in line with expec… [+1422 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "If the oil price remains above US$100, Woodside shares could be raining dividends before Christmas",
-        "summary": "Surging oil prices are no fun at the petrol station, but they could be a boon for upcoming Woodside dividends…",
-        "content": "Woodside Energy Group Ltd (ASX: WDS) shares have been on fire in 2026. In early afternoon trade today, shares in the S&amp;P/ASX 200 Index (ASX: XJO) energy stock are down 0.2%, trading for $31.66 a… [+2786 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
-        "affects_fcn": true,
-        "impact_score": -1
-      },
-      {
-        "title": "ETMarkets Smart Talk | Diversified funds like flexicap and multicap best route in current volatility: Tata AMC’s Chandr…",
-        "summary": "Amidst global uncertainty and market volatility, investors are advised to stay disciplined and invest through…",
-        "content": "Amid rising global uncertainty and heightened volatility in equity markets, investors are increasingly looking for strategies that can help navigate the turbulence without compromising long-term weal… [+6180 chars]｜分類：地緣政治｜解讀：波動升高，FCN 敲入風險增加",
-        "affects_fcn": true,
-        "impact_score": -2
       },
       {
         "title": "How does Arctic water not freeze?",
@@ -80,18 +80,18 @@
         "impact_score": -1
       },
       {
+        "title": "ETMarkets Smart Talk | Diversified funds like flexicap and multicap best route in current volatility: Tata AMC’s Chandr…",
+        "summary": "Amidst global uncertainty and market volatility, investors are advised to stay disciplined and invest through…",
+        "content": "Amid rising global uncertainty and heightened volatility in equity markets, investors are increasingly looking for strategies that can help navigate the turbulence without compromising long-term weal… [+6180 chars]｜分類：全球經濟｜解讀：波動升高，FCN 敲入風險增加",
+        "affects_fcn": true,
+        "impact_score": -2
+      },
+      {
         "title": "'You don't lose when markets panic, you lose when you panic': Devang Mehta's playbook for the current crash",
         "summary": "Despite 18 months of market downturn and recent Middle East conflict-driven volatility, Indian equity investo…",
         "content": "Eighteen months of red. That is the brutal reality Indian equity investors have lived through since September 2024 and the past two weeks have only intensified the pain, with the Middle East conflict… [+3777 chars]｜分類：全球經濟｜解讀：波動升高，FCN 敲入風險增加",
         "affects_fcn": true,
         "impact_score": -2
-      },
-      {
-        "title": "Redington shares in focus as Middle East war disrupts operations of Gulf subsidiary",
-        "summary": "Redington said its Gulf subsidiary is operating under restrictions due to disruptions caused by the ongoing M…",
-        "content": "Shares of Redington will be in focus heading into trade on Tuesday after it said that its step-down subsidiary, Redington Gulf FZE, is operating in a restricted manner in the Gulf region due to the U… [+2912 chars]｜分類：全球經濟｜解讀：地緣風險升高，需留意市場波動擴大",
-        "affects_fcn": true,
-        "impact_score": -1
       }
     ],
     "financial_news": [
@@ -145,95 +145,95 @@
         "impact_score": -1
       },
       {
-        "title": "NYC City Council's Unbelievable Plan to Tackle Self-Checkout Retail Theft - Punish Business Owners?",
-        "summary": "As was predicted by many, New York City Mayor Zohran Mamdani is the gift that keeps on giving when it comes t…",
-        "content": "Skip to comments. NYC City Council's Unbelievable Plan to Tackle Self-Checkout Retail Theft - Punish Business Owners?Red State ^ | 03/16/2026 | Becky Noble Posted on 03/16/2026 8:41:43 PM PDT b… [+4672 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "title": "odoo-addon-base-report-to-printer 17.0.1.2.0.3",
+        "summary": "Report to printer",
+        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "eSafety Warned Elon Musk's X Child Abuse Material Was 'Particularly Systemic' on the Platform",
-        "summary": "A letter obtained by Guardian Australia shows that the eSafety commissioner believes that child abuse materia…",
-        "content": "The eSafety commissioner has warned Elon Musk's X about the availability and accessibility of child abuse material on the platform. It can be recalled the X's Grok came under fire earlier this year … [+1781 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "title": "City of Casey set to work on new precinct",
+        "summary": "Casey Council has welcomed State Government's approval of a precinct that promises 600 homes and 6,800 jobs i…",
+        "content": "Casey Council has welcomed State Governments approval of a precinct that promises 600 homes and 6,800 jobs in Cranbourne East. The approved Croskell (Employment) Precinct Structure Plan has opened u… [+2138 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "affects_fcn": true,
+        "impact_score": 0
+      },
+      {
+        "title": "PDRM arrests MRT Putrajaya Line cable thieves that sparked March 3 incident, 3 days of service disruption",
+        "summary": "PDRM has arrested four suspects believed to be involved in cable theft on the MRT Putrajaya Line, public tran…",
+        "content": "PDRM has arrested four suspects believed to be involved in cable theft on the MRT Putrajaya Line, public transport operator Prasarana revealed. The arrests are the result of information gathered fro… [+1696 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Australia central bank raises rates by 25 basis points to a near 1-year high",
-        "summary": "The 25 basis points hike was in line with expectations from analysts polled by Reuters",
-        "content": "Australia's central bank on Tuesday raised benchmark policy rates for a second straight time, pushing them to their highest since April 2025 at 4.1%. The 25 basis points hike was in line with expec… [+1422 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "title": "Is it better to hit a deer or tree?",
+        "summary": "Is it Better to Hit a Deer or a Tree? A Driver’s Guide to Unavoidable Impacts Choosing between hitting a deer…",
+        "content": "Choosing between hitting a deer or a tree is a decision no driver wants to face, but the answer is generally clear: It’s almost always better to hit a deer than a tree. This is due to the deer’s lowe… [+9091 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "How the INTEGRIS Health daycare closure compares to hundreds of other closures across Oklahoma",
-        "summary": "The Oklahoma Institute for Child Advocacy told News 9 this week that INTEGRIS Health’s decision to close its…",
-        "content": "The Oklahoma Institute for Child Advocacy told News 9 this week that INTEGRIS Healths decision to close its childcare programs this August shares similarities to and differences from the hundreds of … [+1754 chars]｜分類：通膨 / 就業｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "The Temu People Asked A Sports Reporter To Not Use Its Name As Shorthand For Crap Quality",
-        "summary": "Normally, a post about the signing of an NFL free agent wouldnt make it anywhere near these here Techdirt pag…",
-        "content": "The Fine Print: The following comments are owned by whoever posted them. We are not responsible for them in any way.｜分類：通膨 / 就業｜解讀：影響有限",
+        "title": "Here It Comes: Israel Opens Ground Front in Lebanon",
+        "summary": "The IDF has finally begun a new ground incursion into Lebanon, in response to Hezbollah's coordinate missile…",
+        "content": "Skip to comments. Here It Comes: Israel Opens Ground Front in LebanonHotair ^ | 03/16/2026 | Ed Morrissey Posted on 03/16/2026 8:50:46 PM PDT by SeekAndFind The IDF has finally begun a new gro… [+8027 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       }
     ],
     "ai_trend": [
       {
-        "title": "useagentmesh 2.0.0",
+        "title": "parsica-memory 2.3.0",
+        "summary": "File-based persistent memory for AI agents. Zero dependencies.",
+        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "openshell 0.0.7",
+        "summary": "OpenShell is the safe, private runtime for autonomous AI agents.",
+        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Bigg Boss 18’s Eisha Singh issues an apology for disrespectful behaviour by her team; says, ‘I truly feel sorry’",
+        "summary": "Bigg Boss 18 contestant Eisha Singh has apologized to fans after her team was reportedly rude on social media…",
+        "content": "<ul><li>News</li> <li>tv</li> <li>hindi</li> <li>Bigg Boss 18s Eisha Singh issues an apology for disrespectful behaviour by her team; says, I truly feel sorry</li></ul> Follow Us On Social Media … [+1798 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Hindustan Olympiad Result 2026 declared, students from Classes 1–12 can check scorecards here",
+        "summary": "Hindustan Olympiad Result 2026: Hindustan Olympiad Result 2026 has been declared on the official website for…",
+        "content": "<ul><li>News</li> <li>Education News</li> <li>News</li> <li>Hindustan Olympiad Result 2026 declared, students from Classes 112 can check scorecards here</li></ul> Follow Us On Social Media Dopin… [+1792 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "phone-pilot 0.5.2",
+        "summary": "Multi-platform mobile automation via MCP - Control Android devices through AI agents",
+        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "useagentmesh 2.0.1",
         "summary": "The Python Governance Platform for AI Agents — 60 policy rules, per-tool interception, HITL, FinOps, A2A.",
         "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "tribalmind 2.6.0",
-        "summary": "Shared memory for AI development agents - remember, recall, and share knowledge across projects and teams",
-        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Alibaba launches AI platform for enterprises as agent craze sweeps China",
-        "summary": "The platform, called Wukong, can coordinate ​multiple AI agents to handle complex business tasks including do…",
-        "content": "Alibaba Group on Tuesday launched an artificial intelligence platform for enterprises targeting automation, intensifying competition in China's rapidly evolving AI agent market following the OpenClaw… [+1224 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "openmax 0.4.0",
-        "summary": "Multi AI Agent orchestration hub — dispatch interactive AI agents across terminal panes",
-        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "openmax 0.3.9",
-        "summary": "Multi AI Agent orchestration hub — dispatch interactive AI agents across terminal panes",
-        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "tribalmind 2.5.0",
-        "summary": "Shared memory for AI development agents - remember, recall, and share knowledge across projects and teams",
-        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "fpl-intelligence 0.7.1",
-        "summary": "AI-powered Fantasy Premier League MCP server — captain picks, transfer suggestions, player comparison, chip s…",
+        "title": "pylumbergh 0.6.1",
+        "summary": "A self-hosted web dashboard for supervising multiple Claude Code AI sessions running in tmux",
         "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Micron enters high-volume production of HBM4 and PCIe Gen6 SSDs for Nvidia platforms",
-        "summary": "At the Nvidia GTC 2026 conference, Micron Technology signaled a major push in the AI hardware race, announcin…",
-        "content": "Save my User ID and Password Some subscribers prefer to save their log-in information so they do not have to enter their User ID and Password each time they visit the site. To activate this function… [+307 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "pylumbergh 0.1.0a65",
+        "summary": "A self-hosted web dashboard for supervising multiple Claude Code AI sessions running in tmux",
+        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       }
