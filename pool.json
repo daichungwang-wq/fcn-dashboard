@@ -1,0 +1,32 @@
+[
+  {
+    "symbol": "TSM",
+    "name": "TSMC",
+    "risk": "低",
+    "type": "半導體"
+  },
+  {
+    "symbol": "MSFT",
+    "name": "Microsoft",
+    "risk": "低",
+    "type": "大型科技"
+  },
+  {
+    "symbol": "NVDA",
+    "name": "NVIDIA",
+    "risk": "中",
+    "type": "AI"
+  },
+  {
+    "symbol": "AMZN",
+    "name": "Amazon",
+    "risk": "中",
+    "type": "雲端"
+  },
+  {
+    "symbol": "GOOGL",
+    "name": "Google",
+    "risk": "低",
+    "type": "大型科技"
+  }
+]
