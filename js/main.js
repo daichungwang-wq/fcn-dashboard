@@ -18,7 +18,7 @@ async function init() {
   }
 
   if (m3) {
-    m3.innerHTML = renderModule3Decision(positions);
+    m3.innerHTML = renderModule3Decision(positions, pool);
   }
 }
 
