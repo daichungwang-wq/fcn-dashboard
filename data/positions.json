@@ -6,7 +6,8 @@
     "coupon_pa": 19.5,
     "tenor_months": 6,
     "ki": 60,
-    "strike": 70
+    "strike": 70,
+    "gap": 10
   },
   {
     "id": "FCN002",
@@ -15,6 +16,7 @@
     "coupon_pa": 11.5,
     "tenor_months": 12,
     "ki": 65,
-    "strike": 75
+    "strike": 75,
+    "gap": 10
   }
 ]
