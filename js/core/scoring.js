@@ -12,7 +12,8 @@ function getCouponScore(couponPa) {
 function getTenorScore(months) {
   if (months > 12) return -999;
   if (months <= 3) return 5;
-  if (months <= 6) return 2;
+  if (months <= 5) return 2;
+  if (months === 6) return 0;
   if (months <= 9) return -2;
   return -5;
 }
