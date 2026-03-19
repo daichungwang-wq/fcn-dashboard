@@ -49,7 +49,8 @@ function getGapScore(gap) {
   if (gap > 20 && gap <= 22) return -5;
   if (gap > 22 && gap < 25) return -8;
 
-  return 0;
+  console.warn("gap score fallback", gap);
+return 0;
 }
 
 function applyIronRules(position, scores) {
