@@ -1,5 +1,5 @@
-import { totalDecisionScore } from "../core/scoring.js";
-import { getPoolItem, getCategoryScore } from "../core/pool.js";
+import { totalDecisionScore } from "../core/scoring.js?v=2";
+import { getPoolItem, getCategoryScore } from "../core/pool.js?v=2";
 
 export function renderModule3Decision(positions, pool) {
   if (!positions || positions.length === 0) {
@@ -13,13 +13,18 @@ export function renderModule3Decision(positions, pool) {
     const worstCategory = worst ? worst.category : "unknown";
     const worstScore = worst ? getCategoryScore(worst.category) : 0;
 
-    const finalScore = result.totalScore === -999 ? -999 : result.totalScore + worstScore;
+    const finalScore =
+      result.totalScore === -999 ? -999 : result.totalScore + worstScore;
 
     let finalDecision = result.decision;
     if (finalScore === -999) finalDecision = "不做";
     else if (finalScore >= 10) finalDecision = "可做";
     else if (finalScore < 4) finalDecision = "不做";
     else finalDecision = "觀察";
+
+    const ironRuleText = result.ironRuleBlocked
+      ? `｜鐵律：${result.ironRuleReasons.join("、")}`
+      : "";
 
     return `
       <div style="margin-bottom:16px;">
@@ -28,10 +33,12 @@ export function renderModule3Decision(positions, pool) {
         天期分數：${result.tenorScore}｜
         KI分數：${result.kiScore}｜
         Strike分數：${result.strikeScore}｜
+        Gap分數：${result.gapScore}｜
         Worst類別：${worstCategory}｜
         Worst分數：${worstScore}｜
         最終總分：${finalScore}｜
         建議：${finalDecision}
+        ${ironRuleText}
       </div>
     `;
   }).join("");
