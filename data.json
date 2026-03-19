@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-03-19 23:50",
+  "updated_at": "2026-03-19 23:56",
   "summary": {
     "active_fcn_count": 24,
     "top_risk_code": "FCN710H",
@@ -9,6 +9,48 @@
   },
   "morning_brief": {
     "international_news": [
+      {
+        "title": "What’s the Right Amount of Sex to Have?",
+        "summary": "Some sneaky ways the idea of “the right amount of sex” creeps into our work.",
+        "content": "Is there a right amount of sex to have? Or a right amount of desire for sex? That might sound like a weird question. But it came up the other day when I was chatting with fellow sex therapist Dr. Sk… [+3076 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Wisconsin football's safety room is one of the biggest mysteries on the roster",
+        "summary": "Past one established SEC transfer, it's anyone's guess how the Badgers' safety room could shake out.",
+        "content": "Wisconsin football's spring practices are scheduled to kick off on March 19. With dozens of incoming transfers, a handful of new position coaches and a new starting quarterback once again, there'll b… [+5141 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "‘The Season:’ PCCW & SK Global Show Launches At Filmart, Cast Including Anson Lo Discuss The Process Behind The Hong Ko…",
+        "summary": "PCCW Media and Crazy Rich Asians producer SK Global rolled out their premium series, The Season, this week at…",
+        "content": "PCCW Media and Crazy Rich Asians producer SK Global rolled out their premium series, The Season, this week at Filmart in Hong Kong with a collection of large-scale launch events. The rollout began … [+3192 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Pentagon planning US troop reinforcements as West Asia conflict escalates",
+        "summary": "Trump administration considers deploying U.S. troops to Iran to secure oil routes, nuclear sites, and strateg…",
+        "content": "President Donald Trump's administration is considering deploying thousands of U.S. troops to reinforce its operation in the Middle East, as the U.S. military prepares for possible next steps in it… [+5309 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
+        "affects_fcn": true,
+        "impact_score": -1
+      },
+      {
+        "title": "GOP blocks Booker-led push to curb Trump's military authority in Iran",
+        "summary": "Senate Democrats plan multiple war powers resolutions to challenge President Trump's Iran military operations…",
+        "content": "Senate Republicans blocked yet another bid by Senate Democrats to handcuff President Donald Trump's war authority in Iran in what could be an avalanche of similar moves to break through the GOPs floo… [+3000 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Exclusive-US weighs military reinforcements as Iran war enters possible new phase",
+        "summary": "WASHINGTON, March 18 (Reuters) - President ⁠Donald Trump's administration is considering deploying thousands…",
+        "content": "WASHINGTON, March 18 (Reuters) - President Donald Trump's administration is considering deploying thousands of U.S. troops to reinforce its operation in the Middle East, as the U.S. military prepares… [+5394 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
+        "affects_fcn": true,
+        "impact_score": -1
+      },
       {
         "title": "Why marketers delay petrol price cuts — MEMAN",
         "summary": "Learn why energy marketers delay petrol price cuts. Experts cite cost recovery, existing high-cost stock, and…",
@@ -24,72 +66,30 @@
         "impact_score": -1
       },
       {
-        "title": "NYC’s first lady Rama Duwaji celebrated Palestinian terrorists in resurfaced social media posts: report",
-        "summary": "Mayor Zohran Mamdani's wife, Rama Duwaji, celebrated Palestinian terrorists in a flurry of resurfaced social…",
-        "content": "Mayor Zohran Mamdani’s wife, Rama Duwaji, celebrated Palestinian terrorists in a flurry of resurfaced social media posts she made as a teenager and in her early 20s, a shocking new report said. The … [+1434 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "D’Tigress vow improved World Cup performance",
+        "summary": "Nigeria’s D’Tigress express confidence in a stronger performance at the 2026 FIBA World Cup after a mixed qua…",
+        "content": "Nigerias DTigress have expressed confidence in a stronger showing at the 2026 FIBA Womens Basketball World Cup after reflecting on their recent qualifying tournament campaign, PUNCH Sports Extra repo… [+2848 chars]｜分類：全球經濟｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Hero police officers storm inferno to save 5 passengers from fireball crash",
-        "summary": "Michigan police officers heroically rescued five people from a fiery car crash in Canton Township, and four o…",
-        "content": "Four Michigan police officers were injured Wednesday while heroically saving five people trapped inside a car that crashed into a tractor-trailer and burst into flames in Michigan. The crash happene… [+1370 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "Prediction Markets Claimed an Oscar Victory. The Reality Was Messier.",
+        "summary": "The recent explosion of Kalshi and Polymarket meant Oscar gambling and interest skyrocketed, but these weren’…",
+        "content": "There is something deeply funny about using the Oscars to advertise the power of prediction markets. To be clear, the Academy does not deal in corn futures. It is a vote conducted by 10,000 members … [+10394 chars]｜分類：全球經濟｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "As War Drives Viewers to Streaming, Pakistan’s Begin Platform Expands Content Slate and Eyes South Asian Growth (EXCLUS…",
-        "summary": "With war in the Middle East and between Pakistan and Afghanistan reshaping viewing habits across the region,…",
-        "content": "With war in the Middle East and between Pakistan and Afghanistan reshaping viewing habits across the region, Begin CEO Jonathan Mark-Tatti sees opportunity where others see disruption. “Geopolitica… [+4588 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
-        "affects_fcn": true,
-        "impact_score": -1
-      },
-      {
-        "title": "Breaking: ACCC investigating claims of anti-competitive conduct by fuel suppliers",
-        "summary": "The competition watchdog has announced it is investigating allegations of anti-competitive conduct by major f…",
-        "content": "The competition watchdog has announced it is investigating allegations of anti-competitive conduct by major fuel suppliers in regional and rural Australia. The ACCC has taken the unusual step of ann… [+1447 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "Micron’s barnstorming results crush Wall Street’s expectations and it guides for an even bigger beat in future",
+        "summary": "Memory chip supplier Micron Technology Inc. almost tripled its revenue in its latest quarter as it stormed pa…",
+        "content": "Memory chip supplier Micron Technology Inc. almost tripled its revenue in its latest quarter as it stormed past analysts expectations. It also provided blowout guidance for the current quarter, yet s… [+6300 chars]｜分類：全球經濟｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Resignation letter from U.S. counterterrorism head Joe Kent over Iran war is authentic. Read it here",
-        "summary": "A letter shared online in March 2026 is authentically a message in which Joe Kent, head of the U.S. National…",
-        "content": "Claim: A letter shared online in March 2026 is authentically a message in which Joe Kent, head of the U.S. National Counterterrorism Center, announced his resignation over the U.S. and Israel's war … [+4147 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "NFL and Cowboys star Logan Wilson announces retirement at 29 after six stellar seasons",
-        "summary": "A quiet Wednesday in Dallas became a reflective moment for Logan Wilson. The linebacker, recently released by…",
-        "content": "A quiet Wednesday in Dallas became a reflective moment for Logan Wilson. The linebacker, recently released by the Dallas Cowboys, confirmed via Instagram that he will not be playing in the 2026 seaso… [+2865 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Transcorp hits N4.87tn market cap, eyes record dividends",
-        "summary": "Transcorp Plc achieves a historic N4.87tn market cap after its best financial year, signalling record dividen…",
-        "content": "Transnational Corporation Plc has signalled a new era of dominance in the African investment landscape, announcing a historic combined market capitalisation of N4.87tn ($3.57bn) as of 16 March 2026. … [+3789 chars]｜分類：全球經濟｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Beyond the handshake: Human capital imperative in UK-Nigeria trade",
-        "summary": "Discover why human capital and diaspora expertise are the crucial missing pieces for unlocking the full £8.1b…",
-        "content": "Moments that matter rarely announce themselves. They arrive inside larger events, dressed in ceremony, and reveal their true significance only to those already positioned to act on them. The UK-Niger… [+5517 chars]｜分類：全球經濟｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Purpose Investments Inc. Announces March 2026 Distributions",
-        "summary": "TORONTO, March 18, 2026 (GLOBE NEWSWIRE) — Purpose Investments Inc. (“Purpose”) is pleased to announce distri…",
-        "content": "TORONTO, March 18, 2026 (GLOBE NEWSWIRE) Purpose Investments Inc. (Purpose) is pleased to announce distributions for the month of March 2026 for its open-end exchange-traded funds and closed-end fund… [+16373 chars]｜分類：全球經濟｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Re-defining Nigeria’s fintech regulator-regulatee relationship",
-        "summary": "Nigeria’s fintech regulation is evolving. See how the Central Bank’s new collaborative approach is set to red…",
-        "content": "Nigerias fintech sector is the largest in Africa, accounting for 28 per cent of the continents fintech companies and attracting 47 per cent of fintech deals in 2024. But turning this momentum into su… [+5153 chars]｜分類：全球經濟｜解讀：影響有限",
+        "title": "Micron’s earnings crush forecasts on memory chip demand and it guides for an even bigger beat – but shares fall anyway",
+        "summary": "Memory chip supplier Micron Technology Inc. almost tripled its revenue in its latest quarter as it stormed pa…",
+        "content": "Memory chip supplier Micron Technology Inc. almost tripled its revenue in its latest quarter as it stormed past analysts expectations, and also provided blowout guidance for the current quarter — yet… [+6259 chars]｜分類：全球經濟｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       }
@@ -152,32 +152,32 @@
         "impact_score": 1
       },
       {
-        "title": "Supercharged, 25k-Mile 2015 Dodge Challenger R/T Plus",
-        "summary": "This 2015 Dodge Challenger R/T Plus is powered by a Whipple-supercharged 5.7-liter Hemi V8 linked with an eig…",
-        "content": "This 2015 Dodge Challenger R/T Plus is powered by a Whipple-supercharged 5.7-liter Hemi V8 linked with an eight-speed automatic transmission and a Sonnax driveshaft, and it now has 25k miles. Finishe… [+2032 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "title": "Shaquille O’Neal offers to pay for Georgia girl’s funeral after she died following brutal fight at school",
+        "summary": "Shaquille O’Neal is offering to pay for the funeral of a 12-year-old Georgia girl who died a few days after s…",
+        "content": "Shaquille ONeal is offering to pay for the funeral of a 12-year-old Georgia girl who died a few days after she collapsed following a fight after school. The former NBA superstar said he doesnt want … [+2070 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Transcorp hits N4.87tn market cap, eyes record dividends",
-        "summary": "Transcorp Plc achieves a historic N4.87tn market cap after its best financial year, signalling record dividen…",
-        "content": "Transnational Corporation Plc has signalled a new era of dominance in the African investment landscape, announcing a historic combined market capitalisation of N4.87tn ($3.57bn) as of 16 March 2026. … [+3789 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "title": "120m Nigerians live with oral diseases – Dental Association",
+        "summary": "The Nigerian Dental Association reveals that 120 million people live with oral diseases in Nigeria, with mill…",
+        "content": "The President of the Nigerian Dental Association, Dr Emedom Elias, has said no fewer than 120 million Nigerians are living with oral diseases, with millions of children affected by untreated dental c… [+5397 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "NNPC boosts crude supply to Dangote amid price surge",
-        "summary": "NNPC is boosting its crude oil supply to the Dangote refinery to stabilize fuel availability in Nigeria as gl…",
-        "content": "The Nigerian National Petroleum Company Limited has intensified efforts to ensure a steady crude oil supply to the Dangote Petroleum Refinery as part of moves to stabilise fuel availability across th… [+6894 chars]｜分類：通膨 / 就業｜解讀：地緣風險升高，需留意市場波動擴大",
-        "affects_fcn": true,
-        "impact_score": -1
+        "title": "Lagos seals fake real estate office, hunts impersonators",
+        "summary": "The Lagos State Real Estate Regulatory Authority (LASRERA) seals a fake real estate office in Ikorodu to comb…",
+        "content": "The Lagos State Real Estate Regulatory Authority says its operatives sealed the office of a suspected impostor who operates under the guise of being a licensed realtor in the Ikorodu area of the stat… [+2311 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
       },
       {
-        "title": "Dangote imported $3.74bn crude in 2025 – CBN",
-        "summary": "Nigeria’s CBN reports Dangote refinery’s $3.74bn crude imports in 2025, reshaping the country’s oil trade, ex…",
-        "content": "Nigeria recorded crude oil imports worth $3.74bn linked to operations of the Dangote Petroleum Refinery in 2025, highlighting a major shift in the countrys oil trade structure despite its status as a… [+5163 chars]｜分類：通膨 / 就業｜解讀：地緣風險升高，需留意市場波動擴大",
-        "affects_fcn": true,
-        "impact_score": -1
+        "title": "Links to Varsity 845 high school and Varsity 845U college sports spring 2026 results and schedules",
+        "summary": "Varsity 845 high school and Varsity 845U college spring 2026 sports scores and results can be found here.",
+        "content": "Varsity 845 has changed the way it will present Section 9 high school sports scores. Instead of the weekly all-sports roundups, the website will host one web page at the top of RecordOnline.com/sport… [+1395 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
       }
     ],
     "ai_trend": [
@@ -224,16 +224,16 @@
         "impact_score": 0
       },
       {
-        "title": "Directable AI Set to Disrupt Film and TV Biz: ‘It’s Going to Help Small Film Industries in Asia Compete’",
-        "summary": "Generative AI has already changed commercial advertising, is replacing countless processes within film and TV…",
-        "content": "Generative AI has already changed commercial advertising, is replacing countless processes within film and TV production and is poised to upend even newer technology such as virtual production, says … [+5406 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "Five Innovators Transforming Financial Decisioning with Data and Analytics",
+        "summary": "How can banks, credit unions, and other financial institutions transform the massive volumes of data they pro…",
+        "content": "How can banks, credit unions, and other financial institutions transform the massive volumes of data they process every day into actionable insights that can drive better decision-making, identify in… [+3675 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "iron-thread 0.2.0",
-        "summary": "Ruthless middleware that stops broken AI outputs from reaching your database",
-        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "Israel’s AI major in $11 million deal with Indian companies to make UAVs locally",
+        "summary": "News News: NEW DELHI: An AI-powered robotics and software systems company, XTEND, which is headquartered in I…",
+        "content": "Israels AI major in $11 million deal with Indian companies to make UAVs locally｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       }
