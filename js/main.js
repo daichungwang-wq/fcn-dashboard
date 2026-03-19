@@ -1,5 +1,5 @@
 import { renderModule1News } from "./modules/module1_news.js?v=5";
-import { renderModule2Health } from "./modules/module2_health.js?v=5";
+import { renderModule2Health } from "./modules/module2_health.js?v=6";
 import { renderModule3Decision } from "./modules/module3_decision.js?v=5";
 
 async function loadJson(path) {
