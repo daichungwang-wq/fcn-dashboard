@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-03-19 03:05",
+  "updated_at": "2026-03-19 03:13",
   "summary": {
     "active_fcn_count": 24,
     "top_risk_code": "FCN710H",
@@ -9,6 +9,34 @@
   },
   "morning_brief": {
     "international_news": [
+      {
+        "title": "In-depth: China's AI 'five-layer cake'— impressive on the outside, underbaked in the middle",
+        "summary": "Jensen Huang's \"five-layer cake\" model for AI is a tidy recipe: energy, chips, infrastructure, models, applic…",
+        "content": "Credit: DIGITIMES ft. AIJensen Huang's \"five-layer cake\" model for AI is a tidy recipe: energy, chips, infrastructure, models, applications — stacked in order. Applied to China, the cake looks polish… [+71 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Len Deighton, author of bestselling spy thrillers, passes away at 97",
+        "summary": "UK News: LONDON: Len Deighton, a prolific writer whose stylish spy thrillers featured on bestseller lists for…",
+        "content": "Follow Us On Social Media Blockbuster India-Pakistan clash lined up in Hockey World Cup drawOscars ratings fall 9% in Conan O'Brien's second year hosting awards show'Was at his daughters house': Ins… [+1497 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Explained: NCERT’s latest controversy and the questions it raises about history, accuracy, and institutional responsibi…",
+        "summary": "NCERT has removed a controversial map from a Class 8 Social Science textbook that depicted Jaisalmer as part…",
+        "content": "<ul><li>News</li> <li>Education News</li> <li>News</li> <li>Explained: NCERTs latest controversy and the questions it raises about history, accuracy, and institutional responsibility</li></ul> Fo… [+1694 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Macron: Won't take part in ops to unblock Hormuz amid hostilities",
+        "summary": "Europe News: PARIS: President Emmanuel Macron said on Tuesday France would never take part in operations to u…",
+        "content": "Follow Us On Social Media Blockbuster India-Pakistan clash lined up in Hockey World Cup drawOscars ratings fall 9% in Conan O'Brien's second year hosting awards show'Was at his daughters house': Ins… [+1497 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
       {
         "title": "Trump: Will have the honour of taking Cuba, can do anything with it",
         "summary": "US News: President Donald Trump on Monday raised the possibility of the US \\\"taking\\\" Cuba, telling reporters…",
@@ -36,204 +64,22 @@
         "content": "Support CleanTechnica's work through a Substack subscription or on Stripe. As the Middle East conflict sends energy prices surging, new analysis finds electric cars can significantly protect the EU … [+4016 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
         "affects_fcn": true,
         "impact_score": -1
-      },
-      {
-        "title": "Repeat Wellness Club / MEAN* (Middle East Architecture Network)",
-        "summary": "Occupying a former ground-floor commercial unit, the existing interior carried the accumulated traces of succ…",
-        "content": "© Salva Lopez + 31 <ul><li></li><li>Concept And Design Architect: MEAN* Middle East Architecture Network </li><li>Client And Initiative: Repeat (ON Repeat), Mehrazin Davanipour and Niloufar Hossei… [+786 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
-        "affects_fcn": true,
-        "impact_score": -1
-      },
-      {
-        "title": "Venezuela shocks Team USA to win World Baseball Classic for first time",
-        "summary": "Eugenio Suarez's game-winning RBI double cemented Venezuela as World Baseball Classic champions, shocking Tea…",
-        "content": "Venezuelas dominant pitching and timely hitting shocked the United States, 3-2, to capture the World Baseball Classic (WBC) title for the first time in team history. Only Team USA, Japan and the Do… [+4552 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Iran launches retaliatory strikes on Israel and U.S. assets after security chief Larijani is killed",
-        "summary": "Iran has intensified attacks targeting U.S. assets in the Middle East and Israel in apparent retaliation agai…",
-        "content": "Iran intensified attacks against U.S. assets in the Middle East and Israel on Wednesday in apparent retaliation against the killing of the country's security chief Ali Larijani overnight, as the week… [+2486 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
-        "affects_fcn": true,
-        "impact_score": -1
-      },
-      {
-        "title": "EU urges US and Israel to end war with Iran, seeks diplomatic solutions",
-        "summary": "EU foreign policy chief Kaja Kallas says Europe is consulting with regional powers for a diplomatic solution…",
-        "content": "European Union (EU) foreign policy chief Kaja Kallas called on the United States and Israel on Tuesday to end their war with Iran and stated that the EU was consulting with Middle Eastern governments… [+2290 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
-        "affects_fcn": true,
-        "impact_score": -1
-      },
-      {
-        "title": "The Economic Impact Of This Horrifying War With Iran Is Not Going To Be Pretty",
-        "summary": "There is no way to get around it. We are facing a major global economic disruption, and the longer this war g…",
-        "content": "There is no way to get around it. We are facing a major global economic disruption, and the longer this war goes on the worse it will get. As I have reminded my readers on numerous occasions, our ent… [+6664 chars]｜分類：全球經濟｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Nigeria secures £746m UK deal to modernise ports",
-        "summary": "Nigeria secures a £746m UK deal for a comprehensive port modernization of Apapa and Tincan Island ports to bo…",
-        "content": "The Minister of Marine and Blue Economy, Dr Adegboyega Oyetola, has unveiled a landmark £746m financing agreement with the United Kingdom that will deliver the modernisation of Nigerias seaport infra… [+5071 chars]｜分類：全球經濟｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Sanwo-Olu pledges commitment to consumer protection",
-        "summary": "Lagos Governor, Babajide Sanwo-Olu, reiterates his commitment to strengthening legal and institutional framew…",
-        "content": "The Lagos State Governor, Babajide Sanwo-Olu, has reiterated his administrations commitment to continuously strengthening its legal and institutional frameworks for consumer protection. Sanwo-Olu sa… [+3766 chars]｜分類：全球經濟｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "LTM Named NVIDIA Partner Network ‘Rising Star Consulting Partner of the Year’ at NVIDIA GTC 2026",
-        "summary": "MUMBAI, India — LTM, the Business Creativity partner to the world’s largest enterprises, has been recognized…",
-        "content": "THIS CONTENT IS RESERVED FOR SUBSCRIBERS ONLY Subscribe now to read the latest news in your city and across Canada. <ul><li>Exclusive articles from Barbara Shecter, Joe O'Connor, Gabriel Friedman, … [+4877 chars]｜分類：全球經濟｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
       }
     ],
     "financial_news": [
       {
-        "title": "Asian stocks rally as oil retreats, Fed in spotlight",
-        "summary": "SYDNEY, March 18 : Asian shares rallied on Wednesday as oil prices paused their gains, with markets turning t…",
-        "content": "SYDNEY, March 18 : Asian shares rallied on Wednesday as oil prices paused their gains, with markets turning to the U.S. Federal Reserve meeting to see how policymakers will balance growth and inflati… [+3778 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
+        "title": "國際財經新聞資料來源未設定",
+        "summary": "目前未設定 NEWSAPI_KEY。",
+        "content": "設定 NEWSAPI_KEY 後，這裡會自動抓 10–20 則國際財經新聞。",
         "affects_fcn": true,
-        "impact_score": 1
-      },
-      {
-        "title": "Morgan Stanley Sticks With June Rate Cut Call as Oil Surges",
-        "summary": "Morgan Stanley is sticking with a forecast that sees the Federal Reserve resuming interest rates cuts in June…",
-        "content": "(Bloomberg) Morgan Stanley is sticking with a forecast that sees the Federal Reserve resuming interest rates cuts in June and delivering another reduction in September, even as soaring oil prices pro… [+4787 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
-        "affects_fcn": true,
-        "impact_score": 1
-      },
-      {
-        "title": "OraLabs, Inc. - 720690 - 03/11/2026",
-        "summary": "CGMP/Finished Pharmaceuticals/Adulterated",
-        "content": "Delivery Method: Via Electronic Mail - Return Receipt Requested Reference #: 320-26-50 Product: Drugs Over-the-Counter Drugs Recipient: OraLabs, Inc. 18685 East Plaza DriveParker, CO80134-9… [+9165 chars]｜分類：Fed / 利率｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "US Stock Market Today | Dow Jones | Nasdaq Live: US stock futures slip as oil jump fuels inflation worries before Fed m…",
-        "summary": "Dow Jones Today | US Stock Market Live Updates: U.S. stock index futures slipped on Tuesday as the Middle Eas…",
-        "content": "Dow Jones Today | Nasdaq | S&amp;P 500 | US Stock Market Live Updates: Wall Street is cooling from a tech-driven rebound in the previous session that saw the benchmark S&amp;P 500 log its biggest one… [+367 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
-        "affects_fcn": true,
-        "impact_score": 1
-      },
-      {
-        "title": "Why are US stock market index futures down today, and Dow Jones, S&P 500 and Nasdaq in red now? Wall Street futures dro…",
-        "summary": "Why are US stock market index futures down today, and Dow Jones, S&P 500 and Nasdaq in red now remains linked…",
-        "content": "Why are US stock market index futures down today, and Dow Jones, S&amp;P 500 and Nasdaq in red now is linked to multiple global and domestic triggers. Markets are reacting to rising oil prices, infla… [+5209 chars]｜分類：Fed / 利率｜解讀：地緣風險升高，需留意市場波動擴大",
-        "affects_fcn": true,
-        "impact_score": -1
-      },
-      {
-        "title": "Share Market Highlights: Sensex jumps 568 points, Nifty nears 23,600 in strong close",
-        "summary": "Sensex, Nifty updates on 17 March 2026: The Sensex climbed 567.99 points, or 0.75%, to close at 76,070.84, wh…",
-        "content": "<li></li> March 17, 2026 16:02The live blog is now closed. <li></li> March 17, 2026 15:56CLOSING BELL: Sensex settled 567.99 pts or 0.75% higher at 76,070.84, and Nifty 50 gained 172.35 pts or 0.7… [+48979 chars]｜分類：Fed / 利率｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Treasury yields tick up as investors weigh oil surge, Iran tensions and looming Fed decision",
-        "summary": "Treasury yields edged higher as investors weighed escalating tensions in the Middle East and rising oil price…",
-        "content": "Treasury yields edged higher Tuesday as investors weighed escalating tensions in the Middle East and rising oil prices ahead of the Federal Reserve's policy decision. The benchmark 10-year Treasury … [+1373 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
-        "affects_fcn": true,
-        "impact_score": 1
-      },
-      {
-        "title": "Dem congressional candidate Bobby Pulido depicts lewd behavior in controversial music video for his song",
-        "summary": "Democratic nominee Bobby Pulido faces scrutiny over controversial 2010 music video and social media posts as…",
-        "content": "Latin Grammy-winning singer Bobby Pulido, now the Democratic nominee in Texas 15th Congressional District, appeared in a controversial music video depicting lewd behavior. In a 2010 music video for … [+2019 chars]｜分類：通膨 / 就業｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "The traditional granny flat is changing, and Tasmania is leading the way",
-        "summary": "Tasmanians will soon be able to build second dwellings that are 50 per cent larger than the current size. An…",
-        "content": "An urban planning expert says Tasmanias plan to increase the size of granny flats will improve housing affordability, as the purpose of second dwellings changes across the country. Tasmanians will s… [+3528 chars]｜分類：通膨 / 就業｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Cade Cunningham injury, what games has Detroit Pistons star missed?",
-        "summary": "Detroit Pistons All-Star guard left the game against the Washington Wizards on Tuesday, March 17, early with…",
-        "content": "Detroit Pistons All-Star guard Cade Cunningham left the game against the Washington Wizards on Tuesday, March 17, early with what the team later said was back spasms. Its unknown if Cunningham will … [+1793 chars]｜分類：通膨 / 就業｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Stratton wins Illinois Senate primary, defeating crypto-backed Krishnamoorthi",
-        "summary": "Lieutenant Governor Juliana Stratton is now likely to be the next Senator from Illinois, after defeating Rep.…",
-        "content": "Illinois Lieutenant Governor Juliana Stratton is poised to become the next Senator from the state after winning the Democratic primary Tuesday night, defeating Representative Raja Krishnamoorthi. Kr… [+1796 chars]｜分類：通膨 / 就業｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Hampton Park revamp endorsed",
-        "summary": "City of Casey has formally endorsed an updated development plan for Hampton Park Central, marking a significa…",
-        "content": "City of Casey has formally endorsed an updated development plan for Hampton Park Central, marking a significant step toward revitalising one of the municipalitys key activity centres. Unanimously ad… [+2494 chars]｜分類：通膨 / 就業｜解讀：影響有限",
-        "affects_fcn": false,
         "impact_score": 0
       }
     ],
     "ai_trend": [
       {
-        "title": "openmax 0.5.15",
-        "summary": "Multi AI Agent orchestration hub — dispatch interactive AI agents across terminal panes",
-        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Show HN: Cursor for LibreOffice Week 2&3 (AI agents and voice)",
-        "summary": "Article URL: https://keithcu.com/wordpress/?p=5112 Comments URL: https://news.ycombinator.com/item?id=4742110…",
-        "content": "I’ve been calling this project Cursor for LibreOffice to myself, but I knew I couldn’t use the name forever, so I researched and chose WriterAgent. It supports Calc, and Draw as well, but I didnt lik… [+17803 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "cognilateral-trust 0.2.0",
-        "summary": "Epistemic trust layer for AI agents — confidence tiers, routing, and accountability",
-        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "This FBI is advancing the mission of protecting America’s children at a level never seen before.",
-        "summary": "This FBI is advancing the mission of protecting America’s children at a level never seen before. • 6,200+ mis…",
-        "content": "Skip to comments. This FBI is advancing the mission of protecting Americas children at a level never seen before.X ^ | 03/17/2026 | FBI Director Kash Patel Posted on 03/17/2026 7:53:08 PM PDT … [+1985 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "agent-action-policy added to PyPI",
-        "summary": "Declarative action policies for AI agents — approve, deny, or escalate any tool call before execution",
-        "content": "Download the file for your platform. If you're not sure which to choose, learn more about installing packages. Source Distribution Built Distribution Filter files by name, interpreter, ABI, and… [+144 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "agent-action-policy 0.1.0",
-        "summary": "Declarative action policies for AI agents — approve, deny, or escalate any tool call before execution",
-        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "MST-AI 0.1.1",
-        "summary": "A simple AI ChatBot Python library",
-        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Nvidia's Huang says AI will create jobs, not cut them",
-        "summary": "影響有限",
-        "content": "If you click 'Accept all', we and our partners, including 247 who are part of the IAB Transparency &amp; Consent Framework, will also store and / or access information on a device (in other words, us… [+1046 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "AI 趨勢資料來源未設定",
+        "summary": "目前未設定 NEWSAPI_KEY。",
+        "content": "設定 NEWSAPI_KEY 後，這裡會自動抓取 AI agent / AI 基礎設施新聞。",
         "affects_fcn": true,
         "impact_score": 0
       }
