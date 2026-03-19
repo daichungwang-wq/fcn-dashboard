@@ -63,7 +63,7 @@ async function init() {
 
   try {
     if (m3 && pool.length > 0) {
-      m3.innerHTML = renderModule3Decision(pool);
+      m3.innerHTML = renderModule3Decision(positions, pool, config);
     } else if (m3) {
       m3.innerHTML = `<p>目前沒有 Pool 資料</p>`;
     }
