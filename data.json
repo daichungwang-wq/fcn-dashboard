@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-03-19 12:02",
+  "updated_at": "2026-03-19 12:42",
   "summary": {
     "active_fcn_count": 24,
     "top_risk_code": "FCN710H",
@@ -10,86 +10,86 @@
   "morning_brief": {
     "international_news": [
       {
-        "title": "Why gold prices aren’t rising despite Iran war uncertainty — gold down 1% today now below $5,000",
-        "summary": "Why gold prices aren’t rising despite Iran War uncertainty shows gold holding steady around $5,000 per ounce…",
-        "content": "Gold prices have remained unexpectedly steady amid the ongoing US-Israel conflict with Iran, defying expectations for a sharp surge. As of March 17, 2026, spot gold hovered around $4,996 per ounce, w… [+7709 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Fed decision tonight will likely decide whether Bitcoin gets past $80k",
-        "summary": "Bitcoin traded between $73,000 and $74,600 on Wednesday as investors waited for the Federal Reserve's policy…",
-        "content": "Bitcoin has mostly traded around $74,000 on Wednesday as investors waited for the Federal Reserve's policy decision. However, as of press time, Bitcoin has just lost the $73,500 support, with a route… [+7165 chars]｜分類：地緣政治｜解讀：利率壓力若下降，FCN 環境通常較有利",
-        "affects_fcn": true,
-        "impact_score": 1
-      },
-      {
-        "title": "Whales move over 44,000 Bitcoin to exchanges ahead of Fed meeting",
-        "summary": "Whale Bitcoin transfers to exchanges may signal increased market volatility, impacting investor sentiment ami…",
-        "content": "With no changes expected, attention will center on the Fed's updated economic projections and any signals around the rate path into 2026. A large volume of Bitcoin was moved to centralized exchanges … [+1391 chars]｜分類：地緣政治｜解讀：波動升高，FCN 敲入風險增加",
-        "affects_fcn": true,
-        "impact_score": -2
-      },
-      {
-        "title": "Carole Middleton is a ‘stalwart of the royal family’ & part of the ‘slimmed-down’ royals",
-        "summary": "Last week, Carole Middleton attended one day of the Cheltenham Festival, a somewhat fancy multi-day horse rac…",
-        "content": "Last week, Carole Middleton attended one day of the Cheltenham Festival, a somewhat fancy multi-day horse race thing. As it so happened, Carole attended the same day as Queen Camilla and Princess Ann… [+4928 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Israeli air raids kill 12, level buildings in Lebanon",
-        "summary": "Intense Israeli air raids strike central Beirut, killing at least 12 people including a Hezbollah TV director…",
-        "content": "Israel repeatedly struck central Beirut on Wednesday, with Lebanese authorities reporting a death toll of at least 12 including a director for Hezbollah’s Al Manar TV channel, and said it would strik… [+4207 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Posthaste: Despite economy, Canadians hold on to the housing dream",
-        "summary": "Canadians are clinging to their dream of owning a home despite the economic conditions that are making it dif…",
-        "content": "THIS CONTENT IS RESERVED FOR SUBSCRIBERS ONLY Subscribe now to read the latest news in your city and across Canada. <ul><li>Exclusive articles from Barbara Shecter, Joe O'Connor, Gabriel Friedman, … [+4966 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "UK commits £15 million for vulnerable people affected by Middle East conflict",
-        "summary": "Hundreds of thousands of people fleeing conflict in the Middle East will receive life‑saving assistance in re…",
-        "content": "Hundreds of thousands of people fleeing conflict in the Middle East will receive life-saving support, thanks to new funding announced today by the Foreign Secretary. In total, £15 million from the … [+2706 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
+        "title": "North Korea watches and learns as US attacks Iran",
+        "summary": "Kim Jong Un has for years said nuclear weapons were critical to the survival of his regime. Experts say the w…",
+        "content": "North Korea quickly condemned military attacks on Iran, its long-time ally in the Middle East, and analysts suggest that Pyongyang will be looking for military and diplomatic weaknesses and tactical … [+5054 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
         "affects_fcn": true,
         "impact_score": -1
       },
       {
-        "title": "In 'Project Hail Mary,' Ryan Gosling Happily Drops the Movie Hero Stoicism",
-        "summary": "In an appearance at NASA's JPL, the actor explains why his latest intergalactic role was so 'liberating,' whi…",
-        "content": "The Apollo space missions, and the 20+ movies that immortalized them, featured daredevil former military test pilots heading into the unknown and returning as heroes. These brave souls forged new fro… [+5742 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "Iran war triggers helium shortage, hits semiconductor supply",
+        "summary": "Rising tensions in the Middle East are rattling high-end chipmakers. Among all the latest geopolitical uncert…",
+        "content": "Since the war in Iran started, worries about oil and gas have made the biggest headlines and sparked the loudest complaints from consumers. But another bottleneck in the global supply network is als… [+6064 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
+        "affects_fcn": true,
+        "impact_score": -1
+      },
+      {
+        "title": "Bongino fires back at Joe Kent's claim Iran posed 'no imminent threat' to US",
+        "summary": "Former FBI Deputy Director Dan Bongino challenges ex-counterterrorism official's claim that Iran poses no imm…",
+        "content": "Former FBI Deputy Director Dan Bongino pushed back forcefully Tuesday against former National Counterterrorism Center Director Joe Kents claim that Iran posed no imminent threat, arguing that the int… [+2443 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Delinea Report Finds 90% of Organizations Pressure Security Teams to Loosen Identity Controls for AI",
-        "summary": "Delinea published new research examining how rapid AI adoption is reshaping identity security risks for enter…",
-        "content": "SAN FRANCISCO, March 18, 2026 (GLOBE NEWSWIRE) -- Delinea, a pioneering provider of solutions for securing human and machine identities through centralized authorization, today published new research… [+5011 chars]｜分類：全球經濟｜解讀：影響有限",
+        "title": "It's not just oil: Aluminum prices have surged as Iran conflict chokes supply",
+        "summary": "The U.S. and Israel's war with Iran has upended the supply of aluminum in the Middle East, sending prices of…",
+        "content": "The U.S. and Israel's war with Iran has upended the supply of aluminum in the Middle East, sending prices of the base metal skyrocketing. While aluminum may be the most abundant metal on earth, it i… [+2526 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
+        "affects_fcn": true,
+        "impact_score": -1
+      },
+      {
+        "title": "Chelle drops Osimhen, Nwabali from Eagles’ Iran, Jordan ties",
+        "summary": "Super Eagles coach Eric Chelle drops Victor Osimhen and Stanley Nwabali from the squad for friendlies against…",
+        "content": "Super Eagles head coach Eric Chelle has made a bold statement ahead of Nigerias upcoming international friendlies, dropping several high-profile names, including Victor Osimhen and first-choice goalk… [+2854 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Research finds object storage underpins 91% of private AI deployments in production",
-        "summary": "New enterprise research finds data infrastructure rivals GPUs as a key constraint in scaling AI....",
-        "content": "SAN FRANCISCO, March 18, 2026 (GLOBE NEWSWIRE) -- Scality , a global leader in cyber-resilient storage software for the AI era, today announced new findings from independent research conducted by Fr… [+6580 chars]｜分類：全球經濟｜解讀：影響有限",
+        "title": "Daredevil: Born Again S02 Showrunner on Jessica Jones Being Big Factor",
+        "summary": "When The Punisher writer Dario Scardapane came in during the middle of Daredevil: Born Again season one produ…",
+        "content": "Posted in: Disney+, Marvel, TV | Tagged: daredevil: born again, Jessica Jones Daredevil: Born Again showrunner Dario Scardapane on Krysten Ritter's Jessica Jones return and having plans to bring her… [+2811 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Xage Security Hits Record Growth by Architecting the Future of Zero Trust for AI and Critical Infrastructure",
-        "summary": "Zero Trust leader reports 81% revenue growth, driven by a global shift from perimeter-based tools to identity…",
-        "content": "PALO ALTO, Calif., March 18, 2026 (GLOBE NEWSWIRE) -- Xage Security , a global leader in Zero Trust access and protection, today reported 81% year-over-year revenue growth and 102% year-over-year gr… [+9675 chars]｜分類：全球經濟｜解讀：影響有限",
+        "title": "Selected Articles: Poland’s President Nawrocki Vetoes Defense Loan with EU. “Pro-EU” versus “Pol-Exit”",
+        "summary": "Poland’s President Nawrocki Vetoes Defense Loan with EU. “Pro-EU” versus “Pol-Exit” By Lucas Leiroz de Almeid…",
+        "content": "Polands President Nawrocki Vetoes Defense Loan with EU. Pro-EU versus Pol-Exit By Lucas Leiroz de Almeida, March 18, 2026 Apparently, Euroscepticism is on the rise in Poland. Growing divergences be… [+2445 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Employ Inc. Names Matthew Piercy as Chief Financial Officer",
-        "summary": "Known for Building Scalable, Customer-Focused Businesses, Employ Inc. Names Matthew Piercy as Chief Financial…",
-        "content": "DENVER, March 18, 2026 (GLOBE NEWSWIRE) -- Employ Inc., a leading provider of people-first, intelligent hiring solutions across JazzHR, Lever, and Jobvite, today announced the appointment of Matthew … [+2594 chars]｜分類：全球經濟｜解讀：影響有限",
+        "title": "Markets enter stabilisation phase with cautious optimism despite rupee slide",
+        "summary": "Sensex, Nifty extend gains as markets enter stabilisation phase. IT stocks lead rally, but rupee hits record…",
+        "content": "Markets are headed into a stabilisation phase with a cautiously bullish undertone, even as the rupee crashed to a fresh record low and geopolitical tensions over West Asia continue to cloud the outlo… [+4418 chars]｜分類：全球經濟｜解讀：地緣風險升高，需留意市場波動擴大",
+        "affects_fcn": true,
+        "impact_score": -1
+      },
+      {
+        "title": "Foresight Raises $US25 Million to Close the Execution Gap in the Global Infrastructure Supercycle",
+        "summary": "Foresight raises $25M Series A led by Macquarie to scale its AI-driven infrastructure project delivery platfo…",
+        "content": "LONDON and NEW YORK and TEL AVIV, Israel, March 18, 2026 (GLOBE NEWSWIRE) -- Foresight , the AI-powered project delivery platform for large-scale infrastructure, today announced it has raised $US25 … [+5769 chars]｜分類：全球經濟｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "The Danger of Deflation(Phobia)",
+        "summary": "I want to start with a confession: I love falling prices. I love deflation. I want all prices to go down to a…",
+        "content": "This article was originally published by Joseph T. Salerno at the Mises Institute. This article is adapted from a lecture presented at the 2025 Supporters Summit in Delray Beach, Florida. I want t… [+12784 chars]｜分類：全球經濟｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "WallabyPhenox Restructures Debt and Accelerates Global Growth",
+        "summary": "WallabyPhenox completes financing to strengthen its balance sheet, support global expansion, and advance majo…",
+        "content": "IRVINE, Calif., March 18, 2026 (GLOBE NEWSWIRE) -- WallabyPhenox, a global neurovascular medical technology company, today announced the successful completion of a significant financing round aimed a… [+2626 chars]｜分類：全球經濟｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "GSI Technology Concludes Strategic Alternatives Review",
+        "summary": "SUNNYVALE, Calif., March 18, 2026 (GLOBE NEWSWIRE) -- GSI Technology, Inc. (Nasdaq: GSIT) today announced tha…",
+        "content": "SUNNYVALE, Calif., March 18, 2026 (GLOBE NEWSWIRE) -- GSI Technology, Inc. (Nasdaq: GSIT) today announced that its Board of Directors has concluded the Companys previously announced review of strateg… [+5355 chars]｜分類：全球經濟｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       }
@@ -145,95 +145,95 @@
         "impact_score": -1
       },
       {
-        "title": "Asian stocks rally as oil retreats, Fed in spotlight",
-        "summary": "SYDNEY, March 18 : Asian shares rallied on Wednesday as oil prices paused their gains, with markets turning t…",
-        "content": "SYDNEY, March 18 : Asian shares rallied on Wednesday as oil prices paused their gains, with markets turning to the U.S. Federal Reserve meeting to see how policymakers will balance growth and inflati… [+3778 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
+        "title": "Dell Reduces Workforce Again, Citing Cost Management and Restructuring Efforts",
+        "summary": "Dell Technologies cuts workforce for the third year as it reduces costs and shifts focus toward AI-driven gro…",
+        "content": "Dell Technologies has reduced its workforce for the third straight year, continuing a steady push to cut costs and restructure its business. In its latest annual filing, the company reported that it… [+1960 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Average age of first time buyer climbs to 34",
+        "summary": "A new report looks at how conditions have changed for first time buyers since the 1990s.",
+        "content": "At the end of 2025, the three most affordable areas to live in Great Britain were East Renfrewshire, East Dunbartonshire, and Aberdeenshire.｜分類：通膨 / 就業｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "North Korea watches and learns as US attacks Iran",
+        "summary": "Kim Jong Un has for years said nuclear weapons were critical to the survival of his regime. Experts say the w…",
+        "content": "North Korea quickly condemned military attacks on Iran, its long-time ally in the Middle East, and analysts suggest that Pyongyang will be looking for military and diplomatic weaknesses and tactical … [+5054 chars]｜分類：通膨 / 就業｜解讀：地緣風險升高，需留意市場波動擴大",
         "affects_fcn": true,
-        "impact_score": 1
+        "impact_score": -1
       },
       {
-        "title": "What does 6PPD-quinone from turf do? #science",
-        "summary": "What the study found about artificial turf and salmon A new study from the University of British Columbia lin…",
-        "content": "A new study from the University of British Columbia links artificial turf fields around Metro Vancouver to a chemical hazard for coho salmon. Researchers report that turf can leach 6PPD-quinone, a co… [+1612 chars]｜分類：通膨 / 就業｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
+        "title": "Iran war triggers helium shortage, hits semiconductor supply",
+        "summary": "Rising tensions in the Middle East are rattling high-end chipmakers. Among all the latest geopolitical uncert…",
+        "content": "Since the war in Iran started, worries about oil and gas have made the biggest headlines and sparked the loudest complaints from consumers. But another bottleneck in the global supply network is als… [+6064 chars]｜分類：通膨 / 就業｜解讀：地緣風險升高，需留意市場波動擴大",
+        "affects_fcn": true,
+        "impact_score": -1
       },
       {
-        "title": "How does microwave quantum networking handle heat? #science",
-        "summary": "Microwave quantum networks stay working during heat stress Researchers report that a microwave quantum networ…",
-        "content": "Researchers report that a microwave quantum network can maintain performance even when exposed to heat-related disturbances. The broader context is the growing push toward quantum communication syste… [+1675 chars]｜分類：通膨 / 就業｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "QB competition to highlight Arizona State spring football",
-        "summary": "Arizona State football has a room full of quarterbacks ready to compete for the starting role in 2026.",
-        "content": "When Arizona State football coach Kenny Dillingham began talking to quarterback Mikey Keene about transferring to the school, the Sun Devils coach had to make sure the Chandler native knew he was par… [+4713 chars]｜分類：通膨 / 就業｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "How does Linux Foundation help FOSS against AI slop? #tech",
-        "summary": "Linux Foundation launches grants to manage AI generated security noise The Linux Foundation announced $12.5 m…",
-        "content": "The Linux Foundation announced $12.5 million in total grants from Google and other backers to help open-source software maintainers cope with an influx of AI-generated security findings. The goal is … [+1789 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "title": "Bongino fires back at Joe Kent's claim Iran posed 'no imminent threat' to US",
+        "summary": "Former FBI Deputy Director Dan Bongino challenges ex-counterterrorism official's claim that Iran poses no imm…",
+        "content": "Former FBI Deputy Director Dan Bongino pushed back forcefully Tuesday against former National Counterterrorism Center Director Joe Kents claim that Iran posed no imminent threat, arguing that the int… [+2443 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       }
     ],
     "ai_trend": [
       {
-        "title": "Delinea Report Finds 90% of Organizations Pressure Security Teams to Loosen Identity Controls for AI",
-        "summary": "Delinea published new research examining how rapid AI adoption is reshaping identity security risks for enter…",
-        "content": "SAN FRANCISCO, March 18, 2026 (GLOBE NEWSWIRE) -- Delinea, a pioneering provider of solutions for securing human and machine identities through centralized authorization, today published new research… [+5011 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "Corelight’s Agentic Triage turns SOC alerts into evidence-backed investigations",
+        "summary": "Corelight has introduced a new set of agentic AI capabilities aimed at helping security operations centers (S…",
+        "content": "Corelight has introduced a new set of agentic AI capabilities aimed at helping security operations centers (SOCs) cut down on repetitive, time-consuming tasks. The updates are designed to boost analy… [+5873 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "How One Agency Startup Uses Real-Time Data To Develop Real-Time Ads",
-        "summary": "Audience preferences are constantly evolving. So why not ads that evolve in real time, too? No, really. Media…",
-        "content": "Audience preferences are constantly evolving. So why not ads that evolve in real time, too? No, really. Media agency Multiply claims to have “self-learning ads” and proprietary AI software that tra… [+3555 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "Show HN: Backproto – network backpressure routing applied to AI agent payments",
+        "summary": "I’ve been applying backpressure routing (Tassiulas-Ephremides, 1992) to payment flows between AI agents.Strea…",
+        "content": "Capacity is invisible. The most capable agents overload while mediocre ones sit idle. There is no price signal, no rerouting, no backpressure.｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Menlo Security takes on AI agent risk with new browser security platform",
-        "summary": "Browser security company Menlo Security Inc. today announced a new Browser Security Platform that is purpose-…",
-        "content": "Browser security company Menlo Security Inc. today announced a new Browser Security Platform that is purpose-built to secure “agentic enterprise,” where autonomous artificial intelligence agents incr… [+4242 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "TrojAI unveils new capabilities to secure agentic AI beyond the prompt layer",
+        "summary": "TrojAI has announced major new capabilities designed to secure the growing deployment of agentic AI in the en…",
+        "content": "TrojAI has announced major new capabilities designed to secure the growing deployment of agentic AI in the enterprise going beyond the prompt layer. “The innovations we are unveiling this week addre… [+3459 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Fast followers will fall behind in the AI race, warns ServiceNow",
-        "summary": "ServiceNow experts and customers highlight why acting at pace, deploying cross-system AI agents and governanc…",
-        "content": "Many local executives aim to be fast followers in artificial intelligence (AI) adoption, but this approach is no longer sufficient, according to Pete Andrew, group vice-president for Australia and Ne… [+6679 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "oto-cli added to PyPI",
+        "summary": "CLI toolkit for AI agents — covers the long tail of SaaS APIs that don't have a CLI",
+        "content": "Your LLM already uses gh for GitHub, aws for AWS, gcloud for GCP. oto covers the long tail the SaaS products that don't have a CLI. Each connector ships with a SKILL.md an instruction manual that t… [+4460 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Show HN: Agent-fs – The missing filesystem for agents (and humans)",
-        "summary": "Hello there HN, coming back with more agentic suff :)If you saw my last post, we've been building agent-swarm…",
-        "content": "A persistent, searchable filesystem for AI agents.Built by desplega.sh by builders, for builders. Agent FS gives AI agents a structured filesystem with built-in semantic search, versioning, and iden… [+2955 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：ARM｜建議：觀察池",
+        "title": "oto-cli 1.0.0",
+        "summary": "CLI toolkit for AI agents — covers the long tail of SaaS APIs that don't have a CLI",
+        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Talent Connects, recruiting and HR platform, Partners with Fusemachines to Integrate Interview Agent for its 300+ Custo…",
-        "summary": "NEW YORK, March 18, 2026 (GLOBE NEWSWIRE) -- Fusemachines Inc. (NASDAQ: FUSE), a leading provider of enterpri…",
-        "content": "NEW YORK, March 18, 2026 (GLOBE NEWSWIRE) -- Fusemachines Inc. (NASDAQ: FUSE), a leading provider of enterprise Agentic AI technologies, today announced that Talent Connects, a recruiting and talen… [+6795 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "poolclaw-mcp 0.2.0",
+        "summary": "MCP server for PoolClaw — connect Claude Code and AI agents to collaborative pools",
+        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "What is Xbow’s $120M security AI platform? #tech",
-        "summary": "Xbow raises $120M to automatically probe app vulnerabilities Xbow, a security startup that uses AI to examine…",
-        "content": "Xbow, a security startup that uses AI to examine applications for vulnerabilities, raised $120 million. The round was led by DFJ Growth and Northzone, and the company is now valued at over $1 billion… [+1482 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "Former Uber self-driving chief says crashing his Tesla in FSD exposed this big risk with AI",
+        "summary": "Raffi Krikorian wrote in The Atlantic that his Tesla Model X was \"totalled\" after it crashed into a wall whil…",
+        "content": "Raffi Krikorian led Uber's self-driving car project from 2015 to 2017.Horacio Villalobos - Corbis/Corbis via Getty Images <ul><li>Uber's former self-driving lead, Raffi Krikorian, has a warning abou… [+3663 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "How does Linux Foundation help FOSS against AI slop? #tech",
-        "summary": "Linux Foundation launches grants to manage AI generated security noise The Linux Foundation announced $12.5 m…",
-        "content": "The Linux Foundation announced $12.5 million in total grants from Google and other backers to help open-source software maintainers cope with an influx of AI-generated security findings. The goal is … [+1789 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "LTM wins NVIDIA’s Rising Star Partner Award at GTC 2026",
+        "summary": "Shares of LTM reacted, closing at ₹4,298.80 on the NSE — up 2.62 per cent or ₹109.60 from the previous close…",
+        "content": "LTM Limited, formerly LTIMindtree Limited, was named the NVIDIA Partner Networks Rising Star Consulting Partner of the Year at NVIDIA GTC 2026 on March 18, 2026. The award recognises the Mumbai-headq… [+1040 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       }
