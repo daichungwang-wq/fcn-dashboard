@@ -1,6 +1,6 @@
-import { renderModule1News } from "./modules/module1_news.js"
-import { renderModule2Health } from "./modules/module2_health.js"
-import { renderModule3Decision } from "./modules/module3_decision.js"
+import { renderModule1News } from "./modules/module1_news.js";
+import { renderModule2Health } from "./modules/module2_health.js";
+import { renderModule3Decision } from "./modules/module3_decision.js";
 
 async function loadJson(path) {
   const res = await fetch(path);
@@ -18,7 +18,6 @@ async function init() {
   let positions = [];
   let pool = [];
   let newsData = null;
-  let config = {};
 
   try {
     positions = await loadJson("./data/positions.json");
@@ -32,6 +31,7 @@ async function init() {
   } catch (error) {
     console.error("pool load error:", error);
     if (m2) m2.innerHTML = `<p>pool.json 載入失敗</p>`;
+    if (m3) m3.innerHTML = `<p>pool.json 載入失敗</p>`;
   }
 
   try {
@@ -39,13 +39,6 @@ async function init() {
   } catch (error) {
     console.error("news load error:", error);
     if (m1) m1.innerHTML = `<p>news.json 載入失敗</p>`;
-  }
-
-  try {
-    config = await loadJson("./data/config.json");
-  } catch (error) {
-    console.error("config load error:", error);
-    if (m3) m3.innerHTML = `<p>config.json 載入失敗</p>`;
   }
 
   try {
@@ -58,8 +51,10 @@ async function init() {
   }
 
   try {
-    if (m2 && positions && pool) {
+    if (m2 && positions.length > 0 && pool.length > 0) {
       m2.innerHTML = renderModule2Health(positions, pool);
+    } else if (m2 && positions.length === 0) {
+      m2.innerHTML = `<p>目前沒有持倉資料</p>`;
     }
   } catch (error) {
     console.error("module2 render error:", error);
@@ -67,9 +62,10 @@ async function init() {
   }
 
   try {
-    if (m3) {
-  m3.innerHTML = renderModule3Decision(pool);
-}
+    if (m3 && pool.length > 0) {
+      m3.innerHTML = renderModule3Decision(pool);
+    } else if (m3) {
+      m3.innerHTML = `<p>目前沒有 Pool 資料</p>`;
     }
   } catch (error) {
     console.error("module3 render error:", error);
