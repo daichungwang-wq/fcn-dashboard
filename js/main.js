@@ -27,7 +27,7 @@ async function init() {
   }
 
   try {
-    pool = await loadJson("./data/pool.json");
+    pool = await loadJson("../data/pool.json");
   } catch (error) {
     console.error("pool load error:", error);
     if (m2) m2.innerHTML = `<p>pool.json 載入失敗</p>`;
