@@ -36,29 +36,67 @@ function getStrikeScore(strike) {
   return -8;
 }
 
+function getGapScore(gap) {
+  if (gap < 5) return -999;
+  if (gap < 8) return -6;
+  if (gap < 10) return -3;
+  if (gap < 15) return 0;
+  if (gap < 20) return 3;
+  return 5;
+}
+
+function applyIronRules(position, scores) {
+  const reasons = [];
+
+  if (scores.couponScore === -999) reasons.push("利率低於10%");
+  if (scores.tenorScore === -999) reasons.push("天期大於12個月");
+  if (scores.kiScore === -999) reasons.push("KI大於75");
+  if (scores.strikeScore === -999) reasons.push("Strike大於75");
+  if (scores.gapScore === -999) reasons.push("Gap太小");
+
+  const blocked = reasons.length > 0;
+
+  return {
+    blocked,
+    reasons
+  };
+}
+
 export function totalDecisionScore(position) {
   const couponScore = getCouponScore(position.coupon_pa || 0);
   const tenorScore = getTenorScore(position.tenor_months || 0);
   const kiScore = getKiScore(position.ki || 0);
   const strikeScore = getStrikeScore(position.strike || 0);
+  const gapScore = getGapScore(position.gap || 0);
 
-  if (
-    couponScore === -999 ||
-    tenorScore === -999 ||
-    kiScore === -999 ||
-    strikeScore === -999
-  ) {
+  const ironRule = applyIronRules(position, {
+    couponScore,
+    tenorScore,
+    kiScore,
+    strikeScore,
+    gapScore
+  });
+
+  if (ironRule.blocked) {
     return {
       couponScore,
       tenorScore,
       kiScore,
       strikeScore,
+      gapScore,
       totalScore: -999,
-      decision: "不做"
+      decision: "不做",
+      ironRuleBlocked: true,
+      ironRuleReasons: ironRule.reasons
     };
   }
 
-  const totalScore = couponScore + tenorScore + kiScore + strikeScore;
+  const totalScore =
+    couponScore +
+    tenorScore +
+    kiScore +
+    strikeScore +
+    gapScore;
 
   let decision = "觀察";
   if (totalScore >= 10) decision = "可做";
@@ -69,7 +107,10 @@ export function totalDecisionScore(position) {
     tenorScore,
     kiScore,
     strikeScore,
+    gapScore,
     totalScore,
-    decision
+    decision,
+    ironRuleBlocked: false,
+    ironRuleReasons: []
   };
 }
