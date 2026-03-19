@@ -4,13 +4,17 @@
     "symbols": ["NVDA", "TSM", "UNH"],
     "worst_of": "NVDA",
     "coupon_pa": 19.5,
-    "tenor_months": 6
+    "tenor_months": 6,
+    "ki": 60,
+    "strike": 70
   },
   {
     "id": "FCN002",
     "symbols": ["UNH", "TGT"],
     "worst_of": "UNH",
     "coupon_pa": 11.5,
-    "tenor_months": 12
+    "tenor_months": 12,
+    "ki": 65,
+    "strike": 75
   }
 ]
