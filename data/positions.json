@@ -2,11 +2,15 @@
   {
     "id": "FCN001",
     "symbols": ["NVDA", "TSM", "UNH"],
-    "worst_of": "NVDA"
+    "worst_of": "NVDA",
+    "coupon_pa": 19.5,
+    "tenor_months": 6
   },
   {
     "id": "FCN002",
     "symbols": ["UNH", "TGT"],
-    "worst_of": "UNH"
+    "worst_of": "UNH",
+    "coupon_pa": 11.5,
+    "tenor_months": 12
   }
 ]
