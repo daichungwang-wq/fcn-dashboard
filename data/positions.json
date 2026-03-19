@@ -1,1 +1,12 @@
-[]
+[
+  {
+    "id": "FCN001",
+    "symbols": ["NVDA", "TSM", "UNH"],
+    "worst_of": "NVDA"
+  },
+  {
+    "id": "FCN002",
+    "symbols": ["UNH", "TGT"],
+    "worst_of": "UNH"
+  }
+]
