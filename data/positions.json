@@ -1,0 +1,1922 @@
+[
+  {
+    "id": "FCN710H",
+    "trade_date": "114.07.03",
+    "maturity_date": null,
+    "buy_sell": "B",
+    "currency": "USD",
+    "issuer": "法國外貿銀行",
+    "notional": "1萬",
+    "order_price": "100%",
+    "price_basis": "VWAP",
+    "tenor_months": 9,
+    "coupon_pa": 25.0,
+    "trigger": 100.0,
+    "ki": 65.0,
+    "strike": 75.84,
+    "stocks": [
+      {
+        "symbol": "NVDA",
+        "price": 159.3783,
+        "ki_price": 103.5959,
+        "strike_price": 120.8725
+      },
+      {
+        "symbol": "ARM",
+        "price": 155.3988,
+        "ki_price": 101.0092,
+        "strike_price": 117.8545
+      },
+      {
+        "symbol": "TSLA",
+        "price": 315.9623,
+        "ki_price": 205.3755,
+        "strike_price": 239.6258
+      },
+      {
+        "symbol": "AVGO",
+        "price": 274.5929,
+        "ki_price": 178.4854,
+        "strike_price": 208.2513
+      },
+      {
+        "symbol": "ORCL",
+        "price": 235.8377,
+        "ki_price": 153.2945,
+        "strike_price": 178.8593
+      }
+    ]
+  },
+  {
+    "id": "FCN751H",
+    "trade_date": "114.07.08",
+    "maturity_date": "114.09.11",
+    "buy_sell": "B",
+    "currency": "USD",
+    "issuer": "西班牙對外銀行",
+    "notional": "3萬",
+    "order_price": "100%",
+    "price_basis": "VWAP",
+    "tenor_months": 6,
+    "coupon_pa": 18.0,
+    "trigger": 100.0,
+    "ki": 55.0,
+    "strike": 65.79,
+    "stocks": [
+      {
+        "symbol": "ARM",
+        "price": 148.7382,
+        "ki_price": 81.806,
+        "strike_price": 97.8549
+      },
+      {
+        "symbol": "MU",
+        "price": 124.0723,
+        "ki_price": 68.2398,
+        "strike_price": 81.6272
+      },
+      {
+        "symbol": "NVDA",
+        "price": 159.3408,
+        "ki_price": 87.6374,
+        "strike_price": 104.8303
+      },
+      {
+        "symbol": "TSLA",
+        "price": 300.1637,
+        "ki_price": 165.09,
+        "strike_price": 197.4777
+      },
+      {
+        "symbol": "TSM",
+        "price": 228.8055,
+        "ki_price": 125.843,
+        "strike_price": 150.5311
+      }
+    ]
+  },
+  {
+    "id": "FCN813H",
+    "trade_date": "114.07.10",
+    "maturity_date": "114.09.18",
+    "buy_sell": "B",
+    "currency": "USD",
+    "issuer": "法國興業銀行",
+    "notional": "2萬",
+    "order_price": "100%",
+    "price_basis": "VWAP",
+    "tenor_months": 9,
+    "coupon_pa": 16.74,
+    "trigger": 100.0,
+    "ki": 60.0,
+    "strike": 68.0,
+    "stocks": [
+      {
+        "symbol": "AVGO",
+        "price": 276.22,
+        "ki_price": 165.732,
+        "strike_price": 187.8296
+      },
+      {
+        "symbol": "NVDA",
+        "price": 163.3755,
+        "ki_price": 98.0253,
+        "strike_price": 111.0953
+      },
+      {
+        "symbol": "TSLA",
+        "price": 305.7175,
+        "ki_price": 183.4305,
+        "strike_price": 207.8879
+      },
+      {
+        "symbol": "TSM",
+        "price": 230.6869,
+        "ki_price": 138.4121,
+        "strike_price": 156.8671
+      }
+    ]
+  },
+  {
+    "id": "FCN827H",
+    "trade_date": "114.07.11",
+    "maturity_date": "114.09.11",
+    "buy_sell": "B",
+    "currency": "USD",
+    "issuer": "西班牙對外銀行",
+    "notional": "1萬",
+    "order_price": "100%",
+    "price_basis": "VWAP",
+    "tenor_months": 9,
+    "coupon_pa": 20.65,
+    "trigger": 100.0,
+    "ki": 58.0,
+    "strike": 65.0,
+    "stocks": [
+      {
+        "symbol": "ARM",
+        "price": 148.1204,
+        "ki_price": 85.9098,
+        "strike_price": 96.2783
+      },
+      {
+        "symbol": "NVDA",
+        "price": 166.0252,
+        "ki_price": 96.2946,
+        "strike_price": 107.9164
+      },
+      {
+        "symbol": "PLTR",
+        "price": 143.2553,
+        "ki_price": 83.0881,
+        "strike_price": 93.1159
+      },
+      {
+        "symbol": "TSLA",
+        "price": 309.8915,
+        "ki_price": 179.7371,
+        "strike_price": 201.4295
+      }
+    ]
+  },
+  {
+    "id": "FCN833H",
+    "trade_date": "114.07.11",
+    "maturity_date": "114.09.11",
+    "buy_sell": "B",
+    "currency": "USD",
+    "issuer": "西班牙對外銀行",
+    "notional": "2萬",
+    "order_price": "100%",
+    "price_basis": "VWAP",
+    "tenor_months": 10,
+    "coupon_pa": 18.0,
+    "trigger": 100.0,
+    "ki": 55.0,
+    "strike": 65.0,
+    "stocks": [
+      {
+        "symbol": "AMD",
+        "price": 144.9666,
+        "ki_price": 79.7316,
+        "strike_price": 94.2283
+      },
+      {
+        "symbol": "ARM",
+        "price": 148.1204,
+        "ki_price": 81.4662,
+        "strike_price": 96.2783
+      },
+      {
+        "symbol": "AVGO",
+        "price": 274.3172,
+        "ki_price": 150.8745,
+        "strike_price": 178.3062
+      },
+      {
+        "symbol": "NVDA",
+        "price": 166.0252,
+        "ki_price": 91.3139,
+        "strike_price": 107.9164
+      },
+      {
+        "symbol": "TSLA",
+        "price": 309.8915,
+        "ki_price": 170.4403,
+        "strike_price": 201.4295
+      }
+    ]
+  },
+  {
+    "id": "FCN863H",
+    "trade_date": "114.07.15",
+    "maturity_date": "114.08.29",
+    "buy_sell": "B",
+    "currency": "USD",
+    "issuer": "法國外貿銀行",
+    "notional": "10萬",
+    "order_price": "100%",
+    "price_basis": "VWAP",
+    "tenor_months": 12,
+    "coupon_pa": 18.53,
+    "trigger": 100.0,
+    "ki": 60.0,
+    "strike": 70.0,
+    "stocks": [
+      {
+        "symbol": "MU",
+        "price": 120.0886,
+        "ki_price": 72.0532,
+        "strike_price": 84.062
+      },
+      {
+        "symbol": "NVDA",
+        "price": 170.8487,
+        "ki_price": 102.5092,
+        "strike_price": 119.5941
+      },
+      {
+        "symbol": "UNH",
+        "price": 293.3195,
+        "ki_price": 175.9917,
+        "strike_price": 205.3237
+      },
+      {
+        "symbol": "EL",
+        "price": 86.5506,
+        "ki_price": 51.9304,
+        "strike_price": 60.5854
+      },
+      {
+        "symbol": "MRVL",
+        "price": 72.6034,
+        "ki_price": 43.562,
+        "strike_price": 50.8224
+      }
+    ]
+  },
+  {
+    "id": "FCN865H",
+    "trade_date": "114.07.15",
+    "maturity_date": "114.09.11",
+    "buy_sell": "B",
+    "currency": "USD",
+    "issuer": "西班牙對外銀行",
+    "notional": "3萬",
+    "order_price": "100%",
+    "price_basis": "VWAP",
+    "tenor_months": 9,
+    "coupon_pa": 17.02,
+    "trigger": 100.0,
+    "ki": 55.0,
+    "strike": 65.0,
+    "stocks": [
+      {
+        "symbol": "ARM",
+        "price": 148.2018,
+        "ki_price": 96.3312,
+        "strike_price": 81.511
+      },
+      {
+        "symbol": "NVDA",
+        "price": 170.9067,
+        "ki_price": 111.0894,
+        "strike_price": 93.9987
+      },
+      {
+        "symbol": "TSLA",
+        "price": 315.1984,
+        "ki_price": 204.879,
+        "strike_price": 173.3591
+      },
+      {
+        "symbol": "TSM",
+        "price": 236.0744,
+        "ki_price": 153.4484,
+        "strike_price": 129.8409
+      }
+    ]
+  },
+  {
+    "id": "FCN023J",
+    "trade_date": "114.07.22",
+    "maturity_date": "114.10.07",
+    "buy_sell": "B",
+    "currency": "USD",
+    "issuer": "西班牙對外銀行",
+    "notional": "1萬",
+    "order_price": "100%",
+    "price_basis": "VWAP",
+    "tenor_months": 6,
+    "coupon_pa": 17.71,
+    "trigger": 100.0,
+    "ki": 58.0,
+    "strike": 68.0,
+    "stocks": [
+      {
+        "symbol": "ARM",
+        "price": 155.9962,
+        "ki_price": 90.4778,
+        "strike_price": 106.0774
+      },
+      {
+        "symbol": "AVGO",
+        "price": 280.228,
+        "ki_price": 162.5322,
+        "strike_price": 190.555
+      },
+      {
+        "symbol": "NVDA",
+        "price": 167.7139,
+        "ki_price": 97.2741,
+        "strike_price": 114.0455
+      },
+      {
+        "symbol": "TSLA",
+        "price": 330.0895,
+        "ki_price": 191.4519,
+        "strike_price": 224.4609
+      },
+      {
+        "symbol": "TSM",
+        "price": 234.8956,
+        "ki_price": 136.2394,
+        "strike_price": 159.729
+      }
+    ]
+  },
+  {
+    "id": "FCN085J",
+    "trade_date": "114.07.25",
+    "maturity_date": null,
+    "buy_sell": "B",
+    "currency": "USD",
+    "issuer": "西班牙對外銀行",
+    "notional": "10萬",
+    "order_price": "100%",
+    "price_basis": "VWAP",
+    "tenor_months": 12,
+    "coupon_pa": 18.75,
+    "trigger": 100.0,
+    "ki": 60.0,
+    "strike": 70.0,
+    "stocks": [
+      {
+        "symbol": "EL",
+        "price": 88.7453,
+        "ki_price": 53.2472,
+        "strike_price": 62.1217
+      },
+      {
+        "symbol": "MRVL",
+        "price": 73.9055,
+        "ki_price": 44.3433,
+        "strike_price": 51.7399
+      },
+      {
+        "symbol": "NKE",
+        "price": 75.9847,
+        "ki_price": 45.5908,
+        "strike_price": 53.1893
+      },
+      {
+        "symbol": "TGT",
+        "price": 105.8209,
+        "ki_price": 63.4925,
+        "strike_price": 74.0746
+      },
+      {
+        "symbol": "UNH",
+        "price": 283.2182,
+        "ki_price": 169.9309,
+        "strike_price": 198.2527
+      }
+    ]
+  },
+  {
+    "id": "FCN417J",
+    "trade_date": "114.08.12",
+    "maturity_date": "114.10.03",
+    "buy_sell": "B",
+    "currency": "USD",
+    "issuer": "西班牙對外銀行",
+    "notional": "2萬",
+    "order_price": "100%",
+    "price_basis": "VWAP",
+    "tenor_months": 9,
+    "coupon_pa": 18.48,
+    "trigger": 100.0,
+    "ki": 60.0,
+    "strike": 65.0,
+    "stocks": [
+      {
+        "symbol": "ARM",
+        "price": 141.8527,
+        "ki_price": 85.1116,
+        "strike_price": 92.2043
+      },
+      {
+        "symbol": "NVDA",
+        "price": 182.0239,
+        "ki_price": 109.2143,
+        "strike_price": 118.3155
+      },
+      {
+        "symbol": "PLTR",
+        "price": 185.3636,
+        "ki_price": 111.2182,
+        "strike_price": 120.4863
+      },
+      {
+        "symbol": "TSLA",
+        "price": 338.3626,
+        "ki_price": 203.0176,
+        "strike_price": 219.9357
+      }
+    ]
+  },
+  {
+    "id": "FCN527J",
+    "trade_date": "114.08.19",
+    "maturity_date": "114.10.03",
+    "buy_sell": "B",
+    "currency": "USD",
+    "issuer": "法國外貿銀行",
+    "notional": "3萬",
+    "order_price": "100%",
+    "price_basis": "VWAP",
+    "tenor_months": 12,
+    "coupon_pa": 16.77,
+    "trigger": 100.0,
+    "ki": 55.0,
+    "strike": 70.0,
+    "stocks": [
+      {
+        "symbol": "AMD",
+        "price": 168.2821,
+        "ki_price": 92.5552,
+        "strike_price": 117.7975
+      },
+      {
+        "symbol": "ARM",
+        "price": 135.9807,
+        "ki_price": 74.7894,
+        "strike_price": 95.1865
+      },
+      {
+        "symbol": "NVDA",
+        "price": 177.137,
+        "ki_price": 97.4254,
+        "strike_price": 123.9959
+      },
+      {
+        "symbol": "TSLA",
+        "price": 332.6359,
+        "ki_price": 182.9497,
+        "strike_price": 232.8451
+      },
+      {
+        "symbol": "MRVL",
+        "price": 72.9526,
+        "ki_price": 40.1239,
+        "strike_price": 51.0668
+      }
+    ]
+  },
+  {
+    "id": "FCN539J",
+    "trade_date": "114.08.19",
+    "maturity_date": "114.12.04",
+    "buy_sell": "B",
+    "currency": "USD",
+    "issuer": "西班牙對外銀行",
+    "notional": "2萬",
+    "order_price": "100%",
+    "price_basis": "VWAP",
+    "tenor_months": 9,
+    "coupon_pa": 20.13,
+    "trigger": 100.0,
+    "ki": 60.0,
+    "strike": 70.0,
+    "stocks": [
+      {
+        "symbol": "ARM",
+        "price": 136.9931,
+        "ki_price": 82.1959,
+        "strike_price": 95.8952
+      },
+      {
+        "symbol": "AVGO",
+        "price": 297.0782,
+        "ki_price": 178.2469,
+        "strike_price": 207.9547
+      },
+      {
+        "symbol": "NVDA",
+        "price": 178.4431,
+        "ki_price": 107.0659,
+        "strike_price": 124.9102
+      },
+      {
+        "symbol": "PLTR",
+        "price": 162.2214,
+        "ki_price": 97.3328,
+        "strike_price": 113.555
+      },
+      {
+        "symbol": "TSLA",
+        "price": 332.928,
+        "ki_price": 199.7568,
+        "strike_price": 233.0496
+      }
+    ]
+  },
+  {
+    "id": "FCN581J",
+    "trade_date": "114.08.21",
+    "maturity_date": "114.10.02",
+    "buy_sell": "B",
+    "currency": "USD",
+    "issuer": "法國外貿銀行",
+    "notional": "2萬",
+    "order_price": "100%",
+    "price_basis": "VWAP",
+    "tenor_months": 6,
+    "coupon_pa": 18.0,
+    "trigger": 100.0,
+    "ki": 57.0,
+    "strike": 69.68,
+    "stocks": [
+      {
+        "symbol": "TSM",
+        "price": 227.6942,
+        "ki_price": 129.7857,
+        "strike_price": 158.6573
+      },
+      {
+        "symbol": "NVDA",
+        "price": 175.0494,
+        "ki_price": 99.7782,
+        "strike_price": 121.9744
+      },
+      {
+        "symbol": "AMD",
+        "price": 164.0012,
+        "ki_price": 93.4807,
+        "strike_price": 114.276
+      },
+      {
+        "symbol": "TSLA",
+        "price": 321.2785,
+        "ki_price": 183.1287,
+        "strike_price": 223.8669
+      },
+      {
+        "symbol": "AVGO",
+        "price": 289.406,
+        "ki_price": 164.9614,
+        "strike_price": 201.6581
+      }
+    ]
+  },
+  {
+    "id": "FCN775J",
+    "trade_date": "114.09.02",
+    "maturity_date": "114.10.13",
+    "buy_sell": "B",
+    "currency": "USD",
+    "issuer": "法國外貿銀行",
+    "notional": "10萬",
+    "order_price": "100%",
+    "price_basis": "VWAP",
+    "tenor_months": 12,
+    "coupon_pa": 19.18,
+    "trigger": 100.0,
+    "ki": 60.0,
+    "strike": 75.0,
+    "stocks": [
+      {
+        "symbol": "EL",
+        "price": 90.6617,
+        "ki_price": 54.397,
+        "strike_price": 67.9963
+      },
+      {
+        "symbol": "MRVL",
+        "price": 63.5734,
+        "ki_price": 38.144,
+        "strike_price": 47.6801
+      },
+      {
+        "symbol": "MU",
+        "price": 117.2196,
+        "ki_price": 70.3318,
+        "strike_price": 87.9147
+      },
+      {
+        "symbol": "NVDA",
+        "price": 169.9659,
+        "ki_price": 101.9795,
+        "strike_price": 127.4744
+      },
+      {
+        "symbol": "UNH",
+        "price": 309.4757,
+        "ki_price": 185.6854,
+        "strike_price": 232.1068
+      }
+    ]
+  },
+  {
+    "id": "FCN817J",
+    "trade_date": "114.09.04",
+    "maturity_date": null,
+    "buy_sell": "B",
+    "currency": "USD",
+    "issuer": "法國外貿銀行",
+    "notional": "3萬",
+    "order_price": "100%",
+    "price_basis": "VWAP",
+    "tenor_months": 12,
+    "coupon_pa": 14.94,
+    "trigger": 100.0,
+    "ki": 65.0,
+    "strike": 75.0,
+    "stocks": [
+      {
+        "symbol": "AVGO",
+        "price": 305.8322,
+        "ki_price": 198.7909,
+        "strike_price": 229.3742
+      },
+      {
+        "symbol": "META",
+        "price": 749.8963,
+        "ki_price": 487.4326,
+        "strike_price": 562.4222
+      },
+      {
+        "symbol": "TSM",
+        "price": 234.3432,
+        "ki_price": 152.3231,
+        "strike_price": 175.7574
+      },
+      {
+        "symbol": "GOOGL",
+        "price": 230.5922,
+        "ki_price": 149.8849,
+        "strike_price": 172.9442
+      },
+      {
+        "symbol": "NVDA",
+        "price": 171.1282,
+        "ki_price": 111.2333,
+        "strike_price": 128.3462
+      }
+    ]
+  },
+  {
+    "id": "FCN945J",
+    "trade_date": "114.09.11",
+    "maturity_date": null,
+    "buy_sell": "B",
+    "currency": "USD",
+    "issuer": "西班牙對外銀行",
+    "notional": "5萬",
+    "order_price": "100%",
+    "price_basis": "VWAP",
+    "tenor_months": 12,
+    "coupon_pa": 19.27,
+    "trigger": 100.0,
+    "ki": 55.0,
+    "strike": 65.0,
+    "stocks": [
+      {
+        "symbol": "AMD",
+        "price": 156.4196,
+        "ki_price": 86.0308,
+        "strike_price": 101.6727
+      },
+      {
+        "symbol": "ARM",
+        "price": 156.5302,
+        "ki_price": 86.0916,
+        "strike_price": 101.7446
+      },
+      {
+        "symbol": "CCL",
+        "price": 32.3447,
+        "ki_price": 17.7896,
+        "strike_price": 21.0241
+      },
+      {
+        "symbol": "PLTR",
+        "price": 165.2164,
+        "ki_price": 90.869,
+        "strike_price": 107.3907
+      },
+      {
+        "symbol": "TSLA",
+        "price": 359.521,
+        "ki_price": 197.7366,
+        "strike_price": 233.6887
+      }
+    ]
+  },
+  {
+    "id": "FCN125K",
+    "trade_date": "114.09.18",
+    "maturity_date": "114.12.23",
+    "buy_sell": "B",
+    "currency": "USD",
+    "issuer": "法國外貿銀行",
+    "notional": "10萬",
+    "order_price": "100%",
+    "price_basis": "VWAP",
+    "tenor_months": 12,
+    "coupon_pa": 17.74,
+    "trigger": 100.0,
+    "ki": 60.0,
+    "strike": 70.0,
+    "stocks": [
+      {
+        "symbol": "NVDA",
+        "price": 175.8318,
+        "ki_price": 105.4991,
+        "strike_price": 123.0823
+      },
+      {
+        "symbol": "CCL",
+        "price": 31.4089,
+        "ki_price": 18.8453,
+        "strike_price": 21.9862
+      },
+      {
+        "symbol": "EL",
+        "price": 88.0252,
+        "ki_price": 52.8151,
+        "strike_price": 61.6176
+      },
+      {
+        "symbol": "MRVL",
+        "price": 74.199,
+        "ki_price": 44.5194,
+        "strike_price": 51.9393
+      },
+      {
+        "symbol": "TGT",
+        "price": 89.3028,
+        "ki_price": 53.5817,
+        "strike_price": 62.512
+      }
+    ]
+  },
+  {
+    "id": "FCN135K",
+    "trade_date": "114.09.19",
+    "maturity_date": "114.10.28",
+    "buy_sell": "B",
+    "currency": "USD",
+    "issuer": "野村證券",
+    "notional": "1萬",
+    "order_price": "100%",
+    "price_basis": "VWAP",
+    "tenor_months": 6,
+    "coupon_pa": 18.0,
+    "trigger": 100.0,
+    "ki": 64.0,
+    "strike": 73.69,
+    "stocks": [
+      {
+        "symbol": "NVDA",
+        "price": 176.5125,
+        "ki_price": 112.968,
+        "strike_price": 130.0721
+      },
+      {
+        "symbol": "TSM",
+        "price": 264.9189,
+        "ki_price": 169.5481,
+        "strike_price": 195.2187
+      },
+      {
+        "symbol": "TSLA",
+        "price": 425.3438,
+        "ki_price": 272.22,
+        "strike_price": 313.4358
+      }
+    ]
+  },
+  {
+    "id": "FCN321K",
+    "trade_date": "114.09.30",
+    "maturity_date": null,
+    "buy_sell": "B",
+    "currency": "USD",
+    "issuer": "摩根士丹利",
+    "notional": "2萬",
+    "order_price": "100%",
+    "price_basis": "開盤價",
+    "tenor_months": 6,
+    "coupon_pa": 23.0,
+    "trigger": 100.0,
+    "ki": 50.0,
+    "strike": 63.44,
+    "stocks": [
+      {
+        "symbol": "NVDA",
+        "price": 182.03,
+        "ki_price": 91.015,
+        "strike_price": 115.4798
+      },
+      {
+        "symbol": "TSLA",
+        "price": 441.81,
+        "ki_price": 220.905,
+        "strike_price": 280.2843
+      },
+      {
+        "symbol": "PLTR",
+        "price": 179.13,
+        "ki_price": 89.565,
+        "strike_price": 113.6401
+      },
+      {
+        "symbol": "ALAB",
+        "price": 200.69,
+        "ki_price": 100.345,
+        "strike_price": 127.3177
+      }
+    ]
+  },
+  {
+    "id": "FCN465K",
+    "trade_date": "114.10.03",
+    "maturity_date": null,
+    "buy_sell": "B",
+    "currency": "USD",
+    "issuer": "西班牙對外銀行",
+    "notional": "3萬",
+    "order_price": "100%",
+    "price_basis": "收盤價",
+    "tenor_months": 12,
+    "coupon_pa": 18.0,
+    "trigger": 100.0,
+    "ki": 50.0,
+    "strike": 58.98,
+    "stocks": [
+      {
+        "symbol": "AMD",
+        "price": 164.67,
+        "ki_price": 82.335,
+        "strike_price": 97.1224
+      },
+      {
+        "symbol": "ARM",
+        "price": 152.64,
+        "ki_price": 76.32,
+        "strike_price": 90.0271
+      },
+      {
+        "symbol": "ORCL",
+        "price": 286.14,
+        "ki_price": 143.07,
+        "strike_price": 168.7654
+      },
+      {
+        "symbol": "PLTR",
+        "price": 173.07,
+        "ki_price": 86.535,
+        "strike_price": 102.0767
+      },
+      {
+        "symbol": "TSLA",
+        "price": 429.83,
+        "ki_price": 214.915,
+        "strike_price": 253.5137
+      }
+    ]
+  },
+  {
+    "id": "FCN580K",
+    "trade_date": "114.10.08",
+    "maturity_date": "114.12.24",
+    "buy_sell": "B",
+    "currency": "USD",
+    "issuer": "西班牙對外銀行",
+    "notional": "1萬",
+    "order_price": "100%",
+    "price_basis": "VWAP",
+    "tenor_months": 7,
+    "coupon_pa": 18.0,
+    "trigger": 100.0,
+    "ki": 57.0,
+    "strike": 67.31,
+    "stocks": [
+      {
+        "symbol": "AVGO",
+        "price": 341.6248,
+        "ki_price": 194.7261,
+        "strike_price": 229.9477
+      },
+      {
+        "symbol": "MU",
+        "price": 193.8034,
+        "ki_price": 110.4679,
+        "strike_price": 130.4491
+      },
+      {
+        "symbol": "NVDA",
+        "price": 188.4191,
+        "ki_price": 107.3989,
+        "strike_price": 126.8249
+      },
+      {
+        "symbol": "TSLA",
+        "price": 434.363,
+        "ki_price": 247.5869,
+        "strike_price": 292.3697
+      },
+      {
+        "symbol": "TSM",
+        "price": 302.4032,
+        "ki_price": 172.3698,
+        "strike_price": 203.5476
+      }
+    ]
+  },
+  {
+    "id": "FCN593K",
+    "trade_date": "114.10.08",
+    "maturity_date": null,
+    "buy_sell": "B",
+    "currency": "USD",
+    "issuer": "摩根士丹利",
+    "notional": "1萬",
+    "order_price": "100%",
+    "price_basis": "開盤價",
+    "tenor_months": 6,
+    "coupon_pa": 23.0,
+    "trigger": 100.0,
+    "ki": 50.0,
+    "strike": 65.25,
+    "stocks": [
+      {
+        "symbol": "NVDA",
+        "price": 186.66,
+        "ki_price": 93.33,
+        "strike_price": 121.7957
+      },
+      {
+        "symbol": "TSLA",
+        "price": 437.07,
+        "ki_price": 218.535,
+        "strike_price": 285.1882
+      },
+      {
+        "symbol": "PLTR",
+        "price": 182.68,
+        "ki_price": 91.34,
+        "strike_price": 119.1987
+      },
+      {
+        "symbol": "ALAB",
+        "price": 214.74,
+        "ki_price": 107.37,
+        "strike_price": 140.1179
+      }
+    ]
+  },
+  {
+    "id": "FCN665K",
+    "trade_date": "114.10.13",
+    "maturity_date": "114.12.23",
+    "buy_sell": "B",
+    "currency": "USD",
+    "issuer": "法國外貿銀行",
+    "notional": "1萬",
+    "order_price": "100%",
+    "price_basis": "VWAP",
+    "tenor_months": 6,
+    "coupon_pa": 18.71,
+    "trigger": 100.0,
+    "ki": 56.0,
+    "strike": 68.0,
+    "stocks": [
+      {
+        "symbol": "TSM",
+        "price": 301.2708,
+        "ki_price": 168.7116,
+        "strike_price": 204.8641
+      },
+      {
+        "symbol": "NVDA",
+        "price": 188.2908,
+        "ki_price": 105.4428,
+        "strike_price": 128.0377
+      },
+      {
+        "symbol": "TSLA",
+        "price": 430.2425,
+        "ki_price": 240.9358,
+        "strike_price": 292.5649
+      },
+      {
+        "symbol": "AVGO",
+        "price": 355.3562,
+        "ki_price": 198.9995,
+        "strike_price": 241.6422
+      },
+      {
+        "symbol": "MU",
+        "price": 191.8488,
+        "ki_price": 107.4353,
+        "strike_price": 130.4572
+      }
+    ]
+  },
+  {
+    "id": "FCN757K",
+    "trade_date": "114.10.15",
+    "maturity_date": null,
+    "buy_sell": "B",
+    "currency": "USD",
+    "issuer": "法國外貿銀行",
+    "notional": "2萬",
+    "order_price": "100%",
+    "price_basis": "VWAP",
+    "tenor_months": 7,
+    "coupon_pa": 21.28,
+    "trigger": 100.0,
+    "ki": 60.0,
+    "strike": 75.0,
+    "stocks": [
+      {
+        "symbol": "ARM",
+        "price": 170.636,
+        "ki_price": 102.378,
+        "strike_price": 127.9725
+      },
+      {
+        "symbol": "NVDA",
+        "price": 180.5371,
+        "ki_price": 108.3223,
+        "strike_price": 135.4028
+      },
+      {
+        "symbol": "TSM",
+        "price": 304.4954,
+        "ki_price": 182.6972,
+        "strike_price": 228.3716
+      },
+      {
+        "symbol": "AVGO",
+        "price": 352.301,
+        "ki_price": 211.3806,
+        "strike_price": 264.2258
+      }
+    ]
+  },
+  {
+    "id": "FCN791K",
+    "trade_date": "114.10.17",
+    "maturity_date": null,
+    "buy_sell": "B",
+    "currency": "USD",
+    "issuer": "西班牙對外銀行",
+    "notional": "1萬",
+    "order_price": "100%",
+    "price_basis": "VWAP",
+    "tenor_months": 8,
+    "coupon_pa": 25.0,
+    "trigger": 100.0,
+    "ki": 55.0,
+    "strike": 62.89,
+    "stocks": [
+      {
+        "symbol": "ALAB",
+        "price": 157.307,
+        "ki_price": 86.5189,
+        "strike_price": 98.9304
+      },
+      {
+        "symbol": "AMD",
+        "price": 232.1264,
+        "ki_price": 127.6695,
+        "strike_price": 145.9843
+      },
+      {
+        "symbol": "COIN",
+        "price": 328.341,
+        "ki_price": 180.5876,
+        "strike_price": 206.4937
+      },
+      {
+        "symbol": "NVDA",
+        "price": 182.0658,
+        "ki_price": 100.1362,
+        "strike_price": 114.5012
+      },
+      {
+        "symbol": "TSM",
+        "price": 298.2288,
+        "ki_price": 164.0258,
+        "strike_price": 187.5561
+      }
+    ]
+  },
+  {
+    "id": "FCN809K",
+    "trade_date": "114.10.20",
+    "maturity_date": "114.12.09",
+    "buy_sell": "B",
+    "currency": "USD",
+    "issuer": "西班牙對外銀行",
+    "notional": "2萬",
+    "order_price": "100%",
+    "price_basis": "VWAP",
+    "tenor_months": 6,
+    "coupon_pa": 18.0,
+    "trigger": 100.0,
+    "ki": 0.0,
+    "strike": 63.52,
+    "stocks": [
+      {
+        "symbol": "MU",
+        "price": 210.0,
+        "ki_price": null,
+        "strike_price": 133.392
+      },
+      {
+        "symbol": "NVDA",
+        "price": 183.07,
+        "ki_price": null,
+        "strike_price": 116.2861
+      },
+      {
+        "symbol": "TSLA",
+        "price": 443.7,
+        "ki_price": null,
+        "strike_price": 281.8382
+      },
+      {
+        "symbol": "TSM",
+        "price": 300.0,
+        "ki_price": null,
+        "strike_price": 190.56
+      }
+    ]
+  },
+  {
+    "id": "FCN817K",
+    "trade_date": "114.09.04",
+    "maturity_date": null,
+    "buy_sell": "B",
+    "currency": "USD",
+    "issuer": "法國外貿銀行",
+    "notional": "3萬",
+    "order_price": "100%",
+    "price_basis": "VWAP",
+    "tenor_months": 12,
+    "coupon_pa": 14.94,
+    "trigger": 100.0,
+    "ki": 65.0,
+    "strike": 75.0,
+    "stocks": [
+      {
+        "symbol": "AVGO",
+        "price": 305.8322,
+        "ki_price": 198.7909,
+        "strike_price": 229.3742
+      },
+      {
+        "symbol": "META",
+        "price": 749.8963,
+        "ki_price": 487.4326,
+        "strike_price": 562.4222
+      },
+      {
+        "symbol": "TSM",
+        "price": 234.3432,
+        "ki_price": 152.3231,
+        "strike_price": 175.7574
+      },
+      {
+        "symbol": "GOOGL",
+        "price": 230.5922,
+        "ki_price": 149.8849,
+        "strike_price": 172.9442
+      },
+      {
+        "symbol": "NVDA",
+        "price": 171.1282,
+        "ki_price": 111.2333,
+        "strike_price": 128.3462
+      }
+    ]
+  },
+  {
+    "id": "FCN931K",
+    "trade_date": "114.10.27",
+    "maturity_date": null,
+    "buy_sell": "B",
+    "currency": "USD",
+    "issuer": "摩根大通",
+    "notional": "1萬",
+    "order_price": "100%",
+    "price_basis": "VWAP",
+    "tenor_months": 5,
+    "coupon_pa": 16.16,
+    "trigger": 100.0,
+    "ki": 55.0,
+    "strike": 69.0,
+    "stocks": [
+      {
+        "symbol": "ARM",
+        "price": 178.2604,
+        "ki_price": 98.0432,
+        "strike_price": 122.9997
+      },
+      {
+        "symbol": "PLTR",
+        "price": 190.4281,
+        "ki_price": 104.7355,
+        "strike_price": 131.3954
+      },
+      {
+        "symbol": "TSLA",
+        "price": 452.3927,
+        "ki_price": 248.816,
+        "strike_price": 312.151
+      }
+    ]
+  },
+  {
+    "id": "FCN935K",
+    "trade_date": "114.10.27",
+    "maturity_date": null,
+    "buy_sell": "B",
+    "currency": "USD",
+    "issuer": "西班牙對外銀行",
+    "notional": "1萬",
+    "order_price": "100%",
+    "price_basis": "VWAP",
+    "tenor_months": 6,
+    "coupon_pa": 18.0,
+    "trigger": 95.0,
+    "ki": 50.0,
+    "strike": 70.16,
+    "stocks": [
+      {
+        "symbol": "AVGO",
+        "price": 341.6129,
+        "ki_price": 179.7963,
+        "strike_price": 252.2901
+      },
+      {
+        "symbol": "COIN",
+        "price": 345.6199,
+        "ki_price": 181.9052,
+        "strike_price": 255.2494
+      },
+      {
+        "symbol": "INTC",
+        "price": 37.7347,
+        "ki_price": 19.8604,
+        "strike_price": 27.868
+      },
+      {
+        "symbol": "TSLA",
+        "price": 428.8179,
+        "ki_price": 225.6937,
+        "strike_price": 316.6933
+      }
+    ]
+  },
+  {
+    "id": "FCN055L",
+    "trade_date": "114.10.31",
+    "maturity_date": null,
+    "buy_sell": "B",
+    "currency": "USD",
+    "issuer": "西班牙對外銀行",
+    "notional": "1萬",
+    "order_price": "100%",
+    "price_basis": "VWAP",
+    "tenor_months": 12,
+    "coupon_pa": 17.44,
+    "trigger": 99.0,
+    "ki": 55.0,
+    "strike": 68.0,
+    "stocks": [
+      {
+        "symbol": "AMD",
+        "price": 253.5588,
+        "ki_price": 140.866,
+        "strike_price": 174.1616
+      },
+      {
+        "symbol": "ARM",
+        "price": 168.1218,
+        "ki_price": 93.401,
+        "strike_price": 115.4776
+      },
+      {
+        "symbol": "PLTR",
+        "price": 198.4653,
+        "ki_price": 110.2585,
+        "strike_price": 136.3196
+      }
+    ]
+  },
+  {
+    "id": "FCN069L",
+    "trade_date": "114.11.03",
+    "maturity_date": null,
+    "buy_sell": "B",
+    "currency": "USD",
+    "issuer": "西班牙對外銀行",
+    "notional": "3萬",
+    "order_price": "100%",
+    "price_basis": "VWAP",
+    "tenor_months": 12,
+    "coupon_pa": 15.0,
+    "trigger": 100.0,
+    "ki": 55.0,
+    "strike": 61.15,
+    "stocks": [
+      {
+        "symbol": "AMZN",
+        "price": 255.6229,
+        "ki_price": 140.5926,
+        "strike_price": 156.3134
+      },
+      {
+        "symbol": "NVDA",
+        "price": 208.3021,
+        "ki_price": 114.5662,
+        "strike_price": 127.3767
+      },
+      {
+        "symbol": "PLTR",
+        "price": 204.6983,
+        "ki_price": 122.5841,
+        "strike_price": 125.173
+      },
+      {
+        "symbol": "TSM",
+        "price": 305.4025,
+        "ki_price": 167.9714,
+        "strike_price": 186.7536
+      }
+    ]
+  },
+  {
+    "id": "FCN340L",
+    "trade_date": "114.11.18",
+    "maturity_date": "114.12.29",
+    "buy_sell": "B",
+    "currency": "USD",
+    "issuer": "巴克來證券",
+    "notional": "1萬",
+    "order_price": "100%",
+    "price_basis": "VWAP",
+    "tenor_months": 4,
+    "coupon_pa": 18.0,
+    "trigger": 90.0,
+    "ki": 60.0,
+    "strike": 70.0,
+    "stocks": [
+      {
+        "symbol": "MU",
+        "price": 208.1003,
+        "ki_price": 138.7335,
+        "strike_price": 161.8558
+      },
+      {
+        "symbol": "AMD",
+        "price": 207.4432,
+        "ki_price": 138.2954,
+        "strike_price": 161.3447
+      },
+      {
+        "symbol": "NVDA",
+        "price": 164.1965,
+        "ki_price": 109.4644,
+        "strike_price": 127.7084
+      }
+    ]
+  },
+  {
+    "id": "FCN441L",
+    "trade_date": "114.12.01",
+    "maturity_date": null,
+    "buy_sell": "B",
+    "currency": "USD",
+    "issuer": "法國外貿銀行",
+    "notional": "1萬",
+    "order_price": "100%",
+    "price_basis": "VWAP",
+    "tenor_months": 12,
+    "coupon_pa": 17.0,
+    "trigger": 100.0,
+    "ki": 50.0,
+    "strike": 60.0,
+    "stocks": [
+      {
+        "symbol": "AVGO",
+        "price": 387.8916,
+        "ki_price": 193.9458,
+        "strike_price": 232.735
+      },
+      {
+        "symbol": "NVDA",
+        "price": 178.9596,
+        "ki_price": 89.4798,
+        "strike_price": 107.3758
+      },
+      {
+        "symbol": "PLTR",
+        "price": 167.0362,
+        "ki_price": 83.5181,
+        "strike_price": 100.2217
+      },
+      {
+        "symbol": "TSLA",
+        "price": 428.8957,
+        "ki_price": 214.4479,
+        "strike_price": 257.3374
+      },
+      {
+        "symbol": "TSM",
+        "price": 288.1465,
+        "ki_price": 144.0733,
+        "strike_price": 172.8879
+      }
+    ]
+  },
+  {
+    "id": "FCN597L",
+    "trade_date": "114.12.11",
+    "maturity_date": "115.01.23",
+    "buy_sell": "B",
+    "currency": "USD",
+    "issuer": "西班牙對外銀行",
+    "notional": "2萬",
+    "order_price": "100%",
+    "price_basis": "VWAP",
+    "tenor_months": 9,
+    "coupon_pa": 19.59,
+    "trigger": 100.0,
+    "ki": 60.0,
+    "strike": 70.0,
+    "stocks": [
+      {
+        "symbol": "MU",
+        "price": 258.0587,
+        "ki_price": 154.8352,
+        "strike_price": 180.6411
+      },
+      {
+        "symbol": "NVDA",
+        "price": 178.7935,
+        "ki_price": 107.2761,
+        "strike_price": 125.1555
+      },
+      {
+        "symbol": "TSLA",
+        "price": 444.8166,
+        "ki_price": 266.89,
+        "strike_price": 311.3716
+      },
+      {
+        "symbol": "TSM",
+        "price": 303.2266,
+        "ki_price": 181.936,
+        "strike_price": 212.2586
+      }
+    ]
+  },
+  {
+    "id": "FCN607L",
+    "trade_date": "114.12.11",
+    "maturity_date": null,
+    "buy_sell": "B",
+    "currency": "USD",
+    "issuer": "西班牙對外銀行",
+    "notional": "2萬",
+    "order_price": "100%",
+    "price_basis": "VWAP",
+    "tenor_months": 6,
+    "coupon_pa": 18.0,
+    "trigger": 100.0,
+    "ki": 60.0,
+    "strike": 66.72,
+    "stocks": [
+      {
+        "symbol": "AVGO",
+        "price": 401.9041,
+        "ki_price": 241.1425,
+        "strike_price": 268.1504
+      },
+      {
+        "symbol": "NVDA",
+        "price": 178.7935,
+        "ki_price": 107.2761,
+        "strike_price": 119.291
+      },
+      {
+        "symbol": "PLTR",
+        "price": 184.863,
+        "ki_price": 110.9178,
+        "strike_price": 123.3406
+      },
+      {
+        "symbol": "TSLA",
+        "price": 444.8166,
+        "ki_price": 266.89,
+        "strike_price": 296.7816
+      }
+    ]
+  },
+  {
+    "id": "FCN623L",
+    "trade_date": "114.12.12",
+    "maturity_date": null,
+    "buy_sell": "B",
+    "currency": "USD",
+    "issuer": "西班牙對外銀行",
+    "notional": "2萬",
+    "order_price": "100%",
+    "price_basis": "VWAP",
+    "tenor_months": 6,
+    "coupon_pa": 20.0,
+    "trigger": 100.0,
+    "ki": 55.0,
+    "strike": 65.27,
+    "stocks": [
+      {
+        "symbol": "AMD",
+        "price": 214.3216,
+        "ki_price": 117.8769,
+        "strike_price": 139.8877
+      },
+      {
+        "symbol": "MU",
+        "price": 245.4231,
+        "ki_price": 134.9827,
+        "strike_price": 160.1877
+      },
+      {
+        "symbol": "NVDA",
+        "price": 178.1017,
+        "ki_price": 97.9559,
+        "strike_price": 116.247
+      },
+      {
+        "symbol": "TSLA",
+        "price": 452.4935,
+        "ki_price": 248.8714,
+        "strike_price": 295.3425
+      },
+      {
+        "symbol": "TSM",
+        "price": 296.2636,
+        "ki_price": 162.945,
+        "strike_price": 193.3713
+      }
+    ]
+  },
+  {
+    "id": "FCN699L",
+    "trade_date": "114.12.19",
+    "maturity_date": null,
+    "buy_sell": "B",
+    "currency": "USD",
+    "issuer": "西班牙對外銀行",
+    "notional": "2萬",
+    "order_price": "100%",
+    "price_basis": "VWAP",
+    "tenor_months": 9,
+    "coupon_pa": 16.78,
+    "trigger": 100.0,
+    "ki": 55.0,
+    "strike": 60.0,
+    "stocks": [
+      {
+        "symbol": "AMD",
+        "price": 211.951,
+        "ki_price": 116.5731,
+        "strike_price": 127.1706
+      },
+      {
+        "symbol": "MU",
+        "price": 264.2738,
+        "ki_price": 145.3506,
+        "strike_price": 158.5643
+      },
+      {
+        "symbol": "NVDA",
+        "price": 179.5929,
+        "ki_price": 98.7761,
+        "strike_price": 107.7557
+      },
+      {
+        "symbol": "TSLA",
+        "price": 481.9624,
+        "ki_price": 265.0793,
+        "strike_price": 289.1774
+      },
+      {
+        "symbol": "TSM",
+        "price": 289.9295,
+        "ki_price": 159.4612,
+        "strike_price": 173.9577
+      }
+    ]
+  },
+  {
+    "id": "FCN725L",
+    "trade_date": "114.12.23",
+    "maturity_date": null,
+    "buy_sell": "B",
+    "currency": "USD",
+    "issuer": "西班牙對外銀行",
+    "notional": "2萬",
+    "order_price": "100%",
+    "price_basis": "VWAP",
+    "tenor_months": 9,
+    "coupon_pa": 20.22,
+    "trigger": 100.0,
+    "ki": 50.0,
+    "strike": 65.0,
+    "stocks": [
+      {
+        "symbol": "ARM",
+        "price": 111.644,
+        "ki_price": 55.822,
+        "strike_price": 72.5686
+      },
+      {
+        "symbol": "MU",
+        "price": 276.4688,
+        "ki_price": 138.2344,
+        "strike_price": 179.7047
+      },
+      {
+        "symbol": "NVDA",
+        "price": 186.7993,
+        "ki_price": 93.3997,
+        "strike_price": 121.4195
+      },
+      {
+        "symbol": "PLTR",
+        "price": 193.6466,
+        "ki_price": 96.8233,
+        "strike_price": 125.8703
+      },
+      {
+        "symbol": "TSLA",
+        "price": 486.4867,
+        "ki_price": 243.2434,
+        "strike_price": 316.2164
+      }
+    ]
+  },
+  {
+    "id": "FCN735L",
+    "trade_date": "114.12.24",
+    "maturity_date": null,
+    "buy_sell": "B",
+    "currency": "USD",
+    "issuer": "西班牙對外銀行",
+    "notional": "1萬",
+    "order_price": "100%",
+    "price_basis": "VWAP",
+    "tenor_months": 9,
+    "coupon_pa": 19.91,
+    "trigger": 100.0,
+    "ki": 60.0,
+    "strike": 70.0,
+    "stocks": [
+      {
+        "symbol": "GOOG",
+        "price": 314.8463,
+        "ki_price": 188.9078,
+        "strike_price": 220.3924
+      },
+      {
+        "symbol": "MU",
+        "price": 285.6191,
+        "ki_price": 171.3715,
+        "strike_price": 199.9334
+      },
+      {
+        "symbol": "PLTR",
+        "price": 194.0174,
+        "ki_price": 116.4104,
+        "strike_price": 135.8122
+      },
+      {
+        "symbol": "TSLA",
+        "price": 481.9776,
+        "ki_price": 289.1866,
+        "strike_price": 337.3843
+      }
+    ]
+  },
+  {
+    "id": "FCN760L",
+    "trade_date": "114.12.29",
+    "maturity_date": null,
+    "buy_sell": "B",
+    "currency": "USD",
+    "issuer": "西班牙對外銀行",
+    "notional": "1萬",
+    "order_price": "100%",
+    "price_basis": "VWAP",
+    "tenor_months": 9,
+    "coupon_pa": 20.95,
+    "trigger": 100.0,
+    "ki": 55.0,
+    "strike": 65.0,
+    "stocks": [
+      {
+        "symbol": "AMD",
+        "price": 213.8127,
+        "ki_price": 117.597,
+        "strike_price": 138.9783
+      },
+      {
+        "symbol": "AVGO",
+        "price": 348.9184,
+        "ki_price": 191.9051,
+        "strike_price": 226.797
+      },
+      {
+        "symbol": "MU",
+        "price": 287.5369,
+        "ki_price": 158.1453,
+        "strike_price": 186.899
+      },
+      {
+        "symbol": "PLTR",
+        "price": 185.5481,
+        "ki_price": 102.0515,
+        "strike_price": 120.6063
+      },
+      {
+        "symbol": "TSLA",
+        "price": 465.1634,
+        "ki_price": 255.8399,
+        "strike_price": 302.3562
+      }
+    ]
+  },
+  {
+    "id": "FCN783L",
+    "trade_date": "114.12.31",
+    "maturity_date": null,
+    "buy_sell": "B",
+    "currency": "USD",
+    "issuer": "西班牙對外銀行",
+    "notional": "1萬",
+    "order_price": "100%",
+    "price_basis": "VWAP",
+    "tenor_months": 6,
+    "coupon_pa": 20.0,
+    "trigger": 100.0,
+    "ki": 55.0,
+    "strike": 66.98,
+    "stocks": [
+      {
+        "symbol": "AMD",
+        "price": 215.8118,
+        "ki_price": 118.6965,
+        "strike_price": 144.5507
+      },
+      {
+        "symbol": "MU",
+        "price": 287.1548,
+        "ki_price": 157.9351,
+        "strike_price": 192.3363
+      },
+      {
+        "symbol": "NVDA",
+        "price": 188.5904,
+        "ki_price": 103.7247,
+        "strike_price": 126.3178
+      },
+      {
+        "symbol": "TSLA",
+        "price": 453.6836,
+        "ki_price": 249.526,
+        "strike_price": 303.8773
+      },
+      {
+        "symbol": "TSM",
+        "price": 305.2606,
+        "ki_price": 167.8933,
+        "strike_price": 204.4635
+      }
+    ]
+  },
+  {
+    "id": "FCN020M",
+    "trade_date": "115.01.09",
+    "maturity_date": null,
+    "buy_sell": "B",
+    "currency": "USD",
+    "issuer": "法國外貿銀行",
+    "notional": "8萬",
+    "order_price": "100%",
+    "price_basis": "VWAP",
+    "tenor_months": 12,
+    "coupon_pa": 19.36,
+    "trigger": 100.0,
+    "ki": 60.0,
+    "strike": 70.0,
+    "stocks": [
+      {
+        "symbol": "TSM",
+        "price": 322.4882,
+        "ki_price": 193.4929,
+        "strike_price": 225.7417
+      },
+      {
+        "symbol": "NVDA",
+        "price": 185.006,
+        "ki_price": 111.0036,
+        "strike_price": 129.5042
+      },
+      {
+        "symbol": "ARM",
+        "price": 111.7085,
+        "ki_price": 67.0251,
+        "strike_price": 78.196
+      },
+      {
+        "symbol": "AVGO",
+        "price": 343.6653,
+        "ki_price": 206.1992,
+        "strike_price": 240.5657
+      },
+      {
+        "symbol": "MRVL",
+        "price": 83.3879,
+        "ki_price": 50.0327,
+        "strike_price": 58.3715
+      }
+    ]
+  },
+  {
+    "id": "FCN179M",
+    "trade_date": "115.01.22",
+    "maturity_date": null,
+    "buy_sell": "B",
+    "currency": "USD",
+    "issuer": "星展銀行",
+    "notional": "2萬",
+    "order_price": "100%",
+    "price_basis": "VWAP",
+    "tenor_months": 6,
+    "coupon_pa": 18.0,
+    "trigger": 95.0,
+    "ki": 50.0,
+    "strike": 55.76,
+    "stocks": [
+      {
+        "symbol": "AVGO",
+        "price": 311.8567,
+        "ki_price": 164.1351,
+        "strike_price": 183.0435
+      },
+      {
+        "symbol": "CRDO",
+        "price": 129.3606,
+        "ki_price": 68.0845,
+        "strike_price": 75.9278
+      }
+    ]
+  }
+]
