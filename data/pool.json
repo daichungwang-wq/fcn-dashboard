@@ -1,1 +1,18 @@
-[]
+[
+  {
+    "symbol": "NVDA",
+    "category": "high_vol"
+  },
+  {
+    "symbol": "TSM",
+    "category": "core"
+  },
+  {
+    "symbol": "UNH",
+    "category": "defensive"
+  },
+  {
+    "symbol": "TGT",
+    "category": "core"
+  }
+]
