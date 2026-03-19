@@ -1,7 +1,17 @@
 {
-  "vix": null,
-  "us10y": null,
-  "sp500_trend": null,
-  "market_sentiment": null,
-  "updated_at": null
+  "vix": { "current": 21, "previous": 20 },
+  "nasdaq": { "current": 18240, "previous": 18000 },
+  "sp500": { "current": 5780, "previous": 5750 },
+  "dow": { "current": 42150, "previous": 42000 },
+
+  "us10y": { "current": 4.25, "previous": 4.10 },
+  "us20y": { "current": 4.45, "previous": 4.30 },
+
+  "oil": { "current": 82.3, "previous": 80.0 },
+  "gold": { "current": 2320, "previous": 2280 },
+
+  "cpi": { "current": 3.2, "previous": 3.4 },
+  "ppi": { "current": 2.8, "previous": 3.0 },
+
+  "tw_index": { "current": 23500, "previous": 23300 }
 }
