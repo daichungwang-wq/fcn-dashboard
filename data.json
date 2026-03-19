@@ -1,100 +1,107 @@
 {
-  "updated_at": "2026-03-18 23:56",
+  "updated_at": "2026-03-19 02:43",
   "summary": {
     "active_fcn_count": 24,
     "top_risk_code": "FCN710H",
     "worst_of": "ORCL",
-    "market_env": "可做",
-    "main_conclusion": "今天可做 FCN，優先配置 NVDA / AVGO / TSM / MSFT，並持續監控 ORCL / COIN 風險集中。"
+    "market_env": "保守做",
+    "main_conclusion": "今天可保守做 FCN，建議以 TSM / MSFT 為主，避免進攻型標的過重。"
   },
   "morning_brief": {
     "international_news": [
       {
-        "title": "'Bielle-Biarrey's pace spooked me' - Chessum on intercept try finish",
-        "summary": "England back row Ollie Chessum says the fear of being run down by Louis Bielle Biarrey prevented him from run…",
-        "content": "England back row Ollie Chessum says the fear of being chased down by Louis Bielle-Biarrey, France's free-scoring, high-speed wing, spooked him as he went in for a 60m intercept try in England's 48-46… [+4656 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "Iran missile strike kills two in central Israel, say medics",
+        "summary": "Missiles from Iran struck near Tel Aviv, killing two people. Railway services across Israel were suspended af…",
+        "content": "An Iranian missile barrage killed two people near Israel's commercial hub Tel Aviv, medics said Wednesday, as the national railway company suspended operations due to shrapnel impact at a station in … [+2866 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "How Much Pain Is Trump Really Willing to Endure?",
-        "summary": "The outcome of the war in Iran may come down to just how much risk he can take.",
-        "content": "It was supposed to be easy. In the weeks after President Trump authorized the military raid to snatch Nicolás Maduro from Venezuela, he would tell pretty much any audience about how flawlessly the op… [+11947 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "Yes, what you think about inflation can influence what the RBA does next",
+        "summary": "One of the biggest risks for central banks is that worries about higher inflation become embedded in people’s…",
+        "content": "Zhang Na/Xinhua via Getty Images After two back-to-back interest rate hikes by the Reserve Bank of Australia (RBA) in February and March, all eyes are on the next policy meeting set for May. While … [+5110 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": true,
+        "impact_score": 0
+      },
+      {
+        "title": "Dem Sen. Kim: GOP Trying to 'Rig the Election' Instead of Opening DHS",
+        "summary": "On Tuesday’s broadcast of CNN’s “The Source,” Sen. Andy Kim (D-NJ) claimed Republicans are focused on trying…",
+        "content": "On Tuesday’s broadcast of CNN’s “The Source,” Sen. Andy Kim (D-NJ) claimed Republicans are focused on trying to “rig the election” instead of opening DHS. Host Kaitlan Collins asked, “If this war in… [+1310 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "2026 MLB Draft Notebook 2.0",
-        "summary": "In the second update from The Sporting Tribune, our draft team takes a continued look at UCLA Baseball, UC-Ir…",
-        "content": "While most Division-1 programs are simmering around the 1/3 mark of their regular season, California high schools are a month-and-a-half out of playoffs themselves with large decision-making tourname… [+6181 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "Lindsey Graham Says ‘There’s No Reason’ To Invade Iran – Except for Part of It",
+        "summary": "Sen. Lindsey Graham offered a curious assessment of the Iran war, stating that the U.S. does not need to inva…",
+        "content": "Sen. Lindsey Graham (R-SC) offered a curious assessment of the Iran war, stating that the U.S. does not need to invade Iran, but that it should seize a key part of the country. Doing so would presum… [+1941 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Canucks 2020 & 2021 Draft Classes Have Produced 0 NHL Games",
-        "summary": "No player drafted from the Vancouver Canucks in 2020 or 2021 has played an NHL game.",
-        "content": "Developing prospects drafted after the first round can be complicated at times. Unlike top picks, those selected in the second or later rounds statistically have a smaller chance of becoming impactfu… [+3128 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "Timberwolves 116, Suns 104: Life Without Ant",
+        "summary": "An Anthony Edwards-less Wolves team dug deep for a nice win.",
+        "content": "They made you sweat a little bit for it, didnt they? The Phoenix Suns came into Target Center on the tail end of a back-to-back, playing in Boston and losing to the Celtics the night before. Making … [+6564 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Inside the room: More relaxed and assured - but it was still hard for Martin to get a word in",
-        "summary": "Coming out of the meeting with Trump relatively unscathed, for a second time, is probably the most Martin cou…",
-        "content": "AN IRISH TAOISEACH coming to the defence of a British prime minister in the Oval Office. That was, perhaps, not on the bingo card for this years St Patricks Day in the White House. Micheál Martin … [+8460 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "Asian stocks rally as oil retreats, Fed in spotlight",
+        "summary": "SYDNEY, March 18 : Asian shares rallied on Wednesday as oil prices paused their gains, with markets turning t…",
+        "content": "SYDNEY, March 18 : Asian shares rallied on Wednesday as oil prices paused their gains, with markets turning to the U.S. Federal Reserve meeting to see how policymakers will balance growth and inflati… [+3778 chars]｜分類：地緣政治｜解讀：利率壓力若下降，FCN 環境通常較有利",
+        "affects_fcn": true,
+        "impact_score": 1
+      },
+      {
+        "title": "Islanders get much-needed road win over Maple Leafs to keep pace in tight playoff race",
+        "summary": "For all the pregame hype around Matthew Schaefer playing his first game in Toronto, it was the Islanders’ oth…",
+        "content": "TORONTO For all the pregame hype around Matthew Schaefer playing his first game in Toronto, it was the Islanders other area-native rookie, Cal Ritchie, who scored in his first game back home Tuesday.… [+4463 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Real Grooves Audio THE STRAWBERRY WHEEL — A Songwriter's Guide to Open String Harmony",
-        "summary": "THE STRAWBERRY WHEEL — A Songwriter's Guide to Open String Harmony. PDF chord wheel and songwriting reference…",
-        "content": "THE STRAWBERRY WHEEL A Songwriter's Guide to Open String Harmony. PDF chord wheel and songwriting reference for guitar. 80 progressions across 56 chords in 8 keys. Standard tuning. Standard chord sh… [+1298 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "Nigeria secures £746m UK deal to modernise ports",
+        "summary": "Nigeria secures a £746m UK deal for a comprehensive port modernization of Apapa and Tincan Island ports to bo…",
+        "content": "The Minister of Marine and Blue Economy, Dr Adegboyega Oyetola, has unveiled a landmark £746m financing agreement with the United Kingdom that will deliver the modernisation of Nigerias seaport infra… [+5071 chars]｜分類：全球經濟｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Foxconn sees AI server market splitting GPU-ASIC 8:2 as CSP demand surges",
-        "summary": "Buoyed by sustained high capital expenditure by global cloud service providers (CSPs), AI servers and data ce…",
-        "content": "Save my User ID and Password Some subscribers prefer to save their log-in information so they do not have to enter their User ID and Password each time they visit the site. To activate this function… [+307 chars]｜分類：全球經濟｜解讀：影響有限",
+        "title": "Sanwo-Olu pledges commitment to consumer protection",
+        "summary": "Lagos Governor, Babajide Sanwo-Olu, reiterates his commitment to strengthening legal and institutional framew…",
+        "content": "The Lagos State Governor, Babajide Sanwo-Olu, has reiterated his administrations commitment to continuously strengthening its legal and institutional frameworks for consumer protection. Sanwo-Olu sa… [+3766 chars]｜分類：全球經濟｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Search Referral Traffic Down 60% For Small Publishers, Data Shows via @sejournal, @MattGSouthern",
-        "summary": "Chartbeat data shows search referral traffic fell 60% for small publishers over two years, compared with 22%…",
-        "content": "Search referral traffic to small publishers dropped 60% over two years, according to Chartbeat data reported exclusively by Axios. That’s nearly three times the decline at large publishers. The anal… [+3455 chars]｜分類：全球經濟｜解讀：影響有限",
+        "title": "LTM Named NVIDIA Partner Network ‘Rising Star Consulting Partner of the Year’ at NVIDIA GTC 2026",
+        "summary": "MUMBAI, India — LTM, the Business Creativity partner to the world’s largest enterprises, has been recognized…",
+        "content": "THIS CONTENT IS RESERVED FOR SUBSCRIBERS ONLY Subscribe now to read the latest news in your city and across Canada. <ul><li>Exclusive articles from Barbara Shecter, Joe O'Connor, Gabriel Friedman, … [+4877 chars]｜分類：全球經濟｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "JC Tretter has been elected the new executive director for the NFL Players Association",
-        "summary": "JC Tretter is the new executive director for the NFL Players Association. The 35-year-old former center for t…",
-        "content": "JC Tretter is the new executive director for the NFL Players Association. The 35-year-old former center for the Packers and Browns was elected by the unions board of player representatives on Tuesda… [+3313 chars]｜分類：全球經濟｜解讀：影響有限",
+        "title": "Economic Digest: Nepal’s Business News in a Snap",
+        "summary": "KATHMANDU: Economic Digest offers a concise yet comprehensive overview of significant business happenings in…",
+        "content": "KATHMANDU: Economic Digest offers a concise yet comprehensive overview of significant business happenings in Nepal, presented in easily digestible summaries. Nepals latest economic signals reflect a… [+14802 chars]｜分類：全球經濟｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "NFLPA elects former Browns OL JC Tretter as union's next executive director",
-        "summary": "Tretter played nine seasons in the NFL with the Packers and Browns",
-        "content": "The NFL Players Association announced on Tuesday that former Cleveland Browns offensive lineman JC Tretter has been elected by the Board of Player Representatives to be the union's next executive dir… [+2862 chars]｜分類：全球經濟｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "NFLPA names J.C. Tretter as new executive director, 8 months after his scandal-driven resignation",
-        "summary": "The NFLPA's self-described Tyrion Lannister has taken the Iron Throne.",
-        "content": "J.C. Tretter is the new executive director of the NFL Players Association, eight months after resigning amid massive scandal inside the union. The NFLPA announced Tretters election on Tuesday evenin… [+3575 chars]｜分類：全球經濟｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "NFL Commissioner Roger Goodell congratulates new NFLPA executive director JC Tretter",
-        "summary": "Twenty years after Bryant Gumbel characterized the NFL Players Association executive director as the \"persona…",
-        "content": "Twenty years after Bryant Gumbel characterized the NFL Players Association executive director as the personal pet of Commissioner Paul Tagliabue, the man whom Gumbel advised to figure out where [Tagl… [+1810 chars]｜分類：全球經濟｜解讀：影響有限",
+        "title": "Ghana’s Mining Investment Ranking Tumbles …Jinapor Expresses Concern",
+        "summary": "Ghana’s standing as a preferred destination for mining investment has come under renewed scrutiny, following…",
+        "content": "Ghanas standing as a preferred destination for mining investment has come under renewed scrutiny, following a significant drop in the latest Global Mining Investment Attractiveness Index, prompting c… [+7244 chars]｜分類：全球經濟｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       }
     ],
     "financial_news": [
+      {
+        "title": "Asian stocks rally as oil retreats, Fed in spotlight",
+        "summary": "SYDNEY, March 18 : Asian shares rallied on Wednesday as oil prices paused their gains, with markets turning t…",
+        "content": "SYDNEY, March 18 : Asian shares rallied on Wednesday as oil prices paused their gains, with markets turning to the U.S. Federal Reserve meeting to see how policymakers will balance growth and inflati… [+3778 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
+        "affects_fcn": true,
+        "impact_score": 1
+      },
       {
         "title": "Morgan Stanley Sticks With June Rate Cut Call as Oil Surges",
         "summary": "Morgan Stanley is sticking with a forecast that sees the Federal Reserve resuming interest rates cuts in June…",
@@ -138,102 +145,95 @@
         "impact_score": 1
       },
       {
-        "title": "Op-ed: The AI ‘Revolution’ Is a False Promise for Food Systems",
-        "summary": "A version of this article originally appeared in The Deep Dish, our members-only newsletter. Become a member…",
-        "content": "Big techs influence on the current federal administration is undeniable. During his first term, President Donald Trump issued an executive order to promote AI research and development. Shortly after … [+4741 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
+        "title": "citrusglaze-scan added to PyPI",
+        "summary": "Scan AI chat histories for leaked secrets. Find out what you've accidentally shared with AI providers.",
+        "content": "How many secrets have you leaked to AI? Find out in 15 seconds. We scanned one developer's AI chat history. 169 secrets in 30 days. AWS keys, private keys, database passwords all sent to AI provider… [+2500 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Lakers release injury report for Wednesday's game versus Rockets",
+        "summary": "The Lakers have released their injury report for Wednesday's game against the Rockets.",
+        "content": "If you click 'Accept all', we and our partners, including 247 who are part of the IAB Transparency &amp; Consent Framework, will also store and / or access information on a device (in other words, us… [+1046 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Yes, what you think about inflation can influence what the RBA does next",
+        "summary": "One of the biggest risks for central banks is that worries about higher inflation become embedded in people’s…",
+        "content": "Zhang Na/Xinhua via Getty Images After two back-to-back interest rate hikes by the Reserve Bank of Australia (RBA) in February and March, all eyes are on the next policy meeting set for May. While … [+5110 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "affects_fcn": true,
+        "impact_score": 0
+      },
+      {
+        "title": "FG ends Customs’ 7% FAAC deduction policy",
+        "summary": "The Nigerian government has ended the Customs’ 7% FAAC deduction. Learn about the new 4% Free-on-Board fundin…",
+        "content": "The Federal Government, through the Federation Account Allocation Committee, has discontinued the long-standing seven per cent cost-of-collection deduction previously retained by the Nigerian Customs… [+6635 chars]｜分類：通膨 / 就業｜解讀：利率壓力若下降，FCN 環境通常較有利",
         "affects_fcn": true,
         "impact_score": 1
       },
       {
-        "title": "Search Referral Traffic Down 60% For Small Publishers, Data Shows via @sejournal, @MattGSouthern",
-        "summary": "Chartbeat data shows search referral traffic fell 60% for small publishers over two years, compared with 22%…",
-        "content": "Search referral traffic to small publishers dropped 60% over two years, according to Chartbeat data reported exclusively by Axios. That’s nearly three times the decline at large publishers. The anal… [+3455 chars]｜分類：通膨 / 就業｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "JC Tretter has been elected the new executive director for the NFL Players Association",
-        "summary": "JC Tretter is the new executive director for the NFL Players Association. The 35-year-old former center for t…",
-        "content": "JC Tretter is the new executive director for the NFL Players Association. The 35-year-old former center for the Packers and Browns was elected by the unions board of player representatives on Tuesda… [+3313 chars]｜分類：通膨 / 就業｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "'Deeply troubling' allegations against Cesar Chavez prompt United Farm Workers to cancel celebrations - ABC7 Los Angeles",
-        "summary": "'Deeply troubling' allegations against Cesar Chavez prompt United Farm Workers to cancel celebrationsABC7 Los…",
-        "content": "When bad men combine, the good must associate; else they will fall one by one, an unpitied sacrifice in a contemptible struggle. - Edmund Burke｜分類：通膨 / 就業｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Senate Majority leader warns Dems are putting cyber operations at risk as Iran threat looms",
-        "summary": "Senate Majority Leader John Thune accused Democrats of holding government agencies hostage during a partial s…",
-        "content": "Senate Majority Leader John Thune, R-S.D., accused Democrats of holding the government hostage during a dangerous time as the party refuses to budge in a gridlocked funding battle. \"They are holding… [+3075 chars]｜分類：通膨 / 就業｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "What Is Intent-Based Marketing? A Practical Guide for Revenue Teams",
-        "summary": "A practical guide to intent-based marketing, how it differs from traditional demand generation, and how reven…",
-        "content": "Intent-based marketing is the practice of using real buyer behavior to decide who to prioritize, what message to show, and what next step to offer before the buyer fills out a form. It matters becaus… [+11885 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "title": "Julia Stratton Wins Senate Primary in Illinois",
+        "summary": "Illinois Lt. Gov. Juliana Stratton (D) is projected to win the Illinois Senate Democratic primary — a major w…",
+        "content": "“There are a lot of blogs and news sites claiming to understand politics, but only a few actually do. Political Wire is one of them.” Chuck Todd, host of “Meet the Press” “Concise. Relevant. To th… [+594 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       }
     ],
     "ai_trend": [
       {
-        "title": "rankigi 1.0.0",
-        "summary": "RANKIGI Python SDK — tamper-evident audit trails for AI agents",
+        "title": "docagents 0.1.6",
+        "summary": "Terminal interface for Deep Agents - interactive AI agent with file operations, shell access, and sub-agent c…",
         "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "rankigi added to PyPI",
-        "summary": "RANKIGI Python SDK — tamper-evident audit trails for AI agents",
+        "title": "T-Mobile 5G is no longer just for calls and data",
+        "summary": "T-Mobile's network is undergoing a powerful transformation.",
+        "content": "T-Mobile has started pivoting to physical AI systems that interact with the real world. The carrier is working with Nvidia, Nokia, and developers to execute its vision and turn its network into an AI… [+1993 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Show HN: Local-first documentation MCP for AI agents",
+        "summary": "Open source prebuilt packages for React, Django, Spring Boot, and hundreds more. Local-first, version-specifi…",
+        "content": "Built for developers who need AI assistants that work reliably. Batteries Included Hundreds of documentation packages pre-built and ready to install. React, Django, Spring Boot accurate docs from… [+624 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "operon-guard added to PyPI",
+        "summary": "Trust verification for AI agents — behavior specs, race-condition detection, safety rails, and trust scoring.",
         "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Show HN: ToolGuard – Pytest for AI agent tool calls",
-        "summary": "I got tired of my AI agents crashing because the LLM hallucinated a JSON key or passed a string instead of an…",
-        "content": "I got tired of my AI agents crashing because the LLM hallucinated a JSON key or passed a string instead of an int. So I built ToolGuard it fuzzes your Python tool functions with edge-cases (nulls, mi… [+446 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "17 stocks including Tata Steel, SBI, Varun Beverages, Shree Cement, Wipro, Ceigall, NHPC, Paisalo, Strides Pharma will…",
+        "summary": "Key stocks like Tata Steel, SBI, and Varun Beverages will be in focus on Wednesday due to significant corpora…",
+        "content": "The board of Tata Steel has approved the merger of Neelachal Ispat Nigam Limited (NINL) with itself and an investment of up to US $2 billion in its wholly-owned subsidiary T Steel Holdings Pte Ltd. T… [+6800 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：ARM｜建議：觀察池",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Show HN: Xecai, a minimal Python interface for LLM providers for RAG systems",
-        "summary": "A small python library to simplify LLM calls, database retrieval, reranking, conversation storage & embedding…",
-        "content": "Develop code for different LLMs and AI services, change very few lines. Easily customise the behaviour so that it fits your requirements. This library is currently focused on RAG purposes, no Agent … [+4606 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "agent-control-sdk 7.0.0",
-        "summary": "Python SDK for Agent Control - protect your AI agents with controls",
+        "title": "musedb 0.2.1",
+        "summary": "The AI-native file database. Built from the ground up for LLM agents to read and search any document format a…",
         "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "smrti 0.4.6",
-        "summary": "AtomSpace-inspired memory + personality engine for AI agents",
-        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "citrusglaze-scan added to PyPI",
+        "summary": "Scan AI chat histories for leaked secrets. Find out what you've accidentally shared with AI providers.",
+        "content": "How many secrets have you leaked to AI? Find out in 15 seconds. We scanned one developer's AI chat history. 169 secrets in 30 days. AWS keys, private keys, database passwords all sent to AI provider… [+2500 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Foxconn sees AI server market splitting GPU-ASIC 8:2 as CSP demand surges",
-        "summary": "Buoyed by sustained high capital expenditure by global cloud service providers (CSPs), AI servers and data ce…",
-        "content": "Save my User ID and Password Some subscribers prefer to save their log-in information so they do not have to enter their User ID and Password each time they visit the site. To activate this function… [+307 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Search Referral Traffic Down 60% For Small Publishers, Data Shows via @sejournal, @MattGSouthern",
-        "summary": "Chartbeat data shows search referral traffic fell 60% for small publishers over two years, compared with 22%…",
-        "content": "Search referral traffic to small publishers dropped 60% over two years, according to Chartbeat data reported exclusively by Axios. That’s nearly three times the decline at large publishers. The anal… [+3455 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "citrusglaze-scan 0.1.0",
+        "summary": "Scan AI chat histories for leaked secrets. Find out what you've accidentally shared with AI providers.",
+        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       }
@@ -275,7 +275,7 @@
         "impact_score": -1
       },
       {
-        "title": "失業率：4.40%（+0.10%）｜S&P500：6716.09（+16.71）",
+        "title": "失業率：4.40%（+0.10%）｜S&P500：6624.70（-91.39）",
         "summary": "就業與股市穩定度共同反映風險偏好。",
         "content": "若就業惡化且股市回落，FCN 需更保守。",
         "affects_fcn": true,
@@ -299,7 +299,7 @@
     {
       "title": "優先核心池",
       "action": "可配置",
-      "reason": "目前建議先看：NVDA / AVGO / TSM / MSFT。",
+      "reason": "目前建議先看：TSM / MSFT。",
       "level": "ok"
     }
   ],
@@ -310,11 +310,11 @@
     },
     {
       "label": "總經環境",
-      "text": "總經環境中性偏有利，FCN 可做，但仍需避免風險集中在單一高敏感標的。"
+      "text": "總經環境中性，FCN 可做但需偏保守，優先核心股。"
     },
     {
       "label": "今日推薦",
-      "text": "可加入：NVDA / AVGO / TSM / MSFT；觀察：AMD / AMAT / MRVL；避免：ORCL / PLTR / COIN。"
+      "text": "可加入：TSM / MSFT；觀察：NVDA / AVGO / UNH；避免：AMD / ORCL / AMAT。"
     }
   ],
   "risk_radar": [
@@ -335,8 +335,8 @@
     },
     {
       "label": "AI 核心股安全度",
-      "value": 78,
-      "type": "ok"
+      "value": 62,
+      "type": "watch"
     }
   ],
   "fcn_rankings": [
@@ -434,9 +434,9 @@
         "eki": "80%",
         "day_change": "",
         "five_day": "",
-        "today": "可加入",
-        "reason": "屬核心池 / 防守池，且現階段環境允許配置。",
-        "level": "ok"
+        "today": "持續觀察",
+        "reason": "可列觀察，但不宜重壓。",
+        "level": "watch"
       },
       {
         "symbol": "AVGO",
@@ -447,9 +447,9 @@
         "eki": "80%",
         "day_change": "",
         "five_day": "",
-        "today": "可加入",
-        "reason": "屬核心池 / 防守池，且現階段環境允許配置。",
-        "level": "ok"
+        "today": "持續觀察",
+        "reason": "可列觀察，但不宜重壓。",
+        "level": "watch"
       },
       {
         "symbol": "TSM",
@@ -473,9 +473,9 @@
         "eki": "80%",
         "day_change": "",
         "five_day": "",
-        "today": "持續觀察",
-        "reason": "可列觀察，但不宜重壓。",
-        "level": "watch"
+        "today": "暫不建議",
+        "reason": "現階段波動或集中風險偏高。",
+        "level": "risk"
       },
       {
         "symbol": "ORCL",
@@ -512,9 +512,9 @@
         "eki": "80%",
         "day_change": "",
         "five_day": "",
-        "today": "持續觀察",
-        "reason": "可列觀察，但不宜重壓。",
-        "level": "watch"
+        "today": "暫不建議",
+        "reason": "現階段波動或集中風險偏高。",
+        "level": "risk"
       },
       {
         "symbol": "PLTR",
@@ -592,9 +592,9 @@
         "eki": "75%",
         "day_change": "",
         "five_day": "",
-        "today": "持續觀察",
-        "reason": "可列觀察，但不宜重壓。",
-        "level": "watch"
+        "today": "暫不建議",
+        "reason": "現階段波動或集中風險偏高。",
+        "level": "risk"
       },
       {
         "symbol": "ARM",
@@ -605,9 +605,9 @@
         "eki": "70%",
         "day_change": "",
         "five_day": "",
-        "today": "持續觀察",
-        "reason": "可列觀察，但不宜重壓。",
-        "level": "watch"
+        "today": "暫不建議",
+        "reason": "現階段波動或集中風險偏高。",
+        "level": "risk"
       },
       {
         "symbol": "LVS",
@@ -618,9 +618,9 @@
         "eki": "80%",
         "day_change": "",
         "five_day": "",
-        "today": "持續觀察",
-        "reason": "可列觀察，但不宜重壓。",
-        "level": "watch"
+        "today": "暫不建議",
+        "reason": "現階段波動或集中風險偏高。",
+        "level": "risk"
       },
       {
         "symbol": "UNH",
@@ -640,14 +640,6 @@
   "today_recommendations": {
     "add": [
       {
-        "symbol": "NVDA",
-        "reason": "屬核心池 / 防守池，且現階段環境允許配置。"
-      },
-      {
-        "symbol": "AVGO",
-        "reason": "屬核心池 / 防守池，且現階段環境允許配置。"
-      },
-      {
         "symbol": "TSM",
         "reason": "屬核心池 / 防守池，且現階段環境允許配置。"
       },
@@ -658,29 +650,29 @@
     ],
     "watch": [
       {
-        "symbol": "AMD",
+        "symbol": "NVDA",
         "reason": "可列觀察，但不宜重壓。"
       },
       {
-        "symbol": "AMAT",
+        "symbol": "AVGO",
         "reason": "可列觀察，但不宜重壓。"
       },
       {
-        "symbol": "MRVL",
-        "reason": "可列觀察，但不宜重壓。"
-      },
-      {
-        "symbol": "ARM",
-        "reason": "可列觀察，但不宜重壓。"
-      },
-      {
-        "symbol": "LVS",
+        "symbol": "UNH",
         "reason": "可列觀察，但不宜重壓。"
       }
     ],
     "avoid": [
       {
+        "symbol": "AMD",
+        "reason": "現階段波動或集中風險偏高。"
+      },
+      {
         "symbol": "ORCL",
+        "reason": "現階段波動或集中風險偏高。"
+      },
+      {
+        "symbol": "AMAT",
         "reason": "現階段波動或集中風險偏高。"
       },
       {
@@ -689,14 +681,6 @@
       },
       {
         "symbol": "COIN",
-        "reason": "現階段波動或集中風險偏高。"
-      },
-      {
-        "symbol": "TSLA",
-        "reason": "現階段波動或集中風險偏高。"
-      },
-      {
-        "symbol": "CRDO",
         "reason": "現階段波動或集中風險偏高。"
       }
     ]
@@ -711,28 +695,17 @@
       ],
       "eki": "80%–85%",
       "tenor": "6–12個月",
-      "goal": "低波動穩定收息"
+      "goal": "防守優先"
     },
     {
       "name": "平衡收益",
       "targets": [
         "NVDA",
-        "AVGO",
-        "AMD"
+        "AVGO"
       ],
-      "eki": "70%–80%",
-      "tenor": "3–9個月",
-      "goal": "主力配置"
-    },
-    {
-      "name": "進攻型",
-      "targets": [
-        "PLTR",
-        "ARM"
-      ],
-      "eki": "60%–70%",
-      "tenor": "1–3個月",
-      "goal": "部位小、追求收益"
+      "eki": "75%–80%",
+      "tenor": "3–6個月",
+      "goal": "只留主力池"
     }
   ]
 }
