@@ -1,5 +1,5 @@
-import { renderModule2Health } from "./modules/module2_health.js";
-import { renderModule3Decision } from "./modules/module3_decision.js";
+import { renderModule2Health } from "./modules/module2_health.js?v=3";
+import { renderModule3Decision } from "./modules/module3_decision.js?v=3";
 
 async function loadJson(path) {
   const res = await fetch(path);
