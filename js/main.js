@@ -1,5 +1,6 @@
-import { renderModule2Health } from "./modules/module2_health.js?v=3";
-import { renderModule3Decision } from "./modules/module3_decision.js?v=3";
+import { renderModule1News } from "./modules/module1_news.js?v=4";
+import { renderModule2Health } from "./modules/module2_health.js?v=4";
+import { renderModule3Decision } from "./modules/module3_decision.js?v=4";
 
 async function loadJson(path) {
   const res = await fetch(path);
@@ -9,9 +10,15 @@ async function loadJson(path) {
 async function init() {
   const positions = await loadJson("./data/positions.json");
   const pool = await loadJson("./data/pool.json");
+  const newsData = await loadJson("./data/news.json");
 
+  const m1 = document.getElementById("module1-news");
   const m2 = document.getElementById("module2-health");
   const m3 = document.getElementById("module3-decision");
+
+  if (m1) {
+    m1.innerHTML = renderModule1News(newsData);
+  }
 
   if (m2) {
     m2.innerHTML = renderModule2Health(positions, pool);
