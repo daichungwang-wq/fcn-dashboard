@@ -826,3 +826,49 @@ init();
   color: #777;
   font-size: 16px;
 }
+
+.news-mode-bar {
+  background: #fff;
+  border-radius: 18px;
+  padding: 14px 16px;
+  margin: 14px 0 18px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+}
+
+.news-mode-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.news-mode-toggle {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.news-mode-btn {
+  flex: 1;
+  border: 1px solid #d8d8d8;
+  background: #f3f3f3;
+  color: #666;
+  border-radius: 999px;
+  padding: 12px 14px;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.news-mode-btn.active {
+  background: #2f6fc2;
+  color: #fff;
+  border-color: #2f6fc2;
+  box-shadow: 0 4px 12px rgba(47,111,194,0.25);
+}
+
+.news-mode-status {
+  font-size: 15px;
+  font-weight: 700;
+  color: #444;
+}
