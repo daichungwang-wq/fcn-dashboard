@@ -306,3 +306,39 @@ window.setNewsDirection = function(key, direction) {
 window.rerunDecision = function() {
   alert("這一版已完成畫面與覆核流程。下一步再正式連動 Module3 重算。");
 };
+
+let newsMode = "on"; // 預設新聞加權
+
+function updateNewsModeUI() {
+  const pureBtn = document.getElementById("mode-pure");
+  const newsBtn = document.getElementById("mode-news");
+  const status = document.getElementById("news-mode-status");
+
+  if (!pureBtn || !newsBtn || !status) return;
+
+  const isNewsOn = newsMode === "on";
+
+  pureBtn.classList.toggle("active", !isNewsOn);
+  newsBtn.classList.toggle("active", isNewsOn);
+
+  status.textContent = isNewsOn
+    ? "模式：新聞加權（含市場情緒）"
+    : "模式：純模型（不含新聞）";
+}
+
+function bindNewsModeEvents() {
+  const pureBtn = document.getElementById("mode-pure");
+  const newsBtn = document.getElementById("mode-news");
+
+  if (!pureBtn || !newsBtn) return;
+
+  pureBtn.onclick = () => {
+    newsMode = "off";
+    updateNewsModeUI();
+  };
+
+  newsBtn.onclick = () => {
+    newsMode = "on";
+    updateNewsModeUI();
+  };
+}
