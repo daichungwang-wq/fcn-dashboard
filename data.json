@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-03-20 08:25",
+  "updated_at": "2026-03-20 09:59",
   "summary": {
     "active_fcn_count": 24,
     "top_risk_code": "FCN710H",
@@ -10,231 +10,70 @@
   "morning_brief": {
     "international_news": [
       {
-        "title": "Trump threatens to ‘blow up’ world’s largest gas field",
-        "summary": "US President Donald Trump has promised Israel won’t strike the South Pars gas fields, but warned Iran of reta…",
-        "content": "The US will “massively blow up” the South Pars gas field – the world’s largest – if Iran continues to strike Qatari energy facilities, President Donald Trump has warned. Israel launched strikes on W… [+1825 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Woman Snuck Into Her Sister’s House To Retrieve Some Of Her Makeup That Her Niece Stole, But She Debated Confronting He…",
-        "summary": "Nothing says family drama like some missing makeup at midnight.",
-        "content": "Freepik/Reddit Family boundaries can get messy. In this story, a woman realized her 13-year-old niece had taken some of her pimple patches and her lipsticks from her house without asking. She deci… [+2065 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "European Union summit will focus on Iran war and a loan to Ukraine blocked by Hungary",
-        "summary": "European Union leaders are holding a summit in Brussels to tackle growing fallout from the Iran war, rising e…",
-        "content": "BRUSSELS -- European Union leaders are holding a summit in Brussels on Thursday for talks on the Iran war, energy prices, migration and an enormous loan for war-ravaged Ukraine being held up by Hunga… [+3121 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Dhurandhar The Revenge Box Office: Ranveer Singh's juggernaut scripts history, crosses Rs 250 crore in global advances",
-        "summary": "Dhurandhar: The Revenge Is On Track For A TITANIC Weekend Of Over Rs. 600 Crore Worldwide, With Overseas Set…",
-        "content": "Dhurandhar: The Revenge surpassed the Rs. 250 crore mark in worldwide advances. The Ranveer Singh starrer has raked in Rs. 155 crore approx in India while a staggering USD 10.60 million (Rs. 98 crore… [+2406 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Dogs hold on to down Canberra in brutal wet-weather battle",
-        "summary": "It was far from easy, but Canterbury have held on for a narrow win over the Raiders in torrential conditions…",
-        "content": "The Bulldogs have kicked off Round 3 in typical style with a 14-10 arm-wrestle of a victory over the Raiders in Canberra. With the heavens opening it was a physical battle through-out with Canterbu… [+7521 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "World Happiness Report highlights social media's negative impact, ranks Finland as happiest country",
-        "summary": "The latest World Happiness Report 2026 says that heavy social media use has contributed to a stark decline in…",
-        "content": "HELSINKI -- Heavy social media use contributes to a stark decline in well-being among young people, with the effects particularly worrying in teenage girls in English-speaking countries and Western E… [+4074 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Iran war: What’s the Jones Act, and why has Trump suspended it for 60 days?",
-        "summary": "The move allows foreign-flagged vessels to transport goods between US ports for the next 60 days.",
-        "content": "United States President Donald Trump has temporarily waived a century-old shipping law to help ease the cost of transporting oil, gas and other commodities within the US. The move allows foreign-fla… [+4494 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
+        "title": "Oil at 200 dollars a barrel: Middle East conflict sends shockwaves through fashion",
+        "summary": "Middle East conflict and rising oil prices to $200 a barrel impact the fashion industry, affecting production…",
+        "content": "As the global conflict involving Iran escalates, the prospect of oil prices climbing towards 200 dollars a barrel no longer feels implausible. Fashion businesses across the UK and Europe are once aga… [+2567 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
         "affects_fcn": true,
         "impact_score": -1
       },
       {
-        "title": "Australia central bank warns Iran war a material risk",
-        "summary": "Australia's central bank has warned today that the conflict in the Middle East could lead to a severe interna…",
-        "content": "Australia's central bank has warned today that the conflict in the Middle East could lead to a severe international shock, though it believed domestic banks were well-placed to support the economy sh… [+2543 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
-        "affects_fcn": true,
-        "impact_score": -1
-      },
-      {
-        "title": "PM Modi invites global investors to invest in power sector",
-        "summary": "Prime Minister Narendra Modi has invited global investors to India's power sector. He urged them to make, inv…",
-        "content": "New Delhi: Prime Minister Narendra Modi on Thursday invited global investors to invest in the power sector, urging them to \"make, invest, innovate, and scale\" in India.In a written message read out b… [+2170 chars]｜分類：全球經濟｜解讀：影響有限",
+        "title": "UK urged to press Nigeria on violence against Christians during historic Tinubu visit",
+        "summary": "A coalition of Christian and human rights organisations has called on the UK government to use President Bola…",
+        "content": "Fr Sam Ebute buried 21 of his parishioners after bandits attacked Kukum Daji village. He is pictured here standing in front of the victims' shoes. (Photo: Aid to the Church in Need) A coalition of C… [+4255 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Fuel from air and water? China start-up, co-founded by ex Tesla VP, claims big breakthrough amid oil crisis",
-        "summary": "At a time when the world is grappling with oil crisis due to the Middle East conflict, a Chinese startup Carb…",
-        "content": "The ongoing Middle East conflict has triggered an oil crisis amid rising tensions in the Gulf region. Amid this crisis, a Chinese start-up has claimed to have mastered a technique for producing synth… [+4311 chars]｜分類：全球經濟｜解讀：地緣風險升高，需留意市場波動擴大",
+        "title": "Take-Two boss Zelnick says it would be \"unfair\" to put ads in premium games",
+        "summary": "The CEO of Take-Two Interactive, Strauss Zelnick, has said that it would be \"unfair\" to have in-game adverts…",
+        "content": "The CEO of Take-Two Interactive, Strauss Zelnick, has said that it would be \"unfair\" to have in-game adverts within premium titles. Speaking to The Games Business, the executive addressed comments m… [+3811 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Peaky Blinders - a look back at where it all began",
+        "summary": "With Peaky Blinders movie The Immortal Man set to debut at midnight tonight on Netflix, we raid the archives…",
+        "content": "With Peaky Blinders movie The Immortal Man set to debut at midnight tonight on Netflix, we raid the archives to bring you this interview with leading man Cillian Murphy on the eve of the show's debut… [+7436 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "The ECB decides on interest rates under the threat of a resurgence in inflation",
+        "summary": "Conflicts in the Middle East are fueling fears of a new upward trend in inflation The post The ECB decides on…",
+        "content": "The European Central Bank (ECB) is expected to keep interest rates unchanged at todays meeting, as it assesses the scale of the inflationary shock that the war in Iran may cause. The deposit rate is… [+1000 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
         "affects_fcn": true,
         "impact_score": -1
       },
       {
-        "title": "Philippine Peso Drops Past Key 60-Per-Dollar Level on Oil Risk",
-        "summary": "The Philippine peso fell past the key level of 60 per dollar as elevated oil prices weigh on the country’s ec…",
-        "content": "The portraits of former Philippines' Acting President José Abad Santos, from left, and former Philippines' Presidents Corazon Aquino, Manuel A. Roxas, Sergio Osmena and Manuel L. Quezon are displayed… [+4051 chars]｜分類：全球經濟｜解讀：地緣風險升高，需留意市場波動擴大",
+        "title": "S&P/ASX 200 drops sharply as Australian shares fall to 4-month low on Middle East war escalation, inflation fears and m…",
+        "summary": "Australia's benchmark stock index, the S&P/ASX 200, closed at its lowest in nearly four months on Thursday, d…",
+        "content": "Australian Share market: Australias benchmark stock index ended Thursday (March 19, 2026) at its lowest level in nearly four months, as intensifying conflict in the Middle East rattled global markets… [+2609 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
         "affects_fcn": true,
         "impact_score": -1
       },
       {
-        "title": "Sperra Deploys First 3D-Printed Concrete Gravity Anchor at EDP Floating Solar Test Site in Portugal",
-        "summary": "Sperra deploys its first 3D printed gravity anchor at EDP’s floating solar lab in Portugal, validating anchor…",
-        "content": "ALTO RABAGÃO, Portugal, March 19, 2026 (GLOBE NEWSWIRE) -- Sperra today announced the successful deployment of its first full-scale 3D concrete printed gravity anchor in EDPs floating solar laborator… [+4524 chars]｜分類：全球經濟｜解讀：影響有限",
+        "title": "シンガポール法人設立および、スニル・デシュムク氏アドバイザー就任のお知らせ",
+        "summary": "[CPAエクセレントパートナーズ株式会社] [画像1: https://prcdn.freetls.fastly.net/release_image/80248/183/80248-183-9b625a916fd75a…",
+        "content": "CPA CPA Excellent Partners Singapore Pte. Ltd. M&amp;A U.S.CPAUS-CMAUAE 20259920261 2024-25 IMA 15014IMA2024-25 IMACFODX 30C-Suite 30CEOCEOM&amp;A 2019C-Suite Lab LLP150CEOIIMXLRIMBA CPA … [+5068 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       }
     ],
     "financial_news": [
       {
-        "title": "Powell Says Too Soon to Judge War’s Impact as Inflation Keeps Fed on Hold",
-        "summary": "Federal Reserve Chair Jerome Powell made it clear the US central bank won’t cut interest rates again until in…",
-        "content": "(Bloomberg) Federal Reserve Chair Jerome Powell made it clear the US central bank wont cut interest rates again until inflation resumes cooling. And thats before it even starts considering the possib… [+5225 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
+        "title": "國際財經新聞資料來源未設定",
+        "summary": "目前未設定 NEWSAPI_KEY。",
+        "content": "設定 NEWSAPI_KEY 後，這裡會自動抓 10–20 則國際財經新聞。",
         "affects_fcn": true,
-        "impact_score": 1
-      },
-      {
-        "title": "Asian shares skid as oil tops $111 a barrel and Wall Street slumps",
-        "summary": "Shares have retreated in Asia after a slump on Wall Street as oil prices shot toward $115 a barrel",
-        "content": "BANGKOK -- Shares retreated Thursday in Asia after stocks on Wall Street slumped as oil prices spiked at more than $113 a barrel. U.S. stocks also sagged due to a report that said inflation was pri… [+3256 chars]｜分類：Fed / 利率｜解讀：地緣風險升高，需留意市場波動擴大",
-        "affects_fcn": true,
-        "impact_score": -1
-      },
-      {
-        "title": "US yields rise as investors pare back Fed cut bets",
-        "summary": "U.S. Treasury yields climbed on Thursday, particularly at the short end, as investors significantly reduced F…",
-        "content": "(What's moving Sensex and Nifty Track latest market news, stock tips, Budget 2025, Share Market on Budget 2025 and expert advice, on ETMarkets. Also, ETMarkets.com is now on Telegram. For fastest new… [+330 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
-        "affects_fcn": true,
-        "impact_score": 1
-      },
-      {
-        "title": "Inflation to stay sticky, Jahangir Aziz rules out Fed rate cuts in 2026",
-        "summary": "Global markets face complex risks from geopolitical tensions and fragmented oil prices. Economist Jahangir Az…",
-        "content": "As geopolitical tensions intensify and crude oil markets react sharply, investors are facing a complex mix of inflation risks, monetary policy uncertainty, and shifting global supply dynamics. In a c… [+3159 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
-        "affects_fcn": true,
-        "impact_score": 1
-      },
-      {
-        "title": "US Fed keeps rates unchanged, raises inflation outlook. What does it mean for the Indian stock market?",
-        "summary": "The US Fed’s hawkish stance has reinforced risk-off sentiment, with markets pushing rate cut expectations to…",
-        "content": "The US Federal Reserve on Wednesday left its benchmark interest rate unchanged at 3.5%-3.75%, as policymakers balanced rising geopolitical tensions in the Middle East against signs of slowing economi… [+3548 chars]｜分類：Fed / 利率｜解讀：波動升高，FCN 敲入風險增加",
-        "affects_fcn": true,
-        "impact_score": -2
-      },
-      {
-        "title": "US Stock Market | War, Oil, and Rates: Fed’s pause sets stage for choppy markets",
-        "summary": "The Federal Reserve maintained interest rates unchanged, citing geopolitical tensions in the Middle East and…",
-        "content": "The U.S. Federal Reserve kept interest rates unchanged at its latest policy meeting, choosing caution as geopolitical tensions in the Middle East cloud the economic outlook. The decision marks the se… [+5176 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
-        "affects_fcn": true,
-        "impact_score": 1
-      },
-      {
-        "title": "Asian shares skid as oil and gas prices surge",
-        "summary": "Shares have retreated in Asia after a slump on Wall Street as oil prices shot over $110 a barrel. Tokyo's Nik…",
-        "content": "BANGKOK (AP) Shares retreated Thursday in Asia after stocks on Wall Street slumped as oil prices spiked at more than $110 a barrel. U.S. stocks also sagged due to a report that said inflation was p… [+3108 chars]｜分類：Fed / 利率｜解讀：地緣風險升高，需留意市場波動擴大",
-        "affects_fcn": true,
-        "impact_score": -1
-      },
-      {
-        "title": "César Chavez and Dolores Huerta led a movement that won better wages and conditions for farmworkers",
-        "summary": "Dolores Huerta and the late César Chavez are both credited with leading a movement that got growers to negoti…",
-        "content": "Dolores Huerta and the late César Chavez are both labor rights icons credited with leading a movement that pushed growers to negotiate for better wages and working conditions for farmworkers. Their … [+4196 chars]｜分類：通膨 / 就業｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Monthly cash payments could boost disaster survivors. A Maui nonprofit tries it out",
-        "summary": "A new cash aid program in Maui is helping some Lahaina fire survivors stay afloat long after the flames",
-        "content": "Mari Younger cherished her life in West Maui. She worked hard at her career in the restaurant industry and was proudly self-sufficient, happily living in the same condo for 11 years, lovingly doting … [+7425 chars]｜分類：通膨 / 就業｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "BTS will stage a long-awaited comeback concert at a Seoul landmark",
-        "summary": "BTS will stage its long-awaited comeback concert on Saturday night at Seoul’s Gwanghwamun Square",
-        "content": "SEOUL, South Korea -- SEOUL, South Korea (AP) BTS will stage its long-awaited comeback concert on Saturday night at Seouls Gwanghwamun Square, one of South Koreas most famous landmarks that represent… [+3730 chars]｜分類：通膨 / 就業｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Mullin presents a different vision for FEMA, sparking cautious hope",
-        "summary": "President Donald Trump’s pick to lead Homeland Security is signaling a gentler stance on FEMA and promising t…",
-        "content": "President Donald Trumps nominee to head the Department of Homeland Security presented a softer approach on federal emergency management in his Senate confirmation hearing, rejecting the idea of elimi… [+5300 chars]｜分類：通膨 / 就業｜解讀：利率壓力若下降，FCN 環境通常較有利",
-        "affects_fcn": true,
-        "impact_score": 1
-      },
-      {
-        "title": "Trump threatens to ‘blow up’ world’s largest gas field",
-        "summary": "US President Donald Trump has promised Israel won’t strike the South Pars gas fields, but warned Iran of reta…",
-        "content": "The US will “massively blow up” the South Pars gas field – the world’s largest – if Iran continues to strike Qatari energy facilities, President Donald Trump has warned. Israel launched strikes on W… [+1825 chars]｜分類：通膨 / 就業｜解讀：影響有限",
-        "affects_fcn": false,
         "impact_score": 0
       }
     ],
     "ai_trend": [
       {
-        "title": "nornr-agentpay added to PyPI",
-        "summary": "Python SDK for NORNR",
-        "content": "Python SDK for NORNR, the control plane for AI agents operating with real budgets. NORNR sits between agent intent and real-world execution. It evaluates whether an action should happen, routes larg… [+24667 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "As OpenClaw enthusiasm grips China, schoolkids and retirees alike raise 'lobsters'",
-        "summary": "By Laurie Chen and Eduardo Baptista BEIJING, March 19 (Reuters) - Fan Xinquan, a retired electronics worker i…",
-        "content": "By Laurie Chen and Eduardo Baptista BEIJING, March 19 (Reuters) - Fan Xinquan, a retired electronics worker in Beijing, has recently started raising a \"lobster,\" hoping that the AI agent he has been… [+5258 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Nvidia positions Groq 3 LPUs alongside Vera Rubin for an inference-first era",
-        "summary": "The 2026 Nvidia GTC keynote signaled a clear industry shift toward inference. CEO Jensen Huang declared that…",
-        "content": "Save my User ID and Password Some subscribers prefer to save their log-in information so they do not have to enter their User ID and Password each time they visit the site. To activate this function… [+307 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "devsper 2.1.7",
-        "summary": "Orchestrate distributed swarms of AI agents that collaboratively solve complex tasks.",
-        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：ARM｜建議：觀察池",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Squash Icon Saurav Ghosal Joins World Premier Squash as Sports Commissioner",
-        "summary": "Indian squash star Saurav Ghosal has been appointed as the sports commissioner of World Premier Squash, a new…",
-        "content": "Squash legend Saurav Ghosal has been appointed Sports Commissioner of World Premier Squash, a new global league leveraging AI to discover talent and revolutionise the sport. Photograph: Kim Kyung Ho… [+2583 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Visa Says Login Isn’t Enough as AI Enters the Checkout Flow",
-        "summary": "Watch more: What’s Next in Payments With Visa’s James Mirfin There’s an innovation race growing over digital…",
-        "content": "Theres an innovation race growing over digital identity. On one hand are banks and merchants that have traditionally been reliant on tools like passwords, one-time passcodes, biometric selfies and vo… [+6653 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "IPL 2026: Sanju Samson was Rajasthan Royal's face, his loss massive: Faf du Plessis",
-        "summary": "Sanju Samson's exit from Rajasthan Royals marks a major shift. Former captain Faf du Plessis highlights Samso…",
-        "content": "New Delhi: Sanju Samson was arguably the face of Rajasthan Royals -- much like MS Dhoni with Chennai Super Kings or Virat Kohli with Royal Challengers Bengaluru -- and his departure is a significant … [+4016 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Watch: Humanoid robot gets surprisingly good at tennis",
-        "summary": "This ain't teleoperation. Chinese researchers have tested a new, much quicker and easier method of teaching r…",
-        "content": "This ain't teleoperation. Chinese researchers have tested a new, much quicker and easier method of teaching robots to play tennis, and the results look like a breakthrough in machine learning and rea… [+3962 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
-        "affects_fcn": false,
+        "title": "AI 趨勢資料來源未設定",
+        "summary": "目前未設定 NEWSAPI_KEY。",
+        "content": "設定 NEWSAPI_KEY 後，這裡會自動抓取 AI agent / AI 基礎設施新聞。",
+        "affects_fcn": true,
         "impact_score": 0
       }
     ],
