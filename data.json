@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-03-20 09:59",
+  "updated_at": "2026-03-20 10:25",
   "summary": {
     "active_fcn_count": 24,
     "top_risk_code": "FCN710H",
@@ -10,52 +10,10 @@
   "morning_brief": {
     "international_news": [
       {
-        "title": "Oil at 200 dollars a barrel: Middle East conflict sends shockwaves through fashion",
-        "summary": "Middle East conflict and rising oil prices to $200 a barrel impact the fashion industry, affecting production…",
-        "content": "As the global conflict involving Iran escalates, the prospect of oil prices climbing towards 200 dollars a barrel no longer feels implausible. Fashion businesses across the UK and Europe are once aga… [+2567 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
+        "title": "國際新聞資料來源未設定",
+        "summary": "目前未設定 NEWSAPI_KEY。",
+        "content": "設定 NEWSAPI_KEY 後，這裡會自動抓 10–20 則國際新聞。",
         "affects_fcn": true,
-        "impact_score": -1
-      },
-      {
-        "title": "UK urged to press Nigeria on violence against Christians during historic Tinubu visit",
-        "summary": "A coalition of Christian and human rights organisations has called on the UK government to use President Bola…",
-        "content": "Fr Sam Ebute buried 21 of his parishioners after bandits attacked Kukum Daji village. He is pictured here standing in front of the victims' shoes. (Photo: Aid to the Church in Need) A coalition of C… [+4255 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Take-Two boss Zelnick says it would be \"unfair\" to put ads in premium games",
-        "summary": "The CEO of Take-Two Interactive, Strauss Zelnick, has said that it would be \"unfair\" to have in-game adverts…",
-        "content": "The CEO of Take-Two Interactive, Strauss Zelnick, has said that it would be \"unfair\" to have in-game adverts within premium titles. Speaking to The Games Business, the executive addressed comments m… [+3811 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Peaky Blinders - a look back at where it all began",
-        "summary": "With Peaky Blinders movie The Immortal Man set to debut at midnight tonight on Netflix, we raid the archives…",
-        "content": "With Peaky Blinders movie The Immortal Man set to debut at midnight tonight on Netflix, we raid the archives to bring you this interview with leading man Cillian Murphy on the eve of the show's debut… [+7436 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "The ECB decides on interest rates under the threat of a resurgence in inflation",
-        "summary": "Conflicts in the Middle East are fueling fears of a new upward trend in inflation The post The ECB decides on…",
-        "content": "The European Central Bank (ECB) is expected to keep interest rates unchanged at todays meeting, as it assesses the scale of the inflationary shock that the war in Iran may cause. The deposit rate is… [+1000 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
-        "affects_fcn": true,
-        "impact_score": -1
-      },
-      {
-        "title": "S&P/ASX 200 drops sharply as Australian shares fall to 4-month low on Middle East war escalation, inflation fears and m…",
-        "summary": "Australia's benchmark stock index, the S&P/ASX 200, closed at its lowest in nearly four months on Thursday, d…",
-        "content": "Australian Share market: Australias benchmark stock index ended Thursday (March 19, 2026) at its lowest level in nearly four months, as intensifying conflict in the Middle East rattled global markets… [+2609 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
-        "affects_fcn": true,
-        "impact_score": -1
-      },
-      {
-        "title": "シンガポール法人設立および、スニル・デシュムク氏アドバイザー就任のお知らせ",
-        "summary": "[CPAエクセレントパートナーズ株式会社] [画像1: https://prcdn.freetls.fastly.net/release_image/80248/183/80248-183-9b625a916fd75a…",
-        "content": "CPA CPA Excellent Partners Singapore Pte. Ltd. M&amp;A U.S.CPAUS-CMAUAE 20259920261 2024-25 IMA 15014IMA2024-25 IMACFODX 30C-Suite 30CEOCEOM&amp;A 2019C-Suite Lab LLP150CEOIIMXLRIMBA CPA … [+5068 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
         "impact_score": 0
       }
     ],
