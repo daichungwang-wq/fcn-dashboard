@@ -221,7 +221,10 @@ export function renderModule1News(newsData, marketData) {
   if (!newsData) return `<p>目前無新聞資料</p>`;
 
   const topNews = getTopNews(newsData);
-
+  setTimeout(() => {
+            updateNewsModeUI();
+            bindNewsModeEvents();
+          }, 0);
   return `
     <div class="module1">
       <div class="summary">
@@ -271,10 +274,7 @@ export function renderModule1News(newsData, marketData) {
   `;
 }
 
-     setTimeout(() => {
-            updateNewsModeUI();
-            bindNewsModeEvents();
-          }, 0);
+   
 
 window.toggleNews = function(id, el) {
   const target = document.getElementById(id);
