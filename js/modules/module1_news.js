@@ -226,6 +226,16 @@ export function renderModule1News(newsData, marketData) {
     <div class="module1">
       <div class="summary">
         <div style="font-size:22px; font-weight:800; margin-bottom:8px;">Module1 新聞雷達</div>
+        <div class="news-mode-bar">
+  <div class="news-mode-title">決策模式</div>
+  <div class="news-mode-toggle">
+    <button id="mode-pure" class="news-mode-btn">純模型</button>
+    <button id="mode-news" class="news-mode-btn active">新聞加權</button>
+  </div>
+  <div id="news-mode-status" class="news-mode-status">
+    模式：新聞加權（含市場情緒）
+  </div>
+</div>
         國際：${newsData.global?.length || 0} ｜ 
         財經：${newsData.finance?.length || 0} ｜ 
         AI：${newsData.ai?.length || 0} ｜ 
