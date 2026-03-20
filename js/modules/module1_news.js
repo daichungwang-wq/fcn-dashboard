@@ -257,10 +257,7 @@ export function renderModule1News(newsData, marketData) {
           : ""
       }
 
-     setTimeout(() => {
-       updateNewsModeUI();
-       bindNewsModeEvents();
-     }, 0);
+     
 
       ${renderSection("🌍 國際新聞", newsData.global, "global")}
       ${renderSection("💰 財經新聞", newsData.finance, "finance")}
@@ -273,6 +270,11 @@ export function renderModule1News(newsData, marketData) {
     </div>
   `;
 }
+
+     setTimeout(() => {
+            updateNewsModeUI();
+            bindNewsModeEvents();
+          }, 0);
 
 window.toggleNews = function(id, el) {
   const target = document.getElementById(id);
