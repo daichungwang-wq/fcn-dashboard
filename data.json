@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-03-20 15:36",
+  "updated_at": "2026-03-20 23:55",
   "summary": {
     "active_fcn_count": 24,
     "top_risk_code": "FCN710H",
@@ -10,28 +10,231 @@
   "morning_brief": {
     "international_news": [
       {
-        "title": "國際新聞資料來源未設定",
-        "summary": "目前未設定 NEWSAPI_KEY。",
-        "content": "設定 NEWSAPI_KEY 後，這裡會自動抓 10–20 則國際新聞。",
+        "title": "Spain fear friendly being cancelled due to bureaucratic issues",
+        "summary": "Last weekend, Spain and Argentina saw their La Finalissima plans go up in spoke, with the showpiece event hav…",
+        "content": "Last weekend, Spain and Argentina saw their La Finalissima plans go up in spoke, with the showpiece event having to be cancelled due to all parties being unable to agree on a new venue after it becam… [+1488 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Family distraught after Rotorua roadside memorial for Paige Johnson taken",
+        "summary": "Handcrafted tributes, including a diamante bear and named bangle, were taken.",
+        "content": "We showed up, and it was completely gone; it hasnt even been a year since Paige passed. Johnson, 24, was allegedly struck by a motorcycle as he tried to cross the pedestrian crossing on the afternoo… [+2532 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Email Marketing Platforms for Charities Market: Cybersecurity Technology Trends Transforming the Industry",
+        "summary": "Email Marketing Platforms for Charities Market: Cybersecurity Technology Trends Transforming the Industrylink…",
+        "content": "Email Marketing Platforms for Charities Market Insights <ul><li>USD 1.2 Billion in 2024</li><li>USD 3.5 Billion by 2033</li><li>CAGR of 11.2% (20262033).</li></ul> The Email Marketing Platforms for… [+12875 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Trump Branded a 'Colossal Embarrassment' as He Makes Pearl Harbor Joke in Front of Japanese Prime Minister in 'Awkward…",
+        "summary": "Donald Trump used a horrible Pearl Harbor joke when referring to the US bombing of Iran while in front of Jap…",
+        "content": "Takaichi is on a three-day Washington visit, and told lawmakers in her homeland that she expected the meeting with Trump to be \"very difficult\" as he's unsuccessfully been leaning on U.S. allies to f… [+679 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "BTS set to make long-awaited comeback with 'ARIRANG' - The Korea Times",
+        "summary": "Global K-pop sensation BTS said it wanted to keep Korean sentiment alive in its own way as it prepared to rel…",
+        "content": "Fans look at a BTS poster nearby HYBE in central Seoul, Thursday, ahead of BTS' comeback performance in Gwanghwamun. Yonhap Global K-pop sensation BTS said it wanted to keep Korean sentiment alive i… [+5408 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Households brace for cost of living pain as Iran war drives 'extraordinary' shifts",
+        "summary": "British households have been told to brace for a surge in inflation and multiple interest rate hikes this yea…",
+        "content": "British households have been told to brace for a surge in inflation and multiple interest rate hikes this year after surging oil and gas prices sparked by Donald Trump's war on Iran. Tehran has laun… [+3135 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
         "affects_fcn": true,
+        "impact_score": -1
+      },
+      {
+        "title": "The Rings Of Power Season 3 Will Restore A Missing Part Of LOTR",
+        "summary": "There's a key element of Middle-earth that we didn't get to see in The Lord of the Rings, but Rings of Power…",
+        "content": "The Lord of the Rings: The Rings of Power will introduce a dynamic we have yet to see in the broader franchise. A significant benefit to this prequel series is the opportunity to see a version of Mid… [+6434 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "NYT Connections Today: Hints, Answers and Full Breakdown for Puzzle #1013 on March 20, 2026",
+        "summary": "The New York Times' popular word-association game Connections delivered another brain-teasing challenge on Fr…",
+        "content": "The New York Times' popular word-association game Connections delivered another brain-teasing challenge on Friday, March 20, 2026, with Puzzle No. 1013 featuring a mix of everyday terms, cultural ref… [+5343 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "PYPL ALERT: Hagens Berman Alerts PayPal (PYPL) Investors to Securities Class Action Following CEO Ouster and $10B Marke…",
+        "summary": "Investors who lost money in PYPL after its stock plunged due to allegedly misleading financial statements are…",
+        "content": "SAN FRANCISCO, March 19, 2026 (GLOBE NEWSWIRE) -- National shareholder rights law firm Hagens Berman is notifying investors that a securities class action lawsuit has been filed against PayPal Holdin… [+3605 chars]｜分類：全球經濟｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "FedEx Earnings Point to a Leaner, More Competitive Logistics Industry",
+        "summary": "In today’s period of global turmoil, the logistics sector is increasingly just trying to get itself, as an in…",
+        "content": "In todays period of global turmoil, the logistics sector is increasingly just trying to get itself, as an industry, from point A to point B, much less the millions of packages shipped each day.Macro … [+5047 chars]｜分類：全球經濟｜解讀：利率壓力若下降，FCN 環境通常較有利",
+        "affects_fcn": true,
+        "impact_score": 1
+      },
+      {
+        "title": "Deeptune raises $43M to accelerate AI learning through virtual training gyms",
+        "summary": "Artificial intelligence startup Deeptune Inc. said today it’s going to solve the industry’s “data exhaustion”…",
+        "content": "Artificial intelligence startup Deeptune Inc. said today its going to solve the industrys data exhaustion” crisis after raising $43 million in Series A funding. Andreessen Horowitz led the round, whi… [+5559 chars]｜分類：全球經濟｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Mad King Donald is leaving not just destruction and economic chaos in his wake, but a budget disaster too",
+        "summary": "US debt is heading for US$40 trillion as Trump's war on Iran accelerates spending. He promised to eliminate d…",
+        "content": "While the government here has plenty of critics of its high spending, we’re rank amateurs compared with the orange madman in the White House: US debt just passed US$39 trillion and its growth will be… [+501 chars]｜分類：全球經濟｜解讀：影響有限",
+        "affects_fcn": false,
         "impact_score": 0
       }
     ],
     "financial_news": [
       {
-        "title": "國際財經新聞資料來源未設定",
-        "summary": "目前未設定 NEWSAPI_KEY。",
-        "content": "設定 NEWSAPI_KEY 後，這裡會自動抓 10–20 則國際財經新聞。",
+        "title": "FedEx Earnings Point to a Leaner, More Competitive Logistics Industry",
+        "summary": "In today’s period of global turmoil, the logistics sector is increasingly just trying to get itself, as an in…",
+        "content": "In todays period of global turmoil, the logistics sector is increasingly just trying to get itself, as an industry, from point A to point B, much less the millions of packages shipped each day.Macro … [+5047 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
+        "affects_fcn": true,
+        "impact_score": 1
+      },
+      {
+        "title": "Mortgage rates rise as Iran war heightens U.S. inflation fears",
+        "summary": "Mortgage rates, though still well below their level a year ago, have edged up since the Iran war erupted. Her…",
+        "content": "Mortgage rates in the U.S. jumped this week to the highest level in three months, as the Iran war fans inflation fears and puts pressure on the U.S. housing market. The 30-year fixed mortgage rate r… [+2363 chars]｜分類：Fed / 利率｜解讀：影響有限",
         "affects_fcn": true,
         "impact_score": 0
+      },
+      {
+        "title": "Interest rate predictions, even from central bankers, are best ignored",
+        "summary": "Robert McLister: When bombs are falling on oil infrastructure, it’s generally not an ideal time to gamble on…",
+        "content": "On Wednesday, both the Bank of Canada and the U.S. Federal Reserve cited extreme uncertainty in their decision to hold rates and their commentary on future rate policy. THIS CONTENT IS RESERVED FOR … [+3787 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
+        "affects_fcn": true,
+        "impact_score": 1
+      },
+      {
+        "title": "Average U.S. long-term mortgage rate rises to 6.22%, highest in more than 3 months",
+        "summary": "When mortgage rates rise, they can add hundreds of dollars a month in costs for home shoppers, limiting what…",
+        "content": "The average long-term U.S. mortgage rate climbed this week to its highest level in more than three months, a setback for prospective home shoppers this spring homebuying season. The benchmark 30-yea… [+4281 chars]｜分類：Fed / 利率｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Bybit launches yield-bearing tokenized gold, expanding RWA yield market",
+        "summary": "The crypto exchange is offering a yield product tied to Tether Gold (XAUT), signaling a shift toward turning…",
+        "content": "Cryptocurrency exchange Bybit has launched a yield-bearing tokenized gold product that lets users earn interest on Tether Gold (XAUT), the latest entrant into a broader push to turn traditionally non… [+2377 chars]｜分類：Fed / 利率｜解讀：影響有限",
+        "affects_fcn": true,
+        "impact_score": 0
+      },
+      {
+        "title": "Global markets tumble as Iran war intensifies",
+        "summary": "Euronext Dublin was a sea of red as the index was dragged down 2.3%, which was largely in line with internati…",
+        "content": "The US-Israeli war on Iran sent global markets tumbling on Thursday with concern intensifying that central banks will be forced to tighten policy to keep inflation in check. DUBLIN Euronext Dublin … [+3718 chars]｜分類：Fed / 利率｜解讀：影響有限",
+        "affects_fcn": true,
+        "impact_score": 0
+      },
+      {
+        "title": "Why Nvidia, Micron, Tesla stock crashing big today: NVDA down 1% while MU stock crashes nearly 5% — here’s why TSLA sto…",
+        "summary": "Why Nvidia, Micron, Tesla stock crashing big today as NVDA slips 1% and MU plunges nearly 5%. Oil spikes, bon…",
+        "content": "Nvidia, Micron, Tesla stock crashing today trend is accelerating, with Micron (MU) plunging 4.91% to $439.07, Nvidia (NVDA) slipping 1.01% to $178.59, and Tesla (TSLA) falling 2.78% to $381.86. The b… [+4466 chars]｜分類：Fed / 利率｜解讀：地緣風險升高，需留意市場波動擴大",
+        "affects_fcn": true,
+        "impact_score": -1
+      },
+      {
+        "title": "Watch: ABC Cancels ‘The Bachelorette’ After Taylor Frankie Paul Viral Ex-Boyfriend Fight Video",
+        "summary": "ABC has canceled Season 22 of \"The Bachelorette\" after a 2023 video of Taylor Frankie Paul -- who was set to…",
+        "content": "ABC has canceled Season 22 of The Bachelorette after a 2023 video of Taylor Frankie Paul — who was set to lead the new season — fighting her ex-boyfriend went viral. The entire upcoming season of Th… [+3425 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Email Marketing Platforms for Charities Market: Cybersecurity Technology Trends Transforming the Industry",
+        "summary": "Email Marketing Platforms for Charities Market: Cybersecurity Technology Trends Transforming the Industrylink…",
+        "content": "Email Marketing Platforms for Charities Market Insights <ul><li>USD 1.2 Billion in 2024</li><li>USD 3.5 Billion by 2033</li><li>CAGR of 11.2% (20262033).</li></ul> The Email Marketing Platforms for… [+12875 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "NY sicko caught moving teen’s body admits to even more shocking crime",
+        "summary": "Perez-Gabriel pleaded guilty to use of a minor in a sexual performance, third-degree criminal sex act and tam…",
+        "content": "A twisted New Rochelle man admitted to dragging the body of a teen boy out of his home after the youngster died from acute intoxication — then fessed up to previously sexually abusing him, according … [+1220 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "BioCardia to Host 2025 Financial Results and Corporate Update Conference Call on March 24, 2026",
+        "summary": "SUNNYVALE, Calif., March 19, 2026 (GLOBE NEWSWIRE) -- BioCardia®, Inc. [NASDAQ:BCDA], a developer of cellular…",
+        "content": "SUNNYVALE, Calif., March 19, 2026 (GLOBE NEWSWIRE) -- BioCardia®, Inc. [NASDAQ:BCDA], a developer of cellular and cell-derived therapeutics for the treatment of cardiovascular and pulmonary diseases,… [+2211 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Households brace for cost of living pain as Iran war drives 'extraordinary' shifts",
+        "summary": "British households have been told to brace for a surge in inflation and multiple interest rate hikes this yea…",
+        "content": "British households have been told to brace for a surge in inflation and multiple interest rate hikes this year after surging oil and gas prices sparked by Donald Trump's war on Iran. Tehran has laun… [+3135 chars]｜分類：通膨 / 就業｜解讀：地緣風險升高，需留意市場波動擴大",
+        "affects_fcn": true,
+        "impact_score": -1
       }
     ],
     "ai_trend": [
       {
-        "title": "AI 趨勢資料來源未設定",
-        "summary": "目前未設定 NEWSAPI_KEY。",
-        "content": "設定 NEWSAPI_KEY 後，這裡會自動抓取 AI agent / AI 基礎設施新聞。",
+        "title": "Google upgrades its Stitch AI interface development tool",
+        "summary": "Google LLC today released a new version of Stitch, an artificial intelligence tool that can generate user int…",
+        "content": "Google LLC today released a new version of Stitch, an artificial intelligence tool that can generate user interfaces for websites and mobile apps. Shares of graphic design software maker Figma Inc. … [+4274 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "FedEx Earnings Point to a Leaner, More Competitive Logistics Industry",
+        "summary": "In today’s period of global turmoil, the logistics sector is increasingly just trying to get itself, as an in…",
+        "content": "In todays period of global turmoil, the logistics sector is increasingly just trying to get itself, as an industry, from point A to point B, much less the millions of packages shipped each day.Macro … [+5047 chars]｜分類：AI Agent｜解讀：利率壓力若下降，FCN 環境通常較有利｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": true,
+        "impact_score": 1
+      },
+      {
+        "title": "Deeptune raises $43M to accelerate AI learning through virtual training gyms",
+        "summary": "Artificial intelligence startup Deeptune Inc. said today it’s going to solve the industry’s “data exhaustion”…",
+        "content": "Artificial intelligence startup Deeptune Inc. said today its going to solve the industrys data exhaustion” crisis after raising $43 million in Series A funding. Andreessen Horowitz led the round, whi… [+5559 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Decoding Nvidia's Groq-powered LPX and the rest of its new rack systems",
+        "summary": "From LPUs and GPUs to CPUs and switches, everything you need to know about Nvidia's latest kit GTC DEEP DIVE…",
+        "content": "GTC DEEP DIVE At Nvidias GTC conference this week, CEO Jensen Huang finally addressed a $20 billion question hes dodged for months: Why spend so much to license AI chip startup Groqs tech and hire aw… [+12318 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Perplexity Can Now Access Your Apple Health Data to Answer Medical Questions",
+        "summary": "AI company Perplexity today introduced Perplexity Health, a suite of connectors that allow Perplexity to acce…",
+        "content": "AI company Perplexity today introduced Perplexity Health, a suite of connectors that allow Perplexity to access your health data. Perplexity suggests that the feature is useful for aggregating healt… [+1604 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "arandu 0.3.1",
+        "summary": "Long-term memory for AI agents — wisdom acquired through experience. Extraction, entity resolution, reconcili…",
+        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Email Marketing Platforms for Charities Market: Cybersecurity Technology Trends Transforming the Industry",
+        "summary": "Email Marketing Platforms for Charities Market: Cybersecurity Technology Trends Transforming the Industrylink…",
+        "content": "Email Marketing Platforms for Charities Market Insights <ul><li>USD 1.2 Billion in 2024</li><li>USD 3.5 Billion by 2033</li><li>CAGR of 11.2% (20262033).</li></ul> The Email Marketing Platforms for… [+12875 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "wisent 0.10.23",
+        "summary": "Monitor and influence AI Brains",
+        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "affects_fcn": false,
         "impact_score": 0
       }
     ],
@@ -58,7 +261,7 @@
         "impact_score": -2
       },
       {
-        "title": "10Y / 20Y：4.26%（+0.06%） / 4.84%（+0.03%）",
+        "title": "10Y / 20Y：4.25%（-0.01%） / 4.82%（-0.02%）",
         "summary": "中長期利率上升會壓抑科技估值。",
         "content": "科技與 AI 核心股會受中長債殖利率影響。",
         "affects_fcn": true,
