@@ -350,6 +350,31 @@ init();
   vertical-align: middle;
 }
 
+/* ===== 強化數值（現在值） ===== */
+.market-table td:nth-child(2) {
+  font-size: 18px;
+  font-weight: 800;
+}
+
+/* ===== 變化幅度靠右 ===== */
+.market-table td:nth-child(4) {
+  text-align: right;
+  font-weight: 800;
+}
+
+/* ===== 上漲 / 下跌顏色 ===== */
+.market-table .up {
+  color: #c62828;
+}
+
+.market-table .down {
+  color: #2e7d32;
+}
+
+/* ===== 第一欄更穩重 ===== */
+.market-table td:first-child {
+  letter-spacing: 0.5px;
+}
 .market-table td:first-child {
   background: #666;
   color: #fff;
