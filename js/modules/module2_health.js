@@ -1,4 +1,4 @@
-export function renderModule2(positions, quotes) {
+function renderModule2(positions, quotes) {
 
   function getPrice(symbol) {
     return quotes[symbol]?.price || null;
