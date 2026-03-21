@@ -405,3 +405,32 @@ body {
   color: #dc2626;
   font-weight: 700;
 }
+.tag-core {
+  color: #2563eb;
+  font-weight: 700;
+}
+
+.tag-balance {
+  color: #16a34a;
+  font-weight: 700;
+}
+
+.tag-defensive {
+  color: #ca8a04;
+  font-weight: 700;
+}
+
+.tag-avoid {
+  color: #dc2626;
+  font-weight: 700;
+}
+
+.delta-positive {
+  color: #16a34a;
+  font-weight: 700;
+}
+
+.delta-negative {
+  color: #dc2626;
+  font-weight: 700;
+}
