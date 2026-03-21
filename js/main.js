@@ -154,3 +154,32 @@ module3 render 錯誤
 }
 
 init();
+
+// ✅ Pool 收合功能
+window.togglePool = function () {
+  const el = document.getElementById("pool-section");
+  if (!el) return;
+  el.style.display = el.style.display === "none" ? "block" : "none";
+};
+
+// ✅ Dashboard 初始化
+function initDashboard() {
+  const m1Stock = document.getElementById("m1-stock");
+  const m1Fcn = document.getElementById("m1-fcn");
+  const m2Risk = document.getElementById("m2-risk");
+  const m2DPure = document.getElementById("m2-dpure");
+  const m2DEvent = document.getElementById("m2-devent");
+  const m3Score = document.getElementById("m3-score");
+  const m4Score = document.getElementById("m4-score");
+
+  if (m1Stock) m1Stock.textContent = "股票建議率：--";
+  if (m1Fcn) m1Fcn.textContent = "FCN 建議率：--";
+  if (m2Risk) m2Risk.textContent = "風險指數：--";
+  if (m2DPure) m2DPure.textContent = "ΔPure：--";
+  if (m2DEvent) m2DEvent.textContent = "ΔEvent：--";
+  if (m3Score) m3Score.textContent = "適合度：--";
+  if (m4Score) m4Score.textContent = "System Score：--";
+}
+
+// 執行
+initDashboard();
