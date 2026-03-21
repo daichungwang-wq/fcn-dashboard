@@ -338,8 +338,10 @@ export function renderModule1News(newsData, marketData) {
         topNews.length > 0
           ? `
        <div class="section">
-  <button type="button" class="news-blue-btn" onclick="rerunDecision()">🔄 套用判定並重新計算</button>
-  <button type="button" class="news-blue-btn pdf-btn" onclick="exportPDF()">📄 匯出 PDF 報告</button>
+  <div class="module1-action-row">
+    <button type="button" class="news-mode-btn action-btn" onclick="rerunDecision()">🔄 重新計算</button>
+    <button type="button" class="news-mode-btn action-btn" onclick="exportPDF()">📄 匯出 PDF</button>
+  </div>
 </div>
       `
           : ""
