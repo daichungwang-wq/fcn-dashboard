@@ -469,3 +469,38 @@ body {
 .m3a-summary-value.down {
   color: #dc2626;
 }
+.explain-toggle-btn {
+  margin-top: 12px;
+  padding: 10px 16px;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #2563eb;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+#m3-explain-detail {
+  margin-top: 14px;
+}
+
+.m3-explain-detail-inner {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 16px;
+  color: #222;
+  line-height: 1.7;
+}
+
+.m3-explain-detail-inner h4 {
+  margin-top: 14px;
+  margin-bottom: 8px;
+  color: #111827;
+  font-size: 16px;
+}
+
+.m3-explain-detail-inner p {
+  margin: 6px 0;
+  color: #374151;
+}
