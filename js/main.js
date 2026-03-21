@@ -141,6 +141,7 @@ async function init() {
         quotesData,
         config
       });
+    window.renderModule3 = renderModule3;
     } else if (m3) {
       m3.innerHTML = `<p>目前沒有 Pool 資料</p>`;
     }
