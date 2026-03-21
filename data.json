@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-03-21 01:11",
+  "updated_at": "2026-03-21 01:42",
   "summary": {
     "active_fcn_count": 24,
     "top_risk_code": "FCN710H",
@@ -10,51 +10,79 @@
   "morning_brief": {
     "international_news": [
       {
-        "title": "How to live stream Idaho vs Houston: March Madness, TV channel",
-        "summary": "Idaho faces Houston in a Round of 64 matchup during the 2026 NCAA Tournament on Thursday as March Madness off…",
-        "content": "Idaho faces Houston in a Round of 64 matchup during the 2026 NCAA Tournament on Thursday as March Madness officially gets underway. MORE: Predicting upsets in March Madness 2026 <ul><li>Date: Thurs… [+2211 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "Iran bombs natural gas facilities in Qatar",
+        "summary": "Yikes: Iranian attacks ‌have knocked out 17% of Qatar’s liquefied natural gas (LNG) export capacity, causing…",
+        "content": "Iranian attacks have knocked out 17% of Qatar’s liquefied natural gas (LNG) export capacity, causing an estimated $20 billion in lost annual revenue and threatening supplies to Europe and Asia, Qatar… [+1622 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Oman FTA rollout may be delayed amid Middle East crisis",
-        "summary": "India Business News: NEW DELHI: The conflict in West Asia may delay the roll out of the India-Oman free trade…",
-        "content": "EMI CalculatorDetermine the monthly installment amount for a loan｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
+        "title": "'What jobs?' Trump's buddy sparks firestorm as new plot for robot takeover revealed",
+        "summary": "One of President Donald Trump's corporate allies sparked a firestorm on Thursday after his plans to lead a ro…",
+        "content": "One of President Donald Trump's corporate allies sparked a firestorm on Thursday after his plans to lead a robot revolution in manufacturing were revealed. The Wall Street Journal reported that Ama… [+1702 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": true,
+        "impact_score": 0
+      },
+      {
+        "title": "EU leaders call for moratorium on strikes against energy and water facilities in Middle East",
+        "summary": "European Union leaders are urging a halt to military strikes on energy and water infrastructure in the Middle…",
+        "content": "European Union leaders called on Thursday for a moratorium on military strikes on energy and water facilities in the Middle East, amid growing concerns about the impact of the Iran war on the global … [+1113 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
         "affects_fcn": true,
         "impact_score": -1
       },
       {
-        "title": "Global Market Today | Asian stocks edge higher at open as oil retreats",
-        "summary": "Asian markets opened higher on Friday. This followed a rebound in US stocks and a drop in oil prices. Leaders…",
-        "content": "Asian equities advanced at the open Friday after US stocks rebounded from session lows and oil retreated amid efforts by leaders of the US and Israel to calm concerns over the Iran war.The MSCI Asia … [+2863 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
+        "title": "Hong Kong listings rush gathers pace with five companies seeking $678 million",
+        "summary": "March 20 : Hong Kong's new listings pipeline extended its streak, with five offerings seeking up to HK$5.31 b…",
+        "content": "March 20 : Hong Kong's new listings pipeline extended its streak, with five offerings seeking up to HK$5.31 billion ($677.91 million) in total launched on Friday, according to exchange filings. The … [+2184 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Pentagon plans to keep National Guard in DC into 2029, 2 US officials say",
+        "summary": "Pentagon plans to maintain National Guard's mission in DC until Jan. 20 2029, through the rest of President D…",
+        "content": "The Pentagon is planning to maintain the National Guard's federal mission in Washington, D.C., until Jan. 20, 2029, through the rest of President Donald Trumps second term, according to two U.S. offi… [+2574 chars]｜分類：地緣政治｜解讀：利率壓力若下降，FCN 環境通常較有利",
+        "affects_fcn": true,
+        "impact_score": 1
+      },
+      {
+        "title": "Gold just lost its shine. Here's what is driving the sudden drop",
+        "summary": "The gold price slips, driven by shifting rate expectations and a stronger US dollar. The post Gold just lost…",
+        "content": "Gold prices have pulled back in recent sessions, giving back a big part of the gains seen earlier this year. The yellow metal is trading near US$4,660 per ounce, down 3% today and close to 10% over… [+2355 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Italy, Germany and France offer help with Hormuz only after ceasefire",
+        "summary": "Six major international powers said Thursday they were ready “to contribute to” ensuring safe passage through…",
+        "content": "Britain, France, Germany, Italy, Japan and the Netherlands say they are ready \"to contribute to appropriate efforts to ensure safe passage through the Strait of Hormuz\" post-ceasefire - Copyright AFP… [+3799 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "US, Japan announce $40 billion nuclear power project",
+        "summary": "The United States and Japan announced Thursday a $40 billion project to build nuclear reactors in Tennessee a…",
+        "content": "The United States and Japan announced Thursday a $40 billion project to build nuclear reactors in Tennessee and Alabama, after a meeting of the two countries' leaders in Washington. The talks between… [+1303 chars]｜分類：全球經濟｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "The Worst-Case Economic Outcome of Trump's Iran War (Catherine Rampell/The Bulwark)",
+        "summary": "Catherine Rampell / The Bulwark: The Worst-Case Economic Outcome of Trump's Iran War — Oil shocks don't only…",
+        "content": "memeorandum is an auto-generated summary of the stories that US political commentators are discussing online right now. Unlike sister sites Techmeme and Mediagazer, it is not a human-edited news out… [+72 chars]｜分類：全球經濟｜解讀：地緣風險升高，需留意市場波動擴大",
         "affects_fcn": true,
         "impact_score": -1
       },
       {
-        "title": "Trump invokes Pearl Harbor in front of Japanese prime minister to defend Iran attack secrecy",
-        "summary": "During the meeting, Trump praised Japan for \"stepping up\" to assist in efforts to secure the Strait of Hormuz…",
-        "content": "In an apparent awkward moment at the Oval Office on Thursday stateside, U.S. President Donald Trump referenced Pearl Harbor in his first meeting with Japan's Prime Minister Sanae Takaichi after her l… [+2364 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "Three-horse race for Happiest Minds; Gazette may unlock content blocking",
+        "summary": "Happy Friday! A clutch of suitors is eyeing IT veteran Ashok Soota’s Happiest Minds. This and more in today’s…",
+        "content": "Happy Friday! A clutch of suitors is eyeing IT veteran Ashok Sootas Happiest Minds. This and more in todays ETtech Morning Dispatch.Also in the letter:Anveshan eyes new fundsHoward Morgan interviewPh… [+4897 chars]｜分類：全球經濟｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "The Real Housewives of Beverly Hills Recap: Mask for Mask",
-        "summary": "Most of the focus in this episode is on how Amanda isn’t being honest about her life, but neither is Dorit.",
-        "content": "This week on our favorite show Rich Women Doing Things, the rich women did things. Well, they mostly did one thing: they shopped. They shopped at Dolce &amp; Gabbana with the cutest (gay?) sales asso… [+10102 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "'That’s where the danger lies': Uber's former self-driving car boss sounds safety alarm after near-death Tesla experien…",
-        "summary": "Tesla’s Full Self-Driving systems are under scrutiny once again, as former Uber self-driving car boss sounds…",
-        "content": "<ul><li>Tesla’s Full Self-Driving systems have come under scrutiny again</li><li>Uber’s former head of self-driving crashes Model X using FSD</li><li>A Cybertruck also violently crashed into an overp… [+4086 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Reader finds advertisement for streaming service in the middle of an eBook: 'Have some self-respect and read a real boo…",
-        "summary": "Many types of entertainment go hand-in-hand with advertising. We have come to accept a word from the sponsors…",
-        "content": "According to a recent post, this one oasis from our publicity-addled society is no longer. A reader was startled to find a blatant advertisement for a streaming service in the middle of her Hidden Pi… [+1881 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "U.S. Tech Firms Demand Security Restrictions Against Chinese Robots",
+        "summary": "American A.I. and robotics companies are reportedly asking Congress to impose curbs on Chinese robotics manuf…",
+        "content": "American A.I. and robotics companies are reportedly asking Congress to impose curbs on Chinese robotics manufacturers, due to their unfair business practices and the security risks they pose, Chinese… [+6433 chars]｜分類：全球經濟｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
@@ -62,34 +90,6 @@
         "title": "NAVN INVESTOR ALERT: Lawsuit Alleges Navan’s (NAVN) IPO Materials Omitted to Surge in Sales & Marketing Expenses – Hage…",
         "summary": "Investors who lost money in NAVN after its stock plunged due to allegedly misleading financial statements are…",
         "content": "SAN FRANCISCO, March 19, 2026 (GLOBE NEWSWIRE) -- National shareholder rights law firm Hagens Berman notifies investors in Navan, Inc. (NASDAQ: NAVN) that the deadline to move for Lead Plaintiff in t… [+3169 chars]｜分類：全球經濟｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "GEMI UPDATE: Hagens Berman Alerts Gemini Space Station (GEMI) Investors to Securities Class Action Following 75% Post-I…",
-        "summary": "Investors who lost money in GEMI after its stock plunged due to allegedly misleading financial statements are…",
-        "content": "SAN FRANCISCO, March 19, 2026 (GLOBE NEWSWIRE) -- National shareholder rights law firm Hagens Berman is notifying investors that a securities class action lawsuit has been filed against Gemini Space … [+3755 chars]｜分類：全球經濟｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Kevin Warsh's first move as Fed chair could be a rate hike",
-        "summary": "Kevin Warsh could become the new Federal Reserve chair and immediately face a decision on raising interest ra…",
-        "content": "Assuming Kevin Warsh succeeds Jerome Powell as Federal Reserve chair by mid-May as planned, one of his first acts may be to preside over an interest rate hike, a true baptism of fire which would rais… [+3843 chars]｜分類：全球經濟｜解讀：利率壓力若下降，FCN 環境通常較有利",
-        "affects_fcn": true,
-        "impact_score": 1
-      },
-      {
-        "title": "JW Marriott Gold Coast Resort & Spa Welcomes Laura Wiersma and Tushar Gupta with Extensive Luxury Hospitality Experienc…",
-        "summary": "JW Marriott Gold Coast Resort & Spa Welcomes Laura Wiersma and Tushar Gupta with Extensive Luxury Hospitality…",
-        "content": "Published on March 19, 2026 JW Marriott Gold Coast Resort &amp; Spa has recently appointed Laura Wiersma as the new Director of Marketing and Tushar Gupta as the Director of Finance. These appointm… [+4561 chars]｜分類：全球經濟｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Attacks on energy infrastructure bring the war in West Asia closer home",
-        "summary": "It raises the risks of prolonged disruptions in supplies, further straining global energy markets. The ripple…",
-        "content": "With the targeting of key energy infrastructure, the conflict in West Asia is now spreading far beyond the region. Israel has struck Irans South Pars natural gas field, which is estimated to account … [+2236 chars]｜分類：全球經濟｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       }
@@ -145,42 +145,70 @@
         "impact_score": 0
       },
       {
-        "title": "Global markets tumble as Iran war intensifies",
-        "summary": "Euronext Dublin was a sea of red as the index was dragged down 2.3%, which was largely in line with internati…",
-        "content": "The US-Israeli war on Iran sent global markets tumbling on Thursday with concern intensifying that central banks will be forced to tighten policy to keep inflation in check. DUBLIN Euronext Dublin … [+3718 chars]｜分類：Fed / 利率｜解讀：影響有限",
+        "title": "The S&P 500 Just Broke Below Its 200-Day Moving Average. Why Are Stocks Falling Today?",
+        "summary": "S&P 500 index opened in the red today as the Ras Laffan incident and Fed’s hawkish hold weigh on US stock pri…",
+        "content": "The benchmark S&amp;P 500 Index ($SPX) is inching lower on Thursday as the intensifying conflict in the Middle East and a resilient Federal Reserve dampens investor confidence. As these macro develop… [+2013 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
         "affects_fcn": true,
-        "impact_score": 0
+        "impact_score": 1
       },
       {
-        "title": "Tunnel vision: the plan to link the Shetland Islands",
-        "summary": "Replacing ferries with undersea road network could revitalise the local economy and reverse depopulation, say…",
-        "content": "The Shetland Islands are famed for their remote beauty but for locals this comes at a cost. Now campaigners are pushing for the island’s ageing ferries to be replaced with undersea tunnels. “The fer… [+4007 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "title": "3 men are charged with conspiring to smuggle US artificial intelligence to China",
+        "summary": "A senior vice president of Super Micro Computer Inc. and two others affiliated with the company have been cha…",
+        "content": "NEW YORK -- A senior vice president of Super Micro Computer Inc. and two others affiliated with the company were charged Thursday with conspiring to smuggle billions of dollars of computer servers co… [+4604 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "NAVN INVESTOR ALERT: Lawsuit Alleges Navan’s (NAVN) IPO Materials Omitted to Surge in Sales & Marketing Expenses – Hage…",
-        "summary": "Investors who lost money in NAVN after its stock plunged due to allegedly misleading financial statements are…",
-        "content": "SAN FRANCISCO, March 19, 2026 (GLOBE NEWSWIRE) -- National shareholder rights law firm Hagens Berman notifies investors in Navan, Inc. (NASDAQ: NAVN) that the deadline to move for Lead Plaintiff in t… [+3169 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "title": "Iran bombs natural gas facilities in Qatar",
+        "summary": "Yikes: Iranian attacks ‌have knocked out 17% of Qatar’s liquefied natural gas (LNG) export capacity, causing…",
+        "content": "Iranian attacks have knocked out 17% of Qatar’s liquefied natural gas (LNG) export capacity, causing an estimated $20 billion in lost annual revenue and threatening supplies to Europe and Asia, Qatar… [+1622 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "The Rookie S08E12: \"Spy Games\" & S08E13: \"The Thinker\" Previews",
-        "summary": "We've still got some time to go between now and the next episode of ABC and Showrunner Alexi Hawley's The Roo…",
-        "content": "Posted in: ABC, TV | Tagged: The Rookie Check out the official overview and image gallery for ABC's The Rookie S08E12: \"Spy Games,\" and the overview for S08E13: \"The Thinker.\" Article Summary <ul>… [+2569 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "title": "Anti-apartheid activist, human rights campaigner and UN diplomat Nicholas Haysom dies at age 73",
+        "summary": "Nicholas Haysom has died at 73",
+        "content": "UNITED NATIONS -- Nicholas Haysom, a white South African anti-apartheid activist who was tapped by prisoner-turned-president Nelson Mandela to help draft the countrys new constitution that enshrined … [+5601 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "armorer added to PyPI",
-        "summary": "A secure installer for agentic applications.",
-        "content": "Secure Installer for Agentic Applications Armorer is a security-focused CLI tool designed to install and configure AI agents (like OpenClaw) with appropriate sandboxing based on user intent. Quick… [+5798 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "title": "Dozens of boys and young men are dying in South Africa's traditional circumcision rites",
+        "summary": "At least 48 boys and young men died during the latest round of initiation ceremonies in South Africa, which i…",
+        "content": "PHUTHADITJHABA, South Africa -- The 22-year-old Lamkelo Mtyho had no known health issues when he joined his peers, wrapped in blankets and smeared in clay, for the most important ritual of his young … [+7358 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       }
     ],
     "ai_trend": [
+      {
+        "title": "arandu 0.4.1",
+        "summary": "Long-term memory for AI agents — wisdom acquired through experience. Extraction, entity resolution, reconcili…",
+        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Alibaba has made 470,000 AI chips, admits they’re inferior and may always be",
+        "summary": "Sees optimizing its entire cloud around homebrew silicon as the way to compete Chinese web giant Alibaba has…",
+        "content": "Chinese web giant Alibaba has revealed its T-Head chipmaking business has shipped 470,000 AI chips, and admitted they are currently inferior to rival products, but believes it can build a mutually op… [+3378 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "bnbagent 0.1.0",
+        "summary": "Modular Python SDK for on-chain AI agents on BNB Chain",
+        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Vercel Appoints Mitchell Hashimoto, Co-Founder of HashiCorp and Creator of Terraform, to Board of Directors",
+        "summary": "-Vercel, the agentic infrastructure company, today announced the appointment of Mitchell Hashimoto, co-founde…",
+        "content": "Open source pioneer and serial founder brings deep developer community roots and infrastructure expertise to Vercel’s boardSan Francisco--(ANTARA/Business Wire)--Vercel, the agentic infrastructure co… [+3690 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
       {
         "title": "armorer added to PyPI",
         "summary": "A secure installer for agentic applications.",
@@ -196,44 +224,16 @@
         "impact_score": 0
       },
       {
-        "title": "mcp-memento 0.2.19",
-        "summary": "Intelligent persistent memory for AI agents and IDEs via Model Context Protocol (MCP).",
-        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "3 men are charged with conspiring to smuggle US artificial intelligence to China",
+        "summary": "A senior vice president of Super Micro Computer Inc. and two others affiliated with the company have been cha…",
+        "content": "NEW YORK -- A senior vice president of Super Micro Computer Inc. and two others affiliated with the company were charged Thursday with conspiring to smuggle billions of dollars of computer servers co… [+4604 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "hive-mind-mcp-server added to PyPI",
-        "summary": "Swarm intelligence for AI agents — collective decision-making, consensus voting, and multi-agent coordination",
-        "content": "Swarm intelligence for AI agents collective decision-making through weighted consensus voting. Like bees coordinating a hive, multiple agents analyze problems from different perspectives and reach c… [+1585 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：ARM｜建議：觀察池",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "hive-mind-mcp-server 0.1.0",
-        "summary": "Swarm intelligence for AI agents — collective decision-making, consensus voting, and multi-agent coordination",
-        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：ARM｜建議：觀察池",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "tokencostauto 0.1.562",
-        "summary": "To calculate token and translated USD cost of string and message calls to OpenAI, for example when used by AI…",
-        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "OnePlus Nord Buds 4 Pro debut in India with better ANC, AI features, and longer battery life",
-        "summary": "The OnePlus Nord Buds 4 Pro have officially been announced, and the new earbuds bring a handful of upgrades i…",
-        "content": "After a tease last week, OnePlus has now announced the Nord Buds 4 Pro. The new pair of wireless earbuds arrive as successors to the Nord Buds 3 Pro released in July 2024. As previously reported, th… [+1392 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "janet-mcp 0.1.2",
-        "summary": "MCP server for Janet AI project management",
-        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "Jeremy O. Harris Drunkenly Called OpenAI Boss Sam Altman a Nazi at Post-Oscars Party",
+        "summary": "Jeremy O. Harris had a drunken confrontation with AI mogul Sam Altman at the Vanity Fair Oscar party. The fam…",
+        "content": "Jeremy O. Harris had a drunken confrontation with AI mogul Sam Altman at the Vanity Fair Oscar party. The famous playwright reportedly approached the OpenAI boss and called him a Nazi amid his firm’… [+1036 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       }
