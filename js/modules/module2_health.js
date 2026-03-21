@@ -156,7 +156,7 @@ function renderPositionCard(pos, index) {
         color:#2563eb;
       ">展開詳細</button>
 
-      <div style="display:none;margin-top:12px;">
+      <div data-detail style="display:none;margin-top:12px;">
         <div style="
           background:#f9fafb;
           border:1px solid #e5e7eb;
