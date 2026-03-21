@@ -111,8 +111,9 @@ function inferStatus(pos) {
   const dist = getDistanceToKiRaw(pos);
 
   if (dist == null) {
-    return hasCoreFields(pos) ? "待確認" : "待確認";
-  }
+  return hasCoreFields(pos) ? "健康" : "待確認";
+}
+  
 
   if (dist <= 0) return "風險";
   if (dist <= 5) return "追蹤";
