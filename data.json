@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-03-21 07:28",
+  "updated_at": "2026-03-21 07:47",
   "summary": {
     "active_fcn_count": 24,
     "top_risk_code": "FCN710H",
@@ -10,59 +10,10 @@
   "morning_brief": {
     "international_news": [
       {
-        "title": "Mainland willing to provide Taiwan with reliable energy supplies after reunification: spokesperson",
-        "summary": "The mainland is ready to provide Taiwan compatriots with stable and reliable energy supplies once peaceful re…",
-        "content": "People's Daily Online (Xinhua) 15:00, March 18, 2026 BEIJING, March 18 (Xinhua) -- The mainland is ready to provide Taiwan compatriots with stable and reliable energy supplies once peaceful reunifi… [+1009 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Christodoulides raised the issue of the British Bases at the European Council due to risks for Cyprus",
-        "summary": "The Cypriot President called for discussions with Britain on the status of the bases after the end of the war…",
-        "content": "While Cypriot President Nikos Christodoulides was speaking yesterday at the European Council about the crisis in the Middle East, he received a message on his mobile phone about an alert at the Briti… [+2488 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
+        "title": "國際新聞資料來源未設定",
+        "summary": "目前未設定 NEWSAPI_KEY。",
+        "content": "設定 NEWSAPI_KEY 後，這裡會自動抓 10–20 則國際新聞。",
         "affects_fcn": true,
-        "impact_score": -1
-      },
-      {
-        "title": "Wetherspoon warns profits may dip below market estimates",
-        "summary": "Pub chain JD Wetherspoon warned today that profits may fall below market estimates, weighed down by higher en…",
-        "content": "Pub chain JD Wetherspoon warned today that profits may fall below market estimates, weighed down by higher energy and tax costs, along with waning consumer spending. While the UK government's suppor… [+422 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Dubai International Airport (DXB) Status Today: Open and Operating With Limited Flights",
-        "summary": "DUBAI, United Arab Emirates (AP) — Dubai International Airport (DXB), the world's busiest international hub,…",
-        "content": "DUBAI, United Arab Emirates (AP) — Dubai International Airport (DXB), the world's busiest international hub, remains open and operational on Friday, March 20, 2026, but continues to function under se… [+4911 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "US Unlikely to Withdraw From Iran Anytime Soon Because of Hormuz Strait Crisis - Reports",
-        "summary": "The United States is unlikely to end its military operation against Iran in the near future due to the instab…",
-        "content": "Sputnik News 20260318 WASHINGTON (Sputnik) - The United States is unlikely to end its military operation against Iran in the near future due to the instability surrounding the Strait of Hormuz, Axi… [+1030 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "What the Donroe Doctrine Could Mean for China’s Economic Statecraft",
-        "summary": "In the first few months of 2026, the Trump administration has embarked on military interventions in Iran and…",
-        "content": "In the first few months of 2026, the Trump administration has embarked on military interventions in Iran and Venezuela and threatened possible annexation of Greenland. Meanwhile, German Chancellor Fr… [+17103 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Father of service member killed in Iran war said he never told Pete Hegseth to 'finish' the job - NBC News",
-        "summary": "Father of service member killed in Iran war said he never told Pete Hegseth to 'finish' the jobNBC News Falle…",
-        "content": "The Fine Print: The following comments are owned by whoever posted them. We are not responsible for them in any way.｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "a bit of everything…",
-        "summary": "Filmmaker Lav Diaz discusses shooting Magellan with the LUMIX GH7. Today deals at Amazon, BHphoto, Adorama, A…",
-        "content": "Disclaimer: 43Rumors has no affiliation with any of the equipment manufacturers mentioned on this site. Please visit their official websites by typing the specific brand name and adding .com after it… [+552 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
         "impact_score": 0
       }
     ],
