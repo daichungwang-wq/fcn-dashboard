@@ -288,3 +288,120 @@ body {
   font-size: 14px;
   color: #d8d8d8;
 }
+/* =========================
+   M3 UI V2（振宇正式版）
+========================= */
+
+/* ===== Dashboard 卡片 ===== */
+.card {
+  background: #ffffff;
+  color: #111;
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+}
+
+.card h4 {
+  color: #2563eb;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+/* ===== 模型說明 ===== */
+.m3-explain {
+  background: #f9fafb;
+  color: #111;
+  padding: 16px;
+  border-radius: 16px;
+  margin-bottom: 18px;
+  border: 1px solid #e5e7eb;
+}
+
+.m3-explain h3 {
+  color: #2563eb;
+  margin-bottom: 10px;
+}
+
+.m3-explain p {
+  margin: 6px 0;
+}
+
+/* ===== 股票列表 ===== */
+.stock-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+/* ===== 股票卡片 ===== */
+.stock-card {
+  background: #ffffff;
+  color: #222;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+/* ===== 標題 ===== */
+.stock-head {
+  font-size: 18px;
+  font-weight: 800;
+  margin-bottom: 8px;
+  color: #111;
+}
+
+/* ===== 次資訊 ===== */
+.stock-meta {
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 10px;
+}
+
+/* ===== 數據列 ===== */
+.stock-row {
+  margin: 6px 0;
+  font-size: 15px;
+  color: #333;
+}
+
+/* ===== 備註 ===== */
+.stock-note {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #555;
+  line-height: 1.5;
+}
+
+/* ===== 分類顏色（之後會用到） ===== */
+.tag-core {
+  color: #2563eb;
+  font-weight: 700;
+}
+
+.tag-balance {
+  color: #16a34a;
+  font-weight: 700;
+}
+
+.tag-defensive {
+  color: #ca8a04;
+  font-weight: 700;
+}
+
+.tag-avoid {
+  color: #dc2626;
+  font-weight: 700;
+}
+
+/* ===== ΔEvent 強調 ===== */
+.delta-positive {
+  color: #16a34a;
+  font-weight: 700;
+}
+
+.delta-negative {
+  color: #dc2626;
+  font-weight: 700;
+}
