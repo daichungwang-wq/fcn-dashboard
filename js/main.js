@@ -31,12 +31,17 @@ window.toggleM3Explain = function () {
 };
 
 window.toggleM2Detail = function (btn) {
-  const container = btn.closest("div");
-  const detail = container.querySelector("[data-detail]");
+  if (!btn) return;
 
+  const card = btn.closest(".m2-position-card"); // ⭐關鍵
+  if (!card) return;
+
+  const detail = card.querySelector("[data-detail]");
   if (!detail) return;
 
-  const isHidden = detail.style.display === "none" || detail.style.display === "";
+  const isHidden =
+    detail.style.display === "none" || detail.style.display === "";
+
   detail.style.display = isHidden ? "block" : "none";
   btn.textContent = isHidden ? "收合詳細" : "展開詳細";
 };
