@@ -370,6 +370,10 @@ export function renderModule2Health(positions = [], pool = []) {
   return `
     <div class="m2-wrap">
       <div class="m2-title">持倉健康總覽</div>
+      <div style="margin:0 0 12px 0; display:flex; gap:10px;">
+  <button class="m2-detail-btn" onclick="expandAllM2Details()">全部展開</button>
+  <button class="m2-detail-btn" onclick="collapseAllM2Details()">全部收合</button>
+</div>
       ${summaryGrid}
       ${urgentHtml}
       <div class="m2-section-title">持倉明細</div>
