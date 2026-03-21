@@ -314,16 +314,15 @@ window.rerunDecision = function() {
   alert("這一版已完成畫面與覆核流程。下一步再正式連動 Module3 重算。");
 };
 
-window.newsMode = "news"; // 預設新聞加權
+window.newsMode = "news"; // 預設：新聞加權
 
 function updateNewsModeUI() {
   const pureBtn = document.getElementById("mode-pure");
   const newsBtn = document.getElementById("mode-news");
   const status = document.getElementById("news-mode-status");
-
   if (!pureBtn || !newsBtn || !status) return;
 
-  const isNewsOn = newsMode === "on";
+  const isNewsOn = window.newsMode === "news";
 
   pureBtn.classList.toggle("active", !isNewsOn);
   newsBtn.classList.toggle("active", isNewsOn);
@@ -336,16 +335,17 @@ function updateNewsModeUI() {
 function bindNewsModeEvents() {
   const pureBtn = document.getElementById("mode-pure");
   const newsBtn = document.getElementById("mode-news");
-
   if (!pureBtn || !newsBtn) return;
 
   pureBtn.onclick = () => {
-    newsMode = "off";
+    window.newsMode = "pure";
     updateNewsModeUI();
+    if (typeof window.init === "function") window.init();
   };
 
   newsBtn.onclick = () => {
-    newsMode = "on";
+    window.newsMode = "news";
     updateNewsModeUI();
+    if (typeof window.init === "function") window.init();
   };
 }
