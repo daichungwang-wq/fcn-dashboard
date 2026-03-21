@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-03-21 06:03",
+  "updated_at": "2026-03-21 06:40",
   "summary": {
     "active_fcn_count": 24,
     "top_risk_code": "FCN710H",
@@ -10,58 +10,72 @@
   "morning_brief": {
     "international_news": [
       {
+        "title": "Drone defense in the Iran war: What can Ukraine offer?",
+        "summary": "As the Iran war continues apace, Ukraine's hard-won expertise in countering drone swarms is sparking interest…",
+        "content": "Fighting in the Middle East has revealed that many nations are ill equipped to face new forms of warfare, including massive deployment of drones. Attempts to shoot down Iranian drones in the Gulf sta… [+6915 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
+        "affects_fcn": true,
+        "impact_score": -1
+      },
+      {
+        "title": "CNBC Daily Open: Netanyahu's 'ground component' warning",
+        "summary": "Factors playing into early trade include the threat of a \"ground component\" from Israel's Benjamin Netanyahu.",
+        "content": "Hello, this is Leonie Kidd writing to you from London. Welcome to another edition of CNBC's Daily Open. Conflicting messages for the markets to contend with this morning. The threat of a \"ground com… [+2656 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "These Brass Pipes Turn Into a Modern Hanging Planter That Instantly Fills an Empty Corner",
+        "summary": "A few short brass pipes and a piece of twine can turn into a geometric hanging planter that adds greenery to…",
+        "content": "A few short brass pipes and a piece of twine can turn into a geometric hanging planter that adds greenery to an empty wall or window corner. The structure forms a simple metal frame that holds a bowl… [+3169 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Russian oil supplies to India surge – media",
+        "summary": "India’s oil imports from Russia have reportedly risen by 27% in March compared to last month Read Full Articl…",
+        "content": "Russian oil supplies to India have surged in March, Kommersant has reported. Crude imports from Russia to the South Asian country rose by 27% compared to February, the paper said on Thursday, citing… [+1656 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
+        "affects_fcn": true,
+        "impact_score": -1
+      },
+      {
+        "title": "Indian Rupee Drops Past 93 to Record as Iran War Risks Mount",
+        "summary": "India’s rupee weakened past 93 per dollar to a fresh low as prospects of a prolonged Middle East conflict rai…",
+        "content": "(Bloomberg) Indias rupee weakened past 93 per dollar to a fresh low as prospects of a prolonged Middle East conflict raise concerns over a widening current-account gap. THIS CONTENT IS RESERVED FOR … [+4152 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
+        "affects_fcn": true,
+        "impact_score": -1
+      },
+      {
+        "title": "Trump Weighs Troop Deployments To Keep Middle East Options Open: Media Reports",
+        "summary": "Multiple US news outlets, citing sources, are reporting that President Donald Trump is considering sending th…",
+        "content": "By RFE/RL March 20, 2026 Multiple US news outlets, citing sources, are reporting that President Donald Trump is considering sending thousands of additional US ground troops to bolster operations in … [+6391 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
+        "affects_fcn": true,
+        "impact_score": -1
+      },
+      {
+        "title": "Rs 1 lakh crore wiped off! Bajaj Finance shares tumble 18% in March so far amid raging Iran-US war",
+        "summary": "Bajaj Finance shares have plunged over 20% in a month, eroding more than Rs 1 lakh crore in market value amid…",
+        "content": "Shares of Bajaj Finance extended their decline for the second consecutive session on Friday and have declined nearly 18% in March so far as the war between Iran and Israel-US spooked investors. This … [+2445 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Mechanical Connectors Market Size to Surpass USD 19.22 Billion by 2035 | Research by SNS Insider",
+        "summary": "Global Mechanical Connectors Market Size, Share, Revenue Trends & Segmentation By Product Type, Application,…",
+        "content": "Austin, March 20, 2026 (GLOBE NEWSWIRE) -- Mechanical Connectors Market Size &amp; Growth Insights: According to the SNS Insider,The Mechanical Connectors Market Size was valued at USD 10.3 Billion … [+7785 chars]｜分類：全球經濟｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "India’s auto boom at risk as Iran-Israel war chokes gas supplies, straining supply chains",
+        "summary": "Some parts suppliers to leading carmakers like Maruti Suzuki, Tata Motors and Mahindra are already reporting…",
+        "content": "Highlights <ul><li> India most exposed to conflict due to energy reliance on Gulf nations </li><li> Suppliers to Maruti, Tata, Mahindra warn gas shortages to hit production </li><li> S&amp;P c… [+3778 chars]｜分類：全球經濟｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
         "title": "Roaming Charges: Trump’s Little Excursion Hits the Straits",
         "summary": "Perhaps Trump will now replace Joe Kent with Newt Gingrich, who is very, very strong on security. So strong t…",
-        "content": "Desdemona Strait. Photo: Jeffrey St. Clair. I am the frightful thing that always follows youLiar, I am thy NemesisI always knew one day that it would come to this Motörhead, Liar Check out this p… [+38332 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "India Post GDS result 2026: DV process ends on March 23; when will the second merit list release?",
-        "summary": "India Post has released the first merit list for Gramin Dak Sevak recruitment. Candidates can check the list…",
-        "content": "<ul><li>News</li> <li>Education News</li> <li>News</li> <li>India Post GDS result 2026: DV process ends on March 23; when will the second merit list release?</li></ul> Follow Us On Social Media … [+1791 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Australia-EU deal may be sealed by next week",
-        "summary": "Government opposition to Mercosur pact with South American companies not to be repeated with Australian propo…",
-        "content": "A new trade deal between the EU and Australia could be agreed as early as next week, opening the prospect of further competition for Irish farmers due to imports of meat. The Government, which oppos… [+3017 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Ken Early: Hallgrimsson is staying until Euro 2028. But it isn’t all good news",
-        "summary": "Contract extension reflects faith in long-term project as squad faces defining week",
-        "content": "Heimir Hallgrimsson dropped the news he had extended his contract until the end of the 2028 Euros campaign towards the end of Thursdays press conference as though it were a minor detail. There was … [+5408 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "What is the manosphere and why is everyone talking about it?",
-        "summary": "Louis Theroux’s new documentary explores the world of male influencers who target confused young boys",
-        "content": "Why is everyone talking about the manosphere? Perhaps because UK documentarian Louis Theroux just made a feature-length documentary for Netflix called Inside the Manosphere. Louis Theroux ... whos … [+2854 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Amir Khan McNeese transfer, explained: Why viral manager returned to school after following Will Wade to NC State",
-        "summary": "Amir Khan is back in McNeese State colors for the 2026 NCAA tournament. The game is better for it.",
-        "content": "Amir Khan McNeese transfer, explained: Why viral manager returned to school after following Will Wade to NC State originally appeared on The Sporting News. Add The Sporting News as a Preferred Source… [+6130 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "The Haber-Bosch House of Cards: Why The One Chemical Reaction that Feeds Half the World is About to Go Offline",
-        "summary": "The Most Important Chart in the World – A Glimpse at Our Civilizational Precipice I want you to look at a sim…",
-        "content": "The Most Important Chart in the World - A Glimpse at Our Civilizational Precipice I want you to look at a simple chart (see below). On one axis, plot the global human population. On the other, the a… [+10408 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "U.S. Central Command reports over 7,800 targets struck inside Iran",
-        "summary": "The U.S. has conducted over 8,000 combat sorties, striking 7,800+ targets in Iran under Operation Epic Fury,…",
-        "content": "<ul><li>The U.S. has conducted over 8,000 combat sorties, striking 7,800+ targets in Iran under Operation Epic Fury, destroying 120 naval vessels and targeting missile sites, Revolutionary Guard faci… [+6397 chars]｜分類：地緣政治｜解讀：影響有限",
+        "content": "Desdemona Strait. Photo: Jeffrey St. Clair. I am the frightful thing that always follows youLiar, I am thy NemesisI always knew one day that it would come to this Motörhead, Liar Check out this p… [+38332 chars]｜分類：全球經濟｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
@@ -78,23 +92,16 @@
         "content": "<ul><li>Holy basil, or tulsi, is an ancient medicinal herb gaining modern scientific attention for its wide-ranging health benefits.</li><li>Its adaptogenic properties help the body manage stress, wh… [+4954 chars]｜分類：全球經濟｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
-      },
-      {
-        "title": "Novartis agrees to acquire a pan-mutant-selective PI3Kα inhibitor, strengthening its breast cancer pipeline",
-        "summary": "Basel, March 20, 2026 – Novartis today announced that it has entered into an agreement with Synnovation Thera…",
-        "content": "<ul><li>Proposed acquisition supports the Novartis oncology strategy in hormone receptor positive, human epidermal growth factor receptor two-negative (HR+/HER2-) breast cancer </li><li>The lead asse… [+7675 chars]｜分類：全球經濟｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Telix selects IBA Cyclone® KIUBE to support manufacturing expansion in the U.S.",
-        "summary": "Louvain-la-Neuve, Belgium– March 20, 2026 – IBA (Ion Beam Applications S.A., EURONEXT), the world leader in p…",
-        "content": "Louvain-la-Neuve, Belgium March 20, 2026 IBA (Ion Beam Applications S.A., EURONEXT), the world leader in particle accelerator technology and the worlds leading provider of radiopharmaceutical product… [+6389 chars]｜分類：全球經濟｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
       }
     ],
     "financial_news": [
+      {
+        "title": "Silver futures rebound to ₹2.4 lakh/kg as value buying halts 7-day slide",
+        "summary": "Silver prices rebounded sharply by ₹8,540 to ₹2.40 lakh per kilogram in futures trade on Friday, snapping a s…",
+        "content": "Silver prices rebounded sharply by 8,540 to 2.40 lakh per kilogram in futures trade on Friday, snapping a seven-day losing streak on value buying after a steep decline in a recent session. On the Mu… [+1805 chars]｜分類：Fed / 利率｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
       {
         "title": "Global Market | Global central banks turn hawkish as war-driven energy shock clouds rate outlook",
         "summary": "Global central banks are holding interest rates steady, signaling a readiness to tighten policy amid rising e…",
@@ -145,95 +152,88 @@
         "impact_score": 1
       },
       {
-        "title": "Average U.S. long-term mortgage rate rises to 6.22%, highest in more than 3 months",
-        "summary": "When mortgage rates rise, they can add hundreds of dollars a month in costs for home shoppers, limiting what…",
-        "content": "The average long-term U.S. mortgage rate climbed this week to its highest level in more than three months, a setback for prospective home shoppers this spring homebuying season. The benchmark 30-yea… [+4281 chars]｜分類：Fed / 利率｜解讀：影響有限",
+        "title": "KVS admission registration window 2026 begins: Check direct link to apply here",
+        "summary": "The Kendriya Vidyalaya Sangathan (KVS) has opened online registrations for Balvatika and Class 1 admissions f…",
+        "content": "Follow Us On Social Media Bengaluru weekend events (March 21-22): Don't miss these top gigs, stand-up comedy, open-air cinema - Check timings, ticket pricesWhy children copy parents: The science of … [+1613 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Roaming Charges: Trump’s Little Excursion Hits the Straits",
-        "summary": "Perhaps Trump will now replace Joe Kent with Newt Gingrich, who is very, very strong on security. So strong t…",
-        "content": "Desdemona Strait. Photo: Jeffrey St. Clair. I am the frightful thing that always follows youLiar, I am thy NemesisI always knew one day that it would come to this Motörhead, Liar Check out this p… [+38332 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "title": "Liverpool can't afford to lose £43m midfielder to Man City",
+        "summary": "Liverpool have had some high-profile transfer battles with Manchester City of late.Last summer the Premier Le…",
+        "content": "Liverpool have had some high-profile transfer battles with Manchester City of late. Last summer the Premier League champions came within a whisker of adding Marc Guehi on a deal worth an initial £35… [+1597 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "A decade after boxing betrayed him, it’s now or never for Michael Conlan",
-        "summary": "Belfast fighter knows defeat against US opponent will all but end his title aspirations",
-        "content": "In August, it will be 10 years since Russian bantamweight Vladimir Nikitin was given the verdict over Irelands Michael Conlan in their quarter-final bout at the 2016 Olympic Games in Rio. Dripping b… [+4924 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "title": "Washington Eases Sanctions On Minsk As Belarus Releases 250 Prisoners",
+        "summary": "The United States has lifted sanctions on several Belarusian entities and the country's Finance Ministry as M…",
+        "content": "By RFE/RL's Belarus Service March 19, 2026 The United States has lifted sanctions on several Belarusian entities and the country's Finance Ministry as Minsk announced the release of scores of prison… [+3285 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Catriona Crowe: We watch as carefree young people are brainwashed to become performers of patriotism",
-        "summary": "The Oscar-winning documentary Mr Nobody Against Putin is a record of something totally unseen in the world ou…",
-        "content": "Ukraine is now in the fifth year of its war with Russia, an unprovoked invasion of a sovereign state based on Vladimir Putins desire to reconstitute the Russian Empire. It is estimated that casualtie… [+6723 chars]｜分類：通膨 / 就業｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "TGS 2025 Annual Report",
-        "summary": "OSLO, Norway (20 March 2026) - TGS, a leading global provider of energy data and intelligence, published its…",
-        "content": "OSLO, Norway (20 March 2026) - TGS, a leading global provider of energy data and intelligence, published its 2025 Annual Report today. In addition, TGS has published its 2025 Management Remuneration… [+1860 chars]｜分類：通膨 / 就業｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
+        "title": "Russian oil supplies to India surge – media",
+        "summary": "India’s oil imports from Russia have reportedly risen by 27% in March compared to last month Read Full Articl…",
+        "content": "Russian oil supplies to India have surged in March, Kommersant has reported. Crude imports from Russia to the South Asian country rose by 27% compared to February, the paper said on Thursday, citing… [+1656 chars]｜分類：通膨 / 就業｜解讀：地緣風險升高，需留意市場波動擴大",
+        "affects_fcn": true,
+        "impact_score": -1
       }
     ],
     "ai_trend": [
       {
-        "title": "Bitget and SlowMist Map Emerging Security Risks as AI Agents Begin Executing Trades",
-        "summary": "VICTORIA, Seychelles, March 20, 2026 (GLOBE NEWSWIRE) — Bitget, the world’s largest Universal Exchange (UEX),…",
-        "content": "THIS CONTENT IS RESERVED FOR SUBSCRIBERS ONLY Subscribe now to read the latest news in your city and across Canada. <ul><li>Exclusive articles from Barbara Shecter, Joe O'Connor, Gabriel Friedman, … [+4928 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "CNBC Daily Open: Netanyahu's 'ground component' warning",
+        "summary": "Factors playing into early trade include the threat of a \"ground component\" from Israel's Benjamin Netanyahu.",
+        "content": "Hello, this is Leonie Kidd writing to you from London. Welcome to another edition of CNBC's Daily Open. Conflicting messages for the markets to contend with this morning. The threat of a \"ground com… [+2656 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Iran women’s football team feted in Tehran after asylum battle at Asian Cup",
-        "summary": "Iran’s national football team returned to their war-torn nation after several of the players sought asylum in…",
-        "content": "Iranian authorities on Thursday gave the national womens football team a heros welcome after their return from Australia, where some had made and then withdrawn asylum claims, amid accusations Iran h… [+3399 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "kodeagent 0.11.3",
+        "summary": "A minimalistic approach to building AI agents",
+        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Alibaba, Tencent shed $84 billion after AI vision falls flat",
-        "summary": "The market punished Alibaba and Tencent for failing to lay out clear visions for how to profit off AI. Read m…",
-        "content": "HONG KONGAlibaba Group Holding and Tencent Holdings bled US$66 billion (S$84 billion) of value in roughly 24 hours, after the market punished the twin leaders of Chinas tech arena for failing to lay … [+4217 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "bankofai-agent-wallet 2.3.0b4",
+        "summary": "Universal multi-chain secure signing SDK for AI agents",
+        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Iran women's football team feted in Tehran after asylum battle",
-        "summary": "PARIS (AFP): Iranian authorities gave the national women's football team a hero's welcome after returning fro…",
-        "content": "PARIS (AFP): Iranian authorities gave the national women's football team a hero's welcome after returning from Australia where some had made and then withdrawn asylum claims, amid accusations Iran ha… [+3215 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "collet added to PyPI",
+        "summary": "Agent hub CLI — manage and run AI agents",
+        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Use Cases of ChatGPT Subagents: What They Are and How to Use Them in Real Work",
-        "summary": "Learn what ChatGPT subagents are and how to use them for research, coding, reviews, support, operations, and…",
-        "content": "Abstract / Overview ChatGPT subagents are smaller helper agents with narrow jobs. One agent plans the work. Other agents do focused parts like research, coding, checking facts, or reviewing results.… [+17910 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
-        "affects_fcn": true,
-        "impact_score": 0
-      },
-      {
-        "title": "Super Micro co-founder arrested over alleged $2.5B AI chip smuggling scheme",
-        "summary": "US authorities say they have charged and arrested Supermicro co-founder Yih-Shyan “Wally” Liaw for allegedly…",
-        "content": "US authorities say the co-founder of Super Micro Computer, Inc. has been charged and arrested over an alleged multi-billion dollar scheme to smuggle advanced artificial intelligence chips from the US… [+2228 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "collet 0.0.1",
+        "summary": "Agent hub CLI — manage and run AI agents",
+        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "darcycui-mcp 1.0.1",
-        "summary": "A weather forecast MCP Server for any AI agent.",
+        "title": "semanticslayer 0.1.0rc1",
+        "summary": "A lightweight, agent-first semantic layer for AI agents",
+        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "KVS admission registration window 2026 begins: Check direct link to apply here",
+        "summary": "The Kendriya Vidyalaya Sangathan (KVS) has opened online registrations for Balvatika and Class 1 admissions f…",
+        "content": "Follow Us On Social Media Bengaluru weekend events (March 21-22): Don't miss these top gigs, stand-up comedy, open-air cinema - Check timings, ticket pricesWhy children copy parents: The science of … [+1613 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "paper-demo-agent 0.3.1",
+        "summary": "AI agent that reads any scientific paper and builds a live demo",
         "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Roaming Charges: Trump’s Little Excursion Hits the Straits",
-        "summary": "Perhaps Trump will now replace Joe Kent with Newt Gingrich, who is very, very strong on security. So strong t…",
-        "content": "Desdemona Strait. Photo: Jeffrey St. Clair. I am the frightful thing that always follows youLiar, I am thy NemesisI always knew one day that it would come to this Motörhead, Liar Check out this p… [+38332 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       }
