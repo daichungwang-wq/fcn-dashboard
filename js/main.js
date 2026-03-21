@@ -142,7 +142,15 @@ try {
   } else if (m3) {
     m3.innerHTML = `<p>目前沒有 Pool 資料</p>`;
   }
+
 } catch (error) {
   console.error("module3 render error:", error);
-  if (m3) m3.innerHTML = `<p>module3 render 錯誤</p>`;
+  if (m3) m3.innerHTML = `
+  
+module3 render 錯誤
+
+`;
 }
+}
+
+init();
