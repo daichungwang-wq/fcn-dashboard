@@ -50,7 +50,6 @@ function getTopNews(data) {
 function renderMarketTable(marketData) {
   const pickDisplayValue = (v) => {
     if (v == null) return "-";
-
     if (typeof v !== "object") return v;
 
     return (
@@ -60,14 +59,15 @@ function renderMarketTable(marketData) {
       v.now ??
       v.close ??
       v.price ??
-      (typeof v.data === "object" ? (v.data?.value ?? v.data?.current ?? v.data?.latest) : undefined) ??
+      (typeof v.data === "object"
+        ? (v.data?.value ?? v.data?.current ?? v.data?.latest ?? v.data?.price)
+        : undefined) ??
       "-"
     );
   };
 
   const pickPreviousValue = (v) => {
     if (v == null) return "-";
-
     if (typeof v !== "object") return "-";
 
     return (
@@ -75,22 +75,97 @@ function renderMarketTable(marketData) {
       v.prev ??
       v.last ??
       v.yesterday ??
-      (typeof v.data === "object" ? (v.data?.previous ?? v.data?.prev ?? v.data?.last) : undefined) ??
+      (typeof v.data === "object"
+        ? (v.data?.previous ?? v.data?.prev ?? v.data?.last)
+        : undefined) ??
       "-"
     );
   };
 
+  const formatDeltaPercent = (current, previous) => {
+    const c = Number(current);
+    const p = Number(previous);
+    if (!Number.isFinite(c) || !Number.isFinite(p) || p === 0) return "--";
+
+    const pct = ((c - p) / p) * 100;
+    const sign = pct > 0 ? "+" : "";
+    return `${sign}${pct.toFixed(1)}%`;
+  };
+
+  const deltaClass = (current, previous) => {
+    const c = Number(current);
+    const p = Number(previous);
+    if (!Number.isFinite(c) || !Number.isFinite(p) || p === 0) return "";
+    if (c > p) return "market-up";
+    if (c < p) return "market-down";
+    return "market-flat";
+  };
+
+  const pickComment = (name, current, previous) => {
+    const key = String(name || "").toLowerCase();
+    const c = Number(current);
+    const p = Number(previous);
+
+    if (!Number.isFinite(c) || !Number.isFinite(p)) return "";
+
+    const delta = c - p;
+
+    if (key.includes("vix")) return delta > 0 ? "恐慌升溫" : "波動降溫";
+    if (key.includes("nasdaq")) return delta > 0 ? "科技偏強" : "科技轉弱";
+    if (key.includes("sp")) return delta > 0 ? "大盤偏多" : "大盤偏弱";
+    if (key.includes("dow")) return delta > 0 ? "權值偏穩" : "權值轉弱";
+    if (key.includes("10y") || key.includes("20y")) return delta > 0 ? "殖利率升" : "殖利率降";
+    if (key.includes("oil")) return delta > 0 ? "通膨壓力升" : "成本壓力降";
+    if (key.includes("gold")) return delta > 0 ? "避險升溫" : "避險降溫";
+    if (key.includes("cpi") || key.includes("ppi")) return delta > 0 ? "通膨升溫" : "通膨降溫";
+    if (key.includes("tw")) return delta > 0 ? "台股偏強" : "台股偏弱";
+
+    return "";
+  };
+
+  const prettyName = (name) => {
+    const map = {
+      vix: "VIX",
+      sp500: "S&P 500",
+      nasdaq: "Nasdaq",
+      dow: "Dow",
+      us10y: "10Y",
+      us20y: "20Y",
+      oil: "Oil",
+      gold: "Gold",
+      cpi: "CPI",
+      ppi: "PPI",
+      tw_index: "台股"
+    };
+    return map[name] || name;
+  };
+
   const rows = Array.isArray(marketData)
-    ? marketData.map((item) => ({
-        name: item.name ?? item.label ?? "-",
-        value: pickDisplayValue(item),
-        previous: pickPreviousValue(item)
-      }))
-    : Object.entries(marketData || {}).map(([name, value]) => ({
-        name,
-        value: pickDisplayValue(value),
-        previous: pickPreviousValue(value)
-      }));
+    ? marketData.map((item) => {
+        const name = item.name ?? item.label ?? "-";
+        const current = pickDisplayValue(item);
+        const previous = pickPreviousValue(item);
+        return {
+          name,
+          current,
+          previous,
+          deltaPct: formatDeltaPercent(current, previous),
+          deltaClassName: deltaClass(current, previous),
+          comment: pickComment(name, current, previous)
+        };
+      })
+    : Object.entries(marketData || {}).map(([name, value]) => {
+        const current = pickDisplayValue(value);
+        const previous = pickPreviousValue(value);
+        return {
+          name,
+          current,
+          previous,
+          deltaPct: formatDeltaPercent(current, previous),
+          deltaClassName: deltaClass(current, previous),
+          comment: pickComment(name, current, previous)
+        };
+      });
 
   if (!rows.length) return "";
 
@@ -103,14 +178,18 @@ function renderMarketTable(marketData) {
             <th>指標</th>
             <th>數值</th>
             <th>前值</th>
+            <th>變動</th>
+            <th>解讀</th>
           </tr>
         </thead>
         <tbody>
           ${rows.map((r) => `
             <tr>
-              <td>${escapeHtml(r.name)}</td>
-              <td>${escapeHtml(r.value)}</td>
+              <td>${escapeHtml(prettyName(r.name))}</td>
+              <td>${escapeHtml(r.current)}</td>
               <td>${escapeHtml(r.previous)}</td>
+              <td class="${r.deltaClassName}">${escapeHtml(r.deltaPct)}</td>
+              <td>${escapeHtml(r.comment || "--")}</td>
             </tr>
           `).join("")}
         </tbody>
@@ -118,7 +197,6 @@ function renderMarketTable(marketData) {
     </div>
   `;
 }
-
 function renderChoiceButtons(key, currentDirection) {
   const current = normalizeDirection(currentDirection);
 
