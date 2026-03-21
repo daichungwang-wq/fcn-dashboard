@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-03-21 02:13",
+  "updated_at": "2026-03-21 02:26",
   "summary": {
     "active_fcn_count": 24,
     "top_risk_code": "FCN710H",
@@ -9,6 +9,48 @@
   },
   "morning_brief": {
     "international_news": [
+      {
+        "title": "Oil Price Today (March 20): Crude oil falls but firmly above $100. 3 reasons behind decline",
+        "summary": "Oil prices dropped Friday after Israel announced it would stop targeting Iran's energy infrastructure. This f…",
+        "content": "Crude oil prices eased on Friday morning after Israeli Prime Minister Benjamin Netanyahu said in an overnight statement that Israel would no longer target Irans energy infrastructure. The remark foll… [+3679 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
+        "affects_fcn": true,
+        "impact_score": -1
+      },
+      {
+        "title": "Lightning strike hits Phuket-Bengaluru aircraft of Akasa Air",
+        "summary": "An Akasa Air flight from Phuket to Bengaluru, operating on a Boeing 737 MAX, was diverted to Chennai due to a…",
+        "content": "Follow Us On Social Media HDFC board, RBI, govt enter firefighting modeJaxson Dart and girlfriend Marissa Ayers go viral after Lane Kiffin drops a hilarious reaction to her outfit photoWar, HDFC Ban… [+1254 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Japan’s Takaichi seeks to reaffirm alliance with Trump amid Hormuz security concerns",
+        "summary": "Japanese Prime Minister Sanae Takaichi met with President Donald Trump in Washington. Discussions focused on…",
+        "content": "Washington: Japanese Prime Minister Sanae Takaichi sought to reaffirm her alliance with President Donald Trump on Thursday after the president this week seemed to complain that Japan was among the na… [+7020 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Hall boys hockey tops E.O. Smith/Tolland in overtime to win CIAC Division III championship",
+        "summary": "Hall boys hockey won its first CIAC championship since 1993 with the victory Thursday night.",
+        "content": "For just the second time in its history and the first time in 33 years, the Hall boys ice hockey team is a CIAC champion. Sophomore Matthew McDermott scored with an assist from senior Charles Gainer… [+1904 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "NATO Allies and Gulf partners discuss the security situation in the Middle East",
+        "summary": "On Wednesday (18 March 2026), the North Atlantic Council met with NATO's partners from the Gulf. Discussions…",
+        "content": "NATO - North Atlantic Treaty Organisation 19 March 2026 On Wednesday (18 March 2026), the North Atlantic Council met with NATO's partners from the Gulf. Discussions centred on the current security … [+1148 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
+        "affects_fcn": true,
+        "impact_score": -1
+      },
+      {
+        "title": "Cuba readies for first Russian oil shipment of the year as energy crisis deepens",
+        "summary": "Cuba anticipates its first Russian oil shipment this year amid ongoing power outages. A Russian tanker carryi…",
+        "content": "Cuba is preparing to receive its first shipment of Russian oil this year, just days after the government announced it was operating on natural gas, solar power and thermoelectric plants as severe pow… [+5566 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
+        "affects_fcn": true,
+        "impact_score": -1
+      },
       {
         "title": "PRAYER REQUESTS - 3/19/2025 [PRAYER]",
         "summary": "Welcome to the PRAYER REQUESTS thread. This daily thread is a listing of prayer requests that have been poste…",
@@ -24,44 +66,16 @@
         "impact_score": -1
       },
       {
-        "title": "Food prices stressing you out? How to save money at the supermarket",
-        "summary": "Food prices are up 4.5% in a year, with beef mince now $24.46 a kilo.",
-        "content": "Generic home brand items will do the trick in most cases, says nutritionist Amanda Brien. She says University of Auckland researchers found generic products to be significantly cheaper but very simil… [+3817 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "Prime Video ups the ante with 55-title India slate, expands theatrical push",
+        "summary": "Prime Video unveiled its largest-ever Indian Originals slate, featuring nearly 55 series and films across Hin…",
+        "content": "Prime Video on Thursday unveiled its largest-ever Indian Originals slate, doubling down on its content investment in the country with a lineup of nearly 55 series and films across languages and forma… [+3161 chars]｜分類：全球經濟｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Jeff Bezos aims to raise $100 billion to buy, revamp manufacturing firms with AI: Report",
-        "summary": "The ⁠Amazon.com ⁠founder is holding talks with some of theworld's biggest ​asset managers to secure funding f…",
-        "content": "Jeff Bezos is in early discussions to raise $100 billion for a new fund that would acquire manufacturing companies and seek to use AI to drive and speed up automation, the Wall Street Journal reporte… [+1181 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "'A great sign for Washington soccer': Sounders play for sold-out crowd in Spokane",
-        "summary": "Mar. 19—While Spokane's official nickname is \"Hooptown USA,\" it's also home to extremely passionate soccer fa…",
-        "content": "Mar. 19While Spokane's official nickname is \"Hooptown USA,\" it's also home to extremely passionate soccer fans as proven by the crowd that appeared on Wednesday for the first Major League Soccer game… [+5442 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Consumers favouring combustion engine cars as interest in EVs wanes: report",
-        "summary": "The latest EY mobility consumer index for 2025 shows only seven per cent of those planning to buy a car in th…",
-        "content": "TORONTO - A new report shows consumers are increasingly favouring internal combustion engine cars for their next car purchase rather than an electric vehicle. The latest EY mobility consumer index f… [+2342 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Gold set for third weekly fall on firm dollar, hawkish Fed",
-        "summary": "Gold prices saw a slight increase on Friday but are set for a third weekly drop. A strong dollar and the U.S.…",
-        "content": "Gold prices inched up on Friday, but were headed for a third consecutive weekly decline, pressured by a firm dollar and a hawkish U.S. Federal Reserve that has dampened hopes for near-term rate cuts.… [+1724 chars]｜分類：地緣政治｜解讀：利率壓力若下降，FCN 環境通常較有利",
-        "affects_fcn": true,
-        "impact_score": 1
-      },
-      {
-        "title": "Australia and Japan meet in the final of an internationally charged Women's Asian Cup",
-        "summary": "A Women’s Asian Cup soccer tournament that started with little fanfare three weeks ago but eventually receive…",
-        "content": "SYDNEY (AP) A Womens Asian Cup soccer tournament that started with little fanfare three weeks ago but eventually received worldwide attention due to the appearance of an Iranian team affected by the … [+2496 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "Economic Digest: Nepal’s Business News in a Snap",
+        "summary": "KATHMANDU: Economic Digest offers a concise yet comprehensive overview of significant business happenings in…",
+        "content": "KATHMANDU: Economic Digest offers a concise yet comprehensive overview of significant business happenings in Nepal, presented in easily digestible summaries. Nepals latest economic and development i… [+10193 chars]｜分類：全球經濟｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
@@ -76,20 +90,6 @@
         "title": "14 stocks including SBI, 4 Tata group companies, NTPC, IREDA, JSW Cement, Vibhor Steel on Friday",
         "summary": "Key updates on 14 stocks, including SBI, Tata companies, NTPC, and JSW Cement, highlighting significant partn…",
         "content": "SBI Funds Management Ltd, a subsidiary of State Bank of India, has filed a draft red herring prospectus with the Securities and Exchange Board of India for an initial public offering of up to 203,709… [+5310 chars]｜分類：全球經濟｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "US Stock Market | Wall Street ends down as traders see no rate cuts before 2027",
-        "summary": "Global markets tumbled Thursday as soaring oil prices fueled inflation fears, dimming hopes for interest rate…",
-        "content": "Wall Street ended lower on Thursday, with declines in Micron Technology and Tesla, as worries about inflation stemming from soaring oil prices left investors pessimistic about the potential for futur… [+2640 chars]｜分類：全球經濟｜解讀：利率壓力若下降，FCN 環境通常較有利",
-        "affects_fcn": true,
-        "impact_score": 1
-      },
-      {
-        "title": "Bitcoin Trails Money Supply Growth as Energy Costs and Rates Bite",
-        "summary": "Higher fuel costs and restrictive financial conditions are absorbing consumer liquidity, helping explain why…",
-        "content": "In brief <ul><li>Bitcoin has diverged sharply from global M2 growth, with one model suggesting a ~$136,000 fair value versus current levels near $70,000.</li><li>Analysts say tight U.S. monetary pol… [+4556 chars]｜分類：全球經濟｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       }
@@ -152,35 +152,56 @@
         "impact_score": 1
       },
       {
-        "title": "PRAYER REQUESTS - 3/19/2025 [PRAYER]",
-        "summary": "Welcome to the PRAYER REQUESTS thread. This daily thread is a listing of prayer requests that have been poste…",
-        "content": "Welcome to the PRAYER REQUESTS thread. This daily thread is a listing of prayer requests that have been posted by Freepers to the main forum who wish to have continued prayer. Hopefully this thread w… [+38735 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "title": "Mossad chief: Overthrowing the Iranian regime is possible",
+        "summary": "TV report: Mossad chief David Barnea presented an assessment to Prime Minister Benjamin Netanyahu, stating th…",
+        "content": "On the eve of the war with Iran, Prime Minister Benjamin Netanyahu was presented with an assessment suggesting that the Iranian regime could be toppled, as reported on the Keshet 12 program \"Uvda\" on… [+1752 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Trump Thinks Mass Deportations Went Too Far",
-        "summary": "Wall Street Journal: “President Trump is seeking to lower the profile of his mass deportation effort, and has…",
-        "content": "“There are a lot of blogs and news sites claiming to understand politics, but only a few actually do. Political Wire is one of them.” Chuck Todd, host of “Meet the Press” “Concise. Relevant. To th… [+594 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "title": "Cathie Wood’s Ark Invest says quantum computing is a long-term risk for bitcoin, not an imminent threat",
+        "summary": "Today’s quantum computers are far from breaking Bitcoin’s cryptography and any real threat would likely emerg…",
+        "content": "Todays quantum computers are far from breaking Bitcoins cryptography and any real threat would likely emerge gradually, giving the network time to adapt. <ul><li>Ark Invest said current quantum comp… [+3809 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "“Resident Evil: Requiem” Sales Spark Feud",
-        "summary": "Following all the issues with Xbox, gaming fanboys have been pushing the PC vs console feud lately saying tha…",
-        "content": "Following all the issues with Xbox, gaming fanboys have been pushing the PC vs console feud lately saying that consoles are on the way out and everyone is defecting to PC. That doesnt appear to be t… [+1139 chars]｜分類：通膨 / 就業｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
+        "title": "As inflation weighs, gold, silver extend losing streak",
+        "summary": "India Business News: MUMBAI: Precious metal prices crashed on Thursday after oil rallied to a near three-year…",
+        "content": "EMI CalculatorDetermine the monthly installment amount for a loan｜分類：通膨 / 就業｜解讀：地緣風險升高，需留意市場波動擴大",
+        "affects_fcn": true,
+        "impact_score": -1
       },
       {
-        "title": "Overwhelmed by Your Tax Return? File With a TurboTax Expert for Just $150 Flat",
-        "summary": "100% accuracy and audit support guaranteed.",
-        "content": "The deadline to file your taxes is less than one month away, on April 15th. It's a hopeful time for many people who overpay their taxes throughout the year and receive a nice, fat check in return. If… [+2124 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "title": "Unilever explores food business tie-up with McCormick: Report",
+        "summary": "Unilever is reportedly in discussions to merge its food division with spice maker McCormick. This potential a…",
+        "content": "Unilever is in talks to separate its food business and combine it with spice maker McCormick in an all-stock deal that could come within weeks, the Wall Street Journal reported on Thursday, citing so… [+1487 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       }
     ],
     "ai_trend": [
+      {
+        "title": "tenuo 0.1.0b12",
+        "summary": "Capability tokens for AI agents - Python SDK",
+        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "agentscope-monitor 0.5.0",
+        "summary": "AgentScope - Distributed tracing and monitoring for AI agents",
+        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "arandu 0.5.1",
+        "summary": "Long-term memory for AI agents — wisdom acquired through experience. Extraction, entity resolution, reconcili…",
+        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
       {
         "title": "CNBC Daily Open: Some uncomfortable history rears its head at Trump-Takaichi meeting",
         "summary": "A sensitive historical moment came up in the meeting between U.S. President Donald Trump and Japanese PM Sana…",
@@ -203,37 +224,16 @@
         "impact_score": 0
       },
       {
-        "title": "reveal-cli 0.65.0",
-        "summary": "How AI agents understand codebases without wasting tokens — local-first, adapter-driven, progressive disclosu…",
-        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "US charges 3 tied to Super Micro Computer with helping smuggle billions of dollars of AI chips to China",
+        "summary": "US prosecutors did not name Super Micro in the complaint, referring only to a \"US manufacturer.\" San Jose, Ca…",
+        "content": "Three people associated with artificial intelligence server maker Super Micro Computer Inc, including its co-founder, were charged with helping smuggle at least $2.5 billion of US AI technology to Ch… [+5014 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "maestro-memory added to PyPI",
-        "summary": "Temporal hybrid memory system for AI agents",
-        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "maestro-fetch added to PyPI",
-        "summary": "Fetch everything, for agents. Universal data acquisition with smart routing.",
-        "content": "One interface. Any source. Agent-ready output. Give it any URL -- web page, PDF, spreadsheet, cloud file, video, binary dataset -- and get back clean markdown or structured data. Smart routing picks… [+7325 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Super Micro Dives As U.S. Accuses Execs Of Smuggling Nvidia Chips To China - Investor's Business Daily",
-        "summary": "Super Micro Dives As U.S. Accuses Execs Of Smuggling Nvidia Chips To ChinaInvestor's Business Daily Super Mic…",
-        "content": "\"Consequences, Schmonsequences, as long as I'm rich.\" -- Looney Tunes, Ali Baba Bunny (1957, Chuck Jones)｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Tesla in talks with Chinese firms to buy $2.9 billion worth of solar equipment, sources say",
-        "summary": "Musk said in January that solar power could meet all of the electricity needs of the United States - includin…",
-        "content": "Tesla is looking to buy equipment worth $2.9 billion for manufacturing solar panels and cells from Chinese suppliers including Suzhou Maxwell Technologies, two people familiar with the matter said, a… [+4728 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "darcycui-mcp added to PyPI",
+        "summary": "A weather forecast MCP Server for any AI agent.",
+        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       }
