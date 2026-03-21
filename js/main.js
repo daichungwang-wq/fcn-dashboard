@@ -433,3 +433,11 @@ async function initM3A() {
 }
 
 initM3A();
+
+window.toggleM3Explain = function () {
+  const el = document.getElementById("m3-explain-detail");
+  if (!el) return;
+
+  el.style.display = el.style.display === "none" ? "block" : "none";
+};
+
