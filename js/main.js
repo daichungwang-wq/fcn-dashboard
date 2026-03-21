@@ -120,35 +120,30 @@ async function init() {
   }
 
   // === Module3 ===
-  try {
-    if (m3 && pool.length > 0) {
-      config.newsData = newsData;
+  // === Module3 ===
+try {
+  if (m3 && pool.length > 0) {
+    config.newsData = newsData;
 
-      window.__DATA__ = {
-        pool,
-        positions,
-        newsData,
-        marketData,
-        quotesData,
-        config
-      };
+    window.__DATA__ = {
+      pool,
+      positions,
+      newsData,
+      marketData,
+      quotesData,
+      config
+    };
 
-      renderModule3({
-        pool,
-        positions,
-        newsData,
-        marketData,
-        quotesData,
-        config
-      });
-    window.renderModule3 = renderModule3;
-    } else if (m3) {
-      m3.innerHTML = `<p>目前沒有 Pool 資料</p>`;
-    }
-  } catch (error) {
-    console.error("module3 render error:", error);
-    if (m3) m3.innerHTML = `<p>module3 render 錯誤</p>`;
+    window.rerenderModule3 = function () {
+      if (!m3 || !window.__DATA__) return;
+      m3.innerHTML = renderModule3(window.__DATA__);
+    };
+
+    window.rerenderModule3();
+  } else if (m3) {
+    m3.innerHTML = `<p>目前沒有 Pool 資料</p>`;
   }
+} catch (error) {
+  console.error("module3 render error:", error);
+  if (m3) m3.innerHTML = `<p>module3 render 錯誤</p>`;
 }
-
-init();
