@@ -26,11 +26,19 @@ function getPositionId(pos, index) {
 }
 
 function getStatus(pos) {
-  const raw = String(pos.status || pos.health_status || "").trim();
+  const raw = String(
+    pos.status ||
+    pos.health_status ||
+    pos.state ||
+    pos.condition ||
+    ""
+  ).trim();
+
   if (raw.includes("健康")) return "健康";
   if (raw.includes("追蹤")) return "追蹤";
   if (raw.includes("風險")) return "風險";
   if (raw.includes("待確認")) return "待確認";
+
   return "待確認";
 }
 
