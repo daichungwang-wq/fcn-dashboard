@@ -232,6 +232,80 @@ function getDeltaClass(value) {
   return "";
 }
 
+function scoreToGroup(score) {
+  if (score >= 9) return "核心";
+  if (score >= 7) return "平衡";
+  if (score >= 5) return "防守";
+  if (score >= 3) return "收益";
+  return "避免";
+}
+
+function clampScore(score) {
+  return Math.max(1, Math.min(10, Number(score.toFixed(1))));
+}
+
+// 先做一版可動的 pure 分數
+function calcPureScore(stock) {
+  let score = stock.baseline_score ?? 5;
+
+  if (stock.volatility_level === "LOW") score += 0.3;
+  if (stock.volatility_level === "MEDIUM") score += 0;
+  if (stock.volatility_level === "HIGH") score -= 0.6;
+
+  if (stock.downside_risk_level === "LOW") score += 0.3;
+  if (stock.downside_risk_level === "MEDIUM") score += 0;
+  if (stock.downside_risk_level === "HIGH") score -= 0.6;
+
+  if (stock.allow_fcn === false) score -= 1.5;
+
+  if (stock.basket_role === "CORE") score += 0.4;
+  if (stock.basket_role === "BALANCER") score += 0;
+  if (stock.basket_role === "DEFENSIVE") score += 0.2;
+  if (stock.basket_role === "YIELD") score -= 0.5;
+  if (stock.basket_role === "AVOID") score -= 1.2;
+
+  return clampScore(score);
+}
+
+// 先做一版可動的 event 分數
+function calcEventImpact(stock) {
+  // 先用 sector + 波動做假事件擾動，之後再接真新聞
+  let impact = 0;
+
+  if (stock.sector === "AI_SEMI") impact -= 0.4;
+  if (stock.sector === "CLOUD_SOFTWARE") impact += 0.2;
+  if (stock.sector === "HEALTHCARE") impact += 0.1;
+  if (stock.sector === "ENERGY") impact -= 0.1;
+  if (stock.sector === "ETF") impact += 0.1;
+
+  if (stock.volatility_level === "HIGH") impact -= 0.5;
+  if (stock.volatility_level === "LOW") impact += 0.2;
+
+  if (stock.symbol === "NVDA") impact += 0.4;
+  if (stock.symbol === "TSLA") impact -= 1.0;
+  if (stock.symbol === "LQD") impact += 0.2;
+
+  return Number(impact.toFixed(1));
+}
+
+function enrichStock(stock) {
+  const pureScore = calcPureScore(stock);
+  const pureGroup = scoreToGroup(pureScore);
+
+  const eventImpact = calcEventImpact(stock);
+  const eventScore = clampScore(pureScore + eventImpact);
+  const eventGroup = scoreToGroup(eventScore);
+
+  return {
+    ...stock,
+    pure_score: pureScore,
+    pure_group: pureGroup,
+    event_score: eventScore,
+    event_group: eventGroup,
+    event_impact: eventImpact
+  };
+}
+
 function renderStockCard(stock) {
   const baselineGroup = stock.baseline_group ?? "--";
   const baselineScore = stock.baseline_score ?? "--";
@@ -249,6 +323,11 @@ function renderStockCard(stock) {
   const fcnBadge = stock.allow_fcn
     ? `<span class="tag-core">可做 FCN</span>`
     : `<span class="tag-avoid">不做 FCN</span>`;
+
+  const impactText =
+    typeof eventImpact === "number"
+      ? `${eventImpact > 0 ? "+" : ""}${eventImpact}`
+      : eventImpact;
 
   return `
     <div class="stock-card">
@@ -280,7 +359,7 @@ function renderStockCard(stock) {
 
       <div class="stock-row">
         ΔEvent：
-        <span class="${deltaClass}">${eventImpact}</span>
+        <span class="${deltaClass}">${impactText}</span>
       </div>
 
       <div class="stock-note">
@@ -299,9 +378,11 @@ function renderM3AStocks(pool) {
     return;
   }
 
+  const enrichedPool = pool.map(enrichStock);
+
   el.innerHTML = `
     <div class="stock-list">
-      ${pool.map(renderStockCard).join("")}
+      ${enrichedPool.map(renderStockCard).join("")}
     </div>
   `;
 }
