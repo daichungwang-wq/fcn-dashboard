@@ -215,6 +215,23 @@ function initDashboard() {
 initDashboard();
 
 // ===== M3-A：讀取 pool20.json 並顯示 =====
+function getGroupClass(group) {
+  if (group === "核心") return "tag-core";
+  if (group === "平衡") return "tag-balance";
+  if (group === "防守") return "tag-defensive";
+  if (group === "避免") return "tag-avoid";
+  return "";
+}
+
+function getDeltaClass(value) {
+  if (value == null || value === "--") return "";
+  const n = Number(value);
+  if (Number.isNaN(n)) return "";
+  if (n > 0) return "delta-positive";
+  if (n < 0) return "delta-negative";
+  return "";
+}
+
 function renderStockCard(stock) {
   const baselineGroup = stock.baseline_group ?? "--";
   const baselineScore = stock.baseline_score ?? "--";
@@ -224,6 +241,15 @@ function renderStockCard(stock) {
   const eventScore = stock.event_score ?? "--";
   const eventImpact = stock.event_impact ?? "--";
 
+  const baselineClass = getGroupClass(baselineGroup);
+  const pureClass = getGroupClass(pureGroup);
+  const eventClass = getGroupClass(eventGroup);
+  const deltaClass = getDeltaClass(eventImpact);
+
+  const fcnBadge = stock.allow_fcn
+    ? `<span class="tag-core">可做 FCN</span>`
+    : `<span class="tag-avoid">不做 FCN</span>`;
+
   return `
     <div class="stock-card">
       <div class="stock-head">
@@ -231,23 +257,30 @@ function renderStockCard(stock) {
       </div>
 
       <div class="stock-meta">
-        ${stock.sector} ｜ ${stock.subsector} ｜ allow_fcn: ${stock.allow_fcn ? "Y" : "N"}
+        ${stock.sector} ｜ ${stock.subsector} ｜ ${fcnBadge}
       </div>
 
       <div class="stock-row">
-        <span>Baseline：${baselineGroup}（${baselineScore}）</span>
+        Baseline：
+        <span class="${baselineClass}">${baselineGroup}</span>
+        （${baselineScore}）
       </div>
 
       <div class="stock-row">
-        <span>Pure：${pureGroup}（${pureScore}）</span>
+        Pure：
+        <span class="${pureClass}">${pureGroup}</span>
+        （${pureScore}）
       </div>
 
       <div class="stock-row">
-        <span>Event：${eventGroup}（${eventScore}）</span>
+        Event：
+        <span class="${eventClass}">${eventGroup}</span>
+        （${eventScore}）
       </div>
 
       <div class="stock-row">
-        <span>ΔEvent：${eventImpact}</span>
+        ΔEvent：
+        <span class="${deltaClass}">${eventImpact}</span>
       </div>
 
       <div class="stock-note">
