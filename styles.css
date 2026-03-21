@@ -203,3 +203,38 @@ body {
     gap: 12px;
   }
 }
+
+.m3-dashboard {
+  margin: 20px 0;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.card {
+  background: #111;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #333;
+}
+
+.card h4 {
+  margin-bottom: 8px;
+  color: #6cf;
+}
+
+.module-block {
+  margin-top: 20px;
+  padding: 10px;
+  border-top: 1px solid #333;
+}
+
+.m3-explain {
+  background: #1a1a1a;
+  padding: 10px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
