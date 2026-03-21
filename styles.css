@@ -903,3 +903,17 @@ init();
     page-break-inside: avoid;
   }
 }
+.market-up {
+  color: #c0392b;
+  font-weight: 800;
+}
+
+.market-down {
+  color: #1e8449;
+  font-weight: 800;
+}
+
+.market-flat {
+  color: #666;
+  font-weight: 700;
+}
