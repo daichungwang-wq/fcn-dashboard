@@ -48,12 +48,48 @@ function getTopNews(data) {
 }
 
 function renderMarketTable(marketData) {
+  const pickDisplayValue = (v) => {
+    if (v == null) return "-";
+
+    if (typeof v !== "object") return v;
+
+    return (
+      v.value ??
+      v.current ??
+      v.latest ??
+      v.now ??
+      v.close ??
+      v.price ??
+      (typeof v.data === "object" ? (v.data?.value ?? v.data?.current ?? v.data?.latest) : undefined) ??
+      "-"
+    );
+  };
+
+  const pickPreviousValue = (v) => {
+    if (v == null) return "-";
+
+    if (typeof v !== "object") return "-";
+
+    return (
+      v.previous ??
+      v.prev ??
+      v.last ??
+      v.yesterday ??
+      (typeof v.data === "object" ? (v.data?.previous ?? v.data?.prev ?? v.data?.last) : undefined) ??
+      "-"
+    );
+  };
+
   const rows = Array.isArray(marketData)
-    ? marketData
+    ? marketData.map((item) => ({
+        name: item.name ?? item.label ?? "-",
+        value: pickDisplayValue(item),
+        previous: pickPreviousValue(item)
+      }))
     : Object.entries(marketData || {}).map(([name, value]) => ({
         name,
-        value: value && typeof value === "object" ? (value.value ?? "-") : (value ?? "-"),
-        previous: value && typeof value === "object" ? (value.previous ?? value.prev ?? "-") : "-"
+        value: pickDisplayValue(value),
+        previous: pickPreviousValue(value)
       }));
 
   if (!rows.length) return "";
@@ -70,17 +106,13 @@ function renderMarketTable(marketData) {
           </tr>
         </thead>
         <tbody>
-          ${rows
-            .map(
-              (r) => `
+          ${rows.map((r) => `
             <tr>
               <td>${escapeHtml(r.name)}</td>
               <td>${escapeHtml(r.value)}</td>
               <td>${escapeHtml(r.previous)}</td>
             </tr>
-          `
-            )
-            .join("")}
+          `).join("")}
         </tbody>
       </table>
     </div>
