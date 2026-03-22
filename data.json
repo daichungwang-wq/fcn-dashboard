@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-03-22 13:40",
+  "updated_at": "2026-03-22 13:50",
   "summary": {
     "active_fcn_count": 24,
     "top_risk_code": "FCN710H",
@@ -9,6 +9,48 @@
   },
   "morning_brief": {
     "international_news": [
+      {
+        "title": "No vote, no endgame: Trump’s Iran war rattles Congress as costs and casualties mount",
+        "summary": "US President Trump's war with Iran, initiated without congressional approval, faces growing scrutiny. With ca…",
+        "content": "President Donald Trump took the United States to war without a vote of support from Congress, but lawmakers are increasingly questioning when, how and at what cost the war with Iran will come to an e… [+4831 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Trump says US considering 'winding down' Iran war",
+        "summary": "US president Donald Trump has called Nato allies “cowards” for refusing to offer warships to reopen the Strai…",
+        "content": "President Donald Trump said the U.S. was considering \"winding down\" its military operation against Iran, as Iran and Israel traded attacks on Saturday and Iranian media said the nuclear enrichment fa… [+5433 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Israel threatens a surge in attacks as Iran fires missiles farther than ever",
+        "summary": "Israel's defense minister threatened increased attacks on Iran, while Britain condemned an Iranian strike on…",
+        "content": "CAIRO: Israel's defense minister threatened a surge in attacks against Iran on Saturday and Britain condemned Iran for targeting a joint U.K.-U.S. base in the Indian Ocean as the war in the Middle Ea… [+6664 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Fertilizer Shock Escalates as New Supply Risks Emerge",
+        "summary": "The war in the Middle East has created major disruptions to global supplies of nitrogen-based crop nutrients.…",
+        "content": "Sulfur is used for a lot of things, and if we are in a situation where we are in a constrained supply situation, fertilizer may not be the first use case of that sulfur, Nigh said. It could be a more… [+2381 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
+        "affects_fcn": true,
+        "impact_score": -1
+      },
+      {
+        "title": "Think. Over the week",
+        "summary": "The Editorial also lauded the Finance Ministry’s initiative of drawing up various scenarios on the war’s econ…",
+        "content": "The Centres move to earmark 1 lakh crore from this years Budget towards an Economic Stabilisation Fund to deal with the economic crisis emerging from the current Middle East war was welcomed in our E… [+1935 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
+        "affects_fcn": true,
+        "impact_score": -1
+      },
+      {
+        "title": "Oil prices soar as war with Iran continues",
+        "summary": "The U.S. temporarily lifted sanctions on Iranian oil already at sea as oil prices soar amid the Middle East c…",
+        "content": "Copyright ©2026 CBS Interactive Inc. All rights reserved.｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
+        "affects_fcn": true,
+        "impact_score": -1
+      },
       {
         "title": "More than 20 countries say want to contribute to efforts for safe passage in Hormuz strait",
         "summary": "Twenty nations are uniting to guarantee safe passage through the Strait of Hormuz. They strongly condemn Iran…",
@@ -24,37 +66,23 @@
         "impact_score": 0
       },
       {
-        "title": "Logitech G325 Lightspeed Wireless Gaming Headset Review",
-        "summary": "The Logitech G325 Lightspeed Wireless pairs exceptional comfort with impressive sound quality for a mid-tier…",
-        "content": "Why you can trust Tom's Hardware Our expert reviewers spend hours testing and comparing products and services so you can choose the best for you. Find out more about how we test.The cost of gaming h… [+14033 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "Temperature, Larval Diet, and Density Effects on Development Rate and Survival of Aedes aegypti (Diptera: Culicidae)",
+        "summary": "Many environmental factors, biotic and abiotic interact to influence organismal development. Given the import…",
+        "content": "Abstract Many environmental factors, biotic and abiotic interact to influence organismal development. Given the importance of Aedes aegypti as a vector of human pathogens including dengue and yellow… [+43497 chars]｜分類：全球經濟｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Govt hikes commercial LPG allocation to 50 pc as domestic output improves",
-        "summary": "Commercial LPG supplies to key sectors like hotels and restaurants have been boosted by 20 percent. This brin…",
-        "content": "New Delhi: The government has approved an additional 20 per cent allocation of commercial LPG to states and Union Territories, taking the total allocation to 50 per cent, as increased domestic output… [+2580 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "(VIDEO) 5 Essential Things to Know About Olivier Rioux: The 7-Foot-9 Florida Gators Center Making History",
+        "summary": "GAINESVILLE, Fla. — Olivier Rioux, the 7-foot-9 Canadian center for the Florida Gators, continues to captivat…",
+        "content": "GAINESVILLE, Fla. — Olivier Rioux, the 7-foot-9 Canadian center for the Florida Gators, continues to captivate college basketball fans in March 2026 as the tallest player ever to compete in NCAA men'… [+4633 chars]｜分類：全球經濟｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
         "title": "Juliana Stratton’s Big Senate Win, Kristi Noem’s Next Steps and the Origins of Women’s History Month",
         "summary": "Weekend Reading on Women’s Representation is a compilation of stories about women’s representation in politic…",
-        "content": "The Origins of Women’s History Month President Jimmy Carter signs proclamation creating National Womens History Week on Feb. 27, 1980. (White House Staff Photographers Collection) This month, Ive b… [+28010 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Top 5 Stories on Brownstoner This Week: An Early Luxury Apartment Building",
-        "summary": "Studio in Park Slope Brownstone Near Prospect Park Asks $2,800 It is a modest studio, but for Prospect Park l…",
-        "content": "Popular stories this week include an estate condition co-op in Park Slope, a Clinton Hill three-bedroom for rent, and more Brooklyn news. Photo via Corcoran Studio in Park Slope Brownstone Near Pros… [+2183 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Iran has grim warning for 'UK lives' after government make huge move",
-        "summary": "Iran shared an ominous warning about British lives being put 'in danger' after Keir Starmer gave the green li…",
-        "content": "Iran issued an ominous warning about British lives being put 'in danger' after Sir Keir Starmer gave the green light for UK bases to be used for strikes against the nation. Amid mounting pressure f… [+4074 chars]｜分類：地緣政治｜解讀：影響有限",
+        "content": "The Origins of Women’s History Month President Jimmy Carter signs proclamation creating National Womens History Week on Feb. 27, 1980. (White House Staff Photographers Collection) This month, Ive b… [+28010 chars]｜分類：全球經濟｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
@@ -64,34 +92,6 @@
         "content": "SYDNEY — Japan edged hosts Australia 1-0 in the AFC Women's Asian Cup final on Saturday, March 21, 2026, securing their third continental crown and denying the Matildas a home triumph in front of a r… [+3717 chars]｜分類：全球經濟｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
-      },
-      {
-        "title": "Naver Webtoon Reports US$2.7 Billion Creator Payout Over 5 Years",
-        "summary": "Naver Webtoon outlines 3 core priorities for 2026 // Naver Webtoon shared its creator support performance and…",
-        "content": "Image via Naver Webtoon's website Naver WEBTOON shared its creator support performance and 2026 business strategy at a press conference held in Seoul on March 17, highlighting continued investment i… [+2117 chars]｜分類：全球經濟｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "'He should be called Dhurandhar Dhami': Defence minister Rajnath Singh on 4 years of Uttarakhand govt",
-        "summary": "Addressing a public gathering here on the completion of four years of the Uttarakhand government, the Defence…",
-        "content": "<ul><li>News</li> <li>India News</li> <li>'He should be called Dhurandhar Dhami': Defence minister Rajnath Singh on 4 years of Uttarakhand govt</li></ul> Follow Us On Social Media Connor Zary Cal… [+1775 chars]｜分類：全球經濟｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "12 best marketing campaigns of all time",
-        "summary": "From viral moments to brand movements, what the best campaigns teach modern marketers",
-        "content": "The best marketing campaigns dont just go viral, they shift how platforms are used, and redefine how brands connect with people. They spark conversations, inspire user behavior, and sometimes, alter … [+6362 chars]｜分類：全球經濟｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Long overlooked as crucial to life, fungi start to get their due",
-        "summary": "Fungi create soil, sequester vast amounts of carbon, and contribute $55 trillion to the global economy, but k…",
-        "content": "This story was originally published by Yale E360 and is reproduced here as part of the Climate Desk collaboration. Agarikon is one of two endangered species of fungi in the United States. So rare is… [+10699 chars]｜分類：全球經濟｜解讀：地緣風險升高，需留意市場波動擴大",
-        "affects_fcn": true,
-        "impact_score": -1
       }
     ],
     "financial_news": [
@@ -145,42 +145,63 @@
         "impact_score": 1
       },
       {
-        "title": "1978 Ford F-250 Ranger XLT 4×4",
-        "summary": "This 1978 Ford F-250 Ranger XLT 4x4 pickup was sold new at Jim Pauley, Inc. of Shelton, Washington, and was l…",
-        "content": "This 1978 Ford F-250 Ranger XLT 4×4 pickup was sold new at Jim Pauley, Inc. of Shelton, Washington, and was later refurbished under prior ownership. Work included overhauling the 400ci V8 and fitting… [+2386 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "title": "AI boom? OpenAI set to double its team by end of 2026; new hires to be deployed across these fields - Report",
+        "summary": "The company's latest funding round valued it at $840 billion, as Big Tech and Masayoshi Son's Softbank joined…",
+        "content": "OpenAI said it plans to nearly double its workforce to 8,000 from the existing 4,500 by the end of 2026, the Financial Times reported on Saturday, citing two people with knowledge of the matter. As … [+1536 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "altqa-cli added to PyPI",
-        "summary": "AI-powered QA automation CLI — tests your app from Jira tickets, reports bugs back automatically",
-        "content": "AI-powered QA automation from your terminal. AltQA reads Jira tickets, runs browser tests, detects bugs, and reports them back to Jira like having an autonomous QA engineer on your team. pip install… [+5718 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "title": "9k-Mile 2017 Porsche Cayenne Platinum Edition at No Reserve",
+        "summary": "This 2017 Porsche Cayenne is a Mahogany Metallic-finished Platinum Edition that has 9k miles, and it was opti…",
+        "content": "This 2017 Porsche Cayenne is a Mahogany Metallic-finished Platinum Edition that has 9k miles, and it was optioned from the factory with the Premium Package in addition to heated, ventilated, and powe… [+2350 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Nancy Guthrie Update: Expert Calls for 'No-Body Homicide' Approach as Search Continues",
-        "summary": "TUCSON, Ariz. — The search for Nancy Guthrie, the 84-year-old mother of NBC *Today* show co-host Savannah Gut…",
-        "content": "TUCSON, Ariz. — The search for Nancy Guthrie, the 84-year-old mother of NBC *Today* show co-host Savannah Guthrie, entered its seventh week on March 21, 2026, with no confirmed breakthroughs, no arre… [+4606 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "title": "Walmart digital price labels are coming to every store shelf in U.S. by end of 2026",
+        "summary": "Walmart is rolling out digital shelf labels and expects it to be in all U.S. stores by year’s end. Is it surg…",
+        "content": "As the technological and digital landscape has transformed American retail, there have been some areas of life that have remained unchanged. The grocery store aisle, for instance, looks largely the s… [+8284 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Editors’ Prepping Progress",
-        "summary": "To be prepared for a crisis, every Prepper must establish goals and make both long-term and short-term plans.…",
-        "content": "To be prepared for a crisis, every Prepper must establish goals and make both long-term and short-term plans. In this column, the SurvivalBlog editors review their week’s prep activities and planned … [+3307 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "title": "No replies, no rejections: What’s behind the growing silence in hiring?",
+        "summary": "A growing number of job seekers are facing silence instead of responses, as ghosting reaches new highs. A rep…",
+        "content": "Follow Us On Social Media Iran Strikes Ben Gurion Airport, Drones Hit Fuel Depots After Natanz Attack EscalationFrom Moscow To New Delhi, Muslims Across World Offer Eid PrayersFlood Wreaks Havoc In … [+2434 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Juliana Stratton’s Big Senate Win, Kristi Noem’s Next Steps and the Origins of Women’s History Month",
-        "summary": "Weekend Reading on Women’s Representation is a compilation of stories about women’s representation in politic…",
-        "content": "The Origins of Women’s History Month President Jimmy Carter signs proclamation creating National Womens History Week on Feb. 27, 1980. (White House Staff Photographers Collection) This month, Ive b… [+28010 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "title": "350 violations of child rights code recorded during 2082 House of Representatives election",
+        "summary": "KATHMANDU: A study has found that 350 incidents violating the child rights provisions of the election code of…",
+        "content": "KATHMANDU: A study has found that 350 incidents violating the child rights provisions of the election code of conduct were recorded before and after Nepals House of Representatives Election 2026. Ac… [+3487 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       }
     ],
     "ai_trend": [
+      {
+        "title": "openmax 0.5.50",
+        "summary": "Multi AI Agent orchestration hub — dispatch interactive AI agents across terminal panes",
+        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Show HN: Deterministic security solution for AI agents – OpenClaw and 2 more",
+        "summary": "I wanted to share a solution that I made initially for myself for OpenClaw, that helps control what your ai a…",
+        "content": "I wanted to share a solution that I made initially for myself for OpenClaw, that helps control what your ai agents can reach when you let it do stuff without impacting its power, I hope it's useful t… [+1564 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "openmax 0.5.49",
+        "summary": "Multi AI Agent orchestration hub — dispatch interactive AI agents across terminal panes",
+        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
       {
         "title": "altqa-cli added to PyPI",
         "summary": "AI-powered QA automation CLI — tests your app from Jira tickets, reports bugs back automatically",
@@ -203,37 +224,16 @@
         "impact_score": 0
       },
       {
-        "title": "humancli added to PyPI",
-        "summary": "Python CLIs for agents and humans",
-        "content": "Python CLIs for agents and humans. agentcli builds command-line interfaces that produce structured, parseable output for AI agents while remaining human-friendly. Type hints are the schema a functio… [+2176 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "AI boom? OpenAI set to double its team by end of 2026; new hires to be deployed across these fields - Report",
+        "summary": "The company's latest funding round valued it at $840 billion, as Big Tech and Masayoshi Son's Softbank joined…",
+        "content": "OpenAI said it plans to nearly double its workforce to 8,000 from the existing 4,500 by the end of 2026, the Financial Times reported on Saturday, citing two people with knowledge of the matter. As … [+1536 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "antiqa added to PyPI",
-        "summary": "AI-powered QA automation CLI — tests your app from Jira tickets, reports bugs back automatically",
-        "content": "AI-powered QA automation from your terminal. AntiQA reads Jira tickets, runs browser tests, detects bugs, and reports them back to Jira like having an autonomous QA engineer on your team. pip instal… [+5728 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "pytest-agent-digest added to PyPI",
-        "summary": "A Pytest plugin to generate a Markdown report for AI Agents",
-        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "kailash-kaizen 2.0.0",
-        "summary": "Advanced AI agent framework built on Kailash SDK",
-        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "plutus-ai 0.3.165",
-        "summary": "Autonomous AI agent with subprocess orchestration, dynamic tool creation, and a local-first web interface",
-        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "Temperature, Larval Diet, and Density Effects on Development Rate and Survival of Aedes aegypti (Diptera: Culicidae)",
+        "summary": "Many environmental factors, biotic and abiotic interact to influence organismal development. Given the import…",
+        "content": "Abstract Many environmental factors, biotic and abiotic interact to influence organismal development. Given the importance of Aedes aegypti as a vector of human pathogens including dengue and yellow… [+43497 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       }
