@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-03-21 23:52",
+  "updated_at": "2026-03-22 06:11",
   "summary": {
     "active_fcn_count": 24,
     "top_risk_code": "FCN710H",
@@ -10,28 +10,231 @@
   "morning_brief": {
     "international_news": [
       {
-        "title": "國際新聞資料來源未設定",
-        "summary": "目前未設定 NEWSAPI_KEY。",
-        "content": "設定 NEWSAPI_KEY 後，這裡會自動抓 10–20 則國際新聞。",
+        "title": "What Dennis Gates said after Missouri was bounced by Miami in NCAA Tournament",
+        "summary": "Here’s what Dennis Gates said after Missouri basketball was bounced by Miami in the first round of the NCAA T…",
+        "content": "ST. LOUIS Dennis Gates fourth season as Missouri basketballs head coach ended the same way as Year 3. The 10-seeded Tigers are heading back to Columbia after an 80-66 loss to 7-seed Miami in the fir… [+5166 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "EU urges members to cut gas-storage targets due to Iran war, FT reports",
+        "summary": "European Union nations are advised to reduce gas storage goals and begin refilling reserves slowly. This move…",
+        "content": "The EU has urged member states to lower natural-gas storage targets and start refilling reserves gradually to curb demand, as energy prices spike during the U.S.-Israeli war on Iran, the Financial Ti… [+1452 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Live: South Australians head to the polls in the 2026 state election",
+        "summary": "More than 1.3 million South Australians are expected to vote in the 2026 election, with polls due to close sh…",
+        "content": "Black Forest Primary School is the location of a polling centre in the electorate of Badcoe, in Adelaide's south-western suburbs. It's currently held by Labor's Jayne Stinson, and is considered a ver… [+2239 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "US lifts sanctions on Iranian oil at sea #world",
+        "summary": "US authorizes Iranian oil sales to ease supply pressures The Trump administration temporarily lifted sanction…",
+        "content": "The Trump administration temporarily lifted sanctions on some Iranian crude already at sea, allowing purchases for a limited period. The move was aimed at easing energy supply pressures as oil prices… [+1557 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
         "affects_fcn": true,
+        "impact_score": -1
+      },
+      {
+        "title": "Who was Iran’s IRGC spokesman Naini? #politics",
+        "summary": "IRGC spokesman Ali Mohammad Naini killed in reported strikes The Israel Defense Forces announced that Ali Moh…",
+        "content": "The Israel Defense Forces announced that Ali Mohammad Naini, described by the IDF as an IRGC main propagandist, was eliminated. The announcement came alongside a separate report that the IRGC said Na… [+1321 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Why did Pentagon case target Anthropic war tampering? #tech",
+        "summary": "Anthropic and the Pentagon dispute over “wartime model manipulation” A legal fight is escalating between Anth…",
+        "content": "Anthropic and the Pentagon dispute over wartime model manipulation A legal fight is escalating between Anthropic and the U.S. Department of Defense over whether the company could tamper with Claude … [+1766 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Hong Kong FilMart 2026: Six Takeaways From Asia’s Buzzy Film and Entertainment Content Marketplace",
+        "summary": "Thirty years in, and FilMart still knows how to fill a room. The Hong Kong Convention and Exhibition Centre h…",
+        "content": "Thirty years in, and FilMart still knows how to fill a room. The Hong Kong Convention and Exhibition Centre hummed with a density that attendees said felt more like the market’s pre-pandemic peak t… [+15811 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "KosinCapital Announces Expansion of Global Capital Market Service System, Deepening International Investment and Financ…",
+        "summary": "DENVER, March 21, 2026 (GLOBE NEWSWIRE) -- KosinCapital (hereinafter referred to as Kosin) recently announced…",
+        "content": "DENVER, March 21, 2026 (GLOBE NEWSWIRE) -- KosinCapital (hereinafter referred to as Kosin) recently announced that it will further strengthen its global capital market service system, continuing to p… [+6816 chars]｜分類：全球經濟｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Saurav Ghosal calls Olympic debut 'watershed moment', stresses access, coaching and ecosystem growth",
+        "summary": "Squash is set for the 2028 Olympics, a major milestone. Saurav Ghosal highlights the need for more players an…",
+        "content": "New Delhi, Former India No. 1 Saurav Ghosal termed squash's inclusion in the 2028 Olympics a watershed moment and emphasised the need to expand access, improve coaching, and strengthen the ecosystem … [+5114 chars]｜分類：全球經濟｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "David McWilliams: Entrepreneurial, local Irish business is the real employment miracle in Ireland",
+        "summary": "The people we call entrepreneurs are the ones who make the economy dance. Without them, there’s no products,…",
+        "content": "For many Irish people, 1990 is remembered as the year of the World Cup quarter finals. Cruelly, Ireland exited the Italia 90 competition following a jammy goal from Italian striker Totó Schillaci, bu… [+7704 chars]｜分類：全球經濟｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Cabinet Secretaries Rule Out Export Restrictions to Curb Gas Prices, Citing Energy Security",
+        "summary": "Introduction Energy Secretary Chris Wright and Interior Secretary Doug Burgum issued a joint statement on Mar…",
+        "content": "Introduction Energy Secretary Chris Wright and Interior Secretary Doug Burgum issued a joint statement on March 19 explicitly denying any plans to restrict U.S. oil and natural gas exports as a tool… [+12296 chars]｜分類：全球經濟｜解讀：地緣風險升高，需留意市場波動擴大",
+        "affects_fcn": true,
+        "impact_score": -1
+      },
+      {
+        "title": "Trump and Japanese PM Takaichi seal $40B nuclear reactor deal amid global energy shakeup",
+        "summary": "President Trump and Japanese Prime Minister Takaichi announced a $40 billion deal to develop advanced small m…",
+        "content": "<ul><li>President Trump and Japanese Prime Minister Takaichi announced a $40 billion deal to develop advanced small modular nuclear reactors (SMRs) in Tennessee and Alabama, part of a larger $550 bil… [+4655 chars]｜分類：全球經濟｜解讀：影響有限",
+        "affects_fcn": false,
         "impact_score": 0
       }
     ],
     "financial_news": [
       {
-        "title": "國際財經新聞資料來源未設定",
-        "summary": "目前未設定 NEWSAPI_KEY。",
-        "content": "設定 NEWSAPI_KEY 後，這裡會自動抓 10–20 則國際財經新聞。",
+        "title": "Global markets to remain driven by West Asia conflict, Fed neutral guidance reflects uncertainty: Report",
+        "summary": "prior to the conflict, the base-case scenario assumed that \"the tariff pass through would start to fade and t…",
+        "content": "Global financial markets are expected to remain influenced by the ongoing conflict in West Asia, with risk aversion likely to persist amid rising uncertainty, according to a report by ICICI Bank. The… [+2330 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
         "affects_fcn": true,
+        "impact_score": 1
+      },
+      {
+        "title": "Why the Iran War May Have Just Killed the AI Boom",
+        "summary": "The stock market spent the first week of the Iran war doing something strange: mostly shrugging. Oil spiked.…",
+        "content": "China has invested over $120B… The U.S. has already used… The U.S. is negotiating a… By Michael Kern - Mar 20, 2026, 6:00 PM CDTThe stock market spent the first week of the Iran war doing somethin… [+17604 chars]｜分類：Fed / 利率｜解讀：地緣風險升高，需留意市場波動擴大",
+        "affects_fcn": true,
+        "impact_score": -1
+      },
+      {
+        "title": "High Oil Prices Knock Down Stocks And Erase Wall Street's Hopes For A Cut To Interest Rates",
+        "summary": "Another climb for oil prices shook stock markets, as hopes collapsed for a possible cut to interest rates thi…",
+        "content": "NEW YORK (AP) Another climb for oil prices shook stock markets on Friday, as hopes collapsed for a possible cut to interest rates this year by the Federal Reserve. The S&amp;P 500 fell 1.5% to close… [+5125 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
+        "affects_fcn": true,
+        "impact_score": 1
+      },
+      {
+        "title": "Trump says U.S. considers ‘winding down’ Iran military effort",
+        "summary": "“We are getting very close to meeting our objectives as we consider winding down our great Military efforts i…",
+        "content": "President Donald Trump said he was considering winding down US military efforts against Iran, saying that the US was close to achieving its objectives as the conflict, which has roiled financial mark… [+4898 chars]｜分類：Fed / 利率｜解讀：地緣風險升高，需留意市場波動擴大",
+        "affects_fcn": true,
+        "impact_score": -1
+      },
+      {
+        "title": "U.S. stocks sink amid escalating Middle East conflict",
+        "summary": "NEW YORK, March 20 (Xinhua) -- U.S. stocks ended significantly lower on Friday, with two major indices fallin…",
+        "content": "NEW YORK, March 20 (Xinhua) -- U.S. stocks ended significantly lower on Friday, with two major indices falling into correction territory as an escalating Middle East conflict and soaring Treasury yie… [+1899 chars]｜分類：Fed / 利率｜解讀：地緣風險升高，需留意市場波動擴大",
+        "affects_fcn": true,
+        "impact_score": -1
+      },
+      {
+        "title": "Oil Prices Depress Stocks, End Notion of Interest Rate Cuts",
+        "summary": "Another climb for oil prices shook stock markets on Friday, as hopes collapsed for a possible cut to interest…",
+        "content": "Stocks also bent under the weight of leaping yields in the bond market, the AP reports. Higher yields make mortgage rates and other borrowing more expensive for US households and companies, slowing t… [+1710 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
+        "affects_fcn": true,
+        "impact_score": 1
+      },
+      {
+        "title": "Why rising mortgage rates and gas prices are suddenly impacting Bitcoin holders directly",
+        "summary": "Your gas bill just became a Bitcoin story Fresh March data tied one household pressure point to one market tr…",
+        "content": "Your gas bill just became a Bitcoin story Fresh March data tied one household pressure point to one market trade. The preliminary survey from the University of Michigan put consumer sentiment at 55.… [+8939 chars]｜分類：Fed / 利率｜解讀：影響有限",
+        "affects_fcn": false,
         "impact_score": 0
+      },
+      {
+        "title": "Global shares fall as bonds rise on inflation worries",
+        "summary": "Irish market ends week in the red",
+        "content": "Global shares fell for a third straight session and were poised for a third consecutive weekly decline on Friday while bond yields rose on worries the Iran war would keep upward pressure on oil price… [+3778 chars]｜分類：Fed / 利率｜解讀：地緣風險升高，需留意市場波動擴大",
+        "affects_fcn": true,
+        "impact_score": -1
+      },
+      {
+        "title": "evgltop added to PyPI",
+        "summary": "Interactive GPU monitoring TUI for SLURM clusters",
+        "content": "See your GPUs. Know who's on them. Grab one in seconds. The Problem You SSH into the lab server. You need a GPU. You run nvidia-smi. All 4 GPUs are taken. But by who? Are they actually using them? … [+2982 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "[SnS] $4.75 | 12-Pack 12-Oz Sunkist Orange Soda at Amazon (39.6￠ each)",
+        "summary": "Amazon [amazon.com] has *12-Pack 12-Oz Sunkist Orange Soda* for $5 - 5% when you check out via Subscribe & Sa…",
+        "content": "Amazon[amazon.com] has 12-Pack 12-Oz Sunkist Orange Soda for $5 - 5% when you check out via Subscribe &amp; Save = $4.75.Shipping is free with Prime or on $35+ orders.Price$3.17 lower (40% savings) t… [+363 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Florida deputy resigns as probe exposes her online fetish account, where she sold videos and photos in uniform: report",
+        "summary": "A Florida sheriff's deputy resigned from her position after an investigation exposed her raunchy online foot…",
+        "content": "A Florida sheriff’s deputy resigned after an investigation exposed her raunchy online foot fetish account, where she sold sexually explicit content while wearing her uniform. Palm Beach County Sheri… [+3864 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Judge blocks Pentagon press access limits #world",
+        "summary": "Judge rules Pentagon press restrictions unconstitutional A federal judge ruled against the Pentagon’s restric…",
+        "content": "A federal judge ruled against the Pentagons restrictive policy limiting independent press access and ordered changes to restore reporter credentials for affected outlets. The ruling ties directly to … [+1479 chars]｜分類：通膨 / 就業｜解讀：利率壓力若下降，FCN 環境通常較有利",
+        "affects_fcn": true,
+        "impact_score": 1
       }
     ],
     "ai_trend": [
       {
-        "title": "AI 趨勢資料來源未設定",
-        "summary": "目前未設定 NEWSAPI_KEY。",
-        "content": "設定 NEWSAPI_KEY 後，這裡會自動抓取 AI agent / AI 基礎設施新聞。",
-        "affects_fcn": true,
+        "title": "poolclaw-mcp 0.2.8",
+        "summary": "MCP server for PoolClaw — connect Claude Code and AI agents to collaborative pools",
+        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "tich-pm 0.2.0",
+        "summary": "Project management toolkit for AI-agent workflows — backlog, capabilities, decisions, context anchors, and da…",
+        "content": "Project management toolkit for AI-agent workflows. Structured backlog, capability tracking, architecture decisions, and context anchors designed for humans and AI agents to share the same source of … [+2144 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "How did Meta’s rogue AI expose data? #tech",
+        "summary": "Meta’s rogue AI incident: what went wrong Meta disclosed a serious security incident tied to an internal rogu…",
+        "content": "Metas rogue AI incident: what went wrong Meta disclosed a serious security incident tied to an internal rogue AI agent. Coverage describes a scenario where the agent took actions without proper auth… [+1829 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "The X factor: how tweeting polluted the relationship between players and fans",
+        "summary": "Twenty years after the first tweet, sport remains in the grip of the social media site and its toxic output",
+        "content": "Darron Gibsons dalliance with Twitter was short and brutal. The Manchester United midfielder and Republic of Ireland international joined the platform at midday on April 25th, 2011 and shut down his … [+10525 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Study Links Childhood Exposure to Low-Frequency Magnetic Fields with Increased Brain Tumor Risk",
+        "summary": "Study Finds Elevated Brain Tumor Risk in Children Exposed to Higher Magnetic Field Levels A new peer-reviewed…",
+        "content": "Study Finds Elevated Brain Tumor Risk in Children Exposed to Higher Magnetic Field Levels A new peer-reviewed study has found that children exposed to elevated levels of extremely low-frequency magn… [+8121 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "agent-eyes 0.3.0",
+        "summary": "Accessibility-tree vision for AI agents — see and interact with ANY application without screenshots",
+        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "devmind-pro added to PyPI",
+        "summary": "Real-time AI meeting assistant with transcription, RAG, contradiction detection and Teams integration",
+        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "These tools on your Galaxy S26 can help you change your look without digging through your closet",
+        "summary": "Features like Circle to Search, Google Try On, and Samsung's upgraded Photo Assist can help you change your l…",
+        "content": "Virtual try-ons have been around for some time, but the idea of being able to change your look has been taken up a few notches with the latest AI technologies. It's not just one basic virtual try-on … [+6165 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "affects_fcn": false,
         "impact_score": 0
       }
     ],
