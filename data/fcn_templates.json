@@ -1,1 +1,13 @@
+[
+  {"id":"tpl_04","name":"正常組A","coupon":15,"tenor":9,"ki":55,"strike":70,"eki":true,"basket_size":4,"risk_tag":"normal"},
+  {"id":"tpl_06","name":"正常組C","coupon":18,"tenor":9,"ki":55,"strike":65,"eki":true,"basket_size":3,"risk_tag":"normal"},
+  {"id":"tpl_08","name":"正常組E","coupon":18,"tenor":6,"ki":55,"strike":70,"eki":true,"basket_size":4,"risk_tag":"normal"},
 
+  {"id":"tpl_10","name":"積極組A","coupon":22,"tenor":9,"ki":55,"strike":70,"eki":true,"basket_size":5,"risk_tag":"aggressive"},
+  {"id":"tpl_11","name":"積極組B","coupon":24,"tenor":9,"ki":55,"strike":70,"eki":false,"basket_size":5,"risk_tag":"aggressive"},
+
+  {"id":"tpl_14","name":"夢幻組A","coupon":17,"tenor":3,"ki":55,"strike":70,"eki":true,"basket_size":3,"risk_tag":"dream"},
+  {"id":"tpl_16","name":"夢幻組C","coupon":22,"tenor":9,"ki":55,"strike":70,"eki":true,"basket_size":5,"risk_tag":"dream"},
+
+  {"id":"tpl_18","name":"接股組A","coupon":30,"tenor":2,"ki":65,"strike":80,"eki":true,"basket_size":3,"risk_tag":"take_stock"}
+]
