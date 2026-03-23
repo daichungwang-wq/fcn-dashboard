@@ -1307,4 +1307,98 @@ async function init() {
 }
 
 document.addEventListener("DOMContentLoaded", init);
+/***********************
+ V7.4 UX 外掛（安全版）
+***********************/
 
+// ===== 等畫面 render 完再接管 =====
+setTimeout(() => {
+  applyUXFix();
+}, 1000);
+
+function applyUXFix() {
+  fixM3Stocks();
+  fixM2FCN();
+}
+
+// ===== M3：股票整張收合 =====
+function fixM3Stocks() {
+  const cards = document.querySelectorAll(".m3a-stock-card");
+
+  cards.forEach(card => {
+    if (card.dataset.uxFixed) return;
+    card.dataset.uxFixed = "1";
+
+    const summary = card.querySelector(".stock-summary") || card.children[0];
+    const allContent = Array.from(card.children).slice(1);
+
+    const wrapper = document.createElement("div");
+    wrapper.className = "stock-body";
+
+    allContent.forEach(el => wrapper.appendChild(el));
+    wrapper.style.display = "none";
+
+    card.appendChild(wrapper);
+
+    const btn = document.createElement("button");
+    btn.textContent = "展開";
+    btn.style.marginTop = "5px";
+
+    btn.onclick = () => {
+      const open = wrapper.style.display === "block";
+      wrapper.style.display = open ? "none" : "block";
+      btn.textContent = open ? "展開" : "收合";
+    };
+
+    summary.appendChild(btn);
+  });
+}
+
+// ===== M2：FCN整組收合 =====
+function fixM2FCN() {
+  const cards = document.querySelectorAll(".m3b-card");
+
+  cards.forEach(card => {
+    if (card.dataset.uxFixed) return;
+    card.dataset.uxFixed = "1";
+
+    const summary = card.children[0];
+    const allContent = Array.from(card.children).slice(1);
+
+    const wrapper = document.createElement("div");
+    wrapper.className = "fcn-body";
+
+    allContent.forEach(el => wrapper.appendChild(el));
+    wrapper.style.display = "none";
+
+    card.appendChild(wrapper);
+
+    const btn = document.createElement("button");
+    btn.textContent = "展開";
+
+    btn.onclick = () => {
+      const open = wrapper.style.display === "block";
+      wrapper.style.display = open ? "none" : "block";
+      btn.textContent = open ? "展開" : "收合";
+    };
+
+    summary.appendChild(btn);
+  });
+}
+
+// ===== 全部控制 =====
+window.expandAllStocks = () => {
+  document.querySelectorAll(".stock-body").forEach(el => el.style.display = "block");
+};
+
+window.collapseAllStocks = () => {
+  document.querySelectorAll(".stock-body").forEach(el => el.style.display = "none");
+};
+
+window.expandAllFCN = () => {
+  document.querySelectorAll(".fcn-body").forEach(el => el.style.display = "block");
+};
+
+window.collapseAllFCN = () => {
+  document.querySelectorAll(".fcn-body").forEach(el => el.style.display = "none");
+};
