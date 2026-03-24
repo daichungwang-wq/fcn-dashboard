@@ -190,7 +190,10 @@ export function evaluateFCN({
     eki
   });
 
+
   return {
-    pure_score: pure,
-    event_score: event,
-    worst_of: worst?.sy
+  pure_score: pure,
+  event_score: event,
+  worst_of: worst?.symbol || null
+};
+ 
