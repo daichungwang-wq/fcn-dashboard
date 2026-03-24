@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>振宇 FCN 系統</title>
+
+<style>
+body {
+  font-family: -apple-system, BlinkMacSystemFont;
+  margin: 0;
+  background: #f5f6f8;
+}
+
+.container {
+  padding: 16px;
+}
+
+.card {
+  background: white;
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+h1 {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+h2 {
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+button {
+  padding: 8px 14px;
+  border-radius: 12px;
+  border: none;
+  background: #3b6ef5;
+  color: white;
+  margin: 4px;
+}
+
+.btn-outline {
+  background: white;
+  color: #3b6ef5;
+  border: 1px solid #3b6ef5;
+}
+
+.stock-card {
+  background: white;
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 12px;
+}
+
+.extra {
+  display: none;
+  margin-top: 10px;
+  font-size: 14px;
+  color: #666;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>振宇 FCN 系統</h1>
+
+<div class="card">
+<h2>Module3｜FCN 決策系統</h2>
+
+<button onclick="expandAll()">全部展開</button>
+<button class="btn-outline" onclick="collapseAll()">全部收合</button>
+
+<div id="stock-list"></div>
+
+</div>
+
+</div>
+
+<script src="main.js"></script>
+
+</body>
+</html>
