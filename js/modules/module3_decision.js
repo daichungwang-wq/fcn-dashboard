@@ -3,10 +3,10 @@
 module3_decision.js V1
 M3｜FCN Decision UI（可用版）
 ========================================== */
+import { FCN_SCENARIOS } from "../../data/fcn_scenarios.js";
+import { FCN_RUNTIME } from "../../data/fcn_runtime.js";
+import { calcFCNPure } from "../core/fcn_engine.js";
 
-import { calcFCNPure } from “../core/fcn_engine.js”;
-import { FCN_SCENARIOS } from “../../data/fcn_scenarios.js”;
-import { FCN_RUNTIME } from “../../data/fcn_runtime.js”;
 
 // ——————————————
 // 狀態
