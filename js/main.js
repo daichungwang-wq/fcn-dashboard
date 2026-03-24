@@ -1,3 +1,10 @@
+// ====== fallback mock（保證有畫面） ======
+const mockStocks = [
+  { symbol: "NVDA", name: "NVIDIA", score: 10 },
+  { symbol: "TSM", name: "TSMC", score: 9 },
+  { symbol: "AAPL", name: "Apple", score: 8 },
+  { symbol: "MSFT", name: "Microsoft", score: 9 }
+];
 const appState = {
   stocks: [],
   expandedAll: false
