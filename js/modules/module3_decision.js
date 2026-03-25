@@ -103,9 +103,27 @@ function runSimulation() {
 function renderResults(results) {
   const container = document.getElementById("m3-result");
   if (!container) return;
-   const nvda = state.marketRuntime["NVDA"] || {};
-const price = nvda.price_now ?? "-";
-const ret = nvda.ret_1d != null ? (nvda.ret_1d * 100).toFixed(2) + "%" : "-";
+   // 取得 basket 股票（假設存在 r.detail.symbols）
+const symbols = r.detail.symbols || ["NVDA"];
+
+// 找最差表現
+let worst = null;
+let worstRet = 999;
+
+symbols.forEach(sym => {
+    const s = state.marketRuntime[sym];
+    if (!s || s.ret_1d == null) return;
+
+    if (s.ret_1d < worstRet) {
+        worstRet = s.ret_1d;
+        worst = s;
+        worst.symbol = sym;
+    }
+});
+
+const price = worst ? worst.price_now : "-";
+const ret = worst ? (worst.ret_1d * 100).toFixed(2) + "%" : "-";
+const worstSymbol = worst ? worst.symbol : "-";
   container.innerHTML = results.map((r, i) => `
     <div>
       <b>${r.name}｜${r.score}</b>
