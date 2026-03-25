@@ -205,20 +205,35 @@ export function calcPriceMomentum(stock = {}) {
 
 // ------------------------------------------
 // 9. Adjustment Score
-// 先用定稿版區間
+//    對口後進化版 投資價值是否浮現？
 // ------------------------------------------
 export function calcAdjustmentScore(stock = {}) {
-  const m = calcPriceMomentum(stock);
+  const r1d = toNumber(stock.ret_1d);
+  const r1w = toNumber(stock.ret_1w);
+  const r1m = toNumber(stock.ret_1m);
 
-  if (m <= -25) return 8;
-  if (m <= -15) return 6;
-  if (m <= -8) return 4;
-  if (m < 0) return 2;
+  // 核心波動計算
+  const vol =
+    0.6 * r1d +
+    0.3 * r1w +
+    0.1 * r1m;
 
-  if (m <= 5) return 0;
-  if (m <= 10) return -2;
-  if (m <= 20) return -4;
-  return -6;
+  const volPct = vol * 100;
+
+  // 新版評分（你剛定義的）
+  if (volPct <= -30) return 10;
+  if (volPct <= -20) return 8;
+  if (volPct <= -15) return 5;
+  if (volPct <= -10) return 4;
+  if (volPct < 0) return 1;
+
+  if (volPct <= 5) return -5;
+  if (volPct <= 10) return -1;
+  if (volPct <= 15) return -2;
+  if (volPct <= 20) return -3;
+  if (volPct <= 30) return -5;
+
+  return -10;
 }
 
 // ------------------------------------------
