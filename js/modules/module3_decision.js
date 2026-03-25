@@ -103,13 +103,15 @@ function runSimulation() {
 function renderResults(results) {
   const container = document.getElementById("m3-result");
   if (!container) return;
-
+   const nvda = state.marketRuntime["NVDA"] || {};
+const price = nvda.price_now ?? "-";
+const ret = nvda.ret_1d != null ? (nvda.ret_1d * 100).toFixed(2) + "%" : "-";
   container.innerHTML = results.map((r, i) => `
     <div>
       <b>${r.name}｜${r.score}</b>
       <button onclick="toggleDetail(${i})">展開</button>
       <div id="detail-${i}" style="display:none;">
-        stock:${r.detail.stock}<br>
+        stock:${r.detail.stock} ｜ NVDA: ${price} (${ret})<br/>
         rate:${r.detail.rate}<br>
         period:${r.detail.period}<br>
         p_risk:${r.detail.p_risk}<br>
