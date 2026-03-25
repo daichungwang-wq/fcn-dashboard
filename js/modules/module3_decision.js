@@ -129,7 +129,7 @@ const worstSymbol = worst ? worst.symbol : "-";
       <b>${r.name}｜${r.score}</b>
       <button onclick="toggleDetail(${i})">展開</button>
       <div id="detail-${i}" style="display:none;">
-        stock:${r.detail.stock} ｜ NVDA: ${price} (${ret})<br/>
+        stock:${r.detail.stock} ｜ Worst: ${worstSymbol} ${price} (${ret})
         rate:${r.detail.rate}<br>
         period:${r.detail.period}<br>
         p_risk:${r.detail.p_risk}<br>
