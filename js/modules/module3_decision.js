@@ -1,3 +1,11 @@
+async function loadMarketRuntime() {
+  const res = await fetch("./data/market_runtime.json");
+  if (!res.ok) {
+    throw new Error("market_runtime.json 載入失敗");
+  }
+  return await res.json();
+}
+
 /* ==========================================
    module3_decision.js V1（穩定完整版）
 ========================================== */
@@ -15,12 +23,22 @@ function getActiveScenarios() {
 // 狀態
 const state = {
   selectedBasket: [],
-  expanded: false
+  expanded: false,
+  marketRuntime: {}
 };
 
 // 初始化
-export function initModule3() {
+export async function initModule3() {
   renderLayout();
+
+  try {
+    state.marketRuntime = await loadMarketRuntime();
+    console.log("✅ market_runtime loaded", state.marketRuntime);
+  } catch (err) {
+    console.error("❌ market_runtime 載入失敗", err);
+    state.marketRuntime = {};
+  }
+
   bindEvents();
 }
 
