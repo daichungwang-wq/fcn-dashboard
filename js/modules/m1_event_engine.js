@@ -65,17 +65,28 @@ function buildMacroImpactMap(news, impactTable, sectorMap) {
       ? news.affected_sectors
       : Object.keys(weightTable);
 
-  affectedSectors.forEach((sector) => {
-    const sectorWeight = toNumber(weightTable[sector], 0);
-    if (sectorWeight === 0) return;
+  // ⭐ Step 1：先算總權重
+let totalWeight = 0;
 
-    const stocks = getStocksBySector(sector, sectorMap);
+affectedSectors.forEach((sector) => {
+  totalWeight += toNumber(weightTable[sector], 0);
+});
 
-    stocks.forEach((symbol) => {
-      const score = sid * sectorWeight;
-      addImpact(result, symbol, score, news.id);
-    });
+// ⭐ 防呆
+if (totalWeight === 0) return result;
+
+// ⭐ Step 2：平均化
+const avgWeight = totalWeight / affectedSectors.length;
+
+// ⭐ Step 3：再分配到股票
+affectedSectors.forEach((sector) => {
+  const stocks = getStocksBySector(sector, sectorMap);
+
+  stocks.forEach((symbol) => {
+    const score = sid * avgWeight;   // ⭐ 改這裡
+    addImpact(result, symbol, score, news.id);
   });
+});
 
   return result;
 }
