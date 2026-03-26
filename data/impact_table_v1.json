@@ -1,0 +1,145 @@
+{
+  "利率上升": {
+    "AI_SEMI": -1,
+    "CLOUD_SOFTWARE": -2,
+    "PLATFORM": -1,
+    "CONSUMER": -2,
+    "FINANCIAL": 3,
+    "HEALTHCARE": 0,
+    "ENERGY": 0,
+    "TRAVEL": -2,
+    "ETF": -1
+  },
+  "利率下降": {
+    "AI_SEMI": 1,
+    "CLOUD_SOFTWARE": 2,
+    "PLATFORM": 1,
+    "CONSUMER": 2,
+    "FINANCIAL": -2,
+    "HEALTHCARE": 0,
+    "ENERGY": 0,
+    "TRAVEL": 1,
+    "ETF": 1
+  },
+  "流動性寬鬆": {
+    "AI_SEMI": 2,
+    "CLOUD_SOFTWARE": 2,
+    "PLATFORM": 1,
+    "CONSUMER": 1,
+    "FINANCIAL": 0,
+    "HEALTHCARE": 0,
+    "ENERGY": 0,
+    "TRAVEL": 1,
+    "ETF": 1
+  },
+  "流動性緊縮": {
+    "AI_SEMI": -2,
+    "CLOUD_SOFTWARE": -2,
+    "PLATFORM": -1,
+    "CONSUMER": -1,
+    "FINANCIAL": 1,
+    "HEALTHCARE": 0,
+    "ENERGY": 0,
+    "TRAVEL": -1,
+    "ETF": -1
+  },
+  "就業強勁": {
+    "AI_SEMI": 1,
+    "CLOUD_SOFTWARE": 0,
+    "PLATFORM": 0,
+    "CONSUMER": 2,
+    "FINANCIAL": 0,
+    "HEALTHCARE": 0,
+    "ENERGY": 0,
+    "TRAVEL": 1,
+    "ETF": 0
+  },
+  "就業轉弱": {
+    "AI_SEMI": -1,
+    "CLOUD_SOFTWARE": 0,
+    "PLATFORM": 0,
+    "CONSUMER": -2,
+    "FINANCIAL": 0,
+    "HEALTHCARE": 0,
+    "ENERGY": 0,
+    "TRAVEL": -2,
+    "ETF": 0
+  },
+  "美元走強": {
+    "AI_SEMI": -1,
+    "CLOUD_SOFTWARE": 0,
+    "PLATFORM": 0,
+    "CONSUMER": -1,
+    "FINANCIAL": 0,
+    "HEALTHCARE": 0,
+    "ENERGY": 1,
+    "TRAVEL": 0,
+    "ETF": -1
+  },
+  "美元走弱": {
+    "AI_SEMI": 1,
+    "CLOUD_SOFTWARE": 0,
+    "PLATFORM": 0,
+    "CONSUMER": 1,
+    "FINANCIAL": 0,
+    "HEALTHCARE": 0,
+    "ENERGY": -1,
+    "TRAVEL": 0,
+    "ETF": 1
+  },
+  "油價上升": {
+    "AI_SEMI": 0,
+    "CLOUD_SOFTWARE": 0,
+    "PLATFORM": 0,
+    "CONSUMER": -1,
+    "FINANCIAL": 0,
+    "HEALTHCARE": 0,
+    "ENERGY": 2,
+    "TRAVEL": -2,
+    "ETF": 0
+  },
+  "油價下跌": {
+    "AI_SEMI": 0,
+    "CLOUD_SOFTWARE": 0,
+    "PLATFORM": 0,
+    "CONSUMER": 1,
+    "FINANCIAL": 0,
+    "HEALTHCARE": 0,
+    "ENERGY": -2,
+    "TRAVEL": 2,
+    "ETF": 0
+  },
+  "地緣政治升溫": {
+    "AI_SEMI": -1,
+    "CLOUD_SOFTWARE": 0,
+    "PLATFORM": 0,
+    "CONSUMER": 0,
+    "FINANCIAL": 0,
+    "HEALTHCARE": 1,
+    "ENERGY": 1,
+    "TRAVEL": -2,
+    "ETF": 1
+  },
+  "VIX上升": {
+    "AI_SEMI": -1,
+    "CLOUD_SOFTWARE": -1,
+    "PLATFORM": -1,
+    "CONSUMER": 0,
+    "FINANCIAL": 0,
+    "HEALTHCARE": 1,
+    "ENERGY": 0,
+    "TRAVEL": -2,
+    "ETF": 1
+  },
+  "VIX下降": {
+    "AI_SEMI": 1,
+    "CLOUD_SOFTWARE": 1,
+    "PLATFORM": 1,
+    "CONSUMER": 0,
+    "FINANCIAL": 0,
+    "HEALTHCARE": -1,
+    "ENERGY": 0,
+    "TRAVEL": 1,
+    "ETF": -1
+  }
+}
