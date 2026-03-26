@@ -7,7 +7,13 @@
    4. 顯示 Top 10 股票
 ========================================== */
 
-buildNewsRuntime(news, pool, impactTable, sectorMap)
+buildNewsRuntime(
+  news,
+  pool,
+  impactTable,
+  sectorMap,
+  stockSensitivityMap
+)
 import { adjustSensitivity } from "./market_regime_adjuster.js";
 
 /* ---------- 工具 ---------- */
