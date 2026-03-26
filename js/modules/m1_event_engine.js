@@ -51,7 +51,7 @@ function addImpact(targetMap, symbol, score, newsId) {
 
 /* ------------------------------------------
    3. Macro 新聞 → impact_map
-   公式：sid_score × sector_weight × 0.5
+   公式：sid_score × sector_weight
 ------------------------------------------ */
 function buildMacroImpactMap(news, impactTable, sectorMap) {
   const result = {};
@@ -72,7 +72,7 @@ function buildMacroImpactMap(news, impactTable, sectorMap) {
     const stocks = getStocksBySector(sector, sectorMap);
 
     stocks.forEach((symbol) => {
-      const score = sid * sectorWeight * 0.5;
+      const score = sid * sectorWeight;
       addImpact(result, symbol, score, news.id);
     });
   });
