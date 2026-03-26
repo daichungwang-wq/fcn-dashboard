@@ -16,7 +16,16 @@ async function loadJson(path) {
   if (!res.ok) {
     throw new Error(`載入失敗: ${path}`);
   }
-  return await res.json();
+
+  const text = await res.text();
+
+  try {
+    return JSON.parse(text);
+  } catch (err) {
+    console.error("❌ JSON 解析失敗:", path);
+    console.error("前100字內容:", text.slice(0, 100));
+    throw err;
+  }
 }
 
 /* ---------- 主流程 ---------- */
