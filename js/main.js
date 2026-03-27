@@ -1,4 +1,7 @@
+
 import { buildNewsRuntime } from "./modules/m1_event_engine.js";
+import { fetchNews } from "./news/fetch_news.js";
+import { buildNewsInput } from "./news/build_news_input.js";
 import { fetchNews } from "./news/fetch_news.js";
 /* =========================
    工具
@@ -162,6 +165,9 @@ async function main() {
   try {
      const raw = await fetchNews();
      console.log("🧪 測試新聞:", raw);
+
+     const aiNewsInput = await buildNewsInput(raw);
+     console.log("🤖 AI news_input:", aiNewsInput);
     const [news, pool, sectorMap, impactTable, marketRuleTable] = await Promise.all([
       loadJSON("./data/news_input.json"),
       loadJSON("./data/pool30.json"),
