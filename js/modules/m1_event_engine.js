@@ -94,7 +94,7 @@ function buildMacroImpactMap(
       const sensitivity =
         stockSensitivityMap?.[symbol]?.[subtype] ?? 1;
 
-      const score = sid * sectorWeight * (sensitivity / maxSensitivity);
+      const score = sid * (sectorWeight/3) * (sensitivity / maxSensitivity);
       addImpact(result, symbol, score, news.id);
     });
   });
