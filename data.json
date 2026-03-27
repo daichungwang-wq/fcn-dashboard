@@ -1,100 +1,107 @@
 {
-  "updated_at": "2026-03-27 00:01",
+  "updated_at": "2026-03-27 11:02",
   "summary": {
     "active_fcn_count": 24,
     "top_risk_code": "FCN710H",
     "worst_of": "ORCL",
-    "market_env": "保守做",
-    "main_conclusion": "今天可保守做 FCN，建議以 TSM / MSFT 為主，避免進攻型標的過重。"
+    "market_env": "觀望",
+    "main_conclusion": "今天較適合觀望或只做防守型 FCN，先避開高波動與風險集中的標的。"
   },
   "morning_brief": {
     "international_news": [
       {
-        "title": "The Self-Undoing of Israel: Has Zionism Crossed the Point of No Return",
-        "summary": "Is Israel’s trajectory toward isolation and collapse self-inflicted, and has Zionism reached the point of no…",
-        "content": "Is Israels trajectory toward isolation and collapse self-inflicted, and has Zionism reached the point of no return? Every war led by Benjamin Netanyahu is framed not as policy, but as fate. There a… [+6809 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "THEY’RE ON THE OTHER SIDE",
+        "summary": "Many years ago, at the height of anti-Vietnam War agitation, leaders of the movement would say that they were…",
+        "content": "Skip to comments. THEYRE ON THE OTHER SIDEPowerline ^ | 25 Mar 2026 | John Hindeeraker Posted on 03/26/2026 4:02:04 AM PDT by Rummyfan Many years ago, at the height of anti-Vietnam War agitati… [+1994 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Alaskans lost $43 million because the GOP let popular health insurance subsidies expire - The Alaska Current",
-        "summary": "Alaskans lost $43 million because the GOP let popular health insurance subsidies expire - The Alaska Currentt…",
-        "content": "Alaskans who relied on federal subsidies to make health insurance nearly affordable lost out on more than $43 million after Congressional Republicans, including U.S. Sen. Dan Sullivan and U.S. Rep. N… [+6704 chars]｜分類：地緣政治｜解讀：利率壓力若下降，FCN 環境通常較有利",
-        "affects_fcn": true,
-        "impact_score": 1
-      },
-      {
-        "title": "Int’l friendlies: Bassey injured as Eagles train in Turkey",
-        "summary": "Nigeria’s Calvin Bassey has withdrawn from the squad for the upcoming Super Eagles friendlies against Iran an…",
-        "content": "nigeria defender Calvin Bassey has withdrawn from the squad for the upcoming international friendlies against Iran and Jordan due to a back injury, The PUNCH reports. The Super Eagles camp opened on… [+2578 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "Report: Trump Stole Classified Docs For Profits",
+        "summary": "Thanks to Trump-loving Judge Aileen Cannon, Felon 47 was able to skate away from a grand jury’s 37 felony ind…",
+        "content": "Thanks to Trump-loving Judge Aileen Cannon, Felon 47 was able to skate away from a grand jurys 37 felony indictments and get away with leaving the White House with classified documents, storing them … [+2735 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "TCN explains low power allocation to DisCos",
-        "summary": "Experiencing blackouts? The Transmission Company of Nigeria (TCN) explains why there’s low power allocation,…",
-        "content": "The Transmission Company of Nigeria has explained the reasons for the current low power allocation to the distribution companies, leading to outages across the country. As Nigerians continue to grap… [+5311 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "Krysten Ritter Set to Star in and Executive Produce Series Based on Her Novel RETREAT",
+        "summary": "Krysten Ritter (Breaking Bad, Jessica Jones) has teamed up with writer-producer Steve Yockey (The Flight Atte…",
+        "content": "Krysten Ritter (Breaking Bad, Jessica Jones) has teamed up with writer-producer Steve Yockey (The Flight Attendant, Dead Boy Detectives) and Berlanti Productions for Retreat, a series adaptation of t… [+1286 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Hannah Gadsby, Aaron Chen and more share their picks of the comedy festival",
-        "summary": "Comedy season is in full swing, with festivals across the country hosting the best acts from Australia and th…",
-        "content": "Luke Heggie was 37 when he did his first show at Melbourne International Comedy Festival in 2012. \"I showed up every year after that, and within a decade or so, I was able to send enough money home … [+17764 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "Throwback Thursday: Bush Jokes About WMDs In Iraq",
+        "summary": "A little reminder that this is who the Republican Party has always been. This didn't start with Trump. As Dri…",
+        "content": "A little reminder that this is who the Republican Party has always been. This didn't start with Trump. As Driftglass rightfully noted, this is simply a continuation, not an aberration: It is time o… [+3047 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Why Donald Trump Just Can’t Stop Going to War",
-        "summary": "After protests across Iran turned deadly in January, President Donald Trump promised Iranians that “help is o…",
-        "content": "After protests across Iran turned deadly in January, President Donald Trump promised Iranians that help is on the way. On February 28th, the U.S. and Israel launched what immediately became a devasta… [+17801 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "What is orforglipron? The new weight-loss pill that could be a game-changer",
+        "summary": "A recent trial found orforglipron was more effective for weight loss and blood sugar control than its current…",
+        "content": "Your support helps us to tell the story From reproductive rights to climate change to Big Tech, The Independent is on the ground when the story is developing. Whether it's investigating the financia… [+6439 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "British shipbuilding, steel, AI and energy infrastructure to be prioritised for government contracts for national secur…",
-        "summary": "Shipbuilding, steel, AI and energy infrastructure will be recognised as critical for national security, with…",
-        "content": "<ul><li>Government to prioritise money to boost UK resilience, with recent events highlighting the fragility of global supply chains.</li><li>Value for money delivered as departments will consider wh… [+3654 chars]｜分類：全球經濟｜解讀：影響有限",
+        "title": "Health alert issued for dengue outbreaks spreading in travel hotspots",
+        "summary": "The CDC has issued a Level 1 dengue fever warning covering 15+ countries, urging spring break travelers to ta…",
+        "content": "The U.S. Centers for Disease Control and Prevention has issued a warning about dengue fever in over 15 countries. The \"Level 1: Practice Usual Precautions\" alert was published on Monday. \"Dengue is… [+3461 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Asia Pacific Tech Spending Will Grow 9.3% In 2026, But Inflation And Geopolitical Risk Will Erode Purchasing Power",
-        "summary": "Forrester forecasts that Asia Pacific tech spending will grow 9.3% in 2026, with the region spending over US$…",
-        "content": "Forrester forecasts that Asia Pacific tech spending will grow 9.3% in 2026, with the region spending over US$437 billion on new technology between 2026 and 2030. Growth is driven by software, service… [+2446 chars]｜分類：全球經濟｜解讀：地緣風險升高，需留意市場波動擴大",
-        "affects_fcn": true,
-        "impact_score": -1
-      },
-      {
-        "title": "Iran energy shock may lead to 4% inflation - Central Bank",
-        "summary": "A severe energy shock scenario caused by the Iran war could push inflation above 4% this year, according to t…",
-        "content": "A severe energy shock scenario caused by the Iran war could push inflation above 4% this year, according to the Central Bank. The organisation has also warned that household incomes would also be er… [+1602 chars]｜分類：全球經濟｜解讀：影響有限",
-        "affects_fcn": true,
-        "impact_score": 0
-      },
-      {
-        "title": "Prediction of strong Cu(I)–He interaction at open metal sites enables isotope-selective helium adsorption",
-        "summary": "High-level electronic structure calculations reveal unusually strong interactions between Cu(I) sites and hel…",
-        "content": "<li>Rzepa, H. S. The rational design of helium bonds. Nat. Chem.2, 390393 (2010). Google Scholar </li><li>Soper, S. T. Atomic polarizabilities (Journal of Physics B: Atomic, Molecular and Optical … [+9881 chars]｜分類：全球經濟｜解讀：影響有限",
+        "title": "I didn't expect the Motorola Razr Ultra's Android 16 update to feel like this",
+        "summary": "Better late than never",
+        "content": "Motorola isn't exactly known for its prompt Android updates. Android 16 launched on devices from other manufacturers months ago, but that doesn't seem to be motivating Motorola to hurry, even on exp… [+4393 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Alberta Courts Asian Capital for 1M bpd Pipeline to Break U.S. Dependence",
-        "summary": "Asian and Middle Eastern capital is lining up behind Alberta’s latest export push. Premier Danielle Smith say…",
-        "content": "Norways oil and gas output… The total number of active… Asian buyers are seeking alternative… By Alex Kimani - Mar 25, 2026, 7:00 PM CDTAsian and Middle Eastern capital is lining up behind Alberta… [+5766 chars]｜分類：全球經濟｜解讀：地緣風險升高，需留意市場波動擴大",
-        "affects_fcn": true,
-        "impact_score": -1
+        "title": "Bennett Stirtz NBA Mock Draft scouting report: Iowa guard's dynamic offense makes up for defensive issues",
+        "summary": "Strengths, weaknesses, measurements, and NBA comps for 2026 draft prospect Bennett Stirtz",
+        "content": "Bennett Stirtz NBA Mock Draft scouting report: Iowa guard's dynamic offense makes up for defensive issues originally appeared on The Sporting News. Add The Sporting News as a Preferred Source by clic… [+5324 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
       },
       {
-        "title": "Toolbox of FRET-based c-di-GMP biosensors and its FRET-To-Sort application for genome-wide mapping of c-di-GMP regulati…",
-        "summary": "Cyclic di-GMP, a bacterial second messenger, governs many cellular processes including bacterial lifestyle tr…",
-        "content": "<li>Hengge, R. Principles of c-di-GMP signalling in bacteria. Nat. Rev. Microbiol.7, 263273 (2009). Google Scholar </li><li>Jenal, U., Reinders, A. &amp; Lori, C. Cyclic di-GMP: second messenger e… [+18414 chars]｜分類：全球經濟｜解讀：影響有限",
+        "title": "Abaxx Futures Now Available Through TMX Trayport’s Joule Platform",
+        "summary": "LONDON and TORONTO, March 26, 2026 (GLOBE NEWSWIRE) — Abaxx Technologies Inc. (CBOE:ABXX)(OTCQX:ABXXF) (“Abax…",
+        "content": "In addition to developing and deploying financial technologies that make communication, trade, and transactions easier and more secure, Abaxx is the majority shareholder of Abaxx Singapore Pte. Ltd.,… [+4930 chars]｜分類：全球經濟｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Australia’s GYRO.Group Opens Latin America Headquarters",
+        "summary": "GYRO.Group opens offices in Brazil, the digital music specialist's formal entry into the Latin American marke…",
+        "content": "BRISBANE, Australia — GYRO.Group now has a physical presence in Latin America. Today, March 26, the Australia-based digital music specialist announces the opening of its first office in Brazil, via i… [+2214 chars]｜分類：全球經濟｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "OTC Markets Group Welcomes Capitan Silver Corp. to OTCQX",
+        "summary": "NEW YORK, March 26, 2026 (GLOBE NEWSWIRE) — OTC Markets Group Inc. (OTCQX: OTCM), operator of regulated marke…",
+        "content": "NEW YORK, March 26, 2026 (GLOBE NEWSWIRE) OTC Markets Group Inc. (OTCQX: OTCM), operator of regulated markets for trading 12,000 U.S. and international securities, today announced Capitan Silver Corp… [+5102 chars]｜分類：全球經濟｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "WeShop Launches Founders Programme to Empower Early Community Creators in the U.K.",
+        "summary": "Limited group of early members will help grow the community-owned shopping platform while earning enhanced re…",
+        "content": "LONDON, March 26, 2026 (GLOBE NEWSWIRE) -- WeShop Holdings Limited (WeShop or the Company) (NASDAQ: WSHP), the worlds first community-owned social commerce platform, today announced the launch of t… [+4322 chars]｜分類：全球經濟｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       }
     ],
     "financial_news": [
+      {
+        "title": "Asian shares fall and oil climbs on Iran war uncertainties",
+        "summary": "U.S. stocks had their worst day since the war with Iran started, as doubt took over again from hope on Wall S…",
+        "content": "NEW YORK (AP) Stocks fell sharply Thursday, and oil prices rose as doubt took over again from hope on Wall Street about a possible end to the war with Iran. The S&amp;P 500 slumped 1.7% for its wors… [+4747 chars]｜分類：Fed / 利率｜解讀：地緣風險升高，需留意市場波動擴大",
+        "affects_fcn": true,
+        "impact_score": -1
+      },
       {
         "title": "FG plans to borrow N750bn via March bonds",
         "summary": "The Nigerian government, via the DMO, has opened subscriptions for N750bn in FGN March bonds to finance budge…",
@@ -145,95 +152,88 @@
         "impact_score": -1
       },
       {
-        "title": "Why is the Dow Jones rising sharply today despite global tensions? US stock market: Dow jumps 414 points as S&P 500 and…",
-        "summary": "Dow Jones jumped 414 points today, leading a sharp US stock market rally despite global tensions. The Dow Jon…",
-        "content": "US stock market: Dow, S&amp;P 500, and Nasdaq gain big amid falling oil prices: The Dow Jones Industrial Average jumped +414 points (0.90%) to 46,538, while the S&amp;P 500 and Nasdaq climbed 0.87% a… [+6121 chars]｜分類：Fed / 利率｜解讀：地緣風險升高，需留意市場波動擴大",
-        "affects_fcn": true,
-        "impact_score": -1
-      },
-      {
-        "title": "Ministers rip up consultation culture",
-        "summary": "Ministers working closely with the new Cabinet Secretary order a clear up of Whitehall consultation culture t…",
-        "content": "Ministers working closely with the new Cabinet Secretary order a clear up of Whitehall consultation culture to speed up decision making and deliver for the British people. As the next step in a wide… [+4226 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "title": "First Quantum Minerals Provides Notice of Annual General Meeting of Shareholders and Filing of Management Information C…",
+        "summary": "TORONTO, March 26, 2026 (GLOBE NEWSWIRE) — First Quantum Minerals Ltd. (“First Quantum” or the “Company”) (TS…",
+        "content": "TORONTO, March 26, 2026 (GLOBE NEWSWIRE) First Quantum Minerals Ltd. (First Quantum or the Company) (TSX: FM) provides notice that the Annual General Meeting of shareholders of the Company will take … [+4965 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "British shipbuilding, steel, AI and energy infrastructure to be prioritised for government contracts for national secur…",
-        "summary": "Shipbuilding, steel, AI and energy infrastructure will be recognised as critical for national security, with…",
-        "content": "<ul><li>Government to prioritise money to boost UK resilience, with recent events highlighting the fragility of global supply chains.</li><li>Value for money delivered as departments will consider wh… [+3654 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "title": "Caitlin Clark Picks up the Camera and Captures LeBron James at NBA Game",
+        "summary": "Caitlin Clark has become the latest sports star to pick up a camera and try capturing the action instead of b…",
+        "content": "Caitlin Clark has become the latest sports star to pick up a camera and try capturing the action instead of being in it, appearing last night at an NBA basketball game. A high-profile basketball pl… [+2205 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "David Reed appointed Trade Commissioner for Eastern Europe",
-        "summary": "David Reed MBE appointed His Majesty’s Trade Commissioner for Eastern Europe and Central Asia, and His Majest…",
-        "content": "The Secretary of State for Business and Trade is pleased to announce that David Reed MBE has been appointed His Majestys Trade Commissioner (HMTC) for Eastern Europe and Central Asia, and His Majesty… [+2568 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "title": "Australia’s GYRO.Group Opens Latin America Headquarters",
+        "summary": "GYRO.Group opens offices in Brazil, the digital music specialist's formal entry into the Latin American marke…",
+        "content": "BRISBANE, Australia — GYRO.Group now has a physical presence in Latin America. Today, March 26, the Australia-based digital music specialist announces the opening of its first office in Brazil, via i… [+2214 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "3.7% increase in average price of home - report",
-        "summary": "The average home list price nationally rose by 3.7% during the last year, according to the latest sales repor…",
-        "content": "The average home list price nationally rose by 3.7% during the last year, according to the latest sales report from Daft.ie. The property listings website said the figure represents the slowest rate… [+3451 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "title": "What 50% faster AI-driven loan decisions mean for India’s lending sector",
+        "summary": "While India's loan application process is digitized, underwriting remains a bottleneck. Artificial intelligen…",
+        "content": "India has digitised the loan application process, but the process of deciding on them has not yet been fully digitised. Over the past decade, the visible layers of lending have transformed. Technolog… [+6812 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       }
     ],
     "ai_trend": [
       {
-        "title": "The Eclipse Theia Community Release 2026-02",
-        "summary": "We are happy to announce the thirteenth Eclipse Theia community release, “2026-02,” incorporating the latest…",
-        "content": "We are happy to announce the thirteenth Eclipse Theia community release, “2026-02,” incorporating the latest advances from Theia releases 1.67 and 1.68. New to Eclipse Theia? It is the next-generati… [+9284 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "An AI gateway designed to steal your data",
+        "summary": "Dissecting the supply-chain attack on LiteLLM – a multifunctional gateway used in many AI agents. Explaining…",
+        "content": "A significant proportion of cyber incidents are linked to supply chain attacks, and this proportion is constantly growing. Over the past year, we have seen a wide variety of methods used in such atta… [+10787 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Adaptive intelligent controller for a lower limb rehabilitation robot using QAOA-based online membership optimization",
-        "summary": "Adaptive control of lower-limb rehabilitation robots is challenging due to the nonlinear dynamics of coupled…",
-        "content": "<li>Zhang, X., Yue, Z. &amp; Wang, J. Robotics in lower-limb rehabilitation after stroke, Behav. Neurol. 3731802, (2017). </li><li>Meng, W. et al. Recent development of mechanisms and control strate… [+14435 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "Why AI Companies Want to Take Control of Your Computer",
+        "summary": "AI agents like Anthropic’s Claude want to take control of your computer because they would like a little help…",
+        "content": "In 2024, Anthropic tested out a feature called computer use, a tool that could try to manipulate a computer desktop environment, clicking and scrolling on a users behalf. At the time, LLM use was mos… [+8515 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "AIOps and MLOps made simple: Automating Vertex AI with Red Hat Ansible Automation Platform",
-        "summary": "In the era of gen AI and rapid machine learning (ML) adoption, enterprise AI is no longer just a research exp…",
-        "content": "In the era of gen AI and rapid machine learning (ML) adoption, enterprise AI is no longer just a research experimentits a core business driver. But as organizations rush to operationalize their AI in… [+7155 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "puvinoise-sdk 0.2.20",
+        "summary": "Independent OpenTelemetry SDK for AI agents (Anthropic, OpenAI, Ollama)",
+        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Krane raises $9M to expand AI-driven construction supply chain platform",
-        "summary": "Artificial intelligence-native construction supply chain management startup Krane Inc. revealed today that it…",
-        "content": "Artificial intelligence-native construction supply chain management startup Krane Inc. revealed today that it has raised $9 million in new funding to accelerate the development of its operations crew… [+4682 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "Dmitry Shubov Discusses the \"Agentic Shift\" in Southeast Asia’s 2026 Legal-Tech Market",
+        "summary": "FREMONT, Calif., March 26, 2026 (GLOBE NEWSWIRE) -- At the start of 2026‚ Southeast Asia's legal-tech ecosyst…",
+        "content": "FREMONT, Calif., March 26, 2026 (GLOBE NEWSWIRE) -- At the start of 2026 Southeast Asia's legal-tech ecosystem has taken on a monumental challenge: moving from basic AI use to \"Agentic AI\" deployment… [+4113 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "IndustrialMind.ai Announces AI Deployment at ANDRITZ to Augment Engineering Capabilities for Hydraulic Equipment Parts",
-        "summary": "IndustrialMind.ai deploys AI agents at ANDRITZ for drawing review, BOM generation, and root cause analysis, c…",
-        "content": "SAN FRANCISCO, March 25, 2026 (GLOBE NEWSWIRE) -- ANDRITZ, a global engineering and technology group providing plants, equipment, and services for industries including hydropower, pulp and paper, met… [+3862 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "octopoda 3.0.1",
+        "summary": "Memory engine for AI agents — persistent memory, semantic search, shared spaces, loop detection",
+        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "WATCH: Video shows man being pulled from burning car in Tampa",
-        "summary": "Authorities say the man had suffered a medical emergency before crashing.",
-        "content": "<ul><li>DOJ to pay Michael Flynn $1M to settle lawsuit: Sources </li><li>TSA officer says ICE agents absolutely not alleviating airport chaos </li><li>Baseball is back as Opening Day kicks off </l… [+4312 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "Show HN: Agent Flow: A beautiful way to visualize Claude Code actions",
+        "summary": "Hey HN,Claude Code is powerful, but its execution is a black box. You see the final result, not the journey.…",
+        "content": "Real-time visualization of Claude Code agent orchestration. Watch your agents think, branch, and coordinate as they work. Demo video here. I built Agent Flow while developing CraftMyGame, a game cre… [+3554 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Ministers rip up consultation culture",
-        "summary": "Ministers working closely with the new Cabinet Secretary order a clear up of Whitehall consultation culture t…",
-        "content": "Ministers working closely with the new Cabinet Secretary order a clear up of Whitehall consultation culture to speed up decision making and deliver for the British people. As the next step in a wide… [+4226 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "Tensions flare at Capitol Hill Iran briefing and a landmark verdict on social media safety: Morning Rundown",
+        "summary": "How the partial government shutdown is affecting more than just airports.",
+        "content": "How the partial government shutdown is affecting more than just airports. Tensions flare during a briefing with lawmakers about the Iran war. And the AI-generated reality show starring fruit captivat… [+7795 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "British shipbuilding, steel, AI and energy infrastructure to be prioritised for government contracts for national secur…",
-        "summary": "Shipbuilding, steel, AI and energy infrastructure will be recognised as critical for national security, with…",
-        "content": "<ul><li>Government to prioritise money to boost UK resilience, with recent events highlighting the fragility of global supply chains.</li><li>Value for money delivered as departments will consider wh… [+3654 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "Epics DAO Solana バリデータが Shinobi Performance Pool でトップ5入りを達成 - スコア 99.92、日々の改善の積み重ねが世界トップクラスの性能を実現",
+        "summary": "[ELSOUL LABO B.V.] [画像1: https://prcdn.freetls.fastly.net/release_image/105962/415/105962-415-7bdef5f3473c821…",
+        "content": "ELSOUL LABO B.V. CEO Validators DAO ERPC ERPC SWQoS Epic Shreds Epics DAO Solana Shinobi Performance Pool5599.92 Solana 6 3Solana : EpicsoqLdDP8qRn3wQRKTSKAXbjK9dUgFfNPRQS77MQD : https://epics.de… [+1525 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       }
@@ -275,7 +275,7 @@
         "impact_score": -1
       },
       {
-        "title": "失業率：4.40%（+0.10%）｜S&P500：6591.90（+35.53）",
+        "title": "失業率：4.40%（+0.10%）｜S&P500：6477.16（-114.74）",
         "summary": "就業與股市穩定度共同反映風險偏好。",
         "content": "若就業惡化且股市回落，FCN 需更保守。",
         "affects_fcn": true,
@@ -310,7 +310,7 @@
     },
     {
       "label": "總經環境",
-      "text": "總經環境中性，FCN 可做但需偏保守，優先核心股。"
+      "text": "總經壓力偏高，建議降低進攻型 FCN。"
     },
     {
       "label": "今日推薦",
@@ -335,7 +335,7 @@
     },
     {
       "label": "AI 核心股安全度",
-      "value": 62,
+      "value": 45,
       "type": "watch"
     }
   ],
@@ -687,25 +687,14 @@
   },
   "scenario_suggestions": [
     {
-      "name": "穩定收息",
+      "name": "避險觀望",
       "targets": [
-        "TSM",
         "MSFT",
         "UNH"
       ],
       "eki": "80%–85%",
-      "tenor": "6–12個月",
-      "goal": "防守優先"
-    },
-    {
-      "name": "平衡收益",
-      "targets": [
-        "NVDA",
-        "AVGO"
-      ],
-      "eki": "75%–80%",
-      "tenor": "3–6個月",
-      "goal": "只留主力池"
+      "tenor": "短中期",
+      "goal": "只保留低波動核心"
     }
   ]
 }
