@@ -75,36 +75,49 @@ async function main() {
       .sort((a, b) => b[1].event_score - a[1].event_score)
       .slice(0, 10);
 
-    // ====== UI ======
-    const container = document.createElement("div");
-    container.style.marginTop = "20px";
-    container.style.padding = "16px";
+    // ====== 全部股票（測試模式）======
 
-    const title = document.createElement("h2");
-    title.innerText = "🔥 Top 10 市場影響股票（M1 V3）";
-    container.appendChild(title);
+const allStocks = Object.entries(newsRuntime.stock_event_map)
+  .sort((a, b) => b[1].event_score - a[1].event_score);
 
-    top10.forEach(([symbol, data], index) => {
-      const div = document.createElement("div");
+// ====== UI ======
 
-      div.style.marginBottom = "12px";
-      div.style.padding = "12px";
-      div.style.border = "1px solid #ddd";
-      div.style.borderRadius = "10px";
+const container = document.createElement("div");
+container.style.marginTop = "20px";
+container.style.padding = "16px";
 
-      div.innerHTML = `
-        <b>#${index + 1} ${symbol}</b><br/>
-        event_score: ${data.event_score}<br/>
-        macro_avg: ${data.macro_avg}<br/>
-        industry_avg: ${data.industry_avg}<br/>
-        market_avg: ${data.market_avg}<br/>
-        news_count: ${data.news_count}
-      `;
+const title = document.createElement("h2");
+title.innerText = "📊 全部股票 Event Score（Debug 模式）";
+container.appendChild(title);
 
-      container.appendChild(div);
-    });
+allStocks.forEach(([symbol, data], index) => {
+  const div = document.createElement("div");
 
-    document.body.appendChild(container);
+  div.style.marginBottom = "12px";
+  div.style.padding = "12px";
+  div.style.border = "1px solid #ddd";
+  div.style.borderRadius = "10px";
+
+  div.innerHTML = `
+    <b>#${index + 1} ${symbol}</b><br/>
+
+    event_score: ${data.event_score}<br/>
+    macro_avg: ${data.macro_avg}<br/>
+    industry_avg: ${data.industry_avg}<br/>
+    market_avg: ${data.market_avg}<br/>
+    news_count: ${data.news_count}<br/>
+
+    <hr/>
+
+    macro_scores: ${JSON.stringify(data.macro_scores)}<br/>
+    industry_scores: ${JSON.stringify(data.industry_scores)}<br/>
+    market_scores: ${JSON.stringify(data.market_scores)}
+  `;
+
+  container.appendChild(div);
+});
+
+document.body.appendChild(container);
 
   } catch (err) {
     console.error("❌ 系統錯誤:", err);
