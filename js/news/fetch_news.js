@@ -7,7 +7,7 @@
 
 export async function fetchNews() {
   try {
-    const API_KEY = "YOUR_NEWSAPI_KEY"; // 🔥 換成你的 key
+    const API_KEY = "e334543f5b2046eba15d66f9ce060d28"; // 🔥 換成你的 key
 
     const url = `https://newsapi.org/v2/everything?q=(
       fed OR inflation OR interest rate OR CPI OR oil OR AI OR semiconductor OR stock market
