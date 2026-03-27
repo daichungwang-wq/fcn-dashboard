@@ -148,8 +148,8 @@ function buildIndustryImpactMap(
 
     const score =
       sid *
-      INDUSTRY_BASE_WEIGHT *
-      (sensitivity / maxSensitivity);
+      (INDUSTRY_BASE_WEIGHT/3)*
+      sensitivity / (maxSensitivity);
 
     addImpact(result, stock.symbol, score, news.id);
   });
