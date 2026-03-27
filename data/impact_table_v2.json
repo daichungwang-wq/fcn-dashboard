@@ -1,0 +1,145 @@
+{
+  "利率下降": {
+    "AI_SEMI": 3,
+    "AI_APPLICATION": 3,
+    "PLATFORM": 2,
+    "CONSUMER": 2,
+    "FINANCIAL": -2,
+    "HEALTHCARE": 1,
+    "TRAVEL": 2,
+    "ETF": 2,
+    "ENERGY": 0
+  },
+  "利率上升": {
+    "AI_SEMI": -3,
+    "AI_APPLICATION": -3,
+    "PLATFORM": -2,
+    "CONSUMER": -2,
+    "FINANCIAL": 2,
+    "HEALTHCARE": -1,
+    "TRAVEL": -2,
+    "ETF": -2,
+    "ENERGY": 0
+  },
+  "通膨上升": {
+    "AI_SEMI": -2,
+    "AI_APPLICATION": -2,
+    "PLATFORM": -1,
+    "CONSUMER": -3,
+    "FINANCIAL": 1,
+    "HEALTHCARE": 2,
+    "TRAVEL": -3,
+    "ETF": -1,
+    "ENERGY": 3
+  },
+  "通膨下降": {
+    "AI_SEMI": 2,
+    "AI_APPLICATION": 2,
+    "PLATFORM": 2,
+    "CONSUMER": 3,
+    "FINANCIAL": -1,
+    "HEALTHCARE": -2,
+    "TRAVEL": 3,
+    "ETF": 2,
+    "ENERGY": -2
+  },
+  "就業強勁": {
+    "AI_SEMI": 1,
+    "AI_APPLICATION": 1,
+    "PLATFORM": 2,
+    "CONSUMER": 3,
+    "FINANCIAL": 2,
+    "HEALTHCARE": -1,
+    "TRAVEL": 3,
+    "ETF": 1,
+    "ENERGY": 1
+  },
+  "就業轉弱": {
+    "AI_SEMI": -1,
+    "AI_APPLICATION": -1,
+    "PLATFORM": -2,
+    "CONSUMER": -3,
+    "FINANCIAL": -2,
+    "HEALTHCARE": 2,
+    "TRAVEL": -3,
+    "ETF": -1,
+    "ENERGY": -1
+  },
+  "油價上升": {
+    "AI_SEMI": -1,
+    "AI_APPLICATION": -1,
+    "PLATFORM": -1,
+    "CONSUMER": -1,
+    "FINANCIAL": 1,
+    "HEALTHCARE": 1,
+    "TRAVEL": -3,
+    "ETF": 0,
+    "ENERGY": 3
+  },
+  "油價下跌": {
+    "AI_SEMI": 1,
+    "AI_APPLICATION": 1,
+    "PLATFORM": 1,
+    "CONSUMER": 1,
+    "FINANCIAL": -1,
+    "HEALTHCARE": -1,
+    "TRAVEL": 3,
+    "ETF": 1,
+    "ENERGY": -3
+  },
+  "VIX上升": {
+    "AI_SEMI": -3,
+    "AI_APPLICATION": -3,
+    "PLATFORM": -2,
+    "CONSUMER": -3,
+    "FINANCIAL": -2,
+    "HEALTHCARE": 3,
+    "TRAVEL": -3,
+    "ETF": -2,
+    "ENERGY": -1
+  },
+  "VIX下降": {
+    "AI_SEMI": 3,
+    "AI_APPLICATION": 3,
+    "PLATFORM": 2,
+    "CONSUMER": 3,
+    "FINANCIAL": 2,
+    "HEALTHCARE": -2,
+    "TRAVEL": 3,
+    "ETF": 2,
+    "ENERGY": 1
+  },
+  "美元走強": {
+    "AI_SEMI": -2,
+    "AI_APPLICATION": -2,
+    "PLATFORM": -1,
+    "CONSUMER": -1,
+    "FINANCIAL": 2,
+    "HEALTHCARE": 1,
+    "TRAVEL": -2,
+    "ETF": -1,
+    "ENERGY": -1
+  },
+  "美元走弱": {
+    "AI_SEMI": 2,
+    "AI_APPLICATION": 2,
+    "PLATFORM": 1,
+    "CONSUMER": 1,
+    "FINANCIAL": -2,
+    "HEALTHCARE": -1,
+    "TRAVEL": 2,
+    "ETF": 1,
+    "ENERGY": 1
+  },
+  "地緣政治升溫": {
+    "AI_SEMI": -2,
+    "AI_APPLICATION": -1,
+    "PLATFORM": -1,
+    "CONSUMER": -2,
+    "FINANCIAL": -1,
+    "HEALTHCARE": 3,
+    "TRAVEL": -3,
+    "ETF": -1,
+    "ENERGY": 3
+  }
+}
