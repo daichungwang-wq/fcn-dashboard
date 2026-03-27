@@ -2,8 +2,8 @@
    振宇 FCN 系統｜M1 Event Engine V4
    定稿版
    邏輯：
-   1. Macro   = sid × sector_weight × sensitivity / max_sensitivity
-   2. Industry= sid × sector_weight × sensitivity / max_sensitivity
+   1. Macro   = sid × sector_weight/3 * sensitivity / max_sensitivity
+   2. Industry= sid × sector_weight/3 × sensitivity / max_sensitivity
    3. Market  = sid × category_rule
    4. 單則新聞影響上限自然落在 -3 ~ +3
 ========================================== */
@@ -64,7 +64,7 @@ function getMaxSensitivity(stockSensitivityMap = {}) {
 /* ------------------------------------------
    1. Macro 新聞 → impact_map
    公式：
-   score = sid × sector_weight × sensitivity / max_sensitivity
+   score = sid × sector_weight/3 × sensitivity / max_sensitivity
 ------------------------------------------ */
 function buildMacroImpactMap(
   news,
@@ -105,7 +105,7 @@ function buildMacroImpactMap(
 /* ------------------------------------------
    2. Industry 新聞 → impact_map
    公式：
-   score = sid × sector_weight × sensitivity / max_sensitivity
+   score = sid × sector_weight/3 * sensitivity / max_sensitivity
    規則：
    - 有 affected_subsectors 時：subsector 優先
    - 沒有 affected_subsectors 時：sector
