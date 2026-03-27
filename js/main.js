@@ -70,11 +70,7 @@ async function main() {
     window.newsRuntime = newsRuntime;
     window.stockEventMap = newsRuntime.stock_event_map;
 
-    // ====== Top 10 股票 ======
-    const top10 = Object.entries(newsRuntime.stock_event_map)
-      .sort((a, b) => b[1].event_score - a[1].event_score)
-      .slice(0, 10);
-
+    
     // ====== 全部股票（測試模式）======
 
 const allStocks = Object.entries(newsRuntime.stock_event_map)
