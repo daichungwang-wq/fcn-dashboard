@@ -97,7 +97,8 @@ allStocks.forEach(([symbol, data], index) => {
   div.innerHTML = `
     <b>#${index + 1} ${symbol}</b><br/>
 
-    event_score: ${data.event_score}<br/>
+    event_score: ${round(data.event_score)}
+    macro_avg: ${round(data.macro_avg)}
     macro_avg: ${data.macro_avg}<br/>
     industry_avg: ${data.industry_avg}<br/>
     market_avg: ${data.market_avg}<br/>
