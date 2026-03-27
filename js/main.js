@@ -1,5 +1,5 @@
 import { buildNewsRuntime } from "./modules/m1_event_engine.js";
-
+import { fetchNews } from "./news/fetch_news.js";
 /* =========================
    工具
 ========================= */
@@ -160,6 +160,8 @@ function renderDebugDashboard(stockMap, stockPool) {
 ========================= */
 async function main() {
   try {
+     const raw = await fetchNews();
+     console.log("🧪 測試新聞:", raw);
     const [news, pool, sectorMap, impactTable, marketRuleTable] = await Promise.all([
       loadJSON("./data/news_input.json"),
       loadJSON("./data/pool30.json"),
