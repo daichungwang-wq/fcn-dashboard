@@ -139,7 +139,13 @@ async function main() {
     render(runtime.stock_event_map, pool);
   } catch (err) {
     console.error("❌ 系統錯誤:", err);
+     render(runtime.stock_event_map, pool);
 
+// ⭐ 加在這裡（render下面）
+renderDebugDashboard(
+  runtime.stock_event_map,
+  pool
+);
     document.body.innerHTML = `
       <div style="margin:20px;padding:16px;border:1px solid red;border-radius:10px;background:#fff5f5;color:#b00020;">
         系統錯誤：${err.message}
