@@ -1,4 +1,4 @@
-import { calcFCNPure, calcBasketEventScore, calcVolatilityScore } from "./fcn_engine.js";
+import { calcFCNPure, calcBasketEventScore, calcVolatilityScore } from "../core/fcn_engine.js";
 
 /* =========================================
    工具
