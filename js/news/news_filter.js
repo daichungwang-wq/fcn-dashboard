@@ -1,30 +1,35 @@
 /* =========================================
-   News Filter V3
+   News Filter V3.1
    功能：
    1. 過濾與 FCN / 市場高度相關的新聞
    2. 自動分成 macro / market / industry / stock
    3. 強化 market 類新聞判斷
-   4. 回傳 summary 給 main / dashboard 使用
+   4. 保留 market news list 供 debug / dashboard 使用
 ========================================= */
 
 const MACRO_KEYWORDS = [
   "fed", "federal reserve", "rate", "rates", "interest rate",
-  "yield", "treasury", "bond yield",
+  "yield", "treasury", "bond yield", "10-year yield", "10 year yield",
   "inflation", "cpi", "ppi",
-  "jobs", "employment", "payroll", "jobless",
-  "oil", "crude", "energy",
-  "war", "geopolitical", "geopolitics",
-  "vix", "volatility"
+  "jobs", "employment", "payroll", "jobless", "labor market",
+  "oil", "crude", "brent", "wti", "energy price",
+  "war", "geopolitical", "geopolitics", "middle east", "tension",
+  "vix", "volatility", "fear gauge",
+  "dollar", "usd", "dxy"
 ];
 
 const MARKET_KEYWORDS = [
   "stock market", "market rally", "market selloff", "selloff", "correction",
-  "risk-on", "risk off", "risk off mood", "risk-on mood",
+  "risk-on", "risk off", "risk-off", "risk-on mood", "risk-off mood",
   "risk appetite", "risk aversion",
   "s&p 500", "s&p", "nasdaq", "dow jones", "dow", "wall street",
-  "equities", "u.s. stocks", "stocks rise", "stocks fall", "futures",
-  "market slump", "market drop", "market gains", "broad market",
-  "benchmark index", "indexes", "index futures", "trading session"
+  "u.s. stocks", "stocks rise", "stocks fall", "stocks tumble",
+  "equities", "broad market", "benchmark index", "indexes",
+  "index futures", "futures", "trading session",
+  "market slump", "market drop", "market gains", "market falls",
+  "market breadth", "market sentiment", "investor sentiment",
+  "tech selloff", "market turmoil", "market volatility",
+  "qqq", "spy", "dia", "iwm"
 ];
 
 const INDUSTRY_KEYWORDS = [
@@ -33,7 +38,7 @@ const INDUSTRY_KEYWORDS = [
   "travel demand", "airline demand", "cruise demand",
   "banking sector", "fintech", "healthcare sector",
   "consumer spending", "retail demand",
-  "ev demand", "factory output"
+  "ev demand", "factory output", "supply chain"
 ];
 
 const NOISE_KEYWORDS = [
@@ -59,6 +64,17 @@ function buildTickerKeywords(stockPool = []) {
   return [...new Set([...symbols, ...names])];
 }
 
+function hasETFKeyword(text) {
+  return (
+    text.includes("qqq") ||
+    text.includes("spy") ||
+    text.includes("dia") ||
+    text.includes("iwm") ||
+    text.includes("etf") ||
+    text.includes("index")
+  );
+}
+
 function classifyNewsType(text, stockPool = []) {
   const tickerKeywords = buildTickerKeywords(stockPool);
 
@@ -66,26 +82,30 @@ function classifyNewsType(text, stockPool = []) {
   const marketHits = countHits(text, MARKET_KEYWORDS);
   const industryHits = countHits(text, INDUSTRY_KEYWORDS);
   const tickerHits = countHits(text, tickerKeywords);
+  const etfHit = hasETFKeyword(text);
 
   let type = "stock";
   let reason = "ticker";
 
-  // ⭐ V3: market 優先權提高
+  // ✅ V3.1：market 優先再提高
   if (marketHits >= 2) {
     type = "market";
     reason = "market";
-  } else if (macroHits >= 2) {
-    type = "macro";
-    reason = "macro";
-  } else if (industryHits >= 2) {
-    type = "industry";
-    reason = "industry";
+  } else if (marketHits >= 1 && etfHit) {
+    type = "market";
+    reason = "market+etf";
   } else if (marketHits >= 1 && macroHits >= 1) {
     type = "market";
     reason = "market+macro";
   } else if (marketHits >= 1 && tickerHits >= 1) {
     type = "market";
     reason = "market+ticker";
+  } else if (macroHits >= 2) {
+    type = "macro";
+    reason = "macro";
+  } else if (industryHits >= 2) {
+    type = "industry";
+    reason = "industry";
   } else if (macroHits >= 1 && industryHits >= 1) {
     type = "macro";
     reason = "macro+industry";
@@ -109,7 +129,8 @@ function classifyNewsType(text, stockPool = []) {
     macroHits,
     marketHits,
     industryHits,
-    tickerHits
+    tickerHits,
+    etfHit
   };
 }
 
@@ -129,20 +150,21 @@ export function scoreNewsRelevance(news, stockPool = []) {
   const industryHits = countHits(text, INDUSTRY_KEYWORDS);
   const tickerHits = countHits(text, tickerKeywords);
   const noiseHits = countHits(text, NOISE_KEYWORDS);
+  const etfHit = hasETFKeyword(text);
 
   let score = 0;
 
-  // ⭐ V3: market 權重提高
   score += macroHits * 2;
   score += marketHits * 3;
   score += industryHits * 2;
   score += tickerHits * 3;
   score -= noiseHits * 4;
 
+  if (etfHit) score += 2;
+
   const cls = classifyNewsType(text, stockPool);
 
-  // 類型加權
-  if (cls.type === "market") score += 2;
+  if (cls.type === "market") score += 3;
   if (cls.type === "macro") score += 1;
 
   return {
@@ -152,6 +174,7 @@ export function scoreNewsRelevance(news, stockPool = []) {
     industryHits,
     tickerHits,
     noiseHits,
+    etfHit,
     type: cls.type,
     type_reason: cls.reason
   };
@@ -182,25 +205,41 @@ export function filterNews(rawNewsList = [], stockPool = [], options = {}) {
     .sort((a, b) => b._filter_score - a._filter_score)
     .slice(0, maxItems);
 
+  const marketNews = kept.filter((x) => x.detected_type === "market");
+  const macroNews = kept.filter((x) => x.detected_type === "macro");
+  const industryNews = kept.filter((x) => x.detected_type === "industry");
+  const stockNews = kept.filter((x) => x.detected_type === "stock");
+
   const summary = {
     raw_count: rawNewsList.length,
     kept_count: kept.length,
-    macro_count: kept.filter((x) => x.detected_type === "macro").length,
-    market_count: kept.filter((x) => x.detected_type === "market").length,
-    industry_count: kept.filter((x) => x.detected_type === "industry").length,
-    stock_count: kept.filter((x) => x.detected_type === "stock").length
+    macro_count: macroNews.length,
+    market_count: marketNews.length,
+    industry_count: industryNews.length,
+    stock_count: stockNews.length
   };
 
   if (debug) {
     console.log("🧹 Filter scored =", scored);
     console.log("✅ Filter kept =", kept);
     console.log("📊 Filter summary =", summary);
+    console.log(
+      "🔥 Market news titles =",
+      marketNews.map((x) => ({
+        title: x.title,
+        score: x._filter_score,
+        reason: x._filter_meta?.type_reason || ""
+      }))
+    );
   }
 
   return {
     kept,
     summary,
-    scored
+    scored,
+    marketNews,
+    macroNews,
+    industryNews,
+    stockNews
   };
 }
-
