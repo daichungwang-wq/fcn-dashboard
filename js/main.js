@@ -2,6 +2,7 @@
 import { buildNewsRuntime } from "./modules/m1_event_engine.js";
 import { fetchNews } from "./news/fetch_news.js";
 import { buildNewsInput } from "./news/build_news_input.js";
+import { filterNews } from "./news/news_filter.js";
 /* =========================
    工具
 ========================= */
@@ -162,24 +163,29 @@ function renderDebugDashboard(stockMap, stockPool) {
 ========================= */
 async function main() {
   try {
-     const raw = await fetchNews();
-     console.log("🧪 測試新聞:", raw);
+    const [pool, sectorMap, impactTable, marketRuleTable] = await Promise.all([
+      loadJSON("./data/pool30.json"),
+      loadJSON("./data/sector_map_v1.json"),
+      loadJSON("./data/impact_table_v2.json"),
+      loadJSON("./data/market_rule_table_v1.json")
+    ]);
 
-     const aiNewsInput = await buildNewsInput(raw);
-     console.log("🤖 AI news_input:", aiNewsInput);
-      const [pool, sectorMap, impactTable, marketRuleTable] = await Promise.all([
-  loadJSON("./data/pool30.json"),
-  loadJSON("./data/sector_map_v1.json"),
-  loadJSON("./data/impact_table_v2.json"),
-  loadJSON("./data/market_rule_table_v1.json")
-]);
+    const raw = await fetchNews();
+    console.log("🧪 原始新聞:", raw);
 
-// ⭐ 用 AI 取代原本 news_input.json
-const news = aiNewsInput;
+    const filtered = filterNews(raw, pool, {
+      minScore: 2,
+      maxItems: 10,
+      debug: true
+    });
+    console.log("🧹 過濾後新聞:", filtered);
+
+    const aiNewsInput = await buildNewsInput(filtered);
+    console.log("🤖 AI news_input:", aiNewsInput);
 
     const runtime = buildNewsRuntime(
       new Date().toISOString().slice(0, 10),
-      news,
+      aiNewsInput,
       impactTable,
       sectorMap,
       marketRuleTable,
@@ -191,9 +197,8 @@ const news = aiNewsInput;
 
     render(runtime.stock_event_map, pool);
     renderDebugDashboard(runtime.stock_event_map, pool);
-
   } catch (err) {
-    console.error("❌ 系統錯誤:", err);
+    console.error(err);
     document.body.innerHTML = `<div style="color:red;">❌ ${err.message}</div>`;
   }
 }
