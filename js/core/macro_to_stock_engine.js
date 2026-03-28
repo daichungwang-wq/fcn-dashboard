@@ -229,3 +229,13 @@ export function buildMacroStockSignals(pool = [], macro = {}, newsList = []) {
 
   return pool.map(stock => buildMacroStockSignal(stock, macro, newsList));
 }
+// ==========================================
+// 🔧 舊版接口相容（給 m1_event_engine 用）
+// ==========================================
+export function applyMacroToStock({ macroEvents, stock }) {
+  return buildMacroStockSignal(
+    stock,
+    {},                 // macro 暫時不使用
+    macroEvents || []
+  );
+}
