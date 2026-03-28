@@ -200,10 +200,17 @@ export function filterNews(rawNewsList = [], stockPool = [], options = {}) {
     };
   });
 
-  const kept = scored
-    .filter((item) => item._filter_score >= minScore)
-    .sort((a, b) => b._filter_score - a._filter_score)
-    .slice(0, maxItems);
+  const passed = scored
+  .filter((item) => item._filter_score >= minScore)
+  .sort((a, b) => b._filter_score - a._filter_score);
+
+const macroBucket = passed.filter(x => x.detected_type === "macro").slice(0, 3);
+const marketBucket = passed.filter(x => x.detected_type === "market").slice(0, 3);
+const industryBucket = passed.filter(x => x.detected_type === "industry").slice(0, 3);
+const stockBucket = passed.filter(x => x.detected_type === "stock").slice(0, 1);
+
+const kept = [...macroBucket, ...marketBucket, ...industryBucket, ...stockBucket]
+  .slice(0, maxItems);
 
   const marketNews = kept.filter((x) => x.detected_type === "market");
   const macroNews = kept.filter((x) => x.detected_type === "macro");
