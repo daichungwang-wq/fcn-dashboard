@@ -245,7 +245,7 @@ async function main() {
     ];
   }
 
-  const newsRuntime = await runNewsPipeline();
+  const newsRuntime = await runNewsPipeline(pool);
   const stockResults = runStockEvaluation(pool, newsRuntime);
   console.log("🏆 stockResults:", stockResults);
 
