@@ -1,7 +1,242 @@
 [
   {
-    "id": "TEST_1",
-    "title": "Test news",
-    "summary": "Test"
+    "id": "N001",
+    "title": "Fed signals first rate cut could come sooner than expected",
+    "summary": "Federal Reserve officials suggested inflation is cooling enough for markets to expect earlier rate cuts, lifting risk appetite across equities.",
+    "source": "MockWire",
+    "url": "",
+    "published_at": "2026-03-28T06:00:00Z"
+  },
+  {
+    "id": "N002",
+    "title": "US CPI comes in below expectations, easing inflation concerns",
+    "summary": "A softer-than-expected CPI reading strengthened hopes for lower interest rates and supported growth and technology stocks.",
+    "source": "MockWire",
+    "url": "",
+    "published_at": "2026-03-28T06:10:00Z"
+  },
+  {
+    "id": "N003",
+    "title": "US 10-year Treasury yield falls as bond market prices in policy easing",
+    "summary": "Treasury yields declined after weaker inflation data, helping long-duration assets and boosting sentiment toward high-valuation sectors.",
+    "source": "MockWire",
+    "url": "",
+    "published_at": "2026-03-28T06:20:00Z"
+  },
+  {
+    "id": "N004",
+    "title": "VIX slips as market fear subsides after macro data surprise",
+    "summary": "The volatility index moved lower as investors rotated back into risk assets after a calmer inflation and rates outlook.",
+    "source": "MockWire",
+    "url": "",
+    "published_at": "2026-03-28T06:30:00Z"
+  },
+  {
+    "id": "N005",
+    "title": "Oil prices jump on renewed Middle East shipping disruption concerns",
+    "summary": "Crude prices climbed after reports of rising geopolitical tension in key transport routes, raising pressure on airlines and travel-related names.",
+    "source": "MockWire",
+    "url": "",
+    "published_at": "2026-03-28T06:40:00Z"
+  },
+  {
+    "id": "N006",
+    "title": "Gold rises as investors hedge geopolitical uncertainty",
+    "summary": "Gold prices advanced as traders sought safety amid geopolitical headlines, although broader equity markets stayed resilient.",
+    "source": "MockWire",
+    "url": "",
+    "published_at": "2026-03-28T06:50:00Z"
+  },
+  {
+    "id": "N007",
+    "title": "NVIDIA suppliers report stronger-than-expected AI server demand",
+    "summary": "Component checks indicated accelerating AI server orders, supporting expectations for sustained GPU demand and strong semiconductor spending.",
+    "source": "MockWire",
+    "url": "",
+    "published_at": "2026-03-28T07:00:00Z"
+  },
+  {
+    "id": "N008",
+    "title": "TSMC sees advanced-node utilization remain tight on AI chip orders",
+    "summary": "Foundry capacity for advanced nodes stayed tight as AI and data center chip customers continued to ramp production.",
+    "source": "MockWire",
+    "url": "",
+    "published_at": "2026-03-28T07:10:00Z"
+  },
+  {
+    "id": "N009",
+    "title": "Broadcom networking demand strengthens with AI cluster expansion",
+    "summary": "Demand for high-speed networking and connectivity components improved as hyperscalers expanded AI infrastructure buildouts.",
+    "source": "MockWire",
+    "url": "",
+    "published_at": "2026-03-28T07:20:00Z"
+  },
+  {
+    "id": "N010",
+    "title": "Micron memory pricing improves as HBM demand accelerates",
+    "summary": "Memory industry checks pointed to stronger HBM pricing and tighter supply, improving outlook for AI-linked memory suppliers.",
+    "source": "MockWire",
+    "url": "",
+    "published_at": "2026-03-28T07:30:00Z"
+  },
+  {
+    "id": "N011",
+    "title": "Applied Materials benefits from rising wafer fab equipment spending",
+    "summary": "Chip equipment spending plans improved as AI-related semiconductor demand supported advanced packaging and manufacturing investment.",
+    "source": "MockWire",
+    "url": "",
+    "published_at": "2026-03-28T07:40:00Z"
+  },
+  {
+    "id": "N012",
+    "title": "AMD launches new accelerator roadmap to challenge AI incumbents",
+    "summary": "AMD unveiled updated accelerator products and software improvements, signaling stronger competition in enterprise AI compute markets.",
+    "source": "MockWire",
+    "url": "",
+    "published_at": "2026-03-28T07:50:00Z"
+  },
+  {
+    "id": "N013",
+    "title": "Marvell and Credo gain from rising demand for AI data center interconnect",
+    "summary": "Investors turned more constructive on data center connectivity names as AI traffic growth drove new infrastructure spending.",
+    "source": "MockWire",
+    "url": "",
+    "published_at": "2026-03-28T08:00:00Z"
+  },
+  {
+    "id": "N014",
+    "title": "Arm ecosystem momentum builds as cloud and edge AI adoption increases",
+    "summary": "Arm-related demand improved as cloud and edge AI deployments expanded across enterprise and mobile platforms.",
+    "source": "MockWire",
+    "url": "",
+    "published_at": "2026-03-28T08:10:00Z"
+  },
+  {
+    "id": "N015",
+    "title": "Super Micro sees continued demand from AI rack-scale deployments",
+    "summary": "AI server infrastructure demand remained strong, supporting expectations for system integrators tied to large-scale deployments.",
+    "source": "MockWire",
+    "url": "",
+    "published_at": "2026-03-28T08:20:00Z"
+  },
+  {
+    "id": "N016",
+    "title": "Microsoft and Amazon boost cloud capex outlook on enterprise AI adoption",
+    "summary": "Cloud leaders indicated sustained infrastructure investment as enterprise customers accelerated AI application deployment.",
+    "source": "MockWire",
+    "url": "",
+    "published_at": "2026-03-28T08:30:00Z"
+  },
+  {
+    "id": "N017",
+    "title": "Alphabet expands AI services across search and enterprise products",
+    "summary": "Alphabet rolled out additional AI capabilities across core products, reinforcing platform monetization and enterprise demand expectations.",
+    "source": "MockWire",
+    "url": "",
+    "published_at": "2026-03-28T08:40:00Z"
+  },
+  {
+    "id": "N018",
+    "title": "Oracle wins more AI cloud database workloads from enterprise clients",
+    "summary": "Enterprise customers shifted more AI-related database and infrastructure workloads to Oracle cloud platforms.",
+    "source": "MockWire",
+    "url": "",
+    "published_at": "2026-03-28T08:50:00Z"
+  },
+  {
+    "id": "N019",
+    "title": "Apple supplier checks suggest soft smartphone demand but stable services outlook",
+    "summary": "Hardware demand appeared mixed, though recurring services revenues remained supportive for overall platform resilience.",
+    "source": "MockWire",
+    "url": "",
+    "published_at": "2026-03-28T09:00:00Z"
+  },
+  {
+    "id": "N020",
+    "title": "Tesla cuts prices in key markets as EV competition intensifies",
+    "summary": "Tesla adjusted pricing in several regions, raising concerns about margins amid growing electric vehicle competition.",
+    "source": "MockWire",
+    "url": "",
+    "published_at": "2026-03-28T09:10:00Z"
+  },
+  {
+    "id": "N021",
+    "title": "Boeing delivery optimism improves after supplier bottleneck eases",
+    "summary": "Production and delivery expectations improved as supply chain constraints showed tentative signs of stabilization.",
+    "source": "MockWire",
+    "url": "",
+    "published_at": "2026-03-28T09:20:00Z"
+  },
+  {
+    "id": "N022",
+    "title": "Airlines face margin pressure as fuel costs rise with oil spike",
+    "summary": "Higher crude prices raised fresh concerns over margins for airline operators despite resilient travel demand.",
+    "source": "MockWire",
+    "url": "",
+    "published_at": "2026-03-28T09:30:00Z"
+  },
+  {
+    "id": "N023",
+    "title": "Cruise operators see healthy bookings but geopolitical headlines add volatility",
+    "summary": "Booking trends remained constructive, though investors worried that geopolitical tension could disrupt near-term demand and sentiment.",
+    "source": "MockWire",
+    "url": "",
+    "published_at": "2026-03-28T09:40:00Z"
+  },
+  {
+    "id": "N024",
+    "title": "Las Vegas Sands benefits from improving premium travel and gaming demand",
+    "summary": "Premium travel and gaming demand trends improved, supporting optimism for resort and leisure operators.",
+    "source": "MockWire",
+    "url": "",
+    "published_at": "2026-03-28T09:50:00Z"
+  },
+  {
+    "id": "N025",
+    "title": "Bank of America and Citigroup supported by softer recession fears",
+    "summary": "Large banks benefited from reduced recession concerns, though investors remained cautious on credit quality and net interest margins.",
+    "source": "MockWire",
+    "url": "",
+    "published_at": "2026-03-28T10:00:00Z"
+  },
+  {
+    "id": "N026",
+    "title": "Coinbase rises with broader crypto market recovery and Bitcoin strength",
+    "summary": "Crypto-linked equities improved as digital asset prices rebounded and trading activity picked up.",
+    "source": "MockWire",
+    "url": "",
+    "published_at": "2026-03-28T10:10:00Z"
+  },
+  {
+    "id": "N027",
+    "title": "UnitedHealth faces renewed policy scrutiny on reimbursement trends",
+    "summary": "Healthcare insurers came under pressure as investors assessed regulatory and reimbursement risks in managed care.",
+    "source": "MockWire",
+    "url": "",
+    "published_at": "2026-03-28T10:20:00Z"
+  },
+  {
+    "id": "N028",
+    "title": "Walmart and Costco show resilient consumer spending on essentials",
+    "summary": "Defensive retail names held up well as shoppers prioritized essentials and value in a mixed consumption environment.",
+    "source": "MockWire",
+    "url": "",
+    "published_at": "2026-03-28T10:30:00Z"
+  },
+  {
+    "id": "N029",
+    "title": "Target and Nike remain under pressure from discretionary spending weakness",
+    "summary": "Discretionary consumer demand remained soft, weighing on retailers and apparel names with higher exposure to non-essential purchases.",
+    "source": "MockWire",
+    "url": "",
+    "published_at": "2026-03-28T10:40:00Z"
+  },
+  {
+    "id": "N030",
+    "title": "Semiconductor ETF and investment-grade bond ETF see diverging flows on risk rotation",
+    "summary": "Investors rotated toward semiconductor exposure while trimming some defensive bond positioning as macro fears eased.",
+    "source": "MockWire",
+    "url": "",
+    "published_at": "2026-03-28T10:50:00Z"
   }
 ]
