@@ -1,6 +1,6 @@
 // ==========================================
 // FCN SYSTEM V1 MAIN
-// Freeze Version
+// module3 / debug-dashboard version
 // ==========================================
 
 // M1
@@ -66,11 +66,12 @@ async function runNewsPipeline() {
 
   console.log("📰 rawNews:", rawNews);
 
-  // ✅ 這裡一定要 await
+  // 這裡一定要 await
   const newsInput = await buildNewsInput(rawNews);
   console.log("📊 news_input:", newsInput);
 
-  const newsRuntime = buildNewsRuntime(newsInput || []);
+  const safeNewsInput = Array.isArray(newsInput) ? newsInput : [];
+  const newsRuntime = buildNewsRuntime(safeNewsInput);
   console.log("🔥 news_runtime:", newsRuntime);
 
   return newsRuntime;
@@ -81,7 +82,9 @@ async function runNewsPipeline() {
 // ==========================================
 function runStockEvaluation(pool, newsRuntime) {
   const results = [];
-  const newsItems = Array.isArray(newsRuntime?.news_items) ? newsRuntime.news_items : [];
+  const newsItems = Array.isArray(newsRuntime?.news_items)
+    ? newsRuntime.news_items
+    : [];
 
   for (const stock of pool) {
     let pureScore = 0;
@@ -103,7 +106,6 @@ function runStockEvaluation(pool, newsRuntime) {
           stock
         });
 
-        // 相容數字 / 物件
         if (typeof s === "number") {
           eventScore += s;
         } else if (s && typeof s === "object") {
@@ -130,14 +132,12 @@ function runStockEvaluation(pool, newsRuntime) {
 
 // ==========================================
 // M3.2：FCN 簡易模擬
-// 目前先保留接口，後面再升級
 // ==========================================
 function runFCNEvaluation(stockResults) {
   return stockResults.slice(0, 5).map((r, idx) => {
     let fcnScore = 0;
 
     try {
-      // 先用簡化參數跑 pure FCN
       const mockDeal = {
         ki: 60,
         strike: 65,
@@ -163,16 +163,16 @@ function runFCNEvaluation(stockResults) {
 }
 
 // ==========================================
-// UI
+// UI：module3 + debug-dashboard
 // ==========================================
 function renderStockRanking(results, fcnResults) {
-  const app = document.getElementById("app");
-  if (!app) return;
+  const module3 = document.getElementById("module3");
+  const debugDashboard = document.getElementById("debug-dashboard");
 
-  const top10 = results.slice(0, 10);
+  if (module3) {
+    const top10 = results.slice(0, 10);
 
-  app.innerHTML = `
-    <section style="margin-top:20px;">
+    module3.innerHTML = `
       <div style="background:#fff;border:1px solid #ddd;border-radius:16px;padding:16px;margin-bottom:16px;">
         <h2 style="margin:0 0 12px 0;">🧠 FCN Stock Ranking</h2>
         <div>總股票數：${results.length}</div>
@@ -201,8 +201,24 @@ function renderStockRanking(results, fcnResults) {
           </div>
         `).join("")}
       </div>
-    </section>
-  `;
+    `;
+  }
+
+  if (debugDashboard) {
+    const top5 = results.slice(0, 5);
+    const bottom5 = [...results].slice(-5);
+
+    debugDashboard.innerHTML = `
+      <div style="background:#fff;border:1px solid #ddd;border-radius:16px;padding:16px;margin-bottom:16px;">
+        <h2 style="margin:0 0 12px 0;">🧠 Debug Dashboard</h2>
+        <div><b>Top 5</b></div>
+        ${top5.map(r => `<div>${r.symbol} (${r.total_score.toFixed(4)})</div>`).join("")}
+        <br/>
+        <div><b>Bottom 5</b></div>
+        ${bottom5.map(r => `<div>${r.symbol} (${r.total_score.toFixed(4)})</div>`).join("")}
+      </div>
+    `;
+  }
 }
 
 // ==========================================
@@ -211,7 +227,6 @@ function renderStockRanking(results, fcnResults) {
 async function main() {
   console.log("🚀 FCN SYSTEM START");
 
-  // pool
   let pool = await loadJSON("./data/pool30.json");
 
   if (!Array.isArray(pool) || pool.length === 0) {
@@ -230,18 +245,13 @@ async function main() {
     ];
   }
 
-  // M1
   const newsRuntime = await runNewsPipeline();
-
-  // M3.1
   const stockResults = runStockEvaluation(pool, newsRuntime);
   console.log("🏆 stockResults:", stockResults);
 
-  // M3.2
   const fcnResults = runFCNEvaluation(stockResults);
   console.log("💵 fcnResults:", fcnResults);
 
-  // UI
   renderStockRanking(stockResults, fcnResults);
 }
 
@@ -251,17 +261,23 @@ async function main() {
 main().catch(err => {
   console.error("❌ main fatal:", err);
 
-  const app = document.getElementById("app");
-  if (app) {
-    app.innerHTML = `
+  const module3 = document.getElementById("module3");
+  const debugDashboard = document.getElementById("debug-dashboard");
+
+  if (module3) {
+    module3.innerHTML = `
       <div style="margin-top:20px;background:#fff;border:1px solid #f1b5b5;border-radius:16px;padding:16px;color:#b00020;">
         <h2 style="margin:0 0 8px 0;">系統發生錯誤</h2>
         <div>${err.message}</div>
       </div>
     `;
   }
-});
-}
 
-// ==========================================
-main();
+  if (debugDashboard) {
+    debugDashboard.innerHTML = `
+      <div style="margin-top:20px;background:#fff;border:1px solid #f1b5b5;border-radius:16px;padding:16px;color:#b00020;">
+        <div>Debug Error: ${err.message}</div>
+      </div>
+    `;
+  }
+});
