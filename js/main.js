@@ -101,6 +101,7 @@ function runStockEvaluation(pool, newsRuntime) {
     // 純股票分數
     try {
       const pure = evaluateStock(stock);
+console.log("🧪 evaluateStock:", stock.symbol, pure);
       pureScore = toNumber(pure?.score, 0);
     } catch (e) {
       console.warn(`⚠️ evaluateStock fail: ${stock.symbol}`, e);
