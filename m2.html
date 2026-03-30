@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>M2｜FCN 庫存監控（概念版）</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, "Microsoft JhengHei", sans-serif;
+      background: #f5f6f8;
+      color: #111;
+    }
+    .page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px 14px 50px;
+    }
+    h1 { margin: 0 0 10px; font-size: 32px; }
+    .subtitle {
+      color: #555;
+      font-size: 15px;
+      margin-bottom: 18px;
+    }
+    .card {
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 18px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    .summary-box {
+      border: 1px solid #e5e5e5;
+      border-radius: 14px;
+      padding: 14px;
+      background: #fff;
+    }
+    .summary-box .label {
+      color: #666;
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+    .summary-box .value {
+      font-size: 28px;
+      font-weight: 700;
+    }
+    .status-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 10px 0 0;
+    }
+    .pill {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid #ddd;
+      background: #fafafa;
+    }
+    .healthy { background: #ecfff1; border-color: #a9e2b4; }
+    .watch { background: #fff7e8; border-color: #f0d298; }
+    .danger { background: #fff0f0; border-color: #f1b5b5; }
+    .active { background: #eef6ff; border-color: #b8d8ff; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+      font-size: 14px;
+    }
+    th, td {
+      text-align: left;
+      padding: 10px 8px;
+      border-bottom: 1px solid #eee;
+      vertical-align: top;
+    }
+    th {
+      font-size: 13px;
+      color: #666;
+      font-weight: 700;
+      background: #fafafa;
+    }
+    .small {
+      color: #666;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .block-title {
+      margin: 0 0 8px;
+      font-size: 20px;
+    }
+    .note {
+      font-size: 13px;
+      background: #fffbe6;
+      border: 1px solid #f1df9a;
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin-top: 10px;
+      line-height: 1.6;
+    }
+    .link-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+    a.btn {
+      text-decoration: none;
+      border: 0;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 14px;
+      background: #111;
+      color: #fff;
+      display: inline-block;
+    }
+    a.btn.secondary { background: #666; }
+
+    @media (max-width: 900px) {
+      .summary-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 700px) {
+      .summary-grid { grid-template-columns: 1fr; }
+      h1 { font-size: 26px; }
+
+      table, thead, tbody, th, td, tr { display: block; }
+      thead { display: none; }
+      tr {
+        border: 1px solid #e5e5e5;
+        border-radius: 14px;
+        padding: 10px;
+        margin-bottom: 12px;
+        background: #fff;
+      }
+      td {
+        border-bottom: 0;
+        padding: 6px 4px;
+      }
+      td:before {
+        content: attr(data-label);
+        display: block;
+        font-size: 12px;
+        color: #666;
+        margin-bottom: 2px;
+        font-weight: 700;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <h1>M2｜FCN 庫存監控（概念版）</h1>
+    <div class="subtitle">這一版先抓 <b>status = active</b> 的 FCN 單，做概念型監控畫面。重點是先有持倉全貌、Worst-of 與健康狀態。</div>
+
+    <div class="card">
+      <div class="summary-grid">
+        <div class="summary-box">
+          <div class="label">目前 active 單數</div>
+          <div class="value">3</div>
+        </div>
+        <div class="summary-box">
+          <div class="label">健康 Healthy</div>
+          <div class="value">1</div>
+        </div>
+        <div class="summary-box">
+          <div class="label">觀察 Watch</div>
+          <div class="value">1</div>
+        </div>
+        <div class="summary-box">
+          <div class="label">危險 Danger</div>
+          <div class="value">1</div>
+        </div>
+      </div>
+
+      <div class="status-row">
+        <span class="pill active">只顯示 status = active</span>
+        <span class="pill healthy">Healthy：高於 Strike</span>
+        <span class="pill watch">Watch：介於 Strike 與 KI 之間</span>
+        <span class="pill danger">Danger：低於 KI</span>
+      </div>
+
+      <div class="note">
+        這一版是概念版。持倉 P/L、含息損益、到期結果與敲入後接股追蹤，後面再逐步接真實資料與自動計算。
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 class="block-title">Active FCN Inventory</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>FCN ID</th>
+            <th>Basket</th>
+            <th>進場 / 到期</th>
+            <th>Worst-of</th>
+            <th>健康狀態</th>
+            <th>觀察重點</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td data-label="FCN ID"><b>FCN499G</b><div class="small">B / 34.45% / 12M</div></td>
+            <td data-label="Basket">TSLA / INTC / NVDA / ARM</td>
+            <td data-label="進場 / 到期">2025-03-12<br><span class="small">到期：2026-03-12</span></td>
+            <td data-label="Worst-of">INTC</td>
+            <td data-label="健康狀態"><span class="pill watch">Watch</span></td>
+            <td data-label="觀察重點">介於 Strike 與 KI 間，需每天追蹤 Worst-of 距離 KI。</td>
+          </tr>
+
+          <tr>
+            <td data-label="FCN ID"><b>FCN650G</b><div class="small">B / 16.80% / 6M</div></td>
+            <td data-label="Basket">NVDA / TSM / AVGO</td>
+            <td data-label="進場 / 到期">2026-03-01<br><span class="small">到期：2026-09-01</span></td>
+            <td data-label="Worst-of">AVGO</td>
+            <td data-label="健康狀態"><span class="pill healthy">Healthy</span></td>
+            <td data-label="觀察重點">高於 Strike，現階段偏健康，但仍需留意高位強勢後回檔。</td>
+          </tr>
+
+          <tr>
+            <td data-label="FCN ID"><b>DACN2600066</b><div class="small">NATIXIS / 34.21% / 6M</div></td>
+            <td data-label="Basket">TSM / QQQ / SMH</td>
+            <td data-label="進場 / 到期">2026-03-27<br><span class="small">到期：2026-09-27</span></td>
+            <td data-label="Worst-of">SMH</td>
+            <td data-label="健康狀態"><span class="pill danger">Danger</span></td>
+            <td data-label="觀察重點">EKI / KI N/A 類型，高收益對應高風險，重點看到期表現與最差標的。</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h2 class="block-title">M2 後續要補的功能</h2>
+      <ul style="margin:0; padding-left:18px; line-height:1.8;">
+        <li>從 <b>fcn_pool.json</b> 自動抓 <b>status = active</b> 的單。</li>
+        <li>自動計算 Healthy / Watch / Danger。</li>
+        <li>加入含息損益、已實現 / 未實現損益。</li>
+        <li>Worst-of 與 KI 距離百分比。</li>
+        <li>到期 / 提前出場 / 敲入後接股的狀態流轉。</li>
+      </ul>
+
+      <div class="link-row">
+        <a class="btn secondary" href="./milestone1_index.html">返回 Milestone 1</a>
+        <a class="btn" href="./m4.html">前往 M4 Key-in</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
