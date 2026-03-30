@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-03-29 10:57",
+  "updated_at": "2026-03-30 00:04",
   "summary": {
     "active_fcn_count": 24,
     "top_risk_code": "FCN710H",
@@ -10,91 +10,119 @@
   "morning_brief": {
     "international_news": [
       {
-        "title": "US Stocks Sink; Nasdaq 100 and Dow Industrials Enter Correction",
-        "summary": "The selloff in US stocks accelerated on Friday, as traders fled equities on fears that a surge in oil prices…",
-        "content": "(Bloomberg) The selloff in US stocks accelerated on Friday, as traders fled equities on fears that a surge in oil prices sparked by the escalating Iran war will cripple the global economy. THIS CON… [+5134 chars]｜分類：地緣政治｜解讀：波動升高，FCN 敲入風險增加",
-        "affects_fcn": true,
-        "impact_score": -2
-      },
-      {
-        "title": "Pakistan steps into spotlight amid fog of US-Iran war",
-        "summary": "Amid conflicting signals and indirect talks, Pakistan’s improved ties with the US could reshape West Asia dip…",
-        "content": "While the week opened on an optimistic note, with US President Donald Trump holding off strikes on Tehrans power infrastructure by five days until 27 March, missiles continued to streak across West A… [+5895 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "What caused U.S. troops to be wounded? #world",
+        "summary": "U.S. troops wounded amid intensifying Iran related strikes The United States has reported new injuries to ser…",
+        "content": "U.S. troops wounded amid intensifying Iran-related strikes The United States has reported new injuries to service members during the ongoing Iran war after attacks in the region expanded in scope. I… [+1683 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Tennessee School Bus Crash Leaves 2 Students Dead",
-        "summary": "Two students were killed and at least seven other people were injured on Friday in a school bus crash in west…",
-        "content": "Two students were killed and at least seven other people were injured on Friday in a school bus crash in west Tennessee, officials said. The crash involving a Tennessee Department of Transportation d… [+1369 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Iran footballers pay tribute to victims of school strike",
-        "summary": "The Iran men's national team wore black armbands and posed with school rucksacks as the national anthem playe…",
-        "content": "The Iran men's national team wore black armbands and posed with school rucksacks as the national anthem played before a match with Nigeria to remember the victims of a strike on a primary school in I… [+1390 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "IPL 2026 Live: RCB begin title defence at home against powerhouse SRH",
-        "summary": "RCB vs SRH Live Score, IPL 2026: The Indian Premier League (IPL) 2026 begins with defending champions Royal C…",
-        "content": "RCB vs SRH Live Score, IPL 2026: The Indian Premier League (IPL) 2026 begins with defending champions Royal Challengers Bengaluru (RCB) taking on Sunrisers Hyderabad (SRH) at the M Chinnaswamy Stadiu… [+2050 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Trojans review: Barrier between audience and performer disappears in Luail’s poignant, intimate dance",
-        "summary": "The audience becomes part of the story in Philip Connaughton’s retelling of the Aeneid, whose themes are supe…",
-        "content": "Trojans Project Arts Centre, Dublin In Luails production of Trojans, the barrier between audience and performer disappears, making poignant themes of community, displacement and migration. Rather t… [+3181 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "The million-dollar cost of cancelling F1 in the Middle East",
-        "summary": "Formula 1 has cancelled its Bahrain and Saudi Arabian Grands Prix due to regional airspace disruptions. While…",
-        "content": "Hosting a Grand Prix also positions cities on the global stage. Each race is not a sporting event, but a showcase. Mohammed Ben Sulayem, president of the FIA｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
+        "title": "UK CO2 shortage leads plant reopening #food",
+        "summary": "What happened The UK temporarily reopened a bioethanol plant to bolster CO2 supplies as conflict in the Middl…",
+        "content": "What happened The UK temporarily reopened a bioethanol plant to bolster CO2 supplies as conflict in the Middle East continues to affect logistics and availability. Government officials said the move… [+1140 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
         "affects_fcn": true,
         "impact_score": -1
       },
       {
-        "title": "Trump’s MAGA America Whines about ‘Putin Winning’ as India surges Russian Oil Imports",
-        "summary": "As the US aggression on Iran continues, global oil and natural gas markets frantically look for alternative s…",
-        "content": "As the US aggression on Iran continues, global oil and natural gas markets frantically look for alternative suppliers. Naturally, the world’s most populous countries have the highest demand and must… [+5936 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
+        "title": "'I’ll F***ing Kill You': 'No Kings' Protesters Push, Threaten Breitbart Reporter",
+        "summary": "Breitbart News video producer Matthew Perdie was shoved and threatened while covering a \"No Kings\" protest in…",
+        "content": "Breitbart News video producer Matthew Perdie was shoved and threatened while covering a “No Kings” protest in Jim Thorpe, Pennsylvania, after he attempted to speak to an elderly protester about the e… [+1746 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Why was Iowa-Illinois delayed by horn? #sports",
+        "summary": "Horn malfunction derails Elite Eight timing in Iowa Illinois Saturday’s NCAA Tournament Elite Eight between I…",
+        "content": "Saturdays NCAA Tournament Elite Eight between Iowa and Illinois experienced a major, unusual delay after a horn problem at Houstons Toyota Center forced officials and teams to pause play. Multiple re… [+1406 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Dietary behaviors, energy intake, and assessment of school lunch consumption in Thai children with autism",
+        "summary": "Autism spectrum disorder (ASD) is associated with distinctive eating behaviors that can affect nutritional st…",
+        "content": "<li>Hodges, H., Fealko, C. &amp; Soares, N. Autism spectrum disorder: definition, epidemiology, causes, and clinical evaluation. Transl Pediatr.9, S55S65 (2020). Google Scholar </li><li>Zeidan, J.… [+6734 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Traffic in middle lane revving up e-cars; Rs 10-30L e-cars see fastest growth amid discounts",
+        "summary": "India's electric passenger vehicle adoption is primarily driven by the ₹10-30 lakh segment, with sales rising…",
+        "content": "Mumbai: The mid-market 10-30 lakh segment is driving India's electric passenger vehicle adoption, but concerns over rising fuel prices and supply disruptions amid the Israel-US-Iran war have not yet … [+3289 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Sociocultural determinants of attitudes toward oocyte donation among infertility patients in Western Iran",
+        "summary": "Attitudes toward oocyte donation in Iran are deeply shaped by sociocultural forces, including concepts of lin…",
+        "content": "<li>Organization, W. H. Infertility prevalence estimates, 19902021 (World Health Organization, 2023). </li><li>Abangah, G. et al. A meta-analysis of the prevalence and etiology of infertility in Ira… [+3041 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Lola Young Opens Up About Her 'Drugs Recovery,' Says She's 'Doing a Hell of a Lot Better'",
+        "summary": "Lola Young is opening up about her recovery. The 25-year-old singer notably collapsed in the middle of a perf…",
+        "content": "Lola Young is opening up about her recovery. The 25-year-old singer notably collapsed in the middle of a performance at the 2025 All Things Go festival and fans have expressed concern about her onli… [+1052 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Where to invest $3,000 in ASX growth shares in April",
+        "summary": "Money to invest next month? Here are three shares with bucketloads of growth potential. The post Where to inv…",
+        "content": "If you have $3,000 ready to invest as April approaches, you might be wondering which ASX growth shares are worth considering right now. The Australian share market is home to a number of businesses … [+2699 chars]｜分類：全球經濟｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Time for the IMF to Stop Blaming the Victim",
+        "summary": "Setser argues the IMF's framework for analyzing global imbalances is outdated, underweighting China's surging…",
+        "content": "The IMFs standard analysis of global imbalances puts equal emphasis on the United States (too little saving), Europe (too little investment), and East Asia (too much saving). That analysis is now d… [+8998 chars]｜分類：全球經濟｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "West Asia conflict may take pace off India's growth; CEA Nageswaran flags impact on inflation, fiscal deficit",
+        "summary": "India's economic growth forecast of 7-7.4% for 2026-27 faces considerable downside risk due to the West Asia…",
+        "content": "New Delhi: India faces \"considerable downside\" risk to its projected growth of 7-7.4% for 2026-27 due to the West Asia conflict, chief economic advisor V Anantha Nageswaran said on Saturday, warning … [+3830 chars]｜分類：全球經濟｜解讀：影響有限",
         "affects_fcn": true,
-        "impact_score": -1
-      },
-      {
-        "title": "Rocket Lab Successfully Launches 85th Mission and First Dedicated Launch for European Space Agency",
-        "summary": "Rocket Lab successfully launched a pair of satellites for the European Space Agency (ESA) to test new navigat…",
-        "content": "MAHIA, New Zealand, March 28, 2026 (GLOBE NEWSWIRE) -- Rocket Lab Corporation (Nasdaq: RKLB) (Rocket Lab or the Company), a global leader in launch services and space systems, today successfully comp… [+6591 chars]｜分類：全球經濟｜解讀：影響有限",
-        "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "War Forces Global Elite to Stare Into Abyss of Perpetual Shocks",
-        "summary": "The Iran war is forcing soul-searching within the global economic elite on how to respond to a series of shoc…",
-        "content": "(Bloomberg) The Iran war is forcing soul-searching within the global economic elite on how to respond to a series of shocks that show no signs of abating. THIS CONTENT IS RESERVED FOR SUBSCRIBERS O… [+5012 chars]｜分類：全球經濟｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Why Bitcoin Price Is Still Falling Despite Rising Strategy And ETF Demand: Researcher",
-        "summary": "On Friday, March 27th, the price of Bitcoin fell toward the $65,000 level, reflecting the growing uncertainty…",
-        "content": "On Friday, March 27th, the price of Bitcoin fell toward the $65,000 level, reflecting the growing uncertainty in the broader global financial markets. Interestingly, this decline in the flagship cryp… [+2703 chars]｜分類：全球經濟｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Ethereum Sets User Record As Price Lags Far Behind Network Growth",
-        "summary": "BlackRock’s staked Ethereum fund pulled in $155 million on its first day of trading — more than the firm’s ow…",
-        "content": "They say journalists never truly clock out. But for Christian, that's not just a metaphor, it's a lifestyle. By day, he navigates the ever-shifting tides of the cryptocurrency market, wielding words … [+2792 chars]｜分類：全球經濟｜解讀：影響有限",
+        "title": "Influence of equity structure in China’s high-tech manufacturing industry on enterprise value under epidemic shocks",
+        "summary": "The COVID-19 pandemic represented a profound exogenous shock to global economic systems, posing substantial c…",
+        "content": "<li>Li, Y. &amp; Zhang, P. (eds) Blue Book of National Competitiveness: Report on Chinas National Competitiveness No.17New Growth Drivers and Competitive Clusters (Social Sciences Academic, 2018). <… [+8284 chars]｜分類：全球經濟｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       }
     ],
     "financial_news": [
+      {
+        "title": "There are now nearly 50% more home sellers than buyers as mismatch widens to a record 630,000. But it’s only a buyer’s…",
+        "summary": "\"High housing costs and economic uncertainty have caused many house hunters to retreat, creating an imbalance…",
+        "content": "Home buyers have gained even more leverage over sellers as housing market supply continues to overwhelm tepid demand.In February, there were 46.3% more sellers than buyers, representing a gap of 629,… [+3263 chars]｜分類：Fed / 利率｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "U.S. debt suddenly draws weaker demand as $10 trillion must be rolled over this year amid Iran war. ‘The bond market re…",
+        "summary": "\"The need for additional spending to finance the war would increase U.S. debt, sparking a bond market selloff…",
+        "content": "President Donald Trumps war on Iran is colliding with U.S. debt investors, who demonstrated less appetite for Treasury securities as hopes for a quick end to the conflict evaporate.This past week, au… [+3981 chars]｜分類：Fed / 利率｜解讀：波動升高，FCN 敲入風險增加",
+        "affects_fcn": true,
+        "impact_score": -2
+      },
+      {
+        "title": "Crypto firm Goliath Ventures files for bankruptcy after CEO arrested over alleged $328M Ponzi scheme",
+        "summary": "The bankruptcy and legal fallout from Goliath Ventures' Ponzi scheme could erode trust in crypto investments…",
+        "content": "Goliath Ventures' downfall casts a spotlight on the lavish misuse of funds by executives. Florida-based crypto firm Goliath Ventures has filed for Chapter 11 bankruptcy protection following the arres… [+3161 chars]｜分類：Fed / 利率｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Will the US stock market see a big crash ahead? How will Dow, S&P 500 and Nasdaq move — Are rising oil prices and 2% ma…",
+        "summary": "US stock market crash fears are rising as Dow Jones Industrial Average, S&P 500, and Nasdaq Composite fall sh…",
+        "content": "US stock market crash narrative is gaining momentum after a sharp sell-off wiped out billions in value in a single session. The S&amp;P 500 dropped 1.74% to 6,477.16, the Dow Jones fell 469 points, a… [+6844 chars]｜分類：Fed / 利率｜解讀：地緣風險升高，需留意市場波動擴大",
+        "affects_fcn": true,
+        "impact_score": -1
+      },
       {
         "title": "US Stocks Sink; Nasdaq 100 and Dow Industrials Enter Correction",
         "summary": "The selloff in US stocks accelerated on Friday, as traders fled equities on fears that a surge in oil prices…",
@@ -124,116 +152,88 @@
         "impact_score": 0
       },
       {
-        "title": "Dow closes in correction, S&P logs longest weekly losing streak in four years and oil settles at Iran-war highs",
-        "summary": "US stocks slid and the Dow closed in correction Friday as uncertainty about the duration of the war with Iran…",
-        "content": "US stocks slid and the Dow closed in correction Friday as uncertainty about the duration of the war with Iran and nerves about energy inflation continued to weigh on markets. The Dow fell 793 points… [+2804 chars]｜分類：Fed / 利率｜解讀：地緣風險升高，需留意市場波動擴大",
-        "affects_fcn": true,
-        "impact_score": -1
-      },
-      {
-        "title": "White House crypto czar leaves office after securing crypto wins for banks and institutions instead of Bitcoin",
-        "summary": "David Sacks leaves office with wins for crypto infrastructure, while Bitcoin holders are still waiting David…",
-        "content": "David Sacks leaves office with wins for crypto infrastructure, while Bitcoin holders are still waiting David Sacks is out of the formal White House crypto czar role after exhausting the 130-day limi… [+10370 chars]｜分類：Fed / 利率｜解讀：影響有限",
+        "title": "What caused U.S. troops to be wounded? #world",
+        "summary": "U.S. troops wounded amid intensifying Iran related strikes The United States has reported new injuries to ser…",
+        "content": "U.S. troops wounded amid intensifying Iran-related strikes The United States has reported new injuries to service members during the ongoing Iran war after attacks in the region expanded in scope. I… [+1683 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Stock Market Today: Dow Drops 469 Points, S&P 500 and Nasdaq Slide Sharply as Iran Conflict Doubts",
-        "summary": "U.S. stocks tumbled Thursday as fresh doubts about a quick end to the U.S.-Iran conflict and a sharp rise in…",
-        "content": "U.S. stocks tumbled Thursday as fresh doubts about a quick end to the U.S.-Iran conflict and a sharp rise in oil prices reignited inflation fears, sending the Dow Jones Industrial Average down 469 po… [+7222 chars]｜分類：Fed / 利率｜解讀：地緣風險升高，需留意市場波動擴大",
-        "affects_fcn": true,
-        "impact_score": -1
-      },
-      {
-        "title": "Crypto stocks battered as Nasdaq enters correction in $17 trillion market rout",
-        "summary": "The Friday plunge fits into a pattern since the war in Iran broke out, with gains on Monday turning into loss…",
-        "content": "Crypto stocks are getting hit hard Friday as weakness in U.S. equities rippled through high-risk assets, driving bitcoin BTC $65,830.92 below $66,000. Crypto exchange Coinbase (COIN) and digital as… [+3600 chars]｜分類：Fed / 利率｜解讀：影響有限",
+        "title": "How do “divorce registries” work? #lifestyle",
+        "summary": "Divorce registries: how people are “starting over” A growing trend is changing how people handle the practica…",
+        "content": "A growing trend is changing how people handle the practical side of splitting up: divorce registries. Instead of treating a breakup as something to quietly endureor only one more line in a checklists… [+1419 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Luxury watch thief caught wearing neon T-shirt in chip shop jailed",
-        "summary": "A bungling watch thief who was caught after he was spotted by police wearing a distinctive bright neon T-shir…",
-        "content": "A bungling watch thief who was caught after he was spotted by police wearing a distinctive bright neon T-shirt while eating in a chip shop has been jailed. James Wall stole Gucci and Cartier watches… [+2093 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "title": "Why did Jordan Aqaba require police reporting? #travel",
+        "summary": "Jordan Aqaba entry stamp request Travelers discussing a Jordan Aqaba border entry received an immigration rel…",
+        "content": "Jordan Aqaba entry stamp request Travelers discussing a Jordan Aqaba border entry received an immigration-related instruction that their entry stamp asked them to report to police within three month… [+1457 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Pakistan steps into spotlight amid fog of US-Iran war",
-        "summary": "Amid conflicting signals and indirect talks, Pakistan’s improved ties with the US could reshape West Asia dip…",
-        "content": "While the week opened on an optimistic note, with US President Donald Trump holding off strikes on Tehrans power infrastructure by five days until 27 March, missiles continued to streak across West A… [+5895 chars]｜分類：通膨 / 就業｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "COLUMN: Oluchi Okananwa and Brenda Frese’s viral moment exemplifies what makes Frese a coaching genius",
-        "summary": "﻿The head coach’s speech to her star caught fire on the internet, but not always for the right reason.",
-        "content": "Its been impossible to be on any sports social media algorithm this week without seeing Brenda Freses impassioned speech to guard Oluchi Okananwa during the third quarter of Maryland womens basketbal… [+3921 chars]｜分類：通膨 / 就業｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Report: Liverpool considering €80m bid for Nottingham Forest star",
-        "summary": "Liverpool Eyeing Murillo Move as Defensive Planning IntensifiesLiverpool’s long term defensive planning has c…",
-        "content": "Liverpools long term defensive planning has come into sharper focus, with fresh reporting from TEAMtalkoutlining serious interest in Murillo. The Liverpool hierarchy appear to be laying the groundwor… [+3950 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "title": "How did No Kings protests spread nationwide? #politics",
+        "summary": "“No Kings” protests mobilize across U.S.; organizers push record turnout Large scale “No Kings” protests unfo…",
+        "content": "No Kings protests mobilize across U.S.; organizers push record turnout Large-scale No Kings protests unfolded across the United States, with reporting describing millions of participants and planned… [+1932 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       }
     ],
     "ai_trend": [
       {
-        "title": "delegate-manifest added to PyPI",
-        "summary": "AgentPermissionManifest — typed permission middleware for LangGraph agents",
-        "content": "Zero-Trust Permission Middleware for AI Agents. Delegate Manifest is a framework-agnostic Python library that enforces explicit permission boundaries on AI agents. It was engineered to solve the Age… [+1101 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "Daily Hacker News for 2026-03-28",
+        "summary": "The 10 highest-rated articles on Hacker News on March 28, 2026 which have not appeared on any previous Hacker…",
+        "content": "The 10 highest-rated articles on Hacker News on March 28, 2026 which have not appeared on any previous Hacker News Daily are:｜分類：AI Agent｜解讀：影響有限｜FCN Pool：ARM｜建議：觀察池",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "mcp-nexmem added to PyPI",
-        "summary": "NexMem: Shared Agent Memory for Teams — a plug-and-play MCP memory server with pluggable database backends",
-        "content": "Shared Agent Memory for Teams a plug-and-play MCP memory server with pluggable database backends. NexMem gives AI coding agents (Cursor, Claude Desktop, etc.) a persistent knowledge graph that the w… [+8747 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "shared-context-cache-mcp-server 0.1.0",
-        "summary": "MCP server for shared context caching — AI agents share computed results to reduce token cost and latency",
+        "title": "wzrd-client 1.2.4",
+        "summary": "Python client for the WZRD velocity oracle. Reads AI model adoption signals from 4 platforms. Agents stream C…",
         "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "shared-context-cache-mcp-server added to PyPI",
-        "summary": "MCP server for shared context caching — AI agents share computed results to reduce token cost and latency",
+        "title": "clawmetry 0.12.83",
+        "summary": "ClawMetry - Real-time observability dashboard for OpenClaw AI agents",
         "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "pixelpulse-dashboard added to PyPI",
-        "summary": "Real-time pixel-art dashboard for multi-agent systems. Production observability meets engaging visualization.",
-        "content": "Watch your AI agents work pixel-art observability for multi-agent systems. Your agents walk around pixel-art office rooms, show speech bubbles when thinking, and pass glowing message particles betwe… [+10232 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "jito-agent 0.2.0",
-        "summary": "Portable trust and reputation layer for AI agents — log work, build verifiable reputation, dispute bad claims",
+        "title": "telos-gov 2.0.0a1",
+        "summary": "TELOS governance engine -- fidelity scoring, primacy math, and cryptographic audit trails for AI agents",
         "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Is there a pay gap in America? Women say it’s real, many men say it isn’t",
-        "summary": "A new AP-NORC poll, reported by The Los Angeles Times, reveals a widening divide in how men and women perceiv…",
-        "content": "Follow Us On Social Media PULL MISSILES OUT OF U.S. Weighs Options As Iran War Drains Tomahawk Stock | WatchThe Biggest Astrology Myth About RahuKetu Exposed | Ft. Umang TanejaIran Strikes U.S. Forc… [+3052 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "telos-gov added to PyPI",
+        "summary": "TELOS governance engine -- fidelity scoring, primacy math, and cryptographic audit trails for AI agents",
+        "content": "Governance engine for autonomous AI agents. Fidelity scoring, primacy math, cryptographic audit trails, and graduated response -- all in a single compiled package. telos-gov is the engine behind tel… [+2375 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "repowise 0.1.1",
-        "summary": "Codebase intelligence for developers and AI — generates and maintains a structured wiki for any codebase",
-        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "pensyve added to PyPI",
+        "summary": "Universal memory runtime for AI agents",
+        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Breast Cancer: Understanding Symptoms, Causes, and Treatments • Yesil Health AI",
+        "summary": "Breast cancer affects many. Learn about symptoms, risk factors, diagnosis, treatment options, and prevention…",
+        "content": "What Is Breast Cancer? Breast cancer is a type of cancer that develops in the breast tissue. It occurs when cells in the breast begin to grow uncontrollably, forming a tumor that can be felt as a lu… [+18134 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Why did OpenAI scrap Sora video generation? #tech",
+        "summary": "What happened to Sora OpenAI abruptly shelved its video generation app Sora after it had been positioned as a…",
+        "content": "What happened to Sora OpenAI abruptly shelved its video-generation app Sora after it had been positioned as a major step forward in generative media. The change came within a day of business-as-usua… [+1665 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       }
