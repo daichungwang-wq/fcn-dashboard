@@ -88,26 +88,34 @@ async function runNewsPipeline(pool) {
 // ==========================================
 // M3.1：Stock Evaluation
 // ==========================================
-function runStockEvaluation(pool, newsRuntime) {
+function runStockEvaluation(pool, newsRuntime, context = {}) {
   const results = [];
+
   const newsItems = Array.isArray(newsRuntime?.news_items)
     ? newsRuntime.news_items
     : [];
 
   for (const stock of pool) {
-    let pureScore = 0;
-    let eventScore = 0;
+    let evalResult = null;
 
-    // 純股票分數
+    // ----------------------------------
+    // 1️⃣ Stock Engine（核心）
+    // ----------------------------------
     try {
-      const pure = evaluateStock(stock);
-console.log("🧪 evaluateStock:", stock.symbol, pure);
-      pureScore = toNumber(pure?.score, 0);
+      evalResult = evaluateStock(stock, context);
+
+      console.log("🧪 evaluateStock:", stock.symbol, evalResult);
     } catch (e) {
       console.warn(`⚠️ evaluateStock fail: ${stock.symbol}`, e);
+      continue;
     }
 
-    // Event 分數
+    // ----------------------------------
+    // 2️⃣ Event Engine（新聞加權）
+    // （只補充 event impact，不取代 V4 結構）
+    // ----------------------------------
+    let macroAdjustment = 0;
+
     try {
       for (const news of newsItems) {
         const s = applyMacroToStock({
@@ -116,26 +124,71 @@ console.log("🧪 evaluateStock:", stock.symbol, pure);
         });
 
         if (typeof s === "number") {
-          eventScore += s;
+          macroAdjustment += s;
         } else if (s && typeof s === "object") {
-          eventScore += toNumber(s.total_adjustment, 0);
+          macroAdjustment += toNumber(s.total_adjustment, 0);
         }
       }
     } catch (e) {
       console.warn(`⚠️ applyMacroToStock fail: ${stock.symbol}`, e);
     }
 
-    const totalScore = pureScore + eventScore;
+    // ----------------------------------
+    // 3️⃣ 最終 Event Score（整合）
+    // ----------------------------------
+    const finalEventScore =
+      toNumber(evalResult.event_stock_score, 0) +
+      macroAdjustment;
 
+    // ----------------------------------
+    // 4️⃣ Final Total Score（排序用）
+    // ----------------------------------
+    const totalScore =
+      toNumber(evalResult.pure_score, 0) * 0.5 +
+      finalEventScore * 0.5;
+
+    // ----------------------------------
+    // 5️⃣ 輸出（完整可解釋）
+    // ----------------------------------
     results.push({
-      symbol: stock.symbol,
-      pure_score: pureScore,
-      event_score: eventScore,
-      total_score: totalScore
+      symbol: evalResult.symbol,
+      name: evalResult.name,
+
+      // === Trend ===
+      trend: evalResult.trend,
+      trend_label: evalResult.trend_label,
+      trend_score: evalResult.trend_score,
+      trend_note: evalResult.trend_note,
+
+      // === Pure ===
+      pure_score: evalResult.pure_score,
+      pure_reason: evalResult.pure_reason,
+
+      // === Event ===
+      adjustment_score: evalResult.adjustment_score,
+      adjustment_reason: evalResult.adjustment_reason,
+
+      event_impact_score:
+        toNumber(evalResult.event_impact_score, 0) +
+        macroAdjustment,
+
+      event_reason: evalResult.event_reason,
+
+      event_stock_score: finalEventScore,
+
+      // === Decision ===
+      total_score: round(totalScore, 4),
+      total_bias: evalResult.total_bias,
+      eligible: evalResult.eligible,
+      suggestion: evalResult.suggestion
     });
   }
 
+  // ----------------------------------
+  // 排序（依 total_score）
+  // ----------------------------------
   results.sort((a, b) => b.total_score - a.total_score);
+
   return results;
 }
 
