@@ -277,6 +277,7 @@ async function main() {
   console.log("🚀 FCN SYSTEM START");
 
   let pool = await loadJSON("./data/pool30.json");
+  const marketRuntime = await loadJSON("./data/market_runtime.json");
 
   if (!Array.isArray(pool) || pool.length === 0) {
     console.warn("⚠️ 使用 fallback pool");
@@ -295,7 +296,9 @@ async function main() {
   }
 
   const newsRuntime = await runNewsPipeline(pool);
-  const stockResults = runStockEvaluation(pool, newsRuntime);
+  const stockResults = runStockEvaluation(pool, newsRuntime, {
+    marketRuntime
+  });
   console.log("🏆 stockResults:", stockResults);
 
   const fcnResults = runFCNEvaluation(stockResults);
@@ -303,6 +306,7 @@ async function main() {
 
   renderStockRanking(stockResults, fcnResults);
 }
+
 
 // ==========================================
 // 啟動
