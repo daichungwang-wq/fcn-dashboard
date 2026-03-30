@@ -19,19 +19,19 @@ const CATEGORY_MAP = {
   },
   defensive: {
     label: "防禦",
-    base: 8
+    base: 7
   },
   growth: {
     label: "成長",
-    base: 7
+    base: 8
   },
   income: {
     label: "收益",
-    base: 4
+    base: 6
   },
   speculative: {
     label: "投機",
-    base: 1
+    base: 4
   }
 };
 
