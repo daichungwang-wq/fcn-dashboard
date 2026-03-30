@@ -296,9 +296,13 @@ async function main() {
   }
 
   const newsRuntime = await runNewsPipeline(pool);
-  const stockResults = runStockEvaluation(pool, newsRuntime, {
-    marketRuntime
+  const stockResults = pool.map(stock => {
+  const merged = mergeStockData(stock, marketRuntime);
+
+  return evaluateStock(merged, {
+    eventImpactMap: newsRuntime?.stock_event_map || {}
   });
+});
   console.log("🏆 stockResults:", stockResults);
 
   const fcnResults = runFCNEvaluation(stockResults);
