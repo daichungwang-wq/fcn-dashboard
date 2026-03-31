@@ -799,8 +799,37 @@
     document.getElementById("has_position").value = "false";
     document.getElementById("is_portfolio").value = "false";
     document.getElementById("autocall").value = "100";
-
+   
+  </script>
     searchRecords();
   </script>
+
+  <script type="module">
+  import {
+    runDecisionModuleV1,
+    exportDecisionArtifacts
+  } from "./js/core/decision_module_v1.js";
+
+  async function bootDecisionModule() {
+    try {
+      const result = await runDecisionModuleV1({
+        pool30Path: "./data/pool30.json",
+        fcnPoolPath: "./data/fcn_pool.json",
+        marketRuntimePath: "./data/market_runtime.json"
+      });
+
+      console.log("Decision Module V1 啟動成功", result);
+      window.decisionV1Result = result;
+      window.exportDecisionArtifacts = exportDecisionArtifacts;
+
+      alert("Decision Module V1 啟動成功");
+    } catch (err) {
+      console.error("Decision Module V1 啟動失敗", err);
+      alert("Decision Module V1 啟動失敗，請看 console");
+    }
+  }
+
+  bootDecisionModule();
+</script>
 </body>
 </html>
