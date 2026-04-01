@@ -45,20 +45,7 @@ export function buildNewsRuntime(
   /* =========================
      🧠 Macro → Stock
   ========================= */
-  for (const stock of pool) {
-    for (const news of macroNews) {
-      const score = applyMacroToStock({
-        macroEvents: [news],
-        stock,
-        sensitivityMap: options.sensitivityMap || {},
-        macroImpactTable: impactTable
-      });
-
-      if (score !== 0) {
-        stockMap[stock.symbol].macro_scores.push(score);
-      }
-    }
-  }
+ 
 
   /* =========================
      🏭 Industry
