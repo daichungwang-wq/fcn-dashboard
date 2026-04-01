@@ -23,16 +23,7 @@ export function buildNewsRuntime(
   const stockMap = {};
 
   // 初始化
-  pool.forEach((s) => {
-    stockMap[s.symbol] = {
-      event_score: 0,
-      macro_scores: [],
-      industry_scores: [],
-      market_scores: [],
-      stock_scores: [],
-      news_count: 0
-    };
-  });
+
 
   /* =========================
      分類處理
