@@ -617,44 +617,7 @@
       `;
     }
 
-    function renderStockFCNDetailCard(d, subId, subOpen) {
-      return `
-        <div class="item-card">
-          <div class="mini-title">${d.fcn_id}</div>
-          <div class="item-line">Snapshot Loss：<span style="color:${getPLColor(d.stock.snapshot_loss_amt)}">${fmtAmt(d.stock.snapshot_loss_amt)} (${fmtPct(d.stock.snapshot_loss_pct)})</span></div>
-          <div class="item-line">Snapshot Interest：<span style="color:#2e7d32">${fmtAmt(d.stock.snapshot_interest_amt)} (${fmtPct(d.stock.snapshot_interest_pct)})</span></div>
-          <div class="item-line"><b>Snapshot Balance：</b><span style="color:${getPLColor(d.stock.snapshot_balance_amt)}">${fmtAmt(d.stock.snapshot_balance_amt)} (${fmtPct(d.stock.snapshot_balance_pct)})</span></div>
-          <div class="item-line">End Loss：<span style="color:${getPLColor(d.stock.end_loss_amt)}">${fmtAmt(d.stock.end_loss_amt)} (${fmtPct(d.stock.end_loss_pct)})</span></div>
-          <div class="item-line">End Interest：<span style="color:#2e7d32">${fmtAmt(d.stock.end_interest_amt)} (${fmtPct(d.stock.end_interest_pct)})</span></div>
-          <div class="item-line"><b>End Net：</b><span style="color:${getPLColor(d.stock.end_balance_amt)}">${fmtAmt(d.stock.end_balance_amt)} (${fmtPct(d.stock.end_balance_pct)})</span></div>
-          <div class="item-line"><b>決策：</b>${d.stock.decision_label}</div>
-          <div class="item-line">
-           <b>📌 Worst-of 分析：</b>
-           </div>
-
-           <div class="item-line">
-            現價：${d.worst_price || "-"}
-           </div>
-
-           <div class="item-line">
-             進場價：${d.worst_entry || "-"}
-          </div>
-
-          <div class="item-line">
-             Strike：${d.worst_strike || "-"}
-          </div>
-
-          <div class="item-line">
-             KI：${d.worst_ki || "-"}
-          </div>
-          <button class="light" onclick="toggleStockFCNDetail('${subId}')">${subOpen ? "收合 FCN 明細" : "展開 FCN 明細"}</button>
-          <div class="sub-detail ${subOpen ? "show" : ""}">
-            ${buildFCNMeta(d.fcn)}
-            ${buildStockDetailTable(d.fcn.stocks || [])}
-          </div>
-        </div>
-      `;
-    }
+   
 
     function buildStockAnalysis(data) {
       const dangerRows = (data.stockMap || []).filter(x => x.danger > 0);
