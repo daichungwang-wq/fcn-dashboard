@@ -38,6 +38,7 @@ export function buildNewsRuntime(
      分類處理
   ========================= */
   const macroNews = newsInput.filter(n => n.type === "macro");
+  console.log("macroNews", macroNews);
   const industryNews = newsInput.filter(n => n.type === "industry");
   const marketNews = newsInput.filter(n => n.type === "market");
   const stockNews = newsInput.filter(n => n.type === "stock");
