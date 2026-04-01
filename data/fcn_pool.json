@@ -822,7 +822,7 @@
   },
   {
     "date": "2025-07-03",
-    "fcn_id": "FCN710H",
+    "fcn_id": "FCN710H 富邦",
     "basket": [
       "NVDA",
       "ARM",
@@ -1508,7 +1508,7 @@
   },
   {
     "date": "2025-10-03",
-    "fcn_id": "FCN465K",
+    "fcn_id": "FCN465K 富邦",
     "basket": [
       "AMD",
       "ARM",
@@ -1679,7 +1679,7 @@
   },
   {
     "date": "2025-10-17",
-    "fcn_id": "FCN791K",
+    "fcn_id": "FCN791K 富邦",
     "basket": [
       "ALAB",
       "AMD",
@@ -1745,7 +1745,7 @@
   },
   {
     "date": "2025-10-27",
-    "fcn_id": "FCN935K",
+    "fcn_id": "FCN935K 富邦",
     "basket": [
       "AVGO",
       "COIN",
