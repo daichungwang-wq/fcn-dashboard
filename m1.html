@@ -408,38 +408,7 @@
   });
 }
 
-    rows.forEach(row => {
-      const node = getMarketNode(data, row.keys);
-      const now = readMarketNow(node);
-      const prev = readMarketPrev(node);
-
-      let chgPct = pctFromNowPrev(now, prev);
-
-      // 若 node 已有可直接使用的變動欄位，也容錯支援
-      if (!isNum(chgPct)) {
-        const direct = firstDefined(
-          toNum(node?.change_pct),
-          toNum(node?.pct_change),
-          toNum(node?.ret_1d)
-        );
-        if (isNum(direct)) {
-          chgPct = Math.abs(direct) <= 1 ? direct * 100 : direct;
-        }
-      }
-
-      const desc = interpretIndicator(row.code, chgPct);
-
-      tbody.innerHTML += `
-        <tr>
-          <td>${row.label}</td>
-          <td>${fmt(now)}</td>
-          <td>${fmt(prev)}</td>
-          <td class="${getChangeClass(chgPct)}">${fmtPct(chgPct)}</td>
-          <td>${desc}</td>
-        </tr>
-      `;
-    });
-  }
+   
 
   // =========================
   // news 容錯與分類
