@@ -671,7 +671,68 @@
   </div>
   `;
 }
- 
+ function renderStockDetailCard(s, fcn) {
+  const entry = toNumber(s.entry_price ?? s.entry ?? s.price_entry, 0);
+  const now = toNumber(s.price_now ?? s.price, 0);
+
+  const strike = entry ? entry * (toNumber(fcn.strike) / 100) : 0;
+  const ki = entry ? entry * (toNumber(fcn.ki) / 100) : 0;
+
+  const vsEntry = entry ? ((now - entry) / entry) * 100 : 0;
+  const vsStrike = strike ? ((now - strike) / strike) * 100 : 0;
+  const vsKI = ki ? ((now - ki) / ki) * 100 : 0;
+
+  const ret1w = s.ret_1w ?? s.chg_1w ?? null;
+  const ret1m = s.ret_1m ?? s.chg_1m ?? null;
+  const ret3m = s.ret_3m ?? s.chg_3m ?? null;
+  const ret6m = s.ret_6m ?? s.chg_6m ?? null;
+  const ret12m = s.ret_12m ?? s.chg_12m ?? null;
+
+  function fmtTrend(v) {
+    if (v == null || !Number.isFinite(Number(v))) return "-";
+    return fmtPct(Number(v) * (Math.abs(Number(v)) <= 1.5 ? 100 : 1));
+  }
+
+  let trendLabel = "盤整";
+  if (
+    Number.isFinite(Number(ret1m)) &&
+    Number.isFinite(Number(ret3m)) &&
+    Number.isFinite(Number(ret6m)) &&
+    Number(ret1m) < 0 && Number(ret3m) < 0 && Number(ret6m) < 0
+  ) {
+    trendLabel = "下降趨勢";
+  } else if (
+    Number.isFinite(Number(ret1m)) &&
+    Number.isFinite(Number(ret3m)) &&
+    Number.isFinite(Number(ret6m)) &&
+    Number(ret1m) > 0 && Number(ret3m) > 0 && Number(ret6m) > 0
+  ) {
+    trendLabel = "上升趨勢";
+  }
+
+  return `
+    <div class="item-card">
+      <div class="mini-title">${s.symbol}</div>
+
+      <div class="item-line">現價：${now ? fmt(now, 2) : "-"}</div>
+      <div class="item-line">進場價：${entry ? fmt(entry, 2) : "-"}</div>
+      <div class="item-line">Strike：${strike ? fmt(strike, 2) : "-"}</div>
+      <div class="item-line">KI：${ki ? fmt(ki, 2) : "-"}</div>
+
+      <div class="item-line">vs Entry：${fmtPct(vsEntry)}</div>
+      <div class="item-line">vs Strike：${fmtPct(vsStrike)}</div>
+      <div class="item-line">vs KI：${fmtPct(vsKI)}</div>
+
+      <div class="item-line">1W：${fmtTrend(ret1w)} ｜ 1M：${fmtTrend(ret1m)}</div>
+      <div class="item-line">3M：${fmtTrend(ret3m)} ｜ 6M：${fmtTrend(ret6m)}</div>
+      <div class="item-line">12M：${fmtTrend(ret12m)}</div>
+      <div class="item-line">${trendLabel}</div>
+
+      <div class="item-line">Pure：${s.pure_stock ?? "-"} ｜ Event：${s.event_stock ?? "-"}</div>
+      <div class="item-line">Snapshot：${s.snapshot_score ?? s.snapshot ?? "-"}</div>
+    </div>
+  `;
+}
     function renderZoneColumn(title, zoneClass, allRows, code, showHealthyControl = false) {
       const rows = code === "healthy"
         ? limitDisplay(allRows, "healthy", showAllHealthy)
