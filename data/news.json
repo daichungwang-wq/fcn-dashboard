@@ -1,11 +1,12 @@
 [
-  {
-    "id": "N001",
-    "title": "Fed signals first rate cut could come sooner than expected",
-    "summary": "Federal Reserve officials suggested inflation is cooling enough for markets to expect earlier rate cuts, lifting risk appetite across equities.",
-    "source": "MockWire",
-    "url": "",
-    "published_at": "2026-03-28T06:00:00Z"
+ {
+    "id": "test_MACRO",
+   "TYPE": "macro",
+   "subtype": "利率下降"
+   "sid_score": 2,
+   "impact_map": {
+     "NADA" : 2,
+     "TSM" : 1
   },
   {
     "id": "N002",
