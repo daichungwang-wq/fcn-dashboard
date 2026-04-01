@@ -671,39 +671,7 @@
   </div>
   `;
 }
-  function renderStockDetailCard(s, fcn) {
-  const entry = toNumber(s.entry_price);
-  const now = toNumber(s.price_now);
-
-  const strike = entry * (toNumber(fcn.strike) / 100);
-  const ki = entry * (toNumber(fcn.ki) / 100);
-
-  const vsEntry = entry ? ((now - entry) / entry * 100) : 0;
-  const vsStrike = strike ? ((now - strike) / strike * 100) : 0;
-  const vsKI = ki ? ((now - ki) / ki * 100) : 0;
-
-  return `
-  <div class="item-card">
-
-    <div class="mini-title">${s.symbol}</div>
-
-    <div>現價：${fmt(now,2)}</div>
-    <div>進場價：${fmt(entry,2)}</div>
-    <div>Strike：${fmt(strike,2)}</div>
-    <div>KI：${fmt(ki,2)}</div>
-
-    <div>vs Entry：${fmtPct(vsEntry)}</div>
-    <div>vs Strike：${fmtPct(vsStrike)}</div>
-    <div>vs KI：${fmtPct(vsKI)}</div>
-
-    <div>1W：${s.chg_1w ?? "-"} ｜ 1M：${s.chg_1m ?? "-"}</div>
-    <div>3M：${s.chg_3m ?? "-"} ｜ 6M：${s.chg_6m ?? "-"}</div>
-
-    <div>Pure：${s.pure_stock ?? "-"} ｜ Event：${s.event_stock ?? "-"}</div>
-
-  </div>
-  `;
-}
+ 
     function renderZoneColumn(title, zoneClass, allRows, code, showHealthyControl = false) {
       const rows = code === "healthy"
         ? limitDisplay(allRows, "healthy", showAllHealthy)
