@@ -1,1 +1,58 @@
+{
+  "last_update": "2026-04-01T08:00:00Z",
 
+  "vix": {
+    "current": 21,
+    "previous": 20
+  },
+
+  "sp500": {
+    "current": 6606,
+    "previous": 6550
+  },
+
+  "nasdaq": {
+    "current": 22090,
+    "previous": 21800
+  },
+
+  "dow": {
+    "current": 46021,
+    "previous": 45800
+  },
+
+  "us10y": {
+    "current": 4.26,
+    "previous": 4.20
+  },
+
+  "us20y": {
+    "current": 4.84,
+    "previous": 4.78
+  },
+
+  "oil": {
+    "current": 95,
+    "previous": 92
+  },
+
+  "gold": {
+    "current": 2180,
+    "previous": 2160
+  },
+
+  "cpi": {
+    "current": 2.4,
+    "previous": 2.6
+  },
+
+  "ppi": {
+    "current": 0.7,
+    "previous": 0.5
+  },
+
+  "tw_index": {
+    "current": 19850,
+    "previous": 19700
+  }
+}
