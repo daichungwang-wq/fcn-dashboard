@@ -1,1 +1,31 @@
-
+{
+  "fcn_list": [
+    {
+      "id": "DEMO_001",
+      "basket": "NVDA / TSM / AVGO / AMAT",
+      "worst_of": "AMAT",
+      "pure_fcn": 9.2,
+      "event_fcn": 10.1,
+      "delta_fcn_pct": 9.8,
+      "suggestion": "✅ 可做"
+    },
+    {
+      "id": "DEMO_002",
+      "basket": "MSFT / GOOG / AMZN / ORCL",
+      "worst_of": "ORCL",
+      "pure_fcn": 8.4,
+      "event_fcn": 7.6,
+      "delta_fcn_pct": -9.5,
+      "suggestion": "⚠️ 觀察"
+    },
+    {
+      "id": "DEMO_003",
+      "basket": "COIN / SOFI / TSLA / PLTR",
+      "worst_of": "COIN",
+      "pure_fcn": 4.1,
+      "event_fcn": 2.8,
+      "delta_fcn_pct": -31.7,
+      "suggestion": "❌ 避免"
+    }
+  ]
+}
