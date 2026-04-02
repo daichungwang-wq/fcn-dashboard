@@ -4,7 +4,7 @@
   "M3_股票篩選情境參數": {
     "說明": "決定哪些股票可以進入 Clean Pool / Watch / Reject",
 
-    "reject_if_suggestion_avoid": true,
+    "reject_if_suggestion_avoid": false,
 
     "clean_min_pure": 4,
     "clean_min_event": 4,
