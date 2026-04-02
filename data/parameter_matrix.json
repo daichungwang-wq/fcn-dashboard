@@ -1,1 +1,114 @@
+{
+  "說明": "M3 系統主參數表（股票篩選 + FCN 模擬 + 排名邏輯）",
 
+  "M3_股票篩選情境參數": {
+    "reject_if_suggestion_avoid": false,
+
+    "clean_min_pure": 4,
+    "clean_min_event": 4,
+    "clean_min_delta": 0,
+    "clean_use_delta_gate": false,
+
+    "watch_min_pure": 2.5,
+    "watch_min_event": 2.5,
+    "watch_use_or_logic": true
+  },
+
+  "M3_FCN情境組合參數": {
+    "scenarios": [
+
+      {
+        "名稱": "正常組A",
+        "basket_size": [4],
+        "ki": [55],
+        "strike": [70],
+        "tenor": [9],
+        "rate": [15],
+        "eki": [true]
+      },
+      {
+        "名稱": "正常組C",
+        "basket_size": [3],
+        "ki": [55],
+        "strike": [65],
+        "tenor": [9],
+        "rate": [18],
+        "eki": [true]
+      },
+      {
+        "名稱": "正常組E",
+        "basket_size": [4],
+        "ki": [55],
+        "strike": [70],
+        "tenor": [6],
+        "rate": [18],
+        "eki": [true]
+      },
+
+      {
+        "名稱": "積極組A",
+        "basket_size": [5],
+        "ki": [55],
+        "strike": [70],
+        "tenor": [9],
+        "rate": [22],
+        "eki": [true]
+      },
+      {
+        "名稱": "積極組B",
+        "basket_size": [5],
+        "ki": [55],
+        "strike": [70],
+        "tenor": [9],
+        "rate": [24],
+        "eki": [false]
+      },
+
+      {
+        "名稱": "夢幻組A",
+        "basket_size": [3],
+        "ki": [55],
+        "strike": [70],
+        "tenor": [3],
+        "rate": [17],
+        "eki": [true]
+      },
+      {
+        "名稱": "夢幻組C",
+        "basket_size": [5],
+        "ki": [55],
+        "strike": [70],
+        "tenor": [9],
+        "rate": [22],
+        "eki": [true]
+      },
+
+      {
+        "名稱": "接股組A",
+        "basket_size": [3],
+        "ki": [65],
+        "strike": [80],
+        "tenor": [2],
+        "rate": [30],
+        "eki": [true]
+      }
+
+    ]
+  },
+
+  "M3_排名評分參數": {
+    "strong_buy_min_event_fcn": 12,
+    "buy_min_event_fcn": 9,
+    "watch_min_event_fcn": 6
+  },
+
+  "M3_模擬控制參數": {
+    "max_combinations": 50,
+    "top_n_output": 20
+  },
+
+  "系統參數": {
+    "version": "M3_V2_TEMPLATE",
+    "enable_debug_log": false
+  }
+}
