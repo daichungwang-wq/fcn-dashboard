@@ -501,13 +501,13 @@
     "price_ref_1m": 110.87000274658203,
     "price_ref_3m": 109.87357330322266,
     "price_ref_6m": 109.03990173339844,
-    "price_ref_12m": NaN,
+    "price_ref_12m": null,
     "ret_1d": -0.003028,
     "ret_1w": -0.000644,
     "ret_1m": -0.019933,
     "ret_3m": -0.011045,
     "ret_6m": -0.003484,
-    "ret_12m": NaN
+    "ret_12m": null
   },
   "INTC": {
     "price_now": 48.029998779296875,
