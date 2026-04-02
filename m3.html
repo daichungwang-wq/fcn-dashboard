@@ -1,1 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>M3｜FCN 承做決策</title>
 
+<style>
+body {
+  font-family: Arial, "Microsoft JhengHei";
+  background: #f5f5f5;
+  padding: 20px;
+}
+.page { max-width: 1200px; margin:auto; }
+.card {
+  background:#fff;
+  padding:16px;
+  margin-bottom:16px;
+  border-radius:12px;
+  border:1px solid #ddd;
+}
+button {
+  padding:10px 16px;
+  border:none;
+  background:#333;
+  color:#fff;
+  border-radius:8px;
+  cursor:pointer;
+}
+.table {
+  width:100%;
+  border-collapse:collapse;
+}
+.table th {
+  background:#111;
+  color:#fff;
+  padding:10px;
+}
+.table td {
+  padding:10px;
+  border-bottom:1px solid #eee;
+}
+.green { color:#2e7d32; }
+.red { color:#c62828; }
+</style>
+</head>
+
+<body>
+<div class="page">
+
+<h1>📊 M3｜FCN 承做決策</h1>
+
+<button onclick="runM3()">▶ 執行 M3</button>
+<div id="status"></div>
+
+<div class="card">
+<h2>🧠 Clean Pool</h2>
+<div id="clean-pool"></div>
+</div>
+
+<div class="card">
+<h2>💰 FCN Ranking</h2>
+<table class="table">
+<thead>
+<tr>
+<th>Basket</th>
+<th>Worst</th>
+<th>Pure</th>
+<th>Event</th>
+<th>Delta</th>
+<th>建議</th>
+</tr>
+</thead>
+<tbody id="fcn-body"></tbody>
+</table>
+</div>
+
+</div>
+
+<script type="module">
+
+import { mergeStockData, evaluateStock } from "./js/core/stock_engine.js";
+import { evaluateFCN } from "./js/core/fcn_engine.js";
+
+async function loadJSON(path) {
+  const r = await fetch(path);
+  return r.json();
+}
+
+function toNum(v){ return Number(v)||0 }
+
+window.runM3 = async function(){
+
+  document.getElementById("status").innerText = "running...";
+
+  const pool = await loadJSON("./data/pool30.json");
+  const market = await loadJSON("./data/market_runtime.json");
+  const param = await loadJSON("./data/parameter_matrix.json");
+
+  // ========= STOCK =========
+  let stocks = pool.map(s => evaluateStock(mergeStockData(s, market)));
+
+  // ========= CLEAN POOL（🔥修正版）=========
+  const clean = stocks.filter(s => {
+    const pure = toNum(s.pure_stock_score);
+    return pure >= 4; // ✅只砍垃圾股
+  });
+
+  // UI clean pool
+  document.getElementById("clean-pool").innerHTML =
+    clean.map(s => `${s.symbol} (P:${s.pure_stock_score} / E:${s.event_stock_score})`).join("<br>");
+
+  // ========= FCN =========
+  const results = [];
+
+  for(const p of param){
+
+    if(!p.enabled) continue;
+
+    const size = p.basket_size || 4;
+
+    // 組合（簡化版）
+    for(let i=0;i<clean.length-size;i++){
+
+      const basket = clean.slice(i, i+size).map(s=>s.symbol);
+
+      const fcn = evaluateFCN({
+        id: p.id,
+        basket,
+        ki: p.ki,
+        strike: p.strike,
+        yield: p.rate,
+        period: p.tenor,
+        eki: p.eki
+      }, stocks);
+
+      if(fcn) results.push(fcn);
+    }
+  }
+
+  results.sort((a,b)=> toNum(b.event_fcn)-toNum(a.event_fcn));
+
+  const top = results.slice(0,20);
+
+  // ========= UI =========
+  const tbody = document.getElementById("fcn-body");
+  tbody.innerHTML = "";
+
+  top.forEach(f=>{
+    const delta = toNum(f.delta_fcn_pct);
+    const color = delta>=0 ? "green":"red";
+
+    tbody.innerHTML += `
+      <tr>
+        <td>${f.basket}</td>
+        <td>${f.worst_of}</td>
+        <td>${f.pure_fcn.toFixed(2)}</td>
+        <td>${f.event_fcn.toFixed(2)}</td>
+        <td class="${color}">${delta.toFixed(1)}%</td>
+        <td>${f.suggestion}</td>
+      </tr>
+    `;
+  });
+
+  document.getElementById("status").innerText =
+    `完成｜Stock:${stocks.length} | Clean:${clean.length} | FCN:${results.length}`;
+};
+
+</script>
+</body>
+</html>
