@@ -1,112 +1,62 @@
 [
   {
     "id": "S1",
-    "name": "標準6M-核心型",
+    "name": "標準4檔-核心",
     "enabled": true,
-    "comment": "主力標準情境，適合核心股與大多數正常市場環境",
+    "basket_size": 4,
     "ki": 60,
     "strike": 70,
     "tenor": 6,
     "rate": 16,
-    "eki": false
+    "eki": false,
+    "comment": "主力策略"
   },
   {
     "id": "S2",
-    "name": "保守6M-核心型",
+    "name": "保守3檔-核心",
     "enabled": true,
-    "comment": "較保守，適合高品質核心股票",
+    "basket_size": 3,
     "ki": 55,
     "strike": 65,
     "tenor": 6,
     "rate": 14,
-    "eki": false
+    "eki": false,
+    "comment": "降低Worst-of風險"
   },
   {
     "id": "S3",
-    "name": "標準6M-EKI型",
+    "name": "收益4檔",
     "enabled": true,
-    "comment": "高品質股票可測試 EKI 結構",
-    "ki": 60,
-    "strike": 70,
-    "tenor": 6,
-    "rate": 15,
-    "eki": true
-  },
-  {
-    "id": "S4",
-    "name": "收益6M-標準型",
-    "enabled": true,
-    "comment": "在可接受風險下追求較高收益",
+    "basket_size": 4,
     "ki": 60,
     "strike": 70,
     "tenor": 6,
     "rate": 18,
-    "eki": false
+    "eki": false,
+    "comment": "提高收益"
   },
   {
-    "id": "S5",
-    "name": "收益9M-事件型",
+    "id": "S4",
+    "name": "事件5檔-高收益",
     "enabled": true,
-    "comment": "適合事件股或短期有波動題材的組合，例如旅遊股",
+    "basket_size": 5,
     "ki": 60,
     "strike": 70,
     "tenor": 9,
     "rate": 20,
-    "eki": false
+    "eki": false,
+    "comment": "事件型策略（AAL / CCL）"
   },
   {
-    "id": "S6",
-    "name": "深保護6M-核心型",
+    "id": "S5",
+    "name": "EKI-3檔",
     "enabled": true,
-    "comment": "下限更低，換取較低利率，適合極重視保護時使用",
-    "ki": 50,
-    "strike": 65,
+    "basket_size": 3,
+    "ki": 60,
+    "strike": 70,
     "tenor": 6,
-    "rate": 13,
-    "eki": false
-  },
-  {
-    "id": "S7",
-    "name": "進攻6M-高收益型",
-    "enabled": true,
-    "comment": "偏進攻，僅適合中高風險組合",
-    "ki": 65,
-    "strike": 75,
-    "tenor": 6,
-    "rate": 20,
-    "eki": false
-  },
-  {
-    "id": "S8",
-    "name": "進攻9M-高收益型",
-    "enabled": false,
-    "comment": "風險較高，先保留不預設啟用",
-    "ki": 65,
-    "strike": 75,
-    "tenor": 9,
-    "rate": 22,
-    "eki": false
-  },
-  {
-    "id": "S9",
-    "name": "高Gap測試型",
-    "enabled": false,
-    "comment": "僅作測試，Gap 偏大，通常不建議啟用",
-    "ki": 55,
-    "strike": 75,
-    "tenor": 6,
-    "rate": 21,
-    "eki": false
-  },
-  {
-    "id": "S10",
-    "name": "超保守6M-EKI型",
-    "enabled": false,
-    "comment": "保守 + EKI，先保留觀察市場實際報價差異",
-    "ki": 55,
-    "strike": 65,
-    "tenor": 6,
-    "rate": 13,
-    "eki": true
+    "rate": 15,
+    "eki": true,
+    "comment": "高品質股專用"
   }
 ]
