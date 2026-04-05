@@ -172,8 +172,8 @@ export function calcMomentum(stock = {}) {
 // momentum 以百分比 movePct 判斷
 //
 // <= -28%   +10
-// -28~-23   +9
-// -23~-18   +8
+// -26~-22   +9
+// -22~-18   +8
 // -18~-14   +6
 // -14~-11   +5
 // -11~-8    +4
@@ -190,38 +190,46 @@ export function calcMomentum(stock = {}) {
 // > +30     -8
 // ------------------------------------------
 export function calcSnapshotScore(movePct = 0) {
-  if (movePct <= -30) return 10;
-  if (movePct <= -25) return 9;
-  if (movePct <= -20) return 8;
-  if (movePct <= -15) return 6;
-  if (movePct <= -10) return 4;
+  if (movePct <= -28) return 10;
+  if (movePct <= -26) return 8;
+  if (movePct <= -22) return 7;
+  if (movePct <= -18) return 6;
+  if (movePct <= -14) return 5;
+  if (movePct <= -11) return 4;
+   if (movePct <= -8) return 3;
   if (movePct <= -5) return 2;
+  if (movePct <= -3) return 1;
+  if (movePct < 1) return 0;
 
-  if (movePct < 5) return 0;
-
-  if (movePct <= 10) return -1;
-  if (movePct <= 15) return -2;
-  if (movePct <= 20) return -3;
-  if (movePct <= 25) return -4;
-  if (movePct <= 30) return -5;
+  if (movePct <= 5) return -1;
+  if (movePct <= 8) return -2;
+  if (movePct <= 13) return -3;
+  if (movePct <= 18) return -4;
+  if (movePct <= 25) return -5;
+     if (movePct <= 30) return -6;
 
   return -8;
 }
 
 export function getSnapshotBucket(movePct = 0) {
   if (movePct <= -30) return "<= -30%";
-  if (movePct <= -25) return "-30% ~ -25%";
-  if (movePct <= -20) return "-25% ~ -20%";
-  if (movePct <= -15) return "-20% ~ -15%";
-  if (movePct <= -10) return "-15% ~ -10%";
-  if (movePct <= -5) return "-10% ~ -5%";
+   if (movePct <= -28) return "-28% ~ -26%";
+  if (movePct <= -26) return "-26% ~ -22%";
+     if (movePct <= -22) return "-22% ~ -18%";
+     if (movePct <= -18) return "-18% ~ -14%";
+     if (movePct <= -14) return "-14% ~ -11%";
+  if (movePct <= -11) return "-11% ~ -8%";
+  if (movePct <= -8) return "-8% ~ -5%";
+  if (movePct <= -5) return "-5% ~ -3%";
+  if (movePct <= -3) return "-1% ~ -3%";
 
-  if (movePct < 5) return "-5% ~ +5%";
+  if (movePct < 1) return "-1% ~ +1%";
 
-  if (movePct <= 10) return "+5% ~ +10%";
-  if (movePct <= 15) return "+10% ~ +15%";
-  if (movePct <= 20) return "+15% ~ +20%";
-  if (movePct <= 25) return "+20% ~ +25%";
+  if (movePct <= 5) return "1% ~ +5%";
+  if (movePct <= 8) return "+5% ~ +8%";
+  if (movePct <= 13) return "+8% ~ +13%";
+  if (movePct <= 18) return "+13% ~ +18%";
+  if (movePct <= 25) return "+18% ~ +25%";
   if (movePct <= 30) return "+25% ~ +30%";
 
   return "> +30%";
