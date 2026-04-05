@@ -273,7 +273,7 @@
             <div class="form-group full">
               <label for="basket">Basket</label>
               <input id="basket" type="text" placeholder="例：NVDA,TSM,AMAT,CCL" />
-              <div class="helper">先輸入股票代號，按「建立股票區塊」後會嘗試對接 data/fcn_pool.json</div>
+              <div class="helper">先輸入股票代號，按「建立股票區塊」後會對接 fcn_pool / market_runtime / runtime_cache_v1</div>
             </div>
 
             <div class="form-group">
@@ -466,23 +466,20 @@
         <div class="card">
           <h2>這一版重點</h2>
           <div class="muted">
-            1. 先把 M4 UI 結構做正確<br>
-            2. 先把回測欄位完整存下來<br>
-            3. 不亂創新模型<br>
-            4. 後續再對接既有 FCN Pool / stock engine / fcn engine
+            1. 對齊 M2 資料來源<br>
+            2. 先把 M4 回測欄位完整存下來<br>
+            3. 股票價格與變化優先讀取 market_runtime / runtime_cache<br>
+            4. 之後再接既有 stock engine / fcn engine
           </div>
         </div>
 
         <div class="card">
-          <h2>紀錄與回測核心欄位</h2>
+          <h2>資料來源</h2>
           <div class="muted">
-            • Overall / Event / Pure / Delta FCN Score<br>
-            • FCN 條件拆解分數與說明<br>
-            • Baseline / Pure Stock / Event Stock<br>
-            • Pure Stock Volatility Score<br>
-            • Event Stock Volatility Score<br>
-            • 1D / 1W / 1M / 3M / 6M / 12M<br>
-            • Worst-of / Final Decision / Final Reason
+            • data/fcn_pool.json<br>
+            • data/market_runtime.json<br>
+            • localStorage.runtime_cache_v1<br>
+            • 若無資料則保留手動輸入
           </div>
         </div>
       </div>
@@ -503,10 +500,16 @@
   </div>
 
   <script>
-    const STORAGE_KEY = "fcn_m4_records_v3";
+    const STORAGE_KEY = "fcn_m4_records_v4";
 
     let FCN_POOL_DATA = [];
     let FCN_POOL_MAP = {};
+
+    let MARKET_RUNTIME_DATA = {};
+    let MARKET_RUNTIME_MAP = {};
+
+    let RUNTIME_CACHE = {};
+    let RUNTIME_STOCKS_MAP = {};
 
     async function loadFcnPool() {
       try {
@@ -532,9 +535,47 @@
 
         console.log("✅ FCN Pool loaded:", FCN_POOL_DATA.length);
       } catch (err) {
-        console.warn("⚠️ FCN Pool load failed, fallback to manual input only.", err);
+        console.warn("⚠️ FCN Pool load failed", err);
         FCN_POOL_DATA = [];
         FCN_POOL_MAP = {};
+      }
+    }
+
+    async function loadMarketRuntime() {
+      try {
+        const res = await fetch("./data/market_runtime.json");
+        if (!res.ok) throw new Error("market_runtime.json not found");
+        const data = await res.json();
+
+        MARKET_RUNTIME_DATA = data || {};
+        MARKET_RUNTIME_MAP = {};
+
+        Object.keys(MARKET_RUNTIME_DATA || {}).forEach(sym => {
+          MARKET_RUNTIME_MAP[sym.toUpperCase()] = MARKET_RUNTIME_DATA[sym];
+        });
+
+        console.log("✅ market_runtime loaded:", Object.keys(MARKET_RUNTIME_MAP).length);
+      } catch (err) {
+        console.warn("⚠️ market_runtime load failed", err);
+        MARKET_RUNTIME_DATA = {};
+        MARKET_RUNTIME_MAP = {};
+      }
+    }
+
+    function loadRuntimeCache() {
+      try {
+        RUNTIME_CACHE = JSON.parse(localStorage.getItem("runtime_cache_v1")) || {};
+        RUNTIME_STOCKS_MAP = (RUNTIME_CACHE && RUNTIME_CACHE.stocks) ? RUNTIME_CACHE.stocks : {};
+        const normalized = {};
+        Object.keys(RUNTIME_STOCKS_MAP || {}).forEach(sym => {
+          normalized[sym.toUpperCase()] = RUNTIME_STOCKS_MAP[sym];
+        });
+        RUNTIME_STOCKS_MAP = normalized;
+        console.log("✅ runtime_cache_v1 loaded:", Object.keys(RUNTIME_STOCKS_MAP).length);
+      } catch (err) {
+        console.warn("⚠️ runtime_cache_v1 load failed", err);
+        RUNTIME_CACHE = {};
+        RUNTIME_STOCKS_MAP = {};
       }
     }
 
@@ -549,6 +590,25 @@
 
     function getPoolStock(symbol) {
       return FCN_POOL_MAP[symbol.toUpperCase()] || null;
+    }
+
+    function getMarketStock(symbol) {
+      return MARKET_RUNTIME_MAP[symbol.toUpperCase()] || null;
+    }
+
+    function getRuntimeCacheStock(symbol) {
+      return RUNTIME_STOCKS_MAP[symbol.toUpperCase()] || null;
+    }
+
+    function getMergedStock(symbol) {
+      const pool = getPoolStock(symbol) || {};
+      const market = getMarketStock(symbol) || {};
+      const cache = getRuntimeCacheStock(symbol) || {};
+      return {
+        ...pool,
+        ...market,
+        ...cache
+      };
     }
 
     function getDeals() {
@@ -577,23 +637,69 @@
       }
 
       wrap.innerHTML = basket.map((symbol, idx) => {
-        const stock = getPoolStock(symbol) || {};
+        const stock = getMergedStock(symbol);
 
         const baseline = pickField(stock, ["baseline", "tier", "level", "category"], "");
         const baselineComment = pickField(stock, ["baseline_comment", "tier_comment", "comment"], "");
 
-        const stockType = pickField(stock, ["type", "stock_type", "sector_type"], "");
+        const stockType = pickField(stock, ["type", "stock_type", "sector_type", "category"], "");
         const risk = pickField(stock, ["risk", "risk_level"], "");
         const volatility = pickField(stock, ["volatility", "vol", "vol_level"], "");
         const preference = pickField(stock, ["fcn_preference", "preference"], "");
 
-        const currentPrice = pickField(stock, ["current_price", "price", "last_price"], "");
-        const chg1d = pickField(stock, ["change_1d", "chg_1d", "day_change", "change1d"], "");
-        const chg1w = pickField(stock, ["change_1w", "chg_1w", "week_change", "change1w"], "");
-        const chg1m = pickField(stock, ["change_1m", "chg_1m", "month_change", "change1m"], "");
-        const chg3m = pickField(stock, ["change_3m", "chg_3m", "change3m"], "");
-        const chg6m = pickField(stock, ["change_6m", "chg_6m", "change6m"], "");
-        const chg12m = pickField(stock, ["change_12m", "chg_12m", "change12m"], "");
+        const currentPrice = pickField(stock, [
+          "price_now",
+          "current_price",
+          "price",
+          "last_price",
+          "last",
+          "close"
+        ], "");
+
+        const chg1d = pickField(stock, [
+          "ret_1d",
+          "change_1d",
+          "chg_1d",
+          "day_change",
+          "change1d"
+        ], "");
+
+        const chg1w = pickField(stock, [
+          "ret_1w",
+          "change_1w",
+          "chg_1w",
+          "week_change",
+          "change1w"
+        ], "");
+
+        const chg1m = pickField(stock, [
+          "ret_1m",
+          "change_1m",
+          "chg_1m",
+          "month_change",
+          "change1m"
+        ], "");
+
+        const chg3m = pickField(stock, [
+          "ret_3m",
+          "change_3m",
+          "chg_3m",
+          "change3m"
+        ], "");
+
+        const chg6m = pickField(stock, [
+          "ret_6m",
+          "change_6m",
+          "chg_6m",
+          "change6m"
+        ], "");
+
+        const chg12m = pickField(stock, [
+          "ret_12m",
+          "change_12m",
+          "chg_12m",
+          "change12m"
+        ], "");
 
         return `
           <div class="stock-row" data-symbol="${symbol}">
@@ -1110,10 +1216,17 @@
       document.getElementById("lastDealName").textContent = deals.length ? (deals[0].basic.deal_name || "-") : "-";
     }
 
-    loadFcnPool().then(() => {
+    async function initM4() {
+      loadRuntimeCache();
+      await Promise.all([
+        loadFcnPool(),
+        loadMarketRuntime()
+      ]);
       renderHistory();
       updateSummary();
-    });
+    }
+
+    initM4();
   </script>
 </body>
 </html>
