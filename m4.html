@@ -82,11 +82,6 @@
       grid-template-columns: 1.2fr 1fr;
       gap: 18px;
     }
-    .grid-3 {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
-    }
     .grid-4 {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -230,7 +225,7 @@
     }
 
     @media (max-width: 980px) {
-      .grid-2, .grid-3, .grid-4, .form-grid {
+      .grid-2, .grid-4, .form-grid {
         grid-template-columns: 1fr;
       }
     }
@@ -278,7 +273,7 @@
             <div class="form-group full">
               <label for="basket">Basket</label>
               <input id="basket" type="text" placeholder="例：NVDA,TSM,AMAT,CCL" />
-              <div class="helper">先輸入股票代號，之後會對接 FCN Pool 與正式 stock engine</div>
+              <div class="helper">先輸入股票代號，按「建立股票區塊」後會嘗試對接 data/fcn_pool.json</div>
             </div>
 
             <div class="form-group">
@@ -508,7 +503,53 @@
   </div>
 
   <script>
-    const STORAGE_KEY = "fcn_m4_records_v2";
+    const STORAGE_KEY = "fcn_m4_records_v3";
+
+    let FCN_POOL_DATA = [];
+    let FCN_POOL_MAP = {};
+
+    async function loadFcnPool() {
+      try {
+        const res = await fetch("./data/fcn_pool.json");
+        if (!res.ok) throw new Error("fcn_pool.json not found");
+        const data = await res.json();
+
+        if (Array.isArray(data)) {
+          FCN_POOL_DATA = data;
+        } else if (Array.isArray(data.pool)) {
+          FCN_POOL_DATA = data.pool;
+        } else if (Array.isArray(data.items)) {
+          FCN_POOL_DATA = data.items;
+        } else {
+          FCN_POOL_DATA = [];
+        }
+
+        FCN_POOL_MAP = {};
+        FCN_POOL_DATA.forEach(item => {
+          const symbol = (item.symbol || item.ticker || item.stock || "").toString().trim().toUpperCase();
+          if (symbol) FCN_POOL_MAP[symbol] = item;
+        });
+
+        console.log("✅ FCN Pool loaded:", FCN_POOL_DATA.length);
+      } catch (err) {
+        console.warn("⚠️ FCN Pool load failed, fallback to manual input only.", err);
+        FCN_POOL_DATA = [];
+        FCN_POOL_MAP = {};
+      }
+    }
+
+    function pickField(obj, keys, fallback = "") {
+      for (const key of keys) {
+        if (obj && obj[key] !== undefined && obj[key] !== null && obj[key] !== "") {
+          return obj[key];
+        }
+      }
+      return fallback;
+    }
+
+    function getPoolStock(symbol) {
+      return FCN_POOL_MAP[symbol.toUpperCase()] || null;
+    }
 
     function getDeals() {
       try {
@@ -535,112 +576,141 @@
         return;
       }
 
-      wrap.innerHTML = basket.map((symbol, idx) => `
-        <div class="stock-row" data-symbol="${symbol}">
-          <div class="stock-head">
-            <h3 style="margin:0;">${symbol}</h3>
-            <span class="badge badge-blue">Stock ${idx + 1}</span>
+      wrap.innerHTML = basket.map((symbol, idx) => {
+        const stock = getPoolStock(symbol) || {};
+
+        const baseline = pickField(stock, ["baseline", "tier", "level", "category"], "");
+        const baselineComment = pickField(stock, ["baseline_comment", "tier_comment", "comment"], "");
+
+        const stockType = pickField(stock, ["type", "stock_type", "sector_type"], "");
+        const risk = pickField(stock, ["risk", "risk_level"], "");
+        const volatility = pickField(stock, ["volatility", "vol", "vol_level"], "");
+        const preference = pickField(stock, ["fcn_preference", "preference"], "");
+
+        const currentPrice = pickField(stock, ["current_price", "price", "last_price"], "");
+        const chg1d = pickField(stock, ["change_1d", "chg_1d", "day_change", "change1d"], "");
+        const chg1w = pickField(stock, ["change_1w", "chg_1w", "week_change", "change1w"], "");
+        const chg1m = pickField(stock, ["change_1m", "chg_1m", "month_change", "change1m"], "");
+        const chg3m = pickField(stock, ["change_3m", "chg_3m", "change3m"], "");
+        const chg6m = pickField(stock, ["change_6m", "chg_6m", "change6m"], "");
+        const chg12m = pickField(stock, ["change_12m", "chg_12m", "change12m"], "");
+
+        return `
+          <div class="stock-row" data-symbol="${symbol}">
+            <div class="stock-head">
+              <h3 style="margin:0;">${symbol}</h3>
+              <span class="badge badge-blue">Stock ${idx + 1}</span>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label>${symbol}｜Baseline / Tier</label>
+                <input id="${symbol}_baseline" type="text" value="${baseline}" placeholder="core / conditional / restricted / banned" />
+              </div>
+              <div class="form-group">
+                <label>${symbol}｜Baseline 說明</label>
+                <input id="${symbol}_baseline_comment" type="text" value="${baselineComment}" placeholder="Baseline 說明" />
+              </div>
+
+              <div class="form-group">
+                <label>${symbol}｜Type</label>
+                <input id="${symbol}_type" type="text" value="${stockType}" placeholder="AI / 半導體 / 事件 / 傳統" />
+              </div>
+              <div class="form-group">
+                <label>${symbol}｜Risk / Volatility / Preference</label>
+                <input id="${symbol}_meta" type="text" value="${[risk, volatility, preference].filter(Boolean).join('｜')}" placeholder="風險｜波動｜偏好" />
+              </div>
+
+              <div class="form-group">
+                <label>${symbol}｜Pure Stock Score</label>
+                <input id="${symbol}_pure_score" type="number" placeholder="Pure Stock 分數" />
+              </div>
+              <div class="form-group">
+                <label>${symbol}｜Pure Stock 說明</label>
+                <input id="${symbol}_pure_comment" type="text" placeholder="長期評價" />
+              </div>
+
+              <div class="form-group">
+                <label>${symbol}｜Pure Stock Volatility Score</label>
+                <input id="${symbol}_pure_vol_score" type="number" placeholder="Pure 波動度分數" />
+              </div>
+              <div class="form-group">
+                <label>${symbol}｜Pure Vol 說明</label>
+                <input id="${symbol}_pure_vol_comment" type="text" placeholder="Pure 波動度說明" />
+              </div>
+
+              <div class="form-group">
+                <label>${symbol}｜Event Stock Score</label>
+                <input id="${symbol}_event_score" type="number" placeholder="Event Stock 分數" />
+              </div>
+              <div class="form-group">
+                <label>${symbol}｜Event Stock 說明</label>
+                <input id="${symbol}_event_comment" type="text" placeholder="事件型評價" />
+              </div>
+
+              <div class="form-group">
+                <label>${symbol}｜Event Stock Volatility Score</label>
+                <input id="${symbol}_event_vol_score" type="number" placeholder="Event 波動度分數" />
+              </div>
+              <div class="form-group">
+                <label>${symbol}｜Event Vol 說明</label>
+                <input id="${symbol}_event_vol_comment" type="text" placeholder="Event 波動度說明" />
+              </div>
+
+              <div class="form-group">
+                <label>${symbol}｜Event / News Score</label>
+                <input id="${symbol}_news_score" type="number" placeholder="News / Event 分數" />
+              </div>
+              <div class="form-group">
+                <label>${symbol}｜Event / News 說明</label>
+                <input id="${symbol}_news_comment" type="text" placeholder="新聞 / 事件說明" />
+              </div>
+            </div>
+
+            <div class="result-block" style="margin-top:12px;">
+              <div class="section-title">
+                <strong>L3｜${symbol} 詳細資訊</strong>
+                <span class="small">價格 / 變化 / 最後說明</span>
+              </div>
+
+              <div class="grid-4">
+                <div class="form-group">
+                  <label>Current Price</label>
+                  <input id="${symbol}_current_price" type="number" value="${currentPrice}" placeholder="現價" />
+                </div>
+                <div class="form-group">
+                  <label>1D</label>
+                  <input id="${symbol}_chg_1d" type="text" value="${chg1d}" placeholder="1D 變化" />
+                </div>
+                <div class="form-group">
+                  <label>1W</label>
+                  <input id="${symbol}_chg_1w" type="text" value="${chg1w}" placeholder="1W 變化" />
+                </div>
+                <div class="form-group">
+                  <label>1M</label>
+                  <input id="${symbol}_chg_1m" type="text" value="${chg1m}" placeholder="1M 變化" />
+                </div>
+                <div class="form-group">
+                  <label>3M</label>
+                  <input id="${symbol}_chg_3m" type="text" value="${chg3m}" placeholder="3M 變化" />
+                </div>
+                <div class="form-group">
+                  <label>6M</label>
+                  <input id="${symbol}_chg_6m" type="text" value="${chg6m}" placeholder="6M 變化" />
+                </div>
+                <div class="form-group">
+                  <label>12M</label>
+                  <input id="${symbol}_chg_12m" type="text" value="${chg12m}" placeholder="12M 變化" />
+                </div>
+                <div class="form-group">
+                  <label>狀態說明</label>
+                  <input id="${symbol}_snapshot_comment" type="text" placeholder="當前價格狀態說明" />
+                </div>
+              </div>
+            </div>
           </div>
-
-          <div class="form-grid">
-            <div class="form-group">
-              <label>${symbol}｜Baseline</label>
-              <input id="${symbol}_baseline" type="text" placeholder="core / conditional / restricted / banned" />
-            </div>
-            <div class="form-group">
-              <label>${symbol}｜Baseline 說明</label>
-              <input id="${symbol}_baseline_comment" type="text" placeholder="Baseline 說明" />
-            </div>
-
-            <div class="form-group">
-              <label>${symbol}｜Pure Stock Score</label>
-              <input id="${symbol}_pure_score" type="number" placeholder="Pure Stock 分數" />
-            </div>
-            <div class="form-group">
-              <label>${symbol}｜Pure Stock 說明</label>
-              <input id="${symbol}_pure_comment" type="text" placeholder="長期評價" />
-            </div>
-
-            <div class="form-group">
-              <label>${symbol}｜Pure Stock Volatility Score</label>
-              <input id="${symbol}_pure_vol_score" type="number" placeholder="Pure 波動度分數" />
-            </div>
-            <div class="form-group">
-              <label>${symbol}｜Pure Vol 說明</label>
-              <input id="${symbol}_pure_vol_comment" type="text" placeholder="Pure 波動度說明" />
-            </div>
-
-            <div class="form-group">
-              <label>${symbol}｜Event Stock Score</label>
-              <input id="${symbol}_event_score" type="number" placeholder="Event Stock 分數" />
-            </div>
-            <div class="form-group">
-              <label>${symbol}｜Event Stock 說明</label>
-              <input id="${symbol}_event_comment" type="text" placeholder="事件型評價" />
-            </div>
-
-            <div class="form-group">
-              <label>${symbol}｜Event Stock Volatility Score</label>
-              <input id="${symbol}_event_vol_score" type="number" placeholder="Event 波動度分數" />
-            </div>
-            <div class="form-group">
-              <label>${symbol}｜Event Vol 說明</label>
-              <input id="${symbol}_event_vol_comment" type="text" placeholder="Event 波動度說明" />
-            </div>
-
-            <div class="form-group">
-              <label>${symbol}｜Event / News Score</label>
-              <input id="${symbol}_news_score" type="number" placeholder="News / Event 分數" />
-            </div>
-            <div class="form-group">
-              <label>${symbol}｜Event / News 說明</label>
-              <input id="${symbol}_news_comment" type="text" placeholder="新聞 / 事件說明" />
-            </div>
-          </div>
-
-          <div class="result-block" style="margin-top:12px;">
-            <div class="section-title">
-              <strong>L3｜${symbol} 詳細資訊</strong>
-              <span class="small">價格 / 變化 / 最後說明</span>
-            </div>
-
-            <div class="grid-4">
-              <div class="form-group">
-                <label>Current Price</label>
-                <input id="${symbol}_current_price" type="number" placeholder="現價" />
-              </div>
-              <div class="form-group">
-                <label>1D</label>
-                <input id="${symbol}_chg_1d" type="text" placeholder="1D 變化" />
-              </div>
-              <div class="form-group">
-                <label>1W</label>
-                <input id="${symbol}_chg_1w" type="text" placeholder="1W 變化" />
-              </div>
-              <div class="form-group">
-                <label>1M</label>
-                <input id="${symbol}_chg_1m" type="text" placeholder="1M 變化" />
-              </div>
-              <div class="form-group">
-                <label>3M</label>
-                <input id="${symbol}_chg_3m" type="text" placeholder="3M 變化" />
-              </div>
-              <div class="form-group">
-                <label>6M</label>
-                <input id="${symbol}_chg_6m" type="text" placeholder="6M 變化" />
-              </div>
-              <div class="form-group">
-                <label>12M</label>
-                <input id="${symbol}_chg_12m" type="text" placeholder="12M 變化" />
-              </div>
-              <div class="form-group">
-                <label>狀態說明</label>
-                <input id="${symbol}_snapshot_comment" type="text" placeholder="當前價格狀態說明" />
-              </div>
-            </div>
-          </div>
-        </div>
-      `).join("");
+        `;
+      }).join("");
     }
 
     function scoreKI(ki) {
@@ -782,6 +852,8 @@
         symbol,
         baseline: getValue(`${symbol}_baseline`),
         baseline_comment: getValue(`${symbol}_baseline_comment`),
+        type: getValue(`${symbol}_type`),
+        meta: getValue(`${symbol}_meta`),
 
         pure_stock_score: getNumber(`${symbol}_pure_score`),
         pure_stock_comment: getValue(`${symbol}_pure_comment`),
@@ -1038,8 +1110,10 @@
       document.getElementById("lastDealName").textContent = deals.length ? (deals[0].basic.deal_name || "-") : "-";
     }
 
-    renderHistory();
-    updateSummary();
+    loadFcnPool().then(() => {
+      renderHistory();
+      updateSummary();
+    });
   </script>
 </body>
 </html>
