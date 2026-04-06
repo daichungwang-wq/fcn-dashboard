@@ -161,3 +161,5 @@ const result = convertPool(fundamentalData);
 
 console.log("M7 New Stock Pool:");
 console.log(result);
+export { convertPool };
+
