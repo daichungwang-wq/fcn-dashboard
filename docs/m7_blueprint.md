@@ -1,4 +1,30 @@
 📘 M7 Blueprint（最終版）
+fcn-dashboard/
+│
+├── index.html   （原系統，不動）
+├── m7.html      （新模組入口）
+│
+├── /data/
+│   ├── pool30.json                （舊）
+│   ├── market.json                （舊）
+│   │
+│   ├── /m7/
+│   │   ├── m7_fundamental_data.json
+│   │   ├── m7_new_stock_pool.json
+│   │   ├── m7_new_stock_today.json
+│   │   └── m7_fcn_output.json
+│
+├── /js/
+│   ├── core/                      （舊系統）
+│   │
+│   ├── m7/                        ⭐（新模組全部放這）
+│   │   ├── m7_pool_converter.js   ← 你現在這個
+│   │   ├── m7_runtime_engine.js
+│   │   ├── m7_fcn_engine.js
+│   │   └── m7_ui.js
+│
+└── /docs/
+    └── m7_blueprint.md
 
 🎯 專案定位
 
