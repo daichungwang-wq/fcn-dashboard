@@ -275,6 +275,7 @@ M7 = 將「股票價值」、「今日時機」、「FCN結構」三層整合為
 👉 生成 m7_pool_converter.js（含 PEG 自動計算 + 新股票池輸出）
 
 這會讓 M7 第一層直接跑起來 🔥
+📦 m7_pool_converter.js（完整版）
 
 
 
