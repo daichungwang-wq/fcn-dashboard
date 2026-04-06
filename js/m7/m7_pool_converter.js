@@ -1,3 +1,60 @@
+// PEG 計算
+function calcPEG(price, eps_now, eps_next) {
+  if (!eps_now || !eps_next) return null;
+
+  const pe = price / eps_next;
+  const growth = (eps_next / eps_now - 1) * 100;
+
+  if (growth <= 0) return null;
+
+  return pe / growth;
+}
+
+// Quality 分數
+function qualityScore(level) {
+  if (level === "高") return 5;
+  if (level === "中") return 2;
+  return -5;
+}
+
+// PEG 分數
+function pegScore(peg) {
+  if (peg === null) return 0;
+
+  if (peg < 0.8) return 4;
+  if (peg <= 1.0) return 2;
+  if (peg <= 1.3) return 0;
+  if (peg <= 1.6) return -2;
+  return -4;
+}
+
+// 波動分數
+function volScore(level) {
+  if (level === "低") return 2;
+  if (level === "中") return 0;
+  return -3;
+}
+
+// Pool 判斷
+function poolResult(score) {
+  if (score >= 6) return "Core";
+  if (score >= 3) return "Conditional";
+  return "Reject";
+}
+
+// Strike ladder
+function buildStrikeLadder(quality) {
+  if (quality === "高") return [65, 70, 75];
+  if (quality === "中") return [60, 65, 70];
+  return [55, 60, 65];
+}
+
+// KI range
+function buildKIRange() {
+  return [50, 55, 60];
+}
+
+// 主函數
 function convertPool(data) {
   let output = {};
 
@@ -33,7 +90,7 @@ function convertPool(data) {
       "新股票池總分": total,
       "新股票池結果": poolResult(total),
 
-      "可接受Strike階梯": buildStrikeLadder(s.品質等級, peg),
+      "可接受Strike階梯": buildStrikeLadder(s.品質等級),
       "10年線KI參考區間": buildKIRange(),
 
       "是否納入新股票池": total >= 3,
