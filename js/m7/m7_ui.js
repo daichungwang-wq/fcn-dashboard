@@ -1,6 +1,6 @@
 // ==========================================
 // M7 UI FINAL PRO
-// M2風格｜Dashboard四塊｜三大卡
+// M2風格｜Dashboard四塊｜三大卡｜Blueprint｜可解釋分數
 // 對應 m7_runtime_engine.js FINAL
 // ==========================================
 
@@ -41,10 +41,6 @@ function renderTop(data) {
 
 // ------------------------------------------
 // DASHBOARD（四塊）
-// 1. 技術面分析
-// 2. Overall
-// 3. 投資金額健檢分析
-// 4. 今日組合推薦
 // ------------------------------------------
 function renderDashboard(data) {
   const wrap = document.getElementById("m7-dashboard");
@@ -52,11 +48,8 @@ function renderDashboard(data) {
 
   const aggressive = data.aggressive_recommend || [];
   const watch = [...(data.watch_list || [])];
-  const conservative = [...(data.conservative_watch || [])];
   const remove = data.remove_list || [];
-  const all = data.all || [];
-
-  const overallWatchCount = watch.length + conservative.length;
+  const overallWatchCount = watch.length;
 
   const techSummary = [
     `回檔：${num(data.pullback_count)}`,
@@ -145,16 +138,13 @@ function buildComboSummary(aggressive) {
 
 // ------------------------------------------
 // 三大卡
-// 1. 積極推薦卡（含今日推薦，排最前）
-// 2. 觀察名單卡（含保守觀察）
-// 3. 建議剔除卡
 // ------------------------------------------
 function renderMainCards(data) {
   const wrap = document.getElementById("m7-sections");
   if (!wrap) return;
 
   const aggressive = sortAggressive(data.aggressive_recommend || []);
-  const watchBucket = mergeWatchBucket(data.watch_list || [], data.conservative_watch || []);
+  const watchBucket = sortWatch(data.watch_list || []);
   const removeBucket = data.remove_list || [];
 
   wrap.innerHTML = `
@@ -169,7 +159,7 @@ function renderMainCards(data) {
     ${mainCard(
       "觀察名單",
       watchBucket,
-      "整合觀察名單與保守觀察，方便集中追蹤。",
+      "整合觀察名單與保守觀察邏輯，方便集中追蹤。",
       false,
       1
     )}
@@ -184,16 +174,15 @@ function renderMainCards(data) {
   `;
 }
 
-function mergeWatchBucket(watchList, conservativeWatch) {
-  const merged = [...watchList, ...conservativeWatch];
-  return merged.sort((a, b) => b.today_score - a.today_score);
-}
-
 function sortAggressive(list) {
   return [...list].sort((a, b) => {
     return (b.is_today_highlight === true) - (a.is_today_highlight === true)
       || b.today_score - a.today_score;
   });
+}
+
+function sortWatch(list) {
+  return [...list].sort((a, b) => b.today_score - a.today_score);
 }
 
 function mainCard(title, list, desc, defaultOpen = false, previewCount = 3) {
@@ -261,6 +250,8 @@ function cardHTML(x) {
   const actionClass = actionCls(x["建議動作"]);
   const warnLevel = x["曝險警示"]?.level || "normal";
 
+  const scoreJson = encodeURIComponent(JSON.stringify(x["分數拆解"] || {}));
+
   return `
     <div class="stock-card">
       <div class="card-head">
@@ -277,7 +268,7 @@ function cardHTML(x) {
         </div>
 
         <div class="card-right">
-          <div class="score ${scoreClass}">${num(x["today_score"])}</div>
+          <div class="score ${scoreClass}" onclick="showScoreDetail('${scoreJson}')">${num(x["today_score"])}</div>
           <div class="action-pill ${actionClass}">${safe(x["建議動作"])}</div>
         </div>
       </div>
@@ -496,6 +487,59 @@ function qualityComment(x) {
   if (category === "defensive") return `屬防禦型標的，風險相對可控，適合保守配置。`;
   if (category === "income") return `屬收益型標的，需同時觀察事件風險與結構。`;
   return `屬高風險投機類型，僅適合開發期觀察，不宜當作核心 FCN 標的。`;
+}
+
+// ------------------------------------------
+// Blueprint
+// ------------------------------------------
+function toggleBlueprint() {
+  const el = document.getElementById("blueprint-body");
+  if (el) el.classList.toggle("hidden");
+}
+
+function setBPMode(mode) {
+  const simple = document.getElementById("bp-simple");
+  const pro = document.getElementById("bp-pro");
+
+  if (!simple || !pro) return;
+
+  simple.classList.add("hidden");
+  pro.classList.add("hidden");
+
+  if (mode === "simple") simple.classList.remove("hidden");
+  else pro.classList.remove("hidden");
+}
+
+// ------------------------------------------
+// 可解釋分數
+// ------------------------------------------
+function showScoreDetail(encoded) {
+  try {
+    const score = JSON.parse(decodeURIComponent(encoded));
+
+    const text = `
+總分：${score["總分"] ?? "--"}
+
+估值：${score["估值分"] ?? "--"}
+趨勢：${score["趨勢分"] ?? "--"}
+結構：${score["結構分"] ?? "--"}
+時機：${score["時機調整"] ?? "--"}
+資金：${score["資金分"] ?? "--"}
+品質：${score["品質分"] ?? "--"}
+類別：${score["類別調整"] ?? "--"}
+
+說明：
+估值 = 價格與成長
+趨勢 = 年線方向
+結構 = 6M / 3M 中期型態
+時機 = 1W 短期波動
+資金 = 量比
+品質 = 標的品質
+`;
+      alert(text);
+  } catch (e) {
+    alert("分數資料讀取失敗");
+  }
 }
 
 // ------------------------------------------
