@@ -11,7 +11,7 @@ import fs from "fs";
 import path from "path";
 
 const INPUT_FILE = path.resolve("./data/m7/m7_new_stock_pool.json");
-const M2_FILE = path.resolve("./data/m2/m2_stock_exposure.json");
+const M2_FILE = path.resolve("./data/m7/m2_stock_exposure.json");
 const OUTPUT_FILE = path.resolve("./data/m7/m7_new_stock_today.json");
 
 // ------------------------------------------
