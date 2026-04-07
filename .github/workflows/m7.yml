@@ -1,0 +1,47 @@
+name: M7 Auto Build
+
+on:
+  push:
+    paths:
+      - 'data/m7/m7_fundamental_data.json'
+      - 'js/m7/m7_pool_converter.js'
+      - 'js/m7/m7_runtime_engine.js'
+      - 'js/m7/m7_stock_profile.js'
+      - '.github/workflows/m7.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-m7:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run M7 pool converter
+        run: node js/m7/m7_pool_converter.js
+
+      - name: Run M7 runtime engine
+        run: node js/m7/m7_runtime_engine.js
+
+      - name: Commit generated JSON files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add data/m7/m7_new_stock_pool.json
+          git add data/m7/m7_new_stock_today.json
+
+          git diff --cached --quiet || git commit -m "Auto update M7 JSON"
+          git push
