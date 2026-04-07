@@ -1,8 +1,8 @@
 // ==========================================
-// M8 ENGINE FINAL
+// M8 ENGINE V2
+// 真實市場版：Risk Engine + Rate Engine
 // 讀取：data/m7/m7_new_stock_today.json
 // 輸出：data/m8/m8_today.json
-// 限制：最多 30 個情境
 // ==========================================
 
 import fs from "fs";
@@ -53,7 +53,6 @@ function loadM7() {
 
   const raw = JSON.parse(fs.readFileSync(INPUT_FILE, "utf-8"));
   const all = Array.isArray(raw.all) ? raw.all : [];
-
   return { raw, all };
 }
 
@@ -76,17 +75,16 @@ function isEligible(stock, mode = "strict") {
     return bucket === "積極推薦";
   }
 
-  // loose
   return bucket === "積極推薦" || bucket === "觀察名單";
 }
 
 function buildStockPool(all, mode = "strict") {
   const filtered = all.filter(x => isEligible(x, mode));
 
-  const core = filtered.filter(x => x["分類"] === "core");
-  const growth = filtered.filter(x => x["分類"] === "growth");
-  const defensive = filtered.filter(x => x["分類"] === "defensive");
-  const income = filtered.filter(x => x["分類"] === "income");
+  const core = filtered.filter(x => x["分類"] === "core").sort((a, b) => num(b["today_score"]) - num(a["today_score"]));
+  const growth = filtered.filter(x => x["分類"] === "growth").sort((a, b) => num(b["today_score"]) - num(a["today_score"]));
+  const defensive = filtered.filter(x => x["分類"] === "defensive").sort((a, b) => num(b["today_score"]) - num(a["today_score"]));
+  const income = filtered.filter(x => x["分類"] === "income").sort((a, b) => num(b["today_score"]) - num(a["today_score"]));
 
   return { core, growth, defensive, income, filtered };
 }
@@ -101,73 +99,47 @@ function pickTop(arr, n) {
 function buildCombos(pool) {
   const combos = [];
 
-  // A. 主力：2 Core + 1 Growth + 1 Defensive
   if (pool.core.length >= 2 && pool.growth.length >= 1 && pool.defensive.length >= 1) {
     combos.push({
       name: "主力",
-      stocks: [
-        ...pickTop(pool.core, 2),
-        pool.growth[0],
-        pool.defensive[0]
-      ]
+      stocks: [...pickTop(pool.core, 2), pool.growth[0], pool.defensive[0]]
     });
   }
 
-  // B. 保守：2 Core + 2 Defensive
   if (pool.core.length >= 2 && pool.defensive.length >= 2) {
     combos.push({
       name: "保守",
-      stocks: [
-        ...pickTop(pool.core, 2),
-        ...pickTop(pool.defensive, 2)
-      ]
+      stocks: [...pickTop(pool.core, 2), ...pickTop(pool.defensive, 2)]
     });
   }
 
-  // C. 收益：2 Core + 1 Growth + 1 Income
   if (pool.core.length >= 2 && pool.growth.length >= 1 && pool.income.length >= 1) {
     combos.push({
       name: "收益",
-      stocks: [
-        ...pickTop(pool.core, 2),
-        pool.growth[0],
-        pool.income[0]
-      ]
+      stocks: [...pickTop(pool.core, 2), pool.growth[0], pool.income[0]]
     });
   }
 
-  // D. 精簡：2 Core + 1 Growth
   if (pool.core.length >= 2 && pool.growth.length >= 1) {
     combos.push({
       name: "精簡",
-      stocks: [
-        ...pickTop(pool.core, 2),
-        pool.growth[0]
-      ]
+      stocks: [...pickTop(pool.core, 2), pool.growth[0]]
     });
   }
 
-  // E. 防守成長：1 Core + 1 Growth + 1 Defensive
   if (pool.core.length >= 1 && pool.growth.length >= 1 && pool.defensive.length >= 1) {
     combos.push({
       name: "防守成長",
-      stocks: [
-        pool.core[0],
-        pool.growth[0],
-        pool.defensive[0]
-      ]
+      stocks: [pool.core[0], pool.growth[0], pool.defensive[0]]
     });
   }
 
-  // 去重
   return uniqueBy(combos, c => c.stocks.map(s => s["股號"]).sort().join("|"));
 }
 
 // ------------------------------------------
 // 10年保護線代理值
-// 目前先用 M7 的 12月跌幅 / 結構作 proxy
-// 後續可替換成真實 10Y MA 資料
-// 回傳百分比，例如 55 / 60
+// 後續可換真實10Y MA資料
 // ------------------------------------------
 function estimateProtection(stock) {
   const r12 = num(stock["12月漲跌幅"], 0);
@@ -219,7 +191,7 @@ function buildStrikeCandidates(pegCombo) {
 }
 
 // ------------------------------------------
-// 分數
+// 條件分數
 // ------------------------------------------
 function scoreKI(ki) {
   if (ki <= 55) return 8;
@@ -252,6 +224,13 @@ function scoreTenor(t) {
   return -10;
 }
 
+function scoreType(type) {
+  if (type === "EKI") return 2;
+  if (type === "AKI") return 0;
+  if (type === "Down-KI") return 1;
+  return 0;
+}
+
 function scoreRate(r) {
   if (r < 10) return -10;
   if (r <= 12) return -4;
@@ -263,32 +242,151 @@ function scoreRate(r) {
   return 10;
 }
 
-function scoreType(type) {
-  if (type === "EKI") return 2;
-  if (type === "AKI") return 0;
-  if (type === "Down-KI") return 1;
-  return 0;
+// ------------------------------------------
+// Risk Engine
+// 利率不是輸入，是風險的結果
+// ------------------------------------------
+function worstRiskScore(stock) {
+  const category = stock["分類"];
+  const riskLevel = stock["風險等級"];
+  const vol = stock["風險等級"]; // 暫以風險等級代理波動
+
+  let score = 1;
+
+  if (category === "core") score = 1;
+  else if (category === "defensive") score = 2;
+  else if (category === "growth") score = 3;
+  else if (category === "income") score = 4;
+  else score = 5;
+
+  if (riskLevel === "中") score += 0.5;
+  if (riskLevel === "高") score += 1;
+
+  if (vol === "高") score += 0.5;
+
+  return Math.min(5, round2(score));
+}
+
+function gapRiskScore(gap) {
+  if (gap === 0) return 1;
+  if (gap <= 10) return 1;
+  if (gap <= 15) return 2;
+  if (gap <= 20) return 3;
+  return 4;
+}
+
+function kiRiskScore(ki) {
+  if (ki <= 55) return 1;
+  if (ki <= 60) return 2;
+  if (ki <= 65) return 3;
+  return 4;
+}
+
+function tenorRiskScore(tenor) {
+  if (tenor <= 6) return 1;
+  if (tenor <= 9) return 2;
+  return 3;
+}
+
+function buildRiskScore(worstStock, gap, ki, tenor) {
+  const worst = worstRiskScore(worstStock);
+  const gapRisk = gapRiskScore(gap);
+  const kiRisk = kiRiskScore(ki);
+  const tenorRisk = tenorRiskScore(tenor);
+
+  const total =
+    0.4 * worst +
+    0.2 * gapRisk +
+    0.2 * kiRisk +
+    0.2 * tenorRisk;
+
+  return {
+    worst風險: round2(worst),
+    gap風險: round2(gapRisk),
+    ki風險: round2(kiRisk),
+    tenor風險: round2(tenorRisk),
+    riskScore: round2(total)
+  };
+}
+
+// ------------------------------------------
+// Rate Engine
+// Rate = Base + Risk Premium
+// 並加入現實限制：Gap 小 / KI 低 → 利率不能太高
+// ------------------------------------------
+function buildRateCandidates(riskObj, gap, ki, worstStock, tenor) {
+  let base = 12;
+  const riskScore = num(riskObj.riskScore, 1);
+
+  let center = base + riskScore * 2; // 核心公式
+
+  // 最差股票若為高風險類別，利率略上修
+  if (worstStock["分類"] === "income") center += 1;
+  if (worstStock["分類"] === "growth" && worstStock["風險等級"] === "高") center += 1;
+
+  // Gap 小 + KI 低 = 結構安全 → 不可能超高利率
+  if (gap === 0) {
+    center = Math.min(center, 14);
+  } else if (gap <= 10 && ki <= 55) {
+    center = Math.min(center, 16);
+  } else if (gap <= 13 && ki <= 60) {
+    center = Math.min(center, 18);
+  }
+
+  // 天期長可以稍微上修一點
+  if (tenor >= 12) center += 1;
+  else if (tenor >= 9) center += 0.5;
+
+  // 候選
+  let candidates = [
+    Math.floor(center - 2),
+    Math.round(center),
+    Math.ceil(center + 2)
+  ];
+
+  // 整理成常用 ladder
+  candidates = candidates.map(x => {
+    if (x < 10) return 10;
+    if (x > 28) return 28;
+    return Math.round(x);
+  });
+
+  candidates = [...new Set(candidates)].sort((a, b) => a - b);
+
+  // 再加最後一道真實世界限制
+  candidates = candidates.filter(r => {
+    if (gap === 0 && r > 14) return false;
+    if (gap <= 10 && ki <= 55 && r > 16) return false;
+    if (gap <= 13 && ki <= 60 && r > 18) return false;
+    return true;
+  });
+
+  return candidates.length ? candidates : [14];
 }
 
 // ------------------------------------------
 // 模擬說明
 // ------------------------------------------
-function buildScenarioComment(ki, gap, rate, total) {
+function buildScenarioComment(ki, gap, rate, total, riskObj) {
   const parts = [];
 
   if (ki <= 55) parts.push("保護強");
   else if (ki <= 60) parts.push("保護尚可");
   else parts.push("保護偏弱");
 
-  if (gap === 10) parts.push("Gap最佳");
-  else if (gap < 10) parts.push("Gap太小");
+  if (gap === 0) parts.push("Gap極小");
+  else if (gap === 10) parts.push("Gap最佳");
   else if (gap <= 15) parts.push("Gap合理");
   else if (gap <= 20) parts.push("Gap中性");
   else parts.push("Gap偏大");
 
-  if (rate >= 20) parts.push("收益偏高");
+  if (rate >= 22) parts.push("收益高");
   else if (rate >= 16) parts.push("收益平衡");
-  else parts.push("收益一般");
+  else parts.push("收益保守");
+
+  if (riskObj.riskScore <= 1.8) parts.push("整體風險低");
+  else if (riskObj.riskScore <= 2.6) parts.push("整體風險中等");
+  else parts.push("整體風險偏高");
 
   if (total >= 8) parts.push("整體可做");
   else if (total >= 6.5) parts.push("可先觀察");
@@ -298,14 +396,18 @@ function buildScenarioComment(ki, gap, rate, total) {
 }
 
 // ------------------------------------------
-// 從組合建立情境
+// 情境生成
 // ------------------------------------------
-function generateScenariosForCombo(combo, startId = 1) {
+function generateScenariosForCombo(combo, startId = 1, limit = MAX_SCENARIOS) {
   const stocks = combo.stocks;
 
+  // 注意：這裡「基本股票分數」暫用 quality_score
+  // 若你之後有獨立 basic_score，可直接改這裡
   const basicScores = stocks.map(s => num(s["quality_score"] ?? s["品質分數"], 0));
   const todayScores = stocks.map(s => num(s["today_score"], 0));
-  const pegs = stocks.map(s => num(s["估值資料"]?.["PEG"], 9)).filter(v => v > 0);
+  const pegs = stocks
+    .map(s => num(s["估值資料"]?.["PEG"], NaN))
+    .filter(v => Number.isFinite(v) && v > 0);
 
   const worstStock = [...stocks].sort((a, b) => {
     const aScore = num(a["quality_score"] ?? a["品質分數"], 0);
@@ -329,7 +431,6 @@ function generateScenariosForCombo(combo, startId = 1) {
   const strikes = buildStrikeCandidates(pegCombo);
 
   const tenors = [6, 9, 12];
-  const rates = [16, 18, 20, 24];
   const types = ["EKI", "AKI"];
 
   const scenarios = [];
@@ -344,6 +445,9 @@ function generateScenariosForCombo(combo, startId = 1) {
       if (!(gap === 0 || (gap >= 10 && gap < 25))) continue;
 
       for (const tenor of tenors) {
+        const riskObj = buildRiskScore(worstStock, gap, ki, tenor);
+        const rates = buildRateCandidates(riskObj, gap, ki, worstStock, tenor);
+
         for (const rate of rates) {
           for (const type of types) {
             const kiScore = scoreKI(ki);
@@ -374,6 +478,12 @@ function generateScenariosForCombo(combo, startId = 1) {
               "平均今日分數": round2(avgToday),
               "今日分數組件": round2(todayComponent),
 
+              "Worst風險": riskObj.worst風險,
+              "Gap風險": riskObj.gap風險,
+              "KI風險": riskObj.ki風險,
+              "Tenor風險": riskObj.tenor風險,
+              "風險分數": riskObj.riskScore,
+
               "KI": ki,
               "Strike": strike,
               "Gap": gap,
@@ -391,13 +501,13 @@ function generateScenariosForCombo(combo, startId = 1) {
               "FCN總分": round2(totalScore),
 
               "模擬結果": totalScore >= 8 ? "可做" : totalScore >= 6.5 ? "觀察" : "不做",
-              "模擬說明": buildScenarioComment(ki, gap, rate, totalScore),
+              "模擬說明": buildScenarioComment(ki, gap, rate, totalScore, riskObj),
 
               "最後更新日期": new Date().toISOString().slice(0, 10)
             });
 
             seq += 1;
-            if (scenarios.length >= MAX_SCENARIOS) break outer;
+            if (scenarios.length >= limit) break outer;
           }
         }
       }
@@ -408,7 +518,7 @@ function generateScenariosForCombo(combo, startId = 1) {
 }
 
 // ------------------------------------------
-// 主程式
+// 主流程
 // ------------------------------------------
 function run() {
   const { all } = loadM7();
@@ -416,7 +526,6 @@ function run() {
   const strictPool = buildStockPool(all, "strict");
   let combos = buildCombos(strictPool);
 
-  // strict 不夠，再補 loose
   if (!combos.length) {
     const loosePool = buildStockPool(all, "loose");
     combos = buildCombos(loosePool);
@@ -436,7 +545,7 @@ function run() {
     const remain = MAX_SCENARIOS - allScenarios.length;
     if (remain <= 0) break;
 
-    const comboScenarios = generateScenariosForCombo(combo, simStart).slice(0, remain);
+    const comboScenarios = generateScenariosForCombo(combo, simStart, remain);
     allScenarios.push(...comboScenarios);
     simStart = allScenarios.length + 1;
   }
@@ -446,7 +555,7 @@ function run() {
   fs.mkdirSync(path.dirname(OUTPUT_FILE), { recursive: true });
   fs.writeFileSync(OUTPUT_FILE, JSON.stringify(allScenarios, null, 2), "utf-8");
 
-  console.log(`✅ M8 完成，產生情境數: ${allScenarios.length}`);
+  console.log(`✅ M8 v2 完成，產生情境數: ${allScenarios.length}`);
 }
 
 run();
