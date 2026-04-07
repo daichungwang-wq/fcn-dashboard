@@ -1,12 +1,12 @@
 # ==========================================
-# update_market_runtime.py V3.0
+# update_market_runtime.py V3.1 FINAL
 # 功能：
 # 1. 從 Yahoo Finance 抓歷史價格
 # 2. 自動 fallback（避免 null / NaN）
 # 3. 計算 1d / 1w / 1m / 3m / 6m / 12m 報酬
 # 4. 輸出合法 JSON（不會出現 NaN / Infinity）
-# 5. 保留 market_runtime.json
-# 6. 新增輸出 data/m7/m7_fundamental_data.json
+# 5. 輸出 data/market_runtime.json
+# 6. 自動輸出 data/m7/m7_fundamental_data.json
 # ==========================================
 
 import json
@@ -34,9 +34,6 @@ M7_OUTPUT_PATH = "data/m7/m7_fundamental_data.json"
 
 # ------------------------------------------
 # M7 靜態資料表
-# 說明：
-# - price / ret / volume_ratio 由市場資料更新
-# - eps / quality / risk 先用固定表
 # ------------------------------------------
 M7_STATIC_PROFILE = {
     "NVDA": {"name": "NVIDIA", "eps_now": 3.1, "eps_next": 4.2, "quality_level": "高", "risk_level": "中"},
@@ -87,12 +84,9 @@ def safe_number(v, default=0):
     try:
         if v is None:
             return default
-
         n = float(v)
-
         if math.isnan(n) or math.isinf(n):
             return default
-
         return n
     except Exception:
         return default
@@ -102,11 +96,9 @@ def safe_int(v, default=None):
     try:
         if v is None:
             return default
-
         n = float(v)
         if math.isnan(n) or math.isinf(n):
             return default
-
         return int(n)
     except Exception:
         return default
@@ -116,10 +108,8 @@ def get_price_safe(series, idx):
     try:
         if series is None or len(series) == 0:
             return None
-
         if abs(idx) >= len(series):
             return safe_number(series.iloc[0], None)
-
         return safe_number(series.iloc[idx], None)
     except Exception:
         return None
@@ -152,26 +142,15 @@ def calc_volume_ratio(volume_series):
 
 
 def pct_to_percent_number(v):
-    """
-    將 0.085 轉成 8.5
-    """
     return round(safe_number(v, 0) * 100, 2)
 
-
 # ------------------------------------------
-# 讀取 pool30
+# 讀取 pool
 # ------------------------------------------
 def load_pool():
     with open(POOL_PATH, "r", encoding="utf-8") as f:
         pool = json.load(f)
-
-    symbols = []
-    for s in pool:
-        symbol = s.get("symbol")
-        if symbol:
-            symbols.append(symbol)
-    return symbols
-
+    return [s["symbol"] for s in pool if s.get("symbol")]
 
 # ------------------------------------------
 # 抓市場資料
@@ -199,7 +178,7 @@ def fetch_market_runtime(symbols):
                 ref = get_price_safe(close, -1 - days)
                 ref_prices[k] = safe_number(ref, price_now)
 
-            data = {
+            result[symbol] = {
                 "price_now": safe_number(price_now, 0),
                 "volume": safe_int(volume_series.iloc[-1], None) if volume_series is not None and len(volume_series) > 0 else None,
                 "volume_ratio": calc_volume_ratio(volume_series),
@@ -220,11 +199,8 @@ def fetch_market_runtime(symbols):
                 "ret_12m": safe_number(calc_return(price_now, ref_prices["12m"]), 0)
             }
 
-            result[symbol] = data
-
         except Exception as e:
             print(f"❌ Error {symbol}: {e}")
-
             result[symbol] = {
                 "price_now": 0,
                 "volume": None,
@@ -258,7 +234,6 @@ def fetch_market_runtime(symbols):
 
     return cleaned
 
-
 # ------------------------------------------
 # 輸出 market_runtime.json
 # ------------------------------------------
@@ -270,7 +245,6 @@ def save_market_runtime(result):
         json.dump(result, f, indent=2, ensure_ascii=False)
 
     print("✅ market_runtime.json updated")
-
 
 # ------------------------------------------
 # 建立 M7 fundamental data
@@ -294,11 +268,12 @@ def build_m7_fundamental_data(market_runtime):
             "ret_1w": pct_to_percent_number(market.get("ret_1w")),
             "ret_1m": pct_to_percent_number(market.get("ret_1m")),
             "ret_3m": pct_to_percent_number(market.get("ret_3m")),
+            "ret_6m": pct_to_percent_number(market.get("ret_6m")),
+            "ret_12m": pct_to_percent_number(market.get("ret_12m")),
             "volume_ratio": safe_number(market.get("volume_ratio"), 1.0)
         })
 
     return output
-
 
 # ------------------------------------------
 # 輸出 m7_fundamental_data.json
@@ -314,7 +289,6 @@ def save_m7_fundamental_data(market_runtime):
 
     print(f"✅ m7_fundamental_data.json updated, total {len(data)} symbols")
 
-
 # ------------------------------------------
 # 主程式
 # ------------------------------------------
@@ -324,7 +298,6 @@ def main():
     save_market_runtime(market_runtime)
     save_m7_fundamental_data(market_runtime)
     print("✅ update_market_runtime.py finished")
-
 
 if __name__ == "__main__":
     main()
