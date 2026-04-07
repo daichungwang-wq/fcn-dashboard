@@ -1,14 +1,17 @@
 // ==========================================
-// M7 Runtime Engine FINAL
-// 結構版 / FCN版 / 對應 12M + 6M + 3M + 1W
-// 讀取 data/m7/m7_new_stock_pool.json
-// 輸出 data/m7/m7_new_stock_today.json
+// M7 Runtime Engine FINAL + M2 Exposure
+// 讀取：
+//   data/m7/m7_new_stock_pool.json
+//   data/m2/m2_stock_exposure.json
+// 輸出：
+//   data/m7/m7_new_stock_today.json
 // ==========================================
 
 import fs from "fs";
 import path from "path";
 
 const INPUT_FILE = path.resolve("./data/m7/m7_new_stock_pool.json");
+const M2_FILE = path.resolve("./data/m2/m2_stock_exposure.json");
 const OUTPUT_FILE = path.resolve("./data/m7/m7_new_stock_today.json");
 
 // ------------------------------------------
@@ -32,7 +35,27 @@ function round2(v) {
 }
 
 // ------------------------------------------
-// 估值：數據 + 評語 + 分數
+// 讀取 M2 曝險資料
+// ------------------------------------------
+function loadM2Exposure() {
+  if (!fs.existsSync(M2_FILE)) {
+    return {
+      generated_at: null,
+      total_invested: 0,
+      stocks: {}
+    };
+  }
+
+  const raw = JSON.parse(fs.readFileSync(M2_FILE, "utf-8"));
+  return {
+    generated_at: raw.generated_at || null,
+    total_invested: safeNum(raw.total_invested, 0),
+    stocks: raw.stocks || {}
+  };
+}
+
+// ------------------------------------------
+// 估值
 // ------------------------------------------
 function buildValuationData(row) {
   const model = row.valuation_model || "PEG";
@@ -119,9 +142,6 @@ function buildValuationData(row) {
 
 // ------------------------------------------
 // 趨勢 / 結構 / 溫度
-// 年線 = 12M
-// 月線 / 結構 = 6M + 3M
-// 週線 = 1W
 // ------------------------------------------
 function getArrow(v) {
   if (v === null || v === undefined) return "未知";
@@ -138,7 +158,6 @@ function buildStructureAnalysis(r12m, r6m, r3m, r1w) {
   let structureState = "neutral";
   let timingState = "normal";
 
-  // 1) 年線：趨勢方向
   if (r12m === null || r12m === undefined) {
     trendState = "unknown";
   } else if (r12m < 0) {
@@ -149,34 +168,27 @@ function buildStructureAnalysis(r12m, r6m, r3m, r1w) {
     trendState = "up_mild";
   }
 
-  // 2) 結構：6M + 3M
-  // 你定義的重點：
-  // - 年線向上或緩升，但 6M / 3M 同步下彎 = 做頭，按兵不動
-  // - 年線向上 + 6M上 + 3M下 = 回檔，較理想
   if (trendState === "down") {
     structureState = "downtrend";
   } else {
     if (r6m > 0 && r3m < 0) {
-      structureState = "pullback";      // 年線上、6M上、3M下：回檔
+      structureState = "pullback";
     } else if (r6m > 0 && r3m > 0) {
-      structureState = "hot";           // 全部都上：健康但偏熱
+      structureState = "hot";
     } else if (r6m < 0 && r3m < 0) {
-      structureState = "top";           // 你定義的做頭 / 結構轉弱
+      structureState = "top";
     } else if (r6m < 0 && r3m > 0) {
-      structureState = "rebound";       // 弱勢反彈
+      structureState = "rebound";
     } else {
       structureState = "neutral";
     }
   }
 
-  // 3) 溫度：1W
   if (r1w !== null && r1w !== undefined) {
     if (r1w > 8) timingState = "overheat";
     else if (r1w < -5) timingState = "dip";
-    else timingState = "normal";
   }
 
-  // 分數
   let trendScore = 0;
   if (trendState === "up_strong") trendScore = 30;
   else if (trendState === "up_mild") trendScore = 22;
@@ -184,7 +196,7 @@ function buildStructureAnalysis(r12m, r6m, r3m, r1w) {
   else trendScore = 10;
 
   let structureScore = 0;
-  if (structureState === "pullback") structureScore = 20;  // FCN 最喜歡
+  if (structureState === "pullback") structureScore = 20;
   else if (structureState === "hot") structureScore = 10;
   else if (structureState === "rebound") structureScore = 4;
   else if (structureState === "top") structureScore = 0;
@@ -194,21 +206,20 @@ function buildStructureAnalysis(r12m, r6m, r3m, r1w) {
   let timingAdjust = 0;
   if (timingState === "dip") timingAdjust = 5;
   else if (timingState === "overheat") timingAdjust = -5;
-  else timingAdjust = 0;
 
   let structureText = "";
   if (structureState === "pullback") {
-    structureText = "年線仍向上，6月結構仍撐住，但3月回檔，屬於較理想的 FCN 回檔結構。";
+    structureText = "年線仍向上，中期回檔，屬較理想的 FCN 結構。";
   } else if (structureState === "hot") {
-    structureText = "年線與中期結構都向上，結構健康，但目前位置偏熱，不宜急追。";
+    structureText = "長中期結構健康，但位置偏熱，不宜追高。";
   } else if (structureState === "top") {
-    structureText = "年線仍高位，但 3月與6月結構同步轉弱，屬於明顯做頭，宜按兵不動。";
+    structureText = "年線仍高位，但 3M / 6M 同步轉弱，屬明顯做頭，宜按兵不動。";
   } else if (structureState === "downtrend") {
-    structureText = "年線已轉弱，長期趨勢向下，不適合做 FCN。";
+    structureText = "年線下行，長期趨勢已轉弱，不適合做 FCN。";
   } else if (structureState === "rebound") {
-    structureText = "中期結構仍弱，目前較像弱勢反彈，不宜積極進場。";
+    structureText = "中期仍弱，目前偏向弱勢反彈。";
   } else {
-    structureText = "結構中性，需搭配估值與資金面再判斷。";
+    structureText = "結構中性，需搭配其他面向判斷。";
   }
 
   return {
@@ -216,15 +227,12 @@ function buildStructureAnalysis(r12m, r6m, r3m, r1w) {
     month6_arrow: month6Arrow,
     month3_arrow: month3Arrow,
     week_arrow: weekArrow,
-
     trend_state: trendState,
     structure_state: structureState,
     timing_state: timingState,
-
     trend_score: trendScore,
     structure_score: structureScore,
     timing_adjust: timingAdjust,
-
     structure_text: structureText
   };
 }
@@ -251,36 +259,99 @@ function calcCategoryAdjust(category) {
 }
 
 // ------------------------------------------
+// M2 曝險警示
+// ------------------------------------------
+function buildExposure(m2Node) {
+  const empty = {
+    fcn_count: 0,
+    invested_amount: 0,
+    invested_ratio: 0,
+    danger: 0,
+    watch: 0,
+    healthy: 0,
+    avg_score_pure: null,
+    avg_score_event: null
+  };
+
+  if (!m2Node) return empty;
+
+  return {
+    fcn_count: safeNum(m2Node.fcn_count, 0),
+    invested_amount: safeNum(m2Node.invested_amount, 0),
+    invested_ratio: safeNum(m2Node.invested_ratio, 0),
+    danger: safeNum(m2Node.danger, 0),
+    watch: safeNum(m2Node.watch, 0),
+    healthy: safeNum(m2Node.healthy, 0),
+    avg_score_pure: safeNum(m2Node.avg_score_pure, null),
+    avg_score_event: safeNum(m2Node.avg_score_event, null)
+  };
+}
+
+function buildExposureWarning(exposure) {
+  let level = "normal";
+  let text = "目前持倉曝險正常。";
+
+  if (exposure.invested_ratio > 30 || exposure.fcn_count > 15) {
+    level = "high";
+    text = `目前單一標的投入比 ${round2(exposure.invested_ratio)}% 且參與 ${exposure.fcn_count} 檔 FCN，集中度偏高，不宜再擴大部位。`;
+  } else if (
+    exposure.invested_ratio > 20 ||
+    exposure.fcn_count > 10 ||
+    exposure.danger > 0
+  ) {
+    level = "medium";
+    text = `目前持倉已偏高（投入比 ${round2(exposure.invested_ratio)}%，FCN數量 ${exposure.fcn_count}），建議控制加碼節奏。`;
+  }
+
+  if (exposure.danger > 0) {
+    level = "high";
+    text = `目前已有 Danger 持倉 ${exposure.danger} 檔，應以風控為先，不宜再增加集中曝險。`;
+  }
+
+  return { level, text };
+}
+
+// ------------------------------------------
+// 分類分桶
+// ------------------------------------------
+function buildUIBucket(action) {
+  if (action === "加入") return "今日推薦";
+  if (action === "觀察") return "保守觀察";
+  return "建議剔除";
+}
+
+function isAggressiveOK(action, exposureWarning) {
+  if (action === "移除") return false;
+  if (exposureWarning.level === "high") return false;
+  return true;
+}
+
+// ------------------------------------------
 // 解釋
 // ------------------------------------------
 function buildWhyYes(row, valuation, structure, moneyScore, qScore) {
   const arr = [];
-
   if (row.category === "core") arr.push("核心股");
   if (row.category === "defensive") arr.push("防禦型");
   if (qScore >= 5) arr.push("品質高");
   if (valuation.score >= 28) arr.push("估值合理");
-  if (structure.trend_state === "up_strong" || structure.trend_state === "up_mild") {
-    arr.push("年線向上");
-  }
+  if (structure.trend_state === "up_strong" || structure.trend_state === "up_mild") arr.push("長期趨勢向上");
   if (structure.structure_state === "pullback") arr.push("中期回檔，價格較合理");
-  if (moneyScore >= 15) arr.push("資金支持");
-
+  if (moneyScore >= 15) arr.push("市場資金支持");
   return arr;
 }
 
-function buildWhyNo(row, valuation, structure, moneyScore) {
+function buildWhyNo(row, valuation, structure, moneyScore, exposureWarning) {
   const arr = [];
-
   if (row.valuation_model === "PEG" && valuation.peg !== null && valuation.peg > 1.6) {
     arr.push(`PEG ${valuation.peg} 偏高`);
   }
-  if (structure.structure_state === "top") arr.push("3月與6月結構同步轉弱，屬做頭");
-  if (structure.trend_state === "down") arr.push("年線向下，長期趨勢不佳");
-  if (structure.timing_state === "overheat") arr.push("週線過熱，不宜追高");
+  if (structure.structure_state === "top") arr.push("3M / 6M 同步轉弱，屬做頭");
+  if (structure.trend_state === "down") arr.push("年線下行，長期趨勢不佳");
+  if (structure.timing_state === "overheat") arr.push("短期過熱，不宜追高");
   if (moneyScore <= 5) arr.push(`量比 ${row["量比"] ?? "--"} 偏低，資金不足`);
   if (row.category === "speculative") arr.push("高波動投機股，不適合 FCN");
-
+  if (exposureWarning.level === "high") arr.push("現有持倉曝險偏高");
   return arr;
 }
 
@@ -289,28 +360,22 @@ function buildAction(row, structure, total) {
   if (row.category === "speculative") return "移除";
   if (structure.trend_state === "down") return "移除";
   if (structure.structure_state === "top") return "移除";
-
   if (total >= 75) return "加入";
   if (total >= 55) return "觀察";
   return "移除";
 }
 
-function buildFinalComment(action, valuation, structure, moneyScore) {
+function buildFinalComment(action, valuation, structure, moneyScore, exposureWarning) {
   const parts = [];
-
   if (structure.structure_text) parts.push(structure.structure_text);
   if (valuation.text) parts.push(`估值面：${valuation.text}。`);
-
   if (moneyScore <= 5) parts.push("資金面偏弱。");
   else if (moneyScore >= 15) parts.push("資金面尚可。");
+  if (exposureWarning?.text) parts.push(`持倉面：${exposureWarning.text}`);
 
-  if (action === "加入") {
-    parts.push("整體條件支持，可列入 FCN 候選。");
-  } else if (action === "觀察") {
-    parts.push("條件部分符合，但仍需等待更佳位置或更清楚的結構。");
-  } else {
-    parts.push("目前不適合做 FCN。");
-  }
+  if (action === "加入") parts.push("整體條件支持，可列入 FCN 候選。");
+  else if (action === "觀察") parts.push("條件部分符合，但仍需等待更佳位置。");
+  else parts.push("目前不適合做 FCN。");
 
   return parts.join("");
 }
@@ -325,6 +390,7 @@ function run() {
 
   const raw = JSON.parse(fs.readFileSync(INPUT_FILE, "utf-8"));
   const rows = toArray(raw);
+  const m2 = loadM2Exposure();
 
   const result = rows.map((row) => {
     const r1w = safeNum(row["1週漲跌幅"], null);
@@ -355,10 +421,17 @@ function run() {
       qScore +
       categoryAdjust;
 
-    const whyYes = buildWhyYes(row, valuation, structure, moneyScore, qScore);
-    const whyNo = buildWhyNo(row, valuation, structure, moneyScore);
     const action = buildAction(row, structure, total);
-    const finalComment = buildFinalComment(action, valuation, structure, moneyScore);
+
+    const exposure = buildExposure(m2.stocks?.[row.symbol]);
+    const exposureWarning = buildExposureWarning(exposure);
+
+    const uiBucket = buildUIBucket(action);
+    const aggressiveOK = isAggressiveOK(action, exposureWarning);
+
+    const whyYes = buildWhyYes(row, valuation, structure, moneyScore, qScore);
+    const whyNo = buildWhyNo(row, valuation, structure, moneyScore, exposureWarning);
+    const finalComment = buildFinalComment(action, valuation, structure, moneyScore, exposureWarning);
 
     return {
       "股號": row.symbol,
@@ -415,7 +488,22 @@ function run() {
         "總分": Math.round(total)
       },
 
+      "持倉曝險": {
+        "FCN數量": exposure.fcn_count,
+        "投入金額": exposure.invested_amount,
+        "投入資金比": round2(exposure.invested_ratio),
+        "Danger": exposure.danger,
+        "Watch": exposure.watch,
+        "Healthy": exposure.healthy,
+        "Pure平均": exposure.avg_score_pure,
+        "Event平均": exposure.avg_score_event
+      },
+
+      "曝險警示": exposureWarning,
+
       "建議動作": action,
+      "ui_bucket": uiBucket,
+      "aggressive_ok": aggressiveOK,
       "why_yes": whyYes,
       "why_no": whyNo,
       "估值說明": valuation.text,
@@ -432,18 +520,23 @@ function run() {
       ...x
     }));
 
-  const picks = sorted.filter((x) => x["建議動作"] !== "移除");
-
   const output = {
     generated_at: new Date().toISOString(),
+    m2_generated_at: m2.generated_at,
     total_count: sorted.length,
-    today_pick_count: picks.length,
-    today_picks: picks,
+
+    today_recommend: sorted.filter(x => x.ui_bucket === "今日推薦"),
+    conservative_watch: sorted.filter(x => x.ui_bucket === "保守觀察"),
+    remove_list: sorted.filter(x => x.ui_bucket === "建議剔除"),
+
+    aggressive_recommend: sorted.filter(x => x.ui_bucket === "今日推薦" && x.aggressive_ok),
+    watch_list: sorted.filter(x => x.ui_bucket === "保守觀察" && x.aggressive_ok),
+
     all: sorted
   };
 
   fs.writeFileSync(OUTPUT_FILE, JSON.stringify(output, null, 2), "utf-8");
-  console.log(`✅ m7_new_stock_today.json 已產出，共 ${picks.length} 檔候選`);
+  console.log(`✅ m7_new_stock_today.json 已產出，共 ${sorted.length} 檔`);
 }
 
 run();
