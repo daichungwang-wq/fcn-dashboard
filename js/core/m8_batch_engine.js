@@ -230,7 +230,7 @@ async function runM8Case({ caseName, symbols, KI, Strike, T, type, marketYield }
   const BW = calcBW(scores);
   const basketPremium =
   0.15 * BW +
-  0.0012 * BW * BW;
+  0.0008 * BW * BW;
   const structure = calcStructure(KI, T, Strike, type, stocks);
 
   const fairYield = 6 + basketPremium + structure.structure_total;
