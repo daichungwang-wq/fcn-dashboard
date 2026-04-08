@@ -98,7 +98,7 @@ function calcKIAdj(KI) {
 }
 
 function calcStrikeAdj(strike) {
-  return 0.05 * (strike - 50) + 0.00002 * Math.pow(KI - 50, 2);
+  return 0.05 * (strike - 50) + 0.00002 * Math.pow(strike - 50, 2);
 }
 
 function calcTenorAdj(T) {
