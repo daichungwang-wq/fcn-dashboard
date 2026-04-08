@@ -1,3 +1,293 @@
+FairYield=6+BasketPremium+KIAdj+GapAdj+TenorAdj+CorrAdj+StrikeAdj+TypeAdj​
+🔥 M8 – Fair Yield Engine（FINAL BLUEPRINT）
+一、系統定位（定稿）
+M8 = Fair Yield Engine
+用途：將 FCN 風險條件轉換為「市場合理利率」
+二、核心原則（鐵律）
+1️⃣ 風險越高 → 利率越高
+2️⃣ 結構越差 → 利率越高
+3️⃣ 不評價好壞，只反映市場價格
+三、總公式（最終）
+𝐹
+𝑎
+𝑖
+𝑟
+𝑌
+𝑖
+𝑒
+𝑙
+𝑑
+=
+6
++
+𝐵
+𝑎
+𝑠
+𝑘
+𝑒
+𝑡
+𝑃
+𝑟
+𝑒
+𝑚
+𝑖
+𝑢
+𝑚
++
+𝐾
+𝐼
+𝐴
+𝑑
+𝑗
++
+𝐺
+𝑎
+𝑝
+𝐴
+𝑑
+𝑗
++
+𝑇
+𝑒
+𝑛
+𝑜
+𝑟
+𝐴
+𝑑
+𝑗
++
+𝐶
+𝑜
+𝑟
+𝑟
+𝐴
+𝑑
+𝑗
++
+𝑆
+𝑡
+𝑟
+𝑖
+𝑘
+𝑒
+𝐴
+𝑑
+𝑗
++
+𝑇
+𝑦
+𝑝
+𝑒
+𝐴
+𝑑
+𝑗
+FairYield=6+BasketPremium+KIAdj+GapAdj+TenorAdj+CorrAdj+StrikeAdj+TypeAdj
+	​
+
+四、輸入資料
+股票（M7輸出）
+StockScore_i
+FCN條件
+KI
+Strike
+Tenor（T, 月）
+Type（AKI / DACN / EKI）
+Basket結構
+CorrLevel（低 / 中 / 高 / 極高）
+五、BaseYield
+𝐵
+𝑎
+𝑠
+𝑒
+𝑌
+𝑖
+𝑒
+𝑙
+𝑑
+=
+6
+BaseYield=6
+	​
+
+六、Basket 模組（Worst-of 核心）
+1️⃣ Weakness
+𝑊
+𝑒
+𝑎
+𝑘
+𝑛
+𝑒
+𝑠
+𝑠
+𝑖
+=
+100
+−
+𝑆
+𝑡
+𝑜
+𝑐
+𝑘
+𝑆
+𝑐
+𝑜
+𝑟
+𝑒
+𝑖
+Weakness
+i
+	​
+
+=100−StockScore
+i
+	​
+
+	​
+
+2️⃣ BasketWeakness（4檔）
+𝐵
+𝑊
+=
+0.5
+×
+𝑊
+𝑜
+𝑟
+𝑠
+𝑡
+1
++
+0.3
+×
+𝑊
+𝑜
+𝑟
+𝑠
+𝑡
+2
++
+0.2
+×
+𝐴
+𝑣
+𝑔
+BW=0.5×Worst1+0.3×Worst2+0.2×Avg
+	​
+
+3️⃣ BasketPremium
+𝐵
+𝑎
+𝑠
+𝑘
+𝑒
+𝑡
+𝑃
+𝑟
+𝑒
+𝑚
+𝑖
+𝑢
+𝑚
+=
+0.15
+×
+𝐵
+𝑊
+BasketPremium=0.15×BW
+	​
+
+七、KIAdj（曲線型，已修正方向）
+GapAdj=⎩
+⎨
+⎧​reject00.25(Gap−13)+0.015(Gap−13)2​Gap<1010≤Gap≤13Gap>13​​
+	​
+
+邊界
+KI > 75 → reject
+KI < 45 → cap（上限約 +4.5）
+八、GapAdj（單調上升，定價邏輯）
+
+Gap=Strike−KI
+
+
+	​
+​
+
+邊界
+Gap ≥ 25 → reject
+GapAdj ≤ 3.5
+九、TenorAdj（曲線型）
+TenorAdj=min(4.0,max(−1.0, 0.22(T−6)+0.018(T−6)2))​
+
+解讀
+Tenor	Adj
+3M	~ -0.5
+6M	0
+9M	~ +0.8
+12M	~ +2.0
+
+十、CorrAdj（相關性）
+低相關      0
+中相關      +0.5
+高相關      +1.0
+極高相關    +1.5
+十一、StrikeAdj（最終版）
+1️⃣ 理想 Strike（你定義）
+ΔS=Strike−S∗(T)​
+	​
+
+2️⃣ 偏差  ΔS=Strike−S∗(T)​
+	​
+
+3️⃣ 利率補償 StrikeAdj=min(2.5,max(−1.0, 0.12ΔS+0.01(ΔS)2))​
+
+十二、TypeAdj（已修正）
+AKI   →  0
+DACN  → +1.0
+EKI   → -1.0
+十三、Reject 條件
+KI > 75
+Gap < 10
+Gap ≥ 25
+十四、完整展開式（最終）
+FairYield=6+0.15×(0.5×Worst1Weakness+0.3×Worst2Weakness+0.2×AvgWeakness)+0.18(KI−65)+0.006(KI−65)2+GapAdj+min(4,max(−1,0.22(T−6)+0.018(T−6)2))+CorrAdj+min(2.5,max(−1,0.12ΔS+0.01ΔS2))+TypeAdj
+
+FairYield=6+0.15×(0.5×Worst1Weakness+0.3×Worst2Weakness+0.2×AvgWeakness)+0.18(KI−65)+0.006(KI−65)
+2
++GapAdj+min(4,max(−1,0.22(T−6)+0.018(T−6)
+2
+))+CorrAdj+min(2.5,max(−1,0.12ΔS+0.01ΔS
+2
+))+TypeAdj
+	​
+
+十五、輸出格式（M8）
+{
+  "fair_yield": 20.3,
+  "basket_premium": 6.3,
+  "ki_adj": 2.4,
+  "gap_adj": 0,
+  "tenor_adj": 2.0,
+  "corr_adj": 1.0,
+  "strike_adj": 2.5,
+  "type_adj": 0,
+  "valid": true
+}
+十六、與決策系統分離（最重要）
+Fair Yield Engine → 算「市場應該多少利率」
+FCN Score        → 判斷「值不值得做」
+十七、整體流程（最終）
+M7 → 股票池
+
+M8 → Fair Yield
+
+市場報價 - Fair Yield → Pricing
+
+最後 → FCN Score + Pricing → 決策
+🔥 最終一句（整個系統核心）
+先看價格對不對（M8）
+再決定要不要做（FCN Score）
+
 # 📘 M8 Blueprint（FCN 自動組合引擎｜最終版）
 
 ---
