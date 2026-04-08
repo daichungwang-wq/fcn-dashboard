@@ -92,9 +92,9 @@ function calcTailAdj(weaknesses) {
  */
 function calcKIAdj(KI) {
   if (KI <= 70) {
-    return 0.5 + 0.12 * (KI - 55) + 0.004 * Math.pow(KI - 55, 2);
+    return 0.5 + 0.1 * (KI - 55) + 0.003 * Math.pow(KI - 55, 2);
   }
-  return 4.5 + 0.02 * (KI - 70);
+  return 3 + 0.1 * (KI - 70);
 }
 
 function calcStrikeAdj(strike) {
