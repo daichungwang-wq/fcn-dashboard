@@ -82,7 +82,18 @@ function calcBW(scores) {
  * KI=55 -> 0.5
  */
 function calcKIAdj(KI) {
-  return 0.5 + 0.12 * (KI - 55) + 0.004 * Math.pow(KI - 55, 2);
+  // 55 為新 base，KI=55 -> 0.5
+  // 55~75 正常加速，>75 改為降速，避免高 KI 爆掉
+
+  if (KI <= 75) {
+    return 0.5 + 0.12 * (KI - 55) + 0.004 * Math.pow(KI - 55, 2);
+  }
+
+  // 先算到 75 的值，作為分段銜接點
+  const kiAt75 = 0.5 + 0.12 * (75 - 55) + 0.004 * Math.pow(75 - 55, 2);
+
+  // 75 以上只用低斜率增加
+  return kiAt75 + 0.05 * (KI - 75);
 }
 
 /**
@@ -97,7 +108,7 @@ function calcTenorAdj(T) {
  * Strike=65 -> 1
  */
 function calcStrikeAdj(strike) {
-  return 0.1 * (strike - 55);
+  return 0.05 * (strike - 55);
 }
 
 /**
