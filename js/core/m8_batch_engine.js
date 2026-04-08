@@ -15,7 +15,7 @@ const FALLBACK_STOCKS = {
     "產業": "AI_SEMI",
     "子產業": "CPU",
     "風險等級": "中",
-    "today_score": 62,
+    "today_score": 40,
     "_source": "fallback"
   }
 };
@@ -88,15 +88,15 @@ function calcTailAdj(weaknesses) {
  * KI：
  * - KI=55 -> 0.5
  * - 55~75 正常加速
- * - >75 降速，避免高 KI 爆掉
+ * - >70 降速，避免高 KI 爆掉
  */
 function calcKIAdj(KI) {
-  if (KI <= 75) {
+  if (KI <= 70) {
     return 0.5 + 0.12 * (KI - 55) + 0.004 * Math.pow(KI - 55, 2);
   }
 
-  const kiAt75 = 0.5 + 0.12 * (75 - 55) + 0.004 * Math.pow(75 - 55, 2);
-  return kiAt75 + 0.05 * (KI - 75);
+  const kiAt75 = 0.5 + 0.12 * (75 - 55) + 0.004 * Math.pow(70 - 55, 2);
+  return kiAt75 + 0.05 * (KI - 70);
 }
 
 /**
@@ -236,7 +236,7 @@ async function runM8Case({ caseName, symbols, KI, Strike, T, type, marketYield }
 
   const basketPremium =
     0.15 * BW +
-    0.0008 * BW * BW;
+    0.0008 * BW*BW;
 
   const tailAdj = calcTailAdj(weaknesses);
 
