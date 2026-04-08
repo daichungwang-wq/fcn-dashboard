@@ -227,10 +227,14 @@ async function runM8Case({ caseName, symbols, KI, Strike, T, type, marketYield }
   const stocks = symbols.map(sym => findStock(m7, String(sym).toUpperCase()));
   const scores = stocks.map(getTodayScore);
 
-  const BW = calcBW(scores);
-  const basketPremium =
+BW = 0.5 * worst + 0.5 * avg;
+
+BasketPremium =
   0.15 * BW +
   0.0008 * BW * BW;
+
+TailAdj =
+  0.05 * (worst - avg);
   const structure = calcStructure(KI, T, Strike, type, stocks);
 
   const fairYield = 6 + basketPremium + structure.structure_total;
