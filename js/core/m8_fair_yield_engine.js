@@ -4,7 +4,7 @@ async function loadM7() {
     throw new Error("無法讀取 M7 檔案: data/m7/m7_new_stock_today.json");
   }
   return await res.json();
-}
+} 
 
 function normalizeSymbols(symbols) {
   return symbols
