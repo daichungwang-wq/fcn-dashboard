@@ -87,16 +87,16 @@ function calcTailAdj(weaknesses) {
 /**
  * KI：
  * - KI=55 -> 0.5
- * - 55~75 正常加速
+ * - 55~70 正常加速
  * - >70 降速，避免高 KI 爆掉
  */
 function calcKIAdj(KI) {
   if (KI <= 70) {
-    return 0.5 + 0.12 * (KI - 55) + 0.004 * Math.pow(KI - 55, 2);
+    return 0.5 + 0.12 * (KI - 55) + 0.006 * Math.pow(KI - 55, 2);
   }
 
-  const kiAt75 = 0.5 + 0.12 * (75 - 55) + 0.004 * Math.pow(70 - 55, 2);
-  return kiAt75 + 0.05 * (KI - 70);
+  const kiAt70 = 0.5 + 0.12 * (70 - 55) + 0.004 * Math.pow(70 - 55, 2);
+  return kiAt70 + 0.05 * (KI - 70);
 }
 
 /**
