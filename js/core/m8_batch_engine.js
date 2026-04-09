@@ -1,11 +1,11 @@
 // ==========================================
 // M8 Engine VNext FINAL
-// 振宇 FCN 系統｜M8 定價模型（乾淨版定稿）
+// 振宇 FCN 系統｜M8 定價模型（改版：吃 m7_fundamental_data.json）
 // ==========================================
 
 async function loadM7() {
-  const res = await fetch("data/m7/m7_new_stock_today.json");
-  if (!res.ok) throw new Error("無法讀取 M7 檔案");
+  const res = await fetch("data/m7/m7_fundamental_data.json");
+  if (!res.ok) throw new Error("無法讀取 M7 fundamental 檔案");
   return await res.json();
 }
 
@@ -15,14 +15,14 @@ async function loadM7() {
  */
 const FALLBACK_STOCKS = {
   INTC: {
-    "股號": "INTC",
-    "股名": "Intel",
-    "產業": "AI_SEMI",
-    "子產業": "CPU",
-    "風險等級": "中",
-    "today_score": 40,
-    "_source": "fallback",
-    "swing_days": [6.0, 6.4, 6.8, 6.0, 5.8, 5.5]
+    symbol: "INTC",
+    name: "Intel",
+    sector: "AI_SEMI",
+    subsector: "CPU",
+    risk_level: "中",
+    today_score: 40,
+    _source: "fallback",
+    swing_days: [6.0, 6.4, 6.8, 6.0, 5.8, 5.5]
   }
 };
 
@@ -43,10 +43,19 @@ function avg(arr) {
   return arr.reduce((a, b) => a + toNum(b), 0) / arr.length;
 }
 
+function safeUpper(x) {
+  return String(x || "").trim().toUpperCase();
+}
+
 // ------------------------------------------
 // M7 股票整合
+// 兼容兩種格式：
+// A. m7_fundamental_data.json => 直接是 array
+// B. 舊版 m7_new_stock_today.json => aggressive/watch/remove/all
 // ------------------------------------------
 function allM7Stocks(m7json) {
+  if (Array.isArray(m7json)) return m7json;
+
   return [
     ...(m7json.aggressive_recommend || []),
     ...(m7json.watch_list || []),
@@ -55,31 +64,108 @@ function allM7Stocks(m7json) {
   ];
 }
 
-function findStock(m7json, symbol) {
-  const stock = allM7Stocks(m7json).find(
-    s => String(s["股號"] || "").toUpperCase() === symbol
-  );
+function getSymbol(stock) {
+  return safeUpper(stock?.symbol || stock?.["股號"]);
+}
 
-  if (stock) return { ...stock, _source: "m7" };
+function getName(stock) {
+  return String(stock?.name || stock?.["股名"] || getSymbol(stock));
+}
+
+function findStock(m7json, symbol) {
+  const stocks = allM7Stocks(m7json);
+
+  const stock = stocks.find(s => getSymbol(s) === safeUpper(symbol));
+
+  if (stock) return { ...stock, _source: stock._source || "m7" };
   if (FALLBACK_STOCKS[symbol]) return FALLBACK_STOCKS[symbol];
 
   throw new Error(`M7 找不到股票: ${symbol}`);
 }
 
+// ------------------------------------------
+// today_score：若 fundamental_data 沒有 today_score
+// 就用現有欄位推估一個可用分數
+// 目標：維持 M8 可正常計算 weakness / BW
+// ------------------------------------------
+function qualityScore(level) {
+  const x = String(level || "").trim();
+  if (x === "高") return 80;
+  if (x === "中") return 65;
+  if (x === "低") return 45;
+  return 60;
+}
+
+function riskPenalty(level) {
+  const x = String(level || "").trim();
+  if (x === "低") return 0;
+  if (x === "中") return -6;
+  if (x === "高") return -12;
+  return -4;
+}
+
+function trendScore(stock) {
+  const r1w = toNum(stock?.ret_1w, 0);
+  const r1m = toNum(stock?.ret_1m, 0);
+  const r3m = toNum(stock?.ret_3m, 0);
+
+  let score = 0;
+
+  score += Math.max(-8, Math.min(8, r1w * 1.2));
+  score += Math.max(-8, Math.min(8, r1m * 0.8));
+  score += Math.max(-8, Math.min(8, r3m * 0.5));
+
+  return score;
+}
+
+function volatilityPenalty(stock) {
+  const swings = getSwingDays(stock);
+  const swingAvg = avg(swings);
+
+  if (swingAvg >= 7) return -12;
+  if (swingAvg >= 5) return -8;
+  if (swingAvg >= 3.5) return -4;
+  return 0;
+}
+
+function deriveTodayScore(stock) {
+  const base =
+    qualityScore(stock?.quality_level || stock?.["品質"] || stock?.["quality"]) +
+    riskPenalty(stock?.risk_level || stock?.["風險等級"]) +
+    trendScore(stock) +
+    volatilityPenalty(stock);
+
+  return Math.max(20, Math.min(95, round2(base)));
+}
+
 function getTodayScore(stock) {
-  return toNum(stock.today_score, 0);
+  if (stock?.today_score !== undefined && stock?.today_score !== null) {
+    return toNum(stock.today_score, 0);
+  }
+  return deriveTodayScore(stock);
 }
 
 function getSector(stock) {
-  return String(stock["產業"] || "OTHER");
+  return String(
+    stock?.sector ||
+    stock?.["產業"] ||
+    stock?.type ||
+    stock?.category ||
+    "OTHER"
+  );
 }
 
 function getSubsector(stock) {
-  return String(stock["子產業"] || "OTHER");
+  return String(
+    stock?.subsector ||
+    stock?.["子產業"] ||
+    stock?.sub_type ||
+    "OTHER"
+  );
 }
 
 function getRiskLevel(stock) {
-  return String(stock["風險等級"] || "");
+  return String(stock?.risk_level || stock?.["風險等級"] || "");
 }
 
 // ------------------------------------------
@@ -210,14 +296,12 @@ function calcShortSwing(days) {
  * 允許多種欄位格式，避免資料一改就壞
  */
 function getSwingDays(stock) {
-  if (Array.isArray(stock.swing_days)) return stock.swing_days;
-
-  if (Array.isArray(stock.recent_swings)) return stock.recent_swings;
-
-  if (Array.isArray(stock.daily_amplitudes)) return stock.daily_amplitudes;
+  if (Array.isArray(stock?.swing_days)) return stock.swing_days;
+  if (Array.isArray(stock?.recent_swings)) return stock.recent_swings;
+  if (Array.isArray(stock?.daily_amplitudes)) return stock.daily_amplitudes;
 
   const alt = [
-    stock.d0, stock.d1, stock.d2, stock.d3, stock.d4, stock.d5
+    stock?.d0, stock?.d1, stock?.d2, stock?.d3, stock?.d4, stock?.d5
   ];
 
   if (alt.some(v => v !== undefined && v !== null && v !== "")) return alt;
@@ -231,10 +315,6 @@ function getSwingDays(stock) {
  * s1 = worst-of
  * s2 = 2nd worst-of
  * BasketVol = 0.5*s1 + 0.3*s2 + 0.2*avg
- *
- * 這版已經能讓：
- * TSM / AAPL / MSFT / LQD -> VolAdj ≈ +0.43%
- * 並且不再外掛 ResonanceAdj
  */
 function calcBasketVol(swings) {
   const arr = [...swings].map(x => toNum(x)).sort((a, b) => b - a);
@@ -247,13 +327,6 @@ function calcBasketVol(swings) {
 
 /**
  * VolAdj：平滑版
- * 目標：
- * - 保守 basket: 小幅加分
- * - 中高波動 basket: 明顯提升
- * - 不可過度爆衝
- *
- * 注意：
- * 不再加 ResonanceAdj
  */
 function calcVolAdj(basketVol) {
   basketVol = toNum(basketVol);
@@ -325,7 +398,10 @@ function pricingView(diff) {
 export function getM8Blueprint() {
   return {
     version: "M8 VNext FINAL",
+    data_source: "data/m7/m7_fundamental_data.json",
     summary: [
+      "M8 改為主讀 m7_fundamental_data.json",
+      "若無 today_score，改用 quality/risk/trend/swing 自動推導",
       "BW = 0.5 × worst + 0.5 × avg",
       "BasketPremium = 0.15×BW + 0.0008×BW²",
       "TailAdj = 0.05 × (worst - avg)",
@@ -338,6 +414,8 @@ export function getM8Blueprint() {
       "HighRateBrake 用來抑制極端高利率失真"
     ],
     formulas: {
+      derived_today_score:
+        "today_score(推估) = quality_score + risk_penalty + trend_score + volatility_penalty",
       weaknesses: "weakness = 100 - today_score",
       BW: "BW = 0.5 × worst + 0.5 × avg",
       basket_premium: "BasketPremium = 0.15×BW + 0.0008×BW²",
@@ -387,7 +465,7 @@ export async function runM8Case({
   }
 
   const m7 = await loadM7();
-  const stocks = symbols.map(sym => findStock(m7, String(sym).toUpperCase()));
+  const stocks = symbols.map(sym => findStock(m7, safeUpper(sym)));
   const scores = stocks.map(getTodayScore);
 
   const weaknesses = calcWeaknesses(scores);
@@ -428,13 +506,15 @@ export async function runM8Case({
   return {
     case_name: caseName,
     symbols,
+
     KI: toNum(KI),
     strike: toNum(Strike),
     tenor: toNum(T),
     type,
 
     stock_sources: stocks.map(s => ({
-      symbol: s["股號"],
+      symbol: getSymbol(s),
+      name: getName(s),
       source: s._source || "m7",
       sector: getSector(s),
       subsector: getSubsector(s),
