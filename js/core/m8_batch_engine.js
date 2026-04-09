@@ -95,7 +95,17 @@ function calcKIAdj(KI) {
 }
 
 function calcTenorAdj(T) {
-  return 0.15 * (T - 3);
+  let x = 0;
+
+  if (T <= 3) {
+    x = 0.1 * (T - 1);
+  } else if (T <= 10) {
+    x = 0.2 + 0.06 * (T - 3) + 0.03 * Math.pow(T - 3, 2);
+  } else {
+    x = 1.88 + 0.06 * (T - 10);
+  }
+
+  return Math.min(2, x);
 }
 
 function calcStrikeAdj(strike) {
