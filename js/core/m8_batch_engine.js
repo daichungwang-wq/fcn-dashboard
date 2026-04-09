@@ -98,9 +98,9 @@ function calcTenorAdj(T) {
   let x = 0;
 
   if (T <= 3) {
-    x = 0.1 * (T - 1);
+    x = 0.2 * (T - 1);
   } else if (T <= 9) {
-    x = 0.2 + 0.06 * (T - 3) + 0.035 * Math.pow(T - 3, 2);
+    x = 0.4 + 0.1 * (T - 3) + 0.025 * Math.pow(T - 3, 2);
   } else {
     x = 1.85 + 0.05 * (T - 9);
   }
