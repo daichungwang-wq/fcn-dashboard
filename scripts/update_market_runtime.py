@@ -1,12 +1,13 @@
 # ==========================================
-# update_market_runtime.py V3.1 FINAL
+# update_market_runtime.py V4 FINAL
 # 功能：
 # 1. 從 Yahoo Finance 抓歷史價格
 # 2. 自動 fallback（避免 null / NaN）
 # 3. 計算 1d / 1w / 1m / 3m / 6m / 12m 報酬
-# 4. 輸出合法 JSON（不會出現 NaN / Infinity）
-# 5. 輸出 data/market_runtime.json
-# 6. 自動輸出 data/m7/m7_fundamental_data.json
+# 4. 新增 swing_days（M8 用）
+# 5. 輸出合法 JSON（不會出現 NaN / Infinity）
+# 6. 輸出 data/market_runtime.json
+# 7. 自動輸出 data/m7/m7_fundamental_data.json
 # ==========================================
 
 import json
@@ -75,6 +76,27 @@ M7_STATIC_PROFILE = {
     "SMH":  {"name": "VanEck Semiconductor ETF", "eps_now": 0, "eps_next": 0, "quality_level": "高", "risk_level": "中"},
     "QQQ":  {"name": "Invesco QQQ", "eps_now": 0, "eps_next": 0, "quality_level": "高", "risk_level": "中"},
     "LQD":  {"name": "iShares iBoxx Investment Grade Corporate Bond ETF", "eps_now": 0, "eps_next": 0, "quality_level": "高", "risk_level": "低"},
+
+    # 額外常用測試股，可先補在這裡
+    "INTC": {"name": "Intel", "eps_now": 1.8, "eps_next": 2.1, "quality_level": "中", "risk_level": "中"},
+    "BAC":  {"name": "Bank of America", "eps_now": 3.1, "eps_next": 3.3, "quality_level": "中", "risk_level": "中"},
+    "C":    {"name": "Citigroup", "eps_now": 5.7, "eps_next": 6.0, "quality_level": "中", "risk_level": "中"},
+    "BA":   {"name": "Boeing", "eps_now": 0.5, "eps_next": 1.2, "quality_level": "低", "risk_level": "高"},
+    "DIS":  {"name": "Disney", "eps_now": 4.4, "eps_next": 4.9, "quality_level": "中", "risk_level": "中"},
+    "NCLH": {"name": "Norwegian Cruise", "eps_now": 1.0, "eps_next": 1.3, "quality_level": "低", "risk_level": "高"},
+    "UAL":  {"name": "United Airlines", "eps_now": 3.2, "eps_next": 3.6, "quality_level": "中", "risk_level": "高"},
+    "WMT":  {"name": "Walmart", "eps_now": 2.7, "eps_next": 2.9, "quality_level": "高", "risk_level": "低"},
+    "F":    {"name": "Ford", "eps_now": 1.8, "eps_next": 1.9, "quality_level": "低", "risk_level": "中"},
+    "AA":   {"name": "Alcoa", "eps_now": 2.2, "eps_next": 2.5, "quality_level": "低", "risk_level": "高"},
+    "JNJ":  {"name": "Johnson & Johnson", "eps_now": 10.2, "eps_next": 10.6, "quality_level": "高", "risk_level": "低"},
+    "PG":   {"name": "Procter & Gamble", "eps_now": 6.3, "eps_next": 6.6, "quality_level": "高", "risk_level": "低"},
+    "KO":   {"name": "Coca-Cola", "eps_now": 2.6, "eps_next": 2.8, "quality_level": "高", "risk_level": "低"},
+    "PEP":  {"name": "PepsiCo", "eps_now": 7.9, "eps_next": 8.2, "quality_level": "高", "risk_level": "低"},
+    "XOM":  {"name": "Exxon Mobil", "eps_now": 8.4, "eps_next": 8.7, "quality_level": "中", "risk_level": "中"},
+    "JPM":  {"name": "JPMorgan", "eps_now": 16.1, "eps_next": 16.8, "quality_level": "高", "risk_level": "低"},
+    "GS":   {"name": "Goldman Sachs", "eps_now": 34.0, "eps_next": 36.0, "quality_level": "中", "risk_level": "中"},
+    "CAT":  {"name": "Caterpillar", "eps_now": 21.5, "eps_next": 22.4, "quality_level": "高", "risk_level": "中"},
+    "DE":   {"name": "Deere", "eps_now": 23.4, "eps_next": 24.0, "quality_level": "高", "risk_level": "中"},
 }
 
 # ------------------------------------------
@@ -144,13 +166,66 @@ def calc_volume_ratio(volume_series):
 def pct_to_percent_number(v):
     return round(safe_number(v, 0) * 100, 2)
 
+
+# ------------------------------------------
+# M8 用：計算最近 6 日 swing_days
+# 定義：
+# abs(Close - Open) / Open * 100
+# ------------------------------------------
+def calc_swing_days(hist):
+    swings = []
+
+    if hist is None or len(hist) == 0:
+        return [0, 0, 0, 0, 0, 0]
+
+    limit = min(6, len(hist))
+
+    for i in range(limit):
+        try:
+            row = hist.iloc[-1 - i]
+            open_price = safe_number(row.get("Open"), None)
+            close_price = safe_number(row.get("Close"), None)
+
+            if open_price in (None, 0) or close_price is None:
+                swings.append(0)
+                continue
+
+            amp = abs(close_price - open_price) / open_price * 100
+            swings.append(round(amp, 2))
+        except Exception:
+            swings.append(0)
+
+    while len(swings) < 6:
+        swings.append(0)
+
+    return swings
+
+
 # ------------------------------------------
 # 讀取 pool
 # ------------------------------------------
 def load_pool():
     with open(POOL_PATH, "r", encoding="utf-8") as f:
         pool = json.load(f)
-    return [s["symbol"] for s in pool if s.get("symbol")]
+
+    symbols = [s["symbol"] for s in pool if s.get("symbol")]
+
+    # 額外補常用測試/比較股，避免只靠 pool30
+    extra_symbols = [
+        "INTC", "BAC", "C", "BA", "DIS", "NCLH", "UAL", "WMT", "F", "AA",
+        "JNJ", "PG", "KO", "PEP", "XOM", "JPM", "GS", "CAT", "DE", "NKE"
+    ]
+
+    final = []
+    seen = set()
+
+    for sym in symbols + extra_symbols:
+        if sym and sym not in seen:
+            seen.add(sym)
+            final.append(sym)
+
+    return final
+
 
 # ------------------------------------------
 # 抓市場資料
@@ -163,7 +238,7 @@ def fetch_market_runtime(symbols):
 
         try:
             ticker = yf.Ticker(symbol)
-            hist = ticker.history(period="1y")
+            hist = ticker.history(period="1y", auto_adjust=False)
 
             if hist is None or len(hist) < 10:
                 raise Exception("Not enough data")
@@ -177,6 +252,9 @@ def fetch_market_runtime(symbols):
             for k, days in WINDOWS.items():
                 ref = get_price_safe(close, -1 - days)
                 ref_prices[k] = safe_number(ref, price_now)
+
+            # M8 新增
+            swing_days = calc_swing_days(hist)
 
             result[symbol] = {
                 "price_now": safe_number(price_now, 0),
@@ -196,7 +274,11 @@ def fetch_market_runtime(symbols):
                 "ret_1m": safe_number(calc_return(price_now, ref_prices["1m"]), 0),
                 "ret_3m": safe_number(calc_return(price_now, ref_prices["3m"]), 0),
                 "ret_6m": safe_number(calc_return(price_now, ref_prices["6m"]), 0),
-                "ret_12m": safe_number(calc_return(price_now, ref_prices["12m"]), 0)
+                "ret_12m": safe_number(calc_return(price_now, ref_prices["12m"]), 0),
+
+                # M8 runtime
+                "swing_days": swing_days,
+                "amp_1d": swing_days[0] if swing_days else 0
             }
 
         except Exception as e:
@@ -219,7 +301,11 @@ def fetch_market_runtime(symbols):
                 "ret_1m": 0,
                 "ret_3m": 0,
                 "ret_6m": 0,
-                "ret_12m": 0
+                "ret_12m": 0,
+
+                # M8 runtime fallback
+                "swing_days": [0, 0, 0, 0, 0, 0],
+                "amp_1d": 0
             }
 
     cleaned = {}
@@ -228,11 +314,14 @@ def fetch_market_runtime(symbols):
         for k, v in node.items():
             if isinstance(v, (int, float)):
                 cleaned_node[k] = safe_number(v, 0)
+            elif isinstance(v, list):
+                cleaned_node[k] = [safe_number(x, 0) for x in v]
             else:
                 cleaned_node[k] = v
         cleaned[symbol] = cleaned_node
 
     return cleaned
+
 
 # ------------------------------------------
 # 輸出 market_runtime.json
@@ -245,6 +334,7 @@ def save_market_runtime(result):
         json.dump(result, f, indent=2, ensure_ascii=False)
 
     print("✅ market_runtime.json updated")
+
 
 # ------------------------------------------
 # 建立 M7 fundamental data
@@ -270,10 +360,15 @@ def build_m7_fundamental_data(market_runtime):
             "ret_3m": pct_to_percent_number(market.get("ret_3m")),
             "ret_6m": pct_to_percent_number(market.get("ret_6m")),
             "ret_12m": pct_to_percent_number(market.get("ret_12m")),
-            "volume_ratio": safe_number(market.get("volume_ratio"), 1.0)
+            "volume_ratio": safe_number(market.get("volume_ratio"), 1.0),
+
+            # M8 附加欄位，先帶著，未來可用
+            "swing_days": market.get("swing_days", [0, 0, 0, 0, 0, 0]),
+            "amp_1d": safe_number(market.get("amp_1d"), 0)
         })
 
     return output
+
 
 # ------------------------------------------
 # 輸出 m7_fundamental_data.json
@@ -289,6 +384,7 @@ def save_m7_fundamental_data(market_runtime):
 
     print(f"✅ m7_fundamental_data.json updated, total {len(data)} symbols")
 
+
 # ------------------------------------------
 # 主程式
 # ------------------------------------------
@@ -298,6 +394,7 @@ def main():
     save_market_runtime(market_runtime)
     save_m7_fundamental_data(market_runtime)
     print("✅ update_market_runtime.py finished")
+
 
 if __name__ == "__main__":
     main()
