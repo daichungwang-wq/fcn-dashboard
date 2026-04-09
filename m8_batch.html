@@ -14,7 +14,7 @@
     }
 
     .page {
-      max-width: 1400px;
+      max-width: 1600px;
       margin: 0 auto;
     }
 
@@ -25,7 +25,7 @@
 
     .grid {
       display: grid;
-      grid-template-columns: 360px 1fr;
+      grid-template-columns: 420px 1fr;
       gap: 18px;
     }
 
@@ -67,7 +67,7 @@
     }
 
     .form-group textarea {
-      min-height: 72px;
+      min-height: 90px;
       resize: vertical;
     }
 
@@ -100,6 +100,11 @@
     .btn-danger {
       background: #ffe8e8;
       color: #b42318;
+    }
+
+    .btn-success {
+      background: #ecfdf3;
+      color: #027a48;
     }
 
     .muted {
@@ -251,14 +256,8 @@
       margin-top: 12px;
     }
 
-    .explain-box h4 {
-      margin: 0 0 10px;
-      font-size: 15px;
-      color: #111827;
-    }
-
     .explain-box .row {
-      margin-bottom: 10px;
+      margin-bottom: 12px;
     }
 
     .explain-box .label {
@@ -267,13 +266,45 @@
       margin-bottom: 4px;
     }
 
-    @media (max-width: 980px) {
+    .small-note {
+      font-size: 12px;
+      color: #667085;
+      margin-top: 6px;
+    }
+
+    .split-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .clickable-row {
+      cursor: pointer;
+    }
+
+    .clickable-row:hover {
+      background: #f8fafc;
+    }
+
+    .sticky-box {
+      max-height: 360px;
+      overflow: auto;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      background: #fff;
+    }
+
+    @media (max-width: 1080px) {
       .grid {
         grid-template-columns: 1fr;
       }
 
       .summary-grid {
         grid-template-columns: repeat(2, 1fr);
+      }
+
+      .split-2 {
+        grid-template-columns: 1fr;
       }
     }
 
@@ -295,60 +326,109 @@
 </head>
 <body>
   <div class="page">
-    <h1>FCN M8 定價模型（乾淨版）</h1>
+    <h1>FCN M8 定價模型（詢價單管理版）</h1>
 
     <div class="grid">
       <section class="card">
-        <h2>案例輸入</h2>
+        <h2>詢價單輸入</h2>
 
-        <div class="form-group">
-          <label for="caseName">案例名稱</label>
-          <input id="caseName" type="text" value="Case 1" />
+        <div class="split-2">
+          <div class="form-group">
+            <label for="inquiryDate">詢價日期</label>
+            <input id="inquiryDate" type="date" />
+          </div>
+
+          <div class="form-group">
+            <label for="inquiryNo">詢價單號</label>
+            <input id="inquiryNo" type="text" readonly />
+          </div>
         </div>
 
         <div class="form-group">
-          <label for="symbols">股票代號（逗號分隔，2~5 檔）</label>
-          <textarea id="symbols">TSM,AAPL,MSFT,LQD</textarea>
-        </div>
-
-        <div class="form-group">
-          <label for="ki">KI</label>
-          <input id="ki" type="number" value="55" />
-        </div>
-
-        <div class="form-group">
-          <label for="strike">Strike</label>
-          <input id="strike" type="number" value="65" />
-        </div>
-
-        <div class="form-group">
-          <label for="tenor">Tenor（月）</label>
-          <input id="tenor" type="number" value="6" />
-        </div>
-
-        <div class="form-group">
-          <label for="type">Type</label>
-          <select id="type">
-            <option value="EKI">EKI</option>
-            <option value="DACN">DACN</option>
-            <option value="AKI">AKI</option>
+          <label for="inputMode">輸入模式</label>
+          <select id="inputMode">
+            <option value="single">單筆輸入</option>
+            <option value="batch">整批輸入</option>
           </select>
         </div>
 
-        <div class="form-group">
-          <label for="marketYield">Market Yield (%)</label>
-          <input id="marketYield" type="number" step="0.01" value="14" />
+        <div id="singleInputPanel">
+          <div class="form-group">
+            <label for="caseName">案例名稱</label>
+            <input id="caseName" type="text" value="Case 1" />
+          </div>
+
+          <div class="form-group">
+            <label for="symbols">股票代號（逗號分隔，2~5 檔）</label>
+            <textarea id="symbols">TSM,AAPL,MSFT,LQD</textarea>
+          </div>
+
+          <div class="split-2">
+            <div class="form-group">
+              <label for="ki">KI</label>
+              <input id="ki" type="number" value="55" />
+            </div>
+
+            <div class="form-group">
+              <label for="strike">Strike</label>
+              <input id="strike" type="number" value="65" />
+            </div>
+          </div>
+
+          <div class="split-2">
+            <div class="form-group">
+              <label for="tenor">Tenor（月）</label>
+              <input id="tenor" type="number" value="6" />
+            </div>
+
+            <div class="form-group">
+              <label for="type">Type</label>
+              <select id="type">
+                <option value="EKI">EKI</option>
+                <option value="DACN">DACN</option>
+                <option value="AKI">AKI</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="marketYield">Market Yield (%)</label>
+            <input id="marketYield" type="number" step="0.01" value="14" />
+          </div>
+
+          <div class="btn-row">
+            <button class="btn-primary" id="runBtn">執行 M8 並留存</button>
+            <button class="btn-secondary" id="demoBtn">載入示範案例</button>
+            <button class="btn-danger" id="clearBtn">清空結果</button>
+          </div>
         </div>
 
-        <div class="btn-row">
-          <button class="btn-primary" id="runBtn">執行 M8</button>
-          <button class="btn-secondary" id="demoBtn">載入示範案例</button>
-          <button class="btn-danger" id="clearBtn">清空結果</button>
+        <div id="batchInputPanel" style="display:none;">
+          <div class="form-group">
+            <label for="batchInput">整批貼上</label>
+            <textarea id="batchInput" placeholder="Case1,TSM|AMD|NVDA|AVGO,55,68,12,EKI,19.16
+Case2,ARM|GOOG|INTC|TSM,60,70,6,EKI,23.62"></textarea>
+            <div class="small-note">格式：CaseName,股票1|股票2|股票3,KI,Strike,Tenor,Type,MarketYield</div>
+          </div>
+
+          <div class="btn-row">
+            <button class="btn-success" id="importBatchBtn">匯入整批詢價單</button>
+          </div>
         </div>
 
         <p class="muted" style="margin-top:12px;">
           說明：Vol 模組已正式納入，不再另外加 ResonanceAdj。
         </p>
+
+        <div class="section-title">歷史詢價單</div>
+        <div class="sticky-box">
+          <div id="historyList" class="muted" style="padding:12px;">尚無資料</div>
+        </div>
+
+        <div class="section-title">同 Basket 歷史比較</div>
+        <div class="sticky-box">
+          <div id="basketCompare" class="muted" style="padding:12px;">尚無資料</div>
+        </div>
       </section>
 
       <section class="card">
@@ -358,7 +438,7 @@
         </div>
 
         <div id="resultArea">
-          <div class="empty">請先輸入案例後，按「執行 M8」</div>
+          <div class="empty">請先輸入案例後，按「執行 M8 並留存」</div>
         </div>
       </section>
     </div>
@@ -400,6 +480,81 @@
         .split(",")
         .map(s => s.trim().toUpperCase())
         .filter(Boolean);
+    }
+
+    function todayStr() {
+      const d = new Date();
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return `${y}-${m}-${day}`;
+    }
+
+    function generateInquiryNo(dateStr) {
+      const key = `fcn_inquiry_seq_${dateStr}`;
+      let seq = Number(localStorage.getItem(key) || "0") + 1;
+      localStorage.setItem(key, String(seq));
+
+      const pureDate = dateStr.replaceAll("-", "");
+      const seq3 = String(seq).padStart(3, "0");
+      return `FCN${pureDate}${seq3}`;
+    }
+
+    function previewInquiryNo(dateStr) {
+      const key = `fcn_inquiry_seq_${dateStr}`;
+      const seq = Number(localStorage.getItem(key) || "0") + 1;
+      const pureDate = dateStr.replaceAll("-", "");
+      return `FCN${pureDate}${String(seq).padStart(3, "0")}`;
+    }
+
+    function refreshInquiryNo() {
+      const dateStr = $("inquiryDate").value || todayStr();
+      $("inquiryNo").value = previewInquiryNo(dateStr);
+    }
+
+    function normalizeBasket(symbols) {
+      return [...(symbols || [])].map(s => String(s).toUpperCase()).sort().join("|");
+    }
+
+    function getInquiryStore() {
+      return JSON.parse(localStorage.getItem("fcn_inquiries") || "[]");
+    }
+
+    function saveInquiryStore(rows) {
+      localStorage.setItem("fcn_inquiries", JSON.stringify(rows));
+    }
+
+    function parseBatchText(text, inquiryDate) {
+      const lines = String(text || "")
+        .split("\n")
+        .map(x => x.trim())
+        .filter(Boolean);
+
+      const output = [];
+
+      for (const line of lines) {
+        const parts = line.split(",").map(x => x.trim());
+        if (parts.length < 7) continue;
+
+        const [caseName, symbolText, ki, strike, tenor, type, marketYield] = parts;
+
+        output.push({
+          inquiry_date: inquiryDate,
+          inquiry_no: generateInquiryNo(inquiryDate),
+          case_name: caseName,
+          symbols: symbolText.split("|").map(x => x.trim().toUpperCase()).filter(Boolean),
+          KI: Number(ki),
+          Strike: Number(strike),
+          T: Number(tenor),
+          type,
+          marketYield: Number(marketYield),
+          basket_key: normalizeBasket(symbolText.split("|").map(x => x.trim().toUpperCase()).filter(Boolean)),
+          created_at: new Date().toISOString(),
+          status: "imported_only"
+        });
+      }
+
+      return output;
     }
 
     function renderBlueprint() {
@@ -707,6 +862,173 @@
       `;
     }
 
+    function renderHistory() {
+      const store = getInquiryStore().slice().sort((a, b) => (b.inquiry_no || "").localeCompare(a.inquiry_no || ""));
+      const box = $("historyList");
+
+      if (!store.length) {
+        box.innerHTML = "尚無資料";
+        return;
+      }
+
+      box.innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>詢價單號</th>
+              <th>日期</th>
+              <th>Case</th>
+              <th>Symbols</th>
+              <th>Yield</th>
+              <th>Fair</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${store.map((r, idx) => `
+              <tr class="clickable-row" data-load-index="${idx}">
+                <td>${r.inquiry_no || ""}</td>
+                <td>${r.inquiry_date || ""}</td>
+                <td>${r.case_name || ""}</td>
+                <td>${(r.symbols || []).join("|")}</td>
+                <td>${r.marketYield != null ? fmt(r.marketYield) : "-"}</td>
+                <td>${r.result?.fair_yield != null ? fmt(r.result.fair_yield) : "-"}</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      `;
+
+      box.querySelectorAll("[data-load-index]").forEach((tr) => {
+        tr.addEventListener("click", () => {
+          const idx = Number(tr.getAttribute("data-load-index"));
+          loadHistoryBySortedIndex(idx);
+        });
+      });
+    }
+
+    function renderBasketCompare(symbols = null) {
+      const store = getInquiryStore();
+      const box = $("basketCompare");
+
+      if (!store.length) {
+        box.innerHTML = "尚無資料";
+        return;
+      }
+
+      let basketKey = null;
+
+      if (symbols && symbols.length) {
+        basketKey = normalizeBasket(symbols);
+      } else {
+        const currentSymbols = parseSymbols($("symbols").value);
+        if (currentSymbols.length) basketKey = normalizeBasket(currentSymbols);
+      }
+
+      if (!basketKey) {
+        box.innerHTML = "尚無資料";
+        return;
+      }
+
+      const rows = store
+        .filter(x => x.basket_key === basketKey)
+        .sort((a, b) => String(a.inquiry_date).localeCompare(String(b.inquiry_date)));
+
+      if (!rows.length) {
+        box.innerHTML = "尚無資料";
+        return;
+      }
+
+      box.innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>日期</th>
+              <th>單號</th>
+              <th>Market</th>
+              <th>Fair</th>
+              <th>BasketVol</th>
+              <th>VolAdj</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows.map(r => `
+              <tr>
+                <td>${r.inquiry_date || ""}</td>
+                <td>${r.inquiry_no || ""}</td>
+                <td>${r.marketYield != null ? fmt(r.marketYield) : "-"}</td>
+                <td>${r.result?.fair_yield != null ? fmt(r.result.fair_yield) : "-"}</td>
+                <td>${r.result?.basket_vol != null ? fmt(r.result.basket_vol) : "-"}</td>
+                <td>${r.result?.vol_adj != null ? fmt(r.result.vol_adj) : "-"}</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      `;
+    }
+
+    function fillSingleFormFromRecord(r) {
+      $("caseName").value = r.case_name || "Case 1";
+      $("symbols").value = (r.symbols || []).join(",");
+      $("ki").value = r.KI ?? 0;
+      $("strike").value = r.Strike ?? 0;
+      $("tenor").value = r.T ?? 0;
+      $("type").value = r.type || "EKI";
+      $("marketYield").value = r.marketYield ?? 0;
+      $("inputMode").value = "single";
+      setupInputMode();
+    }
+
+    function loadHistoryBySortedIndex(sortedIndex) {
+      const sorted = getInquiryStore().slice().sort((a, b) => (b.inquiry_no || "").localeCompare(a.inquiry_no || ""));
+      const r = sorted[sortedIndex];
+      if (!r) return;
+
+      fillSingleFormFromRecord(r);
+      renderBasketCompare(r.symbols || []);
+
+      if (r.result) {
+        $("pricingBadge").className = badgeClass(r.result.pricing_view || "合理");
+        $("pricingBadge").textContent = r.result.pricing_view || "已載入";
+      }
+    }
+
+    async function saveCurrentRun(result, payload) {
+      const inquiryDate = $("inquiryDate").value || todayStr();
+      const inquiryNo = generateInquiryNo(inquiryDate);
+
+      const row = {
+        inquiry_date: inquiryDate,
+        inquiry_no: inquiryNo,
+        case_name: payload.caseName,
+        symbols: payload.symbols,
+        KI: payload.KI,
+        Strike: payload.Strike,
+        T: payload.T,
+        type: payload.type,
+        marketYield: payload.marketYield,
+        basket_key: normalizeBasket(payload.symbols),
+        created_at: new Date().toISOString(),
+        result: {
+          fair_yield: result.fair_yield,
+          basket_vol: result.basket_vol,
+          vol_adj: result.vol_adj,
+          pricing_view: result.pricing_view,
+          scores: result.scores,
+          short_swings: result.short_swings,
+          pricing_delta: result.pricing_delta
+        }
+      };
+
+      const store = getInquiryStore();
+      store.push(row);
+      saveInquiryStore(store);
+
+      $("inquiryNo").value = inquiryNo;
+      refreshInquiryNo();
+      renderHistory();
+      renderBasketCompare(payload.symbols);
+    }
+
     async function runCase() {
       try {
         const payload = {
@@ -721,6 +1043,8 @@
 
         const result = await runM8Case(payload);
         renderResult(result);
+        await saveCurrentRun(result, payload);
+
       } catch (err) {
         $("pricingBadge").className = "pill bad";
         $("pricingBadge").textContent = "執行失敗";
@@ -728,30 +1052,77 @@
       }
     }
 
+    function importBatchInquiry() {
+      const inquiryDate = $("inquiryDate").value || todayStr();
+      const rows = parseBatchText($("batchInput").value, inquiryDate);
+
+      if (!rows.length) {
+        alert("沒有可匯入的資料");
+        return;
+      }
+
+      const store = getInquiryStore();
+      store.push(...rows);
+      saveInquiryStore(store);
+
+      renderHistory();
+      refreshInquiryNo();
+      alert(`已匯入 ${rows.length} 筆詢價單`);
+    }
+
+    function setupInputMode() {
+      const mode = $("inputMode").value;
+      $("singleInputPanel").style.display = mode === "single" ? "block" : "none";
+      $("batchInputPanel").style.display = mode === "batch" ? "block" : "none";
+    }
+
     function loadDemo() {
-      $("caseName").value = "fcn20260409001";
+      $("caseName").value = "Case Demo";
       $("symbols").value = "ARM,GOOG,INTC,TSM";
       $("ki").value = 60;
       $("strike").value = 70;
       $("tenor").value = 6;
       $("type").value = "EKI";
       $("marketYield").value = 23.35;
+      $("inputMode").value = "single";
+      setupInputMode();
+      renderBasketCompare(parseSymbols($("symbols").value));
     }
 
     function clearResult() {
       $("pricingBadge").className = "pill ok";
       $("pricingBadge").textContent = "尚未執行";
-      $("resultArea").innerHTML = `<div class="empty">請先輸入案例後，按「執行 M8」</div>`;
+      $("resultArea").innerHTML = `<div class="empty">請先輸入案例後，按「執行 M8 並留存」</div>`;
     }
 
     document.addEventListener("DOMContentLoaded", () => {
       console.log("m8_batch html loaded");
+
+      $("inquiryDate").value = todayStr();
+      refreshInquiryNo();
+
       renderBlueprint();
       setupBlueprintToggle();
+      renderHistory();
+      renderBasketCompare();
+      setupInputMode();
+
+      $("inquiryDate").addEventListener("change", refreshInquiryNo);
+      $("inputMode").addEventListener("change", setupInputMode);
 
       $("runBtn").addEventListener("click", runCase);
       $("demoBtn").addEventListener("click", loadDemo);
       $("clearBtn").addEventListener("click", clearResult);
+      $("importBatchBtn").addEventListener("click", importBatchInquiry);
+
+      ["symbols", "ki", "strike", "tenor", "type", "marketYield"].forEach(id => {
+        const el = $(id);
+        if (el) {
+          el.addEventListener("change", () => {
+            renderBasketCompare(parseSymbols($("symbols").value));
+          });
+        }
+      });
     });
   </script>
 </body>
