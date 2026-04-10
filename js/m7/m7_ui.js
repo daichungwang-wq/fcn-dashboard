@@ -1,7 +1,7 @@
 // ==========================================
-// M7 UI FINAL PRO
-// M2風格｜Dashboard四塊｜三大卡｜Blueprint｜可解釋分數
-// 對應 m7_runtime_engine.js FINAL
+// M7 UI FINAL PRO + FIELD EXPLAIN
+// 對應新版 m7_runtime_engine.js
+// 功能：逐欄解釋版
 // ==========================================
 
 async function loadM7() {
@@ -40,7 +40,7 @@ function renderTop(data) {
 }
 
 // ------------------------------------------
-// DASHBOARD（四塊）
+// DASHBOARD
 // ------------------------------------------
 function renderDashboard(data) {
   const wrap = document.getElementById("m7-dashboard");
@@ -49,19 +49,17 @@ function renderDashboard(data) {
   const aggressive = data.aggressive_recommend || [];
   const watch = [...(data.watch_list || [])];
   const remove = data.remove_list || [];
-  const overallWatchCount = watch.length;
 
   const techSummary = [
-    `回檔：${num(data.pullback_count)}`,
-    `偏熱：${num(data.overheat_count)}`,
-    `做頭：${num(data.top_count)}`,
-    `年線下行：${num(data.downtrend_count)}`
+    `甜點：${num(data.sweet_count)}`,
+    `短線偏熱：${num(data.hot_timing_count)}`,
+    `下行趨勢：${num(data.downtrend_count)}`
   ].join(" ｜ ");
 
   const overallSummary = [
     `總數：${num(data.total_count)}`,
     `積極推薦：${aggressive.length}`,
-    `觀察名單：${overallWatchCount}`,
+    `觀察名單：${watch.length}`,
     `建議剔除：${remove.length}`
   ].join(" ｜ ");
 
@@ -77,7 +75,7 @@ function renderDashboard(data) {
       ${dashCard(
         "技術面分析",
         techSummary,
-        data.market_comment || "以長期趨勢、中期結構、短期波動三層判讀今日風向。"
+        data.market_comment || "以趨勢 / 結構 / 時機三層判讀今日風向。"
       )}
 
       ${dashCard(
@@ -132,7 +130,7 @@ function buildComboSummary(aggressive) {
 
   return {
     value: parts.join(" ｜ "),
-    desc: "開發階段不限制檔數，先完整顯示 baseline 分類 / 檔數 / 名字。"
+    desc: "先完整顯示 baseline 分類 / 檔數 / 名字。"
   };
 }
 
@@ -148,29 +146,9 @@ function renderMainCards(data) {
   const removeBucket = data.remove_list || [];
 
   wrap.innerHTML = `
-    ${mainCard(
-      "積極推薦",
-      aggressive,
-      "含今日推薦，今日首選會排最前並標示原因。",
-      true,
-      3
-    )}
-
-    ${mainCard(
-      "觀察名單",
-      watchBucket,
-      "整合觀察名單與保守觀察邏輯，方便集中追蹤。",
-      false,
-      1
-    )}
-
-    ${mainCard(
-      "建議剔除",
-      removeBucket,
-      "目前結構或風險不適合做 FCN，但保留作為開發觀察。",
-      false,
-      1
-    )}
+    ${mainCard("積極推薦", aggressive, "含今日推薦，今日首選會排最前並標示原因。", true, 3)}
+    ${mainCard("觀察名單", watchBucket, "集中追蹤等待更佳位置。", false, 1)}
+    ${mainCard("建議剔除", removeBucket, "目前結構或風險不適合做 FCN。", false, 1)}
   `;
 }
 
@@ -333,13 +311,14 @@ function exposureBlock(x, warnLevel) {
 }
 
 // ------------------------------------------
-// 詳細分析
-// 欄位 / 值 / 分數 / 說明
+// 詳細分析：逐欄解釋版
 // ------------------------------------------
 function analysisBlock(x) {
   const score = x["分數拆解"] || {};
   const valData = x["估值資料"] || {};
   const trend = x["趨勢判讀"] || {};
+  const struct = x["結構資料"] || {};
+  const timing = x["時機資料"] || {};
   const exposure = x["持倉曝險"] || {};
 
   return `
@@ -351,46 +330,78 @@ function analysisBlock(x) {
           `估值：${showValue(score["估值分"])}`,
           `趨勢：${showValue(score["趨勢分"])}`,
           `結構：${showValue(score["結構分"])}`,
-          `時機：${showValue(score["時機調整"])}`,
+          `時機：${showValue(score["時機分"])}`,
           `資金：${showValue(score["資金分"])}`,
           `品質：${showValue(score["品質分"])}`,
           `類別：${showValue(score["類別調整"])}`
         )],
         ["分數", `總分：${showValue(score["總分"])}`],
-        ["說明", "總分用來做排序與分類，但不直接取代你的最終判斷。"]
+        ["說明", "這是 M7 的總拆解。估值看價格合理性，趨勢看方向，結構看甜度，時機看短線節奏，資金看量比，品質與類別做風險框架修正。"]
       ]
     )}
 
     ${analysisSection(
       "估值面",
       [
-        ["欄位", "本益比 / PEG / 成長動能"],
+        ["欄位", "Forward PE / Anchor PE / PE Ratio / PEG / EPS成長 / 品質倍率"],
         ["值", valueLine(
           `Forward PE：${showValue(valData["ForwardPE"])}`,
+          `Anchor PE：${showValue(valData["AnchorPE"])}`,
+          `PE Ratio：${showValue(valData["PERatio"])}`,
           `PEG：${showValue(valData["PEG"])}`,
-          `EPS成長率：${showPercentNum(valData["EPS成長率"])}`
+          `EPS成長率：${showPercentNum(valData["EPS成長率"])}`,
+          `QualityFactor：${showValue(valData["QualityFactor"])}`
         )],
-        ["分數", showValue(score["估值分"])],
+        ["分數", valueLine(
+          `PEScore：${showValue(valData["PEScore"])}`,
+          `GrowthScore：${showValue(valData["GrowthScore"])}`,
+          `ValuationRaw：${showValue(valData["ValuationRaw"])}`,
+          `估值分：${showValue(score["估值分"])}`
+        )],
         ["說明", safe(x["估值說明"])]
       ]
     )}
 
     ${analysisSection(
-      "技術面",
+      "趨勢面",
       [
-        ["欄位", "長期趨勢 / 中期結構 / 短期波動"],
+        ["欄位", "1M / 3M / 6M / 12M 加權後的中期方向"],
         ["值", valueLine(
-          `年線：${showValue(trend["年線"])}（12M ${showPercentNum(x["12月漲跌幅"])})`,
-          `6月線：${showValue(trend["6月線"])}（${showPercentNum(x["6月漲跌幅"])})`,
+          `月線：${showValue(trend["月線"])}（${showPercentNum(x["1月漲跌幅"])})`,
           `3月線：${showValue(trend["3月線"])}（${showPercentNum(x["3月漲跌幅"])})`,
-          `1W短期波動：${showPercentNum(x["1週漲跌幅"])}`
+          `6月線：${showValue(trend["6月線"])}（${showPercentNum(x["6月漲跌幅"])})`,
+          `年線：${showValue(trend["年線"])}（${showPercentNum(x["12月漲跌幅"])})`
         )],
-        ["分數", valueLine(
-          `趨勢分：${showValue(score["趨勢分"])}`,
-          `結構分：${showValue(score["結構分"])}`,
-          `時機調整：${showValue(score["時機調整"])}`
+        ["分數", `趨勢分：${showValue(score["趨勢分"])}`],
+        ["說明", `趨勢狀態：${safe(trend["趨勢狀態"])}。趨勢只看方向，不看甜不甜。`]
+      ]
+    )}
+
+    ${analysisSection(
+      "結構面",
+      [
+        ["欄位", "ShortSwing / 結構狀態"],
+        ["值", valueLine(
+          `ShortSwing：${showValue(struct["ShortSwing"])}`,
+          `結構狀態：${safe(trend["結構狀態"])}`
         )],
-        ["說明", safe(x["結構說明"])]
+        ["分數", `結構分：${showValue(score["結構分"])}`],
+        ["說明", "Structure 用 M8 的 ShortSwing 量化價格甜度。0~5% 曲線加速到 8 分，5~10% 緩升到 10 分，10% 以上封頂。"]
+      ]
+    )}
+
+    ${analysisSection(
+      "時機面",
+      [
+        ["欄位", "1D / 1W / 1M Snapshot"],
+        ["值", valueLine(
+          `1日：${showPercentNum(x["1日漲跌幅"])}`,
+          `1週：${showPercentNum(x["1週漲跌幅"])}`,
+          `1月：${showPercentNum(x["1月漲跌幅"])}`,
+          `Snapshot：${showValue(timing["Snapshot"])}`
+        )],
+        ["分數", `時機分：${showValue(score["時機分"])}`],
+        ["說明", `時機狀態：${safe(trend["時機狀態"])}。Timing 用 0.4×1D + 0.5×1W + 0.1×1M 做 snapshot，再映射成 0~10 分。`]
       ]
     )}
 
@@ -405,9 +416,9 @@ function analysisBlock(x) {
     )}
 
     ${analysisSection(
-      "標的品質",
+      "標的品質 / 類別",
       [
-        ["欄位", "股票投資屬性 / 風險屬性"],
+        ["欄位", "標的品質 / 類別框架"],
         ["值", valueLine(
           `分類：${safe(x["分類"])}`,
           `風險等級：${safe(x["風險等級"])}`
@@ -483,31 +494,10 @@ function qualityComment(x) {
   const risk = safe(x["風險等級"]);
 
   if (category === "core") return `屬核心可接標的，風險屬 ${risk}，適合做為 FCN 基本持股候選。`;
-  if (category === "growth") return `屬成長型標的，風險屬 ${risk}，需更重視結構與價格位置。`;
   if (category === "defensive") return `屬防禦型標的，風險相對可控，適合保守配置。`;
   if (category === "income") return `屬收益型標的，需同時觀察事件風險與結構。`;
+  if (category === "cyclical_high_beta") return `屬高週期事件型標的，雖可能便宜，但價格可信度較低，不宜當核心。`;
   return `屬高風險投機類型，僅適合開發期觀察，不宜當作核心 FCN 標的。`;
-}
-
-// ------------------------------------------
-// Blueprint
-// ------------------------------------------
-function toggleBlueprint() {
-  const el = document.getElementById("blueprint-body");
-  if (el) el.classList.toggle("hidden");
-}
-
-function setBPMode(mode) {
-  const simple = document.getElementById("bp-simple");
-  const pro = document.getElementById("bp-pro");
-
-  if (!simple || !pro) return;
-
-  simple.classList.add("hidden");
-  pro.classList.add("hidden");
-
-  if (mode === "simple") simple.classList.remove("hidden");
-  else pro.classList.remove("hidden");
 }
 
 // ------------------------------------------
@@ -523,20 +513,21 @@ function showScoreDetail(encoded) {
 估值：${score["估值分"] ?? "--"}
 趨勢：${score["趨勢分"] ?? "--"}
 結構：${score["結構分"] ?? "--"}
-時機：${score["時機調整"] ?? "--"}
+時機：${score["時機分"] ?? "--"}
 資金：${score["資金分"] ?? "--"}
 品質：${score["品質分"] ?? "--"}
 類別：${score["類別調整"] ?? "--"}
 
 說明：
-估值 = 價格與成長
-趨勢 = 年線方向
-結構 = 6M / 3M 中期型態
-時機 = 1W 短期波動
+估值 = peScore + growthScore，再乘 qualityFactor
+趨勢 = 1M / 3M / 6M / 12M 的方向判讀
+結構 = M8 ShortSwing 對應甜度
+時機 = Snapshot（0.4×1D + 0.5×1W + 0.1×1M）
 資金 = 量比
-品質 = 標的品質
+品質 = 品質基礎分
+類別 = 標的類別調整
 `;
-      alert(text);
+    alert(text);
   } catch (e) {
     alert("分數資料讀取失敗");
   }
