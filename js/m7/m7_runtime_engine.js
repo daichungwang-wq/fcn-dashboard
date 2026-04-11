@@ -1,5 +1,6 @@
 // ==========================================
 // M7 Runtime Engine FINAL NORMALIZED
+// 分類規則升級版（不動 UI / u8）
 // 讀取：
 //   data/m7/m7_fundamental_data.json
 //   data/m7/m2_stock_exposure.json
@@ -119,7 +120,12 @@ function inferCategory(row) {
   if (sector === "FINANCIAL") return "income";
   if (sector === "ETF") return "income";
   if (sector === "DEFENSIVE") return "defensive";
-  if (sector === "TRAVEL" || subsector === "AIRLINE" || subsector === "CRUISE" || subsector === "CASINO") {
+  if (
+    sector === "TRAVEL" ||
+    subsector === "AIRLINE" ||
+    subsector === "CRUISE" ||
+    subsector === "CASINO"
+  ) {
     return "cyclical_high_beta";
   }
 
@@ -218,8 +224,8 @@ function calcQualityMomentum(r1m, r3m, r6m, r12m) {
 
 function calcQualityFactor(q) {
   if (q >= 30) return 1.20;
-  if (q >= 20) return 1.00 + (q - 20) * 0.02; // 20 -> 1.00, 30 -> 1.20
-  if (q >= 10) return 0.80 + (q - 10) * 0.02; // 10 -> 0.80, 20 -> 1.00
+  if (q >= 20) return 1.00 + (q - 20) * 0.02;
+  if (q >= 10) return 0.80 + (q - 10) * 0.02;
   return 0.80;
 }
 
@@ -257,7 +263,6 @@ function peScoreFromRatio(peRatio) {
   return 6;
 }
 
-
 function growthScoreBase(growth) {
   if (growth === null || growth === undefined) return 3;
 
@@ -276,7 +281,7 @@ function growthScoreBase(growth) {
 
   if (growth <= 27) {
     const x = growth - 20;
-    return 14 + 5 * Math.pow(x*1.1 / 10, 1.6);
+    return 14 + 5 * Math.pow((x * 1.1) / 10, 1.6);
   }
 
   return Math.min(25, 19.4 + 0.8 * Math.sqrt(growth - 27));
@@ -292,8 +297,6 @@ function growthScoreFinal(growth) {
 
   return base + 0.5 * (oldScore - base);
 }
-
-
 
 function buildValuationData(row, category) {
   const model = inferValuationModel(row);
@@ -331,7 +334,7 @@ function buildValuationData(row, category) {
   const qualityMomentum = calcQualityMomentum(r1m, r3m, r6m, r12m);
   const qualityFactor = calcQualityFactor(qualityMomentum);
 
-  const valuationRaw = 4*( 0.7 * peScore + 0.3 * growthScoreAdj) * qualityFactor;
+  const valuationRaw = 4 * (0.7 * peScore + 0.3 * growthScoreAdj) * qualityFactor;
   const valuationNorm = clamp(valuationRaw, 0, 65);
 
   let level = "中性";
@@ -454,7 +457,7 @@ function calcSnapshot(r1d, r1w, r1m) {
 }
 
 function timingScoreFromSnapshot(snapshot) {
-  let score = snapshot * 2;
+  const score = snapshot * 2;
   return clamp(score, 3, 10);
 }
 
@@ -545,14 +548,6 @@ function buildExposureWarning(exposure, category) {
 
 // ------------------------------------------
 // 最終總分
-// Final =
-// 0.30 valuation +
-// 0.20 trend +
-// 0.20 structure +
-// 0.15 timing +
-// 0.15 money +
-// quality_bonus +
-// category_bonus
 // ------------------------------------------
 function buildFinalScore({
   valuationNorm,
@@ -565,8 +560,8 @@ function buildFinalScore({
 }) {
   const total =
     valuationNorm +
-    0.8*trendNorm +
-    0.8*structureNorm +
+    0.8 * trendNorm +
+    0.8 * structureNorm +
     timingNorm +
     moneyNorm +
     qualityBonus +
@@ -577,7 +572,73 @@ function buildFinalScore({
 
 // ------------------------------------------
 // 動作 / highlight / 說明
+// 分類規則升級版：數值門檻 + 風控
+// 不動 UI bucket 結構
 // ------------------------------------------
+function buildAction(row, metrics) {
+  const category = row.category || inferCategory(row);
+
+  const trendState = metrics.trendState;
+  const timingState = metrics.timingState;
+  const exposureWarning = metrics.exposureWarning || { level: "normal" };
+  const exposure = metrics.exposure || {};
+
+  const total = safeNum(metrics.total, 0);
+  const valuationScore = safeNum(metrics.valuationScore, 0);
+  const trendScore = safeNum(metrics.trendScore, 0);
+  const structureScore = safeNum(metrics.structureScore, 0);
+  const timingScore = safeNum(metrics.timingScore, 0);
+  const moneyScore = safeNum(metrics.moneyScore, 0);
+
+  const dangerCount = safeNum(exposure.danger, 0);
+  const exposureLevel = exposureWarning.level || "normal";
+
+  // Step 1：直接排除
+  if (category === "speculative") return "移除";
+  if (trendState === "down") return "移除";
+
+  // 高曝險且已有 danger，先風控
+  if (exposureLevel === "high" && dangerCount > 0) return "移除";
+
+  // 結構不甜又過熱，不適合 FCN
+  if (structureScore < 5 && timingState === "hot") return "移除";
+
+  // 分項過差，直接移除
+  if (valuationScore < 4.5) return "移除";
+  if (structureScore < 4.5) return "移除";
+
+  // 總分太低，直接移除
+  if (total < 6.2) return "移除";
+
+  // Step 2：積極推薦（主池）
+  const passAggressive =
+    total >= 8.5 &&
+    valuationScore >= 6 &&
+    trendScore >= 6 &&
+    structureScore >= 6.5 &&
+    timingScore >= 5.5 &&
+    moneyScore >= 6 &&
+    exposureLevel !== "high";
+
+  if (passAggressive) return "加入";
+
+  // Step 3：觀察名單（備選池）
+  const passWatch =
+    total >= 6.2 &&
+    trendState !== "down";
+
+  if (passWatch) return "觀察";
+
+  // Step 4：其餘移除
+  return "移除";
+}
+
+function buildUIBucket(action) {
+  if (action === "加入") return "積極推薦";
+  if (action === "觀察") return "觀察名單";
+  return "建議剔除";
+}
+
 function evaluateTodayHighlight(candidate) {
   const reasons = [];
   const trend = candidate["趨勢判讀"] || {};
@@ -607,20 +668,6 @@ function evaluateTodayHighlight(candidate) {
     is_today_highlight: highlight,
     today_highlight_reason: reasons.join(" / ")
   };
-}
-
-function buildAction(row, trendState, total) {
-  if (row.category === "speculative") return "移除";
-  if (trendState === "down") return "移除";
-  if (total >= 9) return "加入";
-  if (total >= 6.5) return "觀察";
-  return "移除";
-}
-
-function buildUIBucket(action) {
-  if (action === "加入") return "積極推薦";
-  if (action === "觀察") return "觀察名單";
-  return "建議剔除";
 }
 
 function buildWhyYes(row, valuation, trendState, structureState, timingScore, moneyScore, qualityBonus) {
@@ -761,10 +808,21 @@ function run() {
       categoryBonus
     });
 
-    const action = buildAction(row, trendState, total);
-
     const exposure = buildExposure(m2.stocks?.[row.symbol]);
     const exposureWarning = buildExposureWarning(exposure, category);
+
+    const action = buildAction(row, {
+      total,
+      valuationScore: valuation.norm_score,
+      trendScore: trendNorm,
+      structureScore: structureNorm,
+      timingScore: timingNorm,
+      moneyScore: moneyNorm,
+      trendState,
+      timingState,
+      exposureWarning,
+      exposure
+    });
 
     const candidate = {
       "股號": row.symbol,
