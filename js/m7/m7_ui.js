@@ -1,7 +1,11 @@
 // ==========================================
-// M7 UI FINAL PRO + FIELD EXPLAIN
+// M7 UI FINAL PRO + FIELD EXPLAIN + SCORE DASHBOARD
 // 對應新版 m7_runtime_engine.js
-// 功能：逐欄解釋版
+// 功能：
+// 1. 三大分類卡片
+// 2. 逐欄解釋版
+// 3. Score Dashboard
+// 4. Score Ranking
 // ==========================================
 
 async function loadM7() {
@@ -134,6 +138,174 @@ function buildComboSummary(aggressive) {
     value: parts.join(" ｜ "),
     desc: "先完整顯示 baseline 分類 / 檔數 / 名字。"
   };
+}
+
+// ------------------------------------------
+// SCORE DASHBOARD
+// ------------------------------------------
+function renderScoreDashboard(data) {
+  const wrap = document.getElementById("m7-score-dashboard");
+  if (!wrap) return;
+
+  const rows = Array.isArray(data.all) ? data.all : [];
+  if (!rows.length) {
+    wrap.innerHTML = "";
+    return;
+  }
+
+  const metricDefs = [
+    { key: "估值分", label: "估值" },
+    { key: "趨勢分", label: "Trend" },
+    { key: "結構分", label: "Structure" },
+    { key: "時機分", label: "Timing" },
+    { key: "資金分", label: "Money" },
+    { key: "品質分", label: "Quality Bonus" },
+    { key: "類別調整", label: "Category Bonus" }
+  ];
+
+  const cards = metricDefs.map(def => {
+    const stat = calcMetricStats(rows, def.key);
+
+    return `
+      <div class="score-stat-card">
+        <div class="score-stat-title">${def.label}</div>
+        <div class="score-stat-body">
+          <div>stock 數量：${stat.count}</div>
+          <div>平均值：${fmtNum(stat.mean)}</div>
+          <div>標準差：${fmtNum(stat.std)}</div>
+          <div>離散係數：${stat.cv === null ? "--" : fmtNum(stat.cv)}</div>
+          <div>最高分：${stat.maxSymbol || "--"} (${fmtNum(stat.maxValue)})</div>
+          <div>最低分：${stat.minSymbol || "--"} (${fmtNum(stat.minValue)})</div>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  wrap.innerHTML = `
+    <div class="main-card">
+      <div class="main-header">
+        <div>
+          <div class="main-title">Score Dashboard</div>
+          <div class="main-desc">各分項的樣本數、平均、標準差、離散係數與極值</div>
+        </div>
+      </div>
+      <div class="main-body">
+        <div class="score-stat-grid">
+          ${cards}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function calcMetricStats(rows, metricKey) {
+  const items = rows
+    .map(row => ({
+      symbol: row["股號"],
+      value: Number(row?.["分數拆解"]?.[metricKey])
+    }))
+    .filter(x => Number.isFinite(x.value));
+
+  const count = items.length;
+  if (!count) {
+    return {
+      count: 0,
+      mean: null,
+      std: null,
+      cv: null,
+      maxSymbol: null,
+      maxValue: null,
+      minSymbol: null,
+      minValue: null
+    };
+  }
+
+  const values = items.map(x => x.value);
+  const mean = values.reduce((sum, v) => sum + v, 0) / count;
+
+  const variance = values.reduce((sum, v) => {
+    return sum + Math.pow(v - mean, 2);
+  }, 0) / count;
+
+  const std = Math.sqrt(variance);
+  const cv = mean === 0 ? null : std / Math.abs(mean);
+
+  const sorted = [...items].sort((a, b) => b.value - a.value);
+  const maxItem = sorted[0];
+  const minItem = sorted[sorted.length - 1];
+
+  return {
+    count,
+    mean,
+    std,
+    cv,
+    maxSymbol: maxItem?.symbol || null,
+    maxValue: maxItem?.value ?? null,
+    minSymbol: minItem?.symbol || null,
+    minValue: minItem?.value ?? null
+  };
+}
+
+// ------------------------------------------
+// SCORE RANKING
+// ------------------------------------------
+function renderScoreRanking(data) {
+  const wrap = document.getElementById("m7-score-ranking");
+  if (!wrap) return;
+
+  const rows = Array.isArray(data.all) ? data.all : [];
+  if (!rows.length) {
+    wrap.innerHTML = "";
+    return;
+  }
+
+  const metricDefs = [
+    { key: "估值分", label: "估值" },
+    { key: "趨勢分", label: "Trend" },
+    { key: "結構分", label: "Structure" },
+    { key: "時機分", label: "Timing" },
+    { key: "資金分", label: "Money" },
+    { key: "品質分", label: "Quality Bonus" },
+    { key: "類別調整", label: "Category Bonus" }
+  ];
+
+  wrap.innerHTML = `
+    <div class="main-card">
+      <div class="main-header">
+        <div>
+          <div class="main-title">Score Ranking</div>
+          <div class="main-desc">依各分項由高到低排序</div>
+        </div>
+      </div>
+      <div class="main-body">
+        ${metricDefs.map(def => `
+          <div class="analysis-section">
+            <div class="analysis-title">${def.label}</div>
+            <div class="analysis-table">
+              <div class="analysis-row">
+                <div class="analysis-label">排序</div>
+                <div class="analysis-value ranking-line">${buildMetricRankingLine(rows, def.key)}</div>
+              </div>
+            </div>
+          </div>
+        `).join("")}
+      </div>
+    </div>
+  `;
+}
+
+function buildMetricRankingLine(rows, metricKey) {
+  const items = rows
+    .map(row => ({
+      symbol: row["股號"],
+      value: Number(row?.["分數拆解"]?.[metricKey])
+    }))
+    .filter(x => Number.isFinite(x.value))
+    .sort((a, b) => b.value - a.value);
+
+  if (!items.length) return "--";
+
+  return items.map(x => `${x.symbol}(${fmtNum(x.value)})`).join("，");
 }
 
 // ------------------------------------------
@@ -597,6 +769,11 @@ function formatNum(v, digits = 2) {
   return Number.isFinite(n) ? n.toFixed(digits) : "--";
 }
 
+function fmtNum(v, digits = 2) {
+  const n = Number(v);
+  return Number.isFinite(n) ? n.toFixed(digits) : "--";
+}
+
 function formatInt(v) {
   const n = Number(v);
   return Number.isFinite(n) ? n.toLocaleString() : "--";
@@ -612,53 +789,3 @@ function safe(v) {
 }
 
 document.addEventListener("DOMContentLoaded", loadM7);
-}
-
-function buildMetricRankingLine(rows, metricKey) {
-  const items = rows
-    .map(row => ({
-      symbol: row["股號"],
-      value: Number(row?.["分數拆解"]?.[metricKey])
-    }))
-    .filter(x => Number.isFinite(x.value))
-    .sort((a, b) => b.value - a.value);
-
-  if (!items.length) return "--";
-
-  return items.map(x => `${x.symbol}(${fmtNum(x.value)})`).join("，");
-}
-
-function fmtNum(v, digits = 2) {
-  const n = Number(v);
-  return Number.isFinite(n) ? n.toFixed(digits) : "--";
-}
-.score-stat-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 12px;
-}
-
-.score-stat-card {
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 14px;
-  background: #fafafa;
-}
-
-.score-stat-title {
-  font-size: 16px;
-  font-weight: 800;
-  margin-bottom: 10px;
-  color: #1d2939;
-}
-
-.score-stat-body {
-  line-height: 1.8;
-  color: #344054;
-  font-size: 14px;
-}
-
-.ranking-line {
-  line-height: 1.8;
-  word-break: break-word;
-}
