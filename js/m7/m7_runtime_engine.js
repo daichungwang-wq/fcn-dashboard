@@ -300,18 +300,7 @@ function growthScoreFinal(growth) {
   return base + 0.5 * (oldScore - base);
 }
 
-const peScore = peScoreFromRatio(peRatio);
-const growthScore = growthScoreFinal(growth);
-const growthScoreAdj = growthScore * 0.6;
-const pegScore = calcPEGScore(peg);
 
-const qualityMomentum = calcQualityMomentum(r1m, r3m, r6m, r12m);
-const qualityFactor = calcQualityFactor(qualityMomentum);
-
-const valuationRaw =
-  (0.5 * peScore + 0.3 * growthScoreAdj + 0.2 * pegScore) * qualityFactor;
-
-const valuationNorm = clamp(valuationRaw / 2.5, 0, 10);
 
 function buildValuationData(row, category) {
   const model = inferValuationModel(row);
