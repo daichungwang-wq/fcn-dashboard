@@ -257,6 +257,15 @@ function peScoreFromRatio(peRatio) {
   return 6;
 }
 
+function calcPEGScore(peg) {
+  if (peg === null || peg === undefined) return 0;
+  if (peg < 0.8) return 4;
+  if (peg <= 1.0) return 2;
+  if (peg <= 1.3) return 0;
+  if (peg <= 1.6) return -2;
+  return -4;
+}
+
 function growthScoreBase(growth) {
   if (growth === null || growth === undefined) return 3;
 
@@ -290,6 +299,8 @@ function growthScoreFinal(growth) {
 
   return base + 0.5 * (oldScore - base);
 }
+
+
 
 function buildValuationData(row, category) {
   const model = inferValuationModel(row);
@@ -327,7 +338,7 @@ function buildValuationData(row, category) {
   const qualityMomentum = calcQualityMomentum(r1m, r3m, r6m, r12m);
   const qualityFactor = calcQualityFactor(qualityMomentum);
 
-  const valuationRaw = 4*(0.7 * peScore + 0.3 * growthScoreAdj) * qualityFactor;
+  const valuationRaw = 4*( 0.6 * peScore + 0.3 * growthScoreAdj + 0.5 * pegScore) * qualityFactor;
   const valuationNorm = clamp(valuationRaw, 0, 60);
 
   let level = "中性";
@@ -424,8 +435,9 @@ function calcShortSwing(swingDays, amp1d) {
 }
 
 function structureScoreFromShortSwing(shortSwing) {
-  if (shortSwing <= 0) return 0;
-  if (shortSwing <= 5) return  1 + 4 * Math.pow(shortSwing / 5, 1.2);
+  if (shortSwing < -1) return 0;
+  if (shortSwing <= 0) return 3;
+  if (shortSwing <= 5) return 8 * Math.pow(shortSwing / 5, 1.2);
   if (shortSwing <= 10) return 8 + (shortSwing - 5) * 0.4;
   return 10;
 }
@@ -448,17 +460,9 @@ function calcSnapshot(r1d, r1w, r1m) {
   );
 }
 
-function calcTimingScore(snapshot) {
-  if (snapshot === null || snapshot === undefined) return 5;
-    // 🔥 關鍵：縮放到 -1 ~ 1
-  const s = snapshot / 10;
-  const s = Math.max(-1.5, Math.min(1.5, snapshot));
-  const direction = s >= 0 ? 1 : -1;
-  const magnitude = Math.pow(Math.abs(s), 0.7);
-
-  let score = 5 + direction * magnitude * 5;
-
-  return Math.max(0, Math.min(10, score));
+function timingScoreFromSnapshot(snapshot) {
+  let score = snapshot;
+  return clamp(score, 0, 10);
 }
 
 function inferTimingState(snapshot) {
@@ -473,12 +477,12 @@ function inferTimingState(snapshot) {
 // Money normalize 0~10
 // ------------------------------------------
 function calcMoneyScoreNormalized(volumeRatio) {
-  const v = safeNum(volumeRatio, null);
-  if (v === null) return 5;
+  const v = safeNum(volumeRatio, 1);
+  if (v === null) return 4;
   if (v >= 1.5) return 10;
-  if (v >= 1.2) return 9;
-  if (v >= 0.9) return 8;
-  if (v >= 0.5) return 7;
+  if (v >= 1.2) return 8;
+  if (v >= 0.9) return 6;
+  if (v >= 0.7) return 4;
   return 2;
 }
 
@@ -563,10 +567,10 @@ function buildFinalScore({
 }) {
   const total =
     valuationNorm +
-    1.2*trendNorm +
+    0.8*trendNorm +
     0.8*structureNorm +
     0.8*timingNorm +
-    0.9*moneyNorm +
+    moneyNorm +
     qualityBonus +
     categoryBonus;
 
