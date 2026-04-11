@@ -328,17 +328,21 @@ function calcVolAdj(basketVol) {
   basketVol = toNum(basketVol);
   let x;
 
-  if (basketVol <= 3.0) {
-    x = -0.6 + 0.35 * basketVol;
+  if (basketVol <= 2.0) {
+    x = -0.1 + 0.35 * basketVol;
+  } else if (basketVol <= 4.0) {
+    const d = basketVol - 2.0;
+    x = 0.6 + 0.7 * d + 0.3 * d * d;
   } else if (basketVol <= 6.0) {
-    const d = basketVol - 3.0;
-    x = 0.45 + 0.85 * d + 0.22 * d * d;
+    const d = basketVol - 4.0;
+    x = 3.2 + 0.85 * d + 0.3 * d * d;
   } else {
     const d = basketVol - 6.0;
-    x = 4.03 + 0.45 * d - 0.04 * d * d;
+    x = 6.4 + 0.45 * d - 0.04 * d * d;
   }
 
-  return Math.max(-0.5, Math.min(5.0, x));
+  // 如需限制 VolAdj 本身上限，可保留；若不要限制可直接 return x
+  return Math.max(-0.5, Math.min(10.0, x));
 }
 
 // ------------------------------------------
