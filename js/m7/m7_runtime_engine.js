@@ -450,9 +450,13 @@ function calcSnapshot(r1d, r1w, r1m) {
 
 function calcTimingScore(snapshot) {
   if (snapshot === null || snapshot === undefined) return 5;
+    // 🔥 關鍵：縮放到 -1 ~ 1
+  const s = snapshot / 10;
+  const s = Math.max(-1.5, Math.min(1.5, snapshot));
+  const direction = s >= 0 ? 1 : -1;
+  const magnitude = Math.pow(Math.abs(s), 0.7);
 
-  const scale = 5;   // 控制靈敏度（很重要）
-  let score = 5 + snapshot * scale;
+  let score = 5 + direction * magnitude * 5;
 
   return Math.max(0, Math.min(10, score));
 }
