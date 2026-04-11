@@ -612,3 +612,53 @@ function safe(v) {
 }
 
 document.addEventListener("DOMContentLoaded", loadM7);
+}
+
+function buildMetricRankingLine(rows, metricKey) {
+  const items = rows
+    .map(row => ({
+      symbol: row["股號"],
+      value: Number(row?.["分數拆解"]?.[metricKey])
+    }))
+    .filter(x => Number.isFinite(x.value))
+    .sort((a, b) => b.value - a.value);
+
+  if (!items.length) return "--";
+
+  return items.map(x => `${x.symbol}(${fmtNum(x.value)})`).join("，");
+}
+
+function fmtNum(v, digits = 2) {
+  const n = Number(v);
+  return Number.isFinite(n) ? n.toFixed(digits) : "--";
+}
+.score-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.score-stat-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 14px;
+  background: #fafafa;
+}
+
+.score-stat-title {
+  font-size: 16px;
+  font-weight: 800;
+  margin-bottom: 10px;
+  color: #1d2939;
+}
+
+.score-stat-body {
+  line-height: 1.8;
+  color: #344054;
+  font-size: 14px;
+}
+
+.ranking-line {
+  line-height: 1.8;
+  word-break: break-word;
+}
