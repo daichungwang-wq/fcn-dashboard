@@ -497,17 +497,22 @@ export async function runM8Case({
 
   const base = 6;
 
-  const preRate =
-    base +
-    basketPremium +
-    structure.structure_total +
-    tailAdj +
-    volAdj;
+ const preRate =
+  base +
+  basketPremium +
+  structure.structure_total +
+  tailAdj +
+  volAdj;
 
-  const highRateBrake = calcHighRateBrake(preRate);
+const highRateBrake = calcHighRateBrake(preRate);
 
-  const fairYield = preRate - highRateBrake;
-  const delta = toNum(marketYield) - fairYield;
+const rawFairYield = preRate - highRateBrake;
+
+// 封頂 10%
+const fairYield = Math.min(rawFairYield, 10);
+const yieldCapped = rawFairYield > 10;
+
+const delta = toNum(marketYield) - fairYield;
 
   let note = "";
   if (basketPremium < 7 && delta > 4) {
