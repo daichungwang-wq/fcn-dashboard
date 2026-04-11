@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-11T03:55:31.385Z",
+  "generated_at": "2026-04-11T04:08:32.113Z",
   "m2_generated_at": "2026-04-07T07:00:00Z",
   "total_count": 33,
   "sweet_count": 8,
@@ -363,12 +363,12 @@
       "量比": 0.62,
       "valuation_score": 60,
       "trend_score": 10,
-      "structure_score": 2.81,
+      "structure_score": 2.83,
       "timing_score": 5.94,
       "money_score": 7,
       "quality_score": 2,
       "category_adjust": 0.5,
-      "today_score": 87.8,
+      "today_score": 87.81,
       "趨勢判讀": {
         "年線": "↑",
         "6月線": "↑",
@@ -411,12 +411,12 @@
         "估值原始分": 69.79,
         "估值分": 60,
         "趨勢分": 10,
-        "結構分": 2.81,
+        "結構分": 2.83,
         "時機分": 5.94,
         "資金分": 7,
         "品質分": 2,
         "類別調整": 0.5,
-        "總分": 87.8
+        "總分": 87.81
       },
       "持倉曝險": {
         "FCN數量": 3,
@@ -469,12 +469,12 @@
       "量比": 0.97,
       "valuation_score": 60,
       "trend_score": 8,
-      "structure_score": 1.93,
+      "structure_score": 2.38,
       "timing_score": 0.1,
       "money_score": 8,
       "quality_score": 1,
       "category_adjust": 1,
-      "today_score": 80.42,
+      "today_score": 80.78,
       "趨勢判讀": {
         "年線": "↑",
         "6月線": "↑",
@@ -517,12 +517,12 @@
         "估值原始分": 94.67,
         "估值分": 60,
         "趨勢分": 8,
-        "結構分": 1.93,
+        "結構分": 2.38,
         "時機分": 0.1,
         "資金分": 8,
         "品質分": 1,
         "類別調整": 1,
-        "總分": 80.42
+        "總分": 80.78
       },
       "持倉曝險": {
         "FCN數量": 0,
@@ -575,12 +575,12 @@
       "量比": 0.64,
       "valuation_score": 60,
       "trend_score": 6,
-      "structure_score": 1.74,
+      "structure_score": 2.27,
       "timing_score": 1.52,
       "money_score": 7,
       "quality_score": 2,
       "category_adjust": 2,
-      "today_score": 80.1,
+      "today_score": 80.53,
       "趨勢判讀": {
         "年線": "↑",
         "6月線": "↑",
@@ -623,12 +623,12 @@
         "估值原始分": 68.02,
         "估值分": 60,
         "趨勢分": 6,
-        "結構分": 1.74,
+        "結構分": 2.27,
         "時機分": 1.52,
         "資金分": 7,
         "品質分": 2,
         "類別調整": 2,
-        "總分": 80.1
+        "總分": 80.53
       },
       "持倉曝險": {
         "FCN數量": 1,
@@ -684,12 +684,12 @@
       "量比": 0.6,
       "valuation_score": 60,
       "trend_score": 2,
-      "structure_score": 2.29,
+      "structure_score": 2.57,
       "timing_score": 6.5,
       "money_score": 7,
       "quality_score": 2,
       "category_adjust": 1,
-      "today_score": 78.73,
+      "today_score": 78.95,
       "趨勢判讀": {
         "年線": "↓",
         "6月線": "↓",
@@ -732,12 +732,12 @@
         "估值原始分": 79.17,
         "估值分": 60,
         "趨勢分": 2,
-        "結構分": 2.29,
+        "結構分": 2.57,
         "時機分": 6.5,
         "資金分": 7,
         "品質分": 2,
         "類別調整": 1,
-        "總分": 78.73
+        "總分": 78.95
       },
       "持倉曝險": {
         "FCN數量": 2,
@@ -792,12 +792,12 @@
       "量比": 1.03,
       "valuation_score": 54.99,
       "trend_score": 4,
-      "structure_score": 4.47,
+      "structure_score": 3.58,
       "timing_score": 3.25,
       "money_score": 8,
       "quality_score": 2,
       "category_adjust": 2,
-      "today_score": 77.17,
+      "today_score": 76.46,
       "趨勢判讀": {
         "年線": "↑",
         "6月線": "↓",
@@ -840,12 +840,12 @@
         "估值原始分": 54.99,
         "估值分": 54.99,
         "趨勢分": 4,
-        "結構分": 4.47,
+        "結構分": 3.58,
         "時機分": 3.25,
         "資金分": 8,
         "品質分": 2,
         "類別調整": 2,
-        "總分": 77.17
+        "總分": 76.46
       },
       "持倉曝險": {
         "FCN數量": 1,
@@ -881,110 +881,6 @@
     },
     {
       "排名": 10,
-      "股號": "AAL",
-      "股名": "American Airlines",
-      "產業": "TRAVEL",
-      "子產業": "AIRLINE",
-      "分類": "cyclical_high_beta",
-      "估值模型": "PEG",
-      "風險等級": "高",
-      "股價": 11.37,
-      "PEG": 0.28,
-      "1日漲跌幅": 3.24,
-      "1週漲跌幅": 2.16,
-      "1月漲跌幅": 2.34,
-      "3月漲跌幅": -28.89,
-      "6月漲跌幅": -2.49,
-      "12月漲跌幅": 19.56,
-      "量比": 0.55,
-      "valuation_score": 60,
-      "trend_score": 4,
-      "structure_score": 6.25,
-      "timing_score": 2.68,
-      "money_score": 7,
-      "quality_score": -2,
-      "category_adjust": -0.2,
-      "today_score": 76.04,
-      "趨勢判讀": {
-        "年線": "↑",
-        "6月線": "↓",
-        "3月線": "↓",
-        "月線": "↑",
-        "趨勢狀態": "neutral",
-        "結構狀態": "building",
-        "時機狀態": "neutral"
-      },
-      "估值資料": {
-        "ValuationClass": "CYCLICAL",
-        "PEG": 0.28,
-        "ForwardPE": 9.47,
-        "AnchorPE": 12,
-        "PERatio": 0.79,
-        "EPS成長率": 33.33,
-        "PEScore": 32.21,
-        "GrowthScore": 20.92,
-        "GrowthScoreAdj": 12.55,
-        "QualityMomentum": 5.06,
-        "QualityFactor": 0.8,
-        "ValuationRaw": 84.2
-      },
-      "結構資料": {
-        "swing_days": [
-          3.24,
-          7.59,
-          2.75,
-          2.4,
-          4.94,
-          3.07
-        ],
-        "amp_1d": 3.24,
-        "ShortSwing": 4.28
-      },
-      "時機資料": {
-        "Snapshot": 2.68
-      },
-      "分數拆解": {
-        "估值原始分": 84.2,
-        "估值分": 60,
-        "趨勢分": 4,
-        "結構分": 6.25,
-        "時機分": 2.68,
-        "資金分": 7,
-        "品質分": -2,
-        "類別調整": -0.2,
-        "總分": 76.04
-      },
-      "持倉曝險": {
-        "FCN數量": 0,
-        "投入金額": 0,
-        "投入資金比": 0,
-        "Danger": 0,
-        "Watch": 0,
-        "Healthy": 0,
-        "Pure平均": null,
-        "Event平均": null
-      },
-      "曝險警示": {
-        "level": "normal",
-        "text": "投入比 0%（安全）。",
-        "baseline": {
-          "safe": 20,
-          "warning": 30
-        }
-      },
-      "建議動作": "加入",
-      "ui_bucket": "積極推薦",
-      "is_today_highlight": false,
-      "today_highlight_reason": "趨勢未轉空 / 估值合理 / 曝險可控",
-      "why_yes": [
-        "估值合理"
-      ],
-      "why_no": [],
-      "估值說明": "ValuationClass CYCLICAL，AnchorPE 12，Forward PE 9.47，PE Ratio 0.79，EPS成長 33.33%，PEG 0.28，QualityMomentum 5.06%，QualityFactor 0.80，ValuationRaw 84.20，估值判定：合理偏低",
-      "最終說明": "趨勢面：TrendRaw -2.37，狀態 neutral。結構面：ShortSwing 4.28，甜度已反映。時機面：Snapshot 2.68。估值面：ValuationClass CYCLICAL，AnchorPE 12，Forward PE 9.47，PE Ratio 0.79，EPS成長 33.33%，PEG 0.28，QualityMomentum 5.06%，QualityFactor 0.80，ValuationRaw 84.20，估值判定：合理偏低。持倉面：投入比 0%（安全）。整體條件支持，可列入 FCN 候選。"
-    },
-    {
-      "排名": 11,
       "股號": "MSFT",
       "股名": "Microsoft",
       "產業": "AI_PLATFORM",
@@ -1003,12 +899,12 @@
       "量比": 0.9,
       "valuation_score": 60,
       "trend_score": 2,
-      "structure_score": 2.11,
+      "structure_score": 2.47,
       "timing_score": 0,
       "money_score": 8,
       "quality_score": 2,
       "category_adjust": 2,
-      "today_score": 75.28,
+      "today_score": 75.58,
       "趨勢判讀": {
         "年線": "↓",
         "6月線": "↓",
@@ -1051,12 +947,12 @@
         "估值原始分": 71.3,
         "估值分": 60,
         "趨勢分": 2,
-        "結構分": 2.11,
+        "結構分": 2.47,
         "時機分": 0,
         "資金分": 8,
         "品質分": 2,
         "類別調整": 2,
-        "總分": 75.28
+        "總分": 75.58
       },
       "持倉曝險": {
         "FCN數量": 0,
@@ -1093,7 +989,7 @@
       "最終說明": "趨勢面：TrendRaw -15.46，狀態 weak。結構面：ShortSwing 2.17，甜度已反映。時機面：Snapshot -0.49。估值面：ValuationClass AI_PLATFORM_CORE，AnchorPE 34，Forward PE 29.15，PE Ratio 0.86，EPS成長 14.29%，PEG 2.04，QualityMomentum -12.52%，QualityFactor 0.80，ValuationRaw 71.30，估值判定：合理偏低。資金面尚可。持倉面：投入比 0%（安全）。整體條件支持，可列入 FCN 候選。"
     },
     {
-      "排名": 12,
+      "排名": 11,
       "股號": "QQQ",
       "股名": "Invesco QQQ",
       "產業": "ETF",
@@ -1112,12 +1008,12 @@
       "量比": 0.57,
       "valuation_score": 56.21,
       "trend_score": 6,
-      "structure_score": 1.2,
+      "structure_score": 1.97,
       "timing_score": 2.18,
       "money_score": 7,
       "quality_score": 2,
       "category_adjust": 0.5,
-      "today_score": 74.92,
+      "today_score": 75.53,
       "趨勢判讀": {
         "年線": "↑",
         "6月線": "↑",
@@ -1160,12 +1056,12 @@
         "估值原始分": 56.21,
         "估值分": 56.21,
         "趨勢分": 6,
-        "結構分": 1.2,
+        "結構分": 1.97,
         "時機分": 2.18,
         "資金分": 7,
         "品質分": 2,
         "類別調整": 0.5,
-        "總分": 74.92
+        "總分": 75.53
       },
       "持倉曝險": {
         "FCN數量": 0,
@@ -1201,6 +1097,110 @@
       "最終說明": "趨勢面：TrendRaw 8.97，狀態 up_mild。結構面：ShortSwing 1.53，甜度已反映。時機面：Snapshot 2.18。估值面：ValuationClass ETF_GROWTH，AnchorPE 26，QualityMomentum 18.32%，QualityFactor 0.97，ValuationRaw 56.21，估值判定：合理偏低。持倉面：投入比 0%（安全）。整體條件支持，可列入 FCN 候選。"
     },
     {
+      "排名": 12,
+      "股號": "AAL",
+      "股名": "American Airlines",
+      "產業": "TRAVEL",
+      "子產業": "AIRLINE",
+      "分類": "cyclical_high_beta",
+      "估值模型": "PEG",
+      "風險等級": "高",
+      "股價": 11.37,
+      "PEG": 0.28,
+      "1日漲跌幅": 3.24,
+      "1週漲跌幅": 2.16,
+      "1月漲跌幅": 2.34,
+      "3月漲跌幅": -28.89,
+      "6月漲跌幅": -2.49,
+      "12月漲跌幅": 19.56,
+      "量比": 0.55,
+      "valuation_score": 60,
+      "trend_score": 4,
+      "structure_score": 4.32,
+      "timing_score": 2.68,
+      "money_score": 7,
+      "quality_score": -2,
+      "category_adjust": -0.2,
+      "today_score": 74.5,
+      "趨勢判讀": {
+        "年線": "↑",
+        "6月線": "↓",
+        "3月線": "↓",
+        "月線": "↑",
+        "趨勢狀態": "neutral",
+        "結構狀態": "building",
+        "時機狀態": "neutral"
+      },
+      "估值資料": {
+        "ValuationClass": "CYCLICAL",
+        "PEG": 0.28,
+        "ForwardPE": 9.47,
+        "AnchorPE": 12,
+        "PERatio": 0.79,
+        "EPS成長率": 33.33,
+        "PEScore": 32.21,
+        "GrowthScore": 20.92,
+        "GrowthScoreAdj": 12.55,
+        "QualityMomentum": 5.06,
+        "QualityFactor": 0.8,
+        "ValuationRaw": 84.2
+      },
+      "結構資料": {
+        "swing_days": [
+          3.24,
+          7.59,
+          2.75,
+          2.4,
+          4.94,
+          3.07
+        ],
+        "amp_1d": 3.24,
+        "ShortSwing": 4.28
+      },
+      "時機資料": {
+        "Snapshot": 2.68
+      },
+      "分數拆解": {
+        "估值原始分": 84.2,
+        "估值分": 60,
+        "趨勢分": 4,
+        "結構分": 4.32,
+        "時機分": 2.68,
+        "資金分": 7,
+        "品質分": -2,
+        "類別調整": -0.2,
+        "總分": 74.5
+      },
+      "持倉曝險": {
+        "FCN數量": 0,
+        "投入金額": 0,
+        "投入資金比": 0,
+        "Danger": 0,
+        "Watch": 0,
+        "Healthy": 0,
+        "Pure平均": null,
+        "Event平均": null
+      },
+      "曝險警示": {
+        "level": "normal",
+        "text": "投入比 0%（安全）。",
+        "baseline": {
+          "safe": 20,
+          "warning": 30
+        }
+      },
+      "建議動作": "加入",
+      "ui_bucket": "積極推薦",
+      "is_today_highlight": false,
+      "today_highlight_reason": "趨勢未轉空 / 估值合理 / 曝險可控",
+      "why_yes": [
+        "估值合理"
+      ],
+      "why_no": [],
+      "估值說明": "ValuationClass CYCLICAL，AnchorPE 12，Forward PE 9.47，PE Ratio 0.79，EPS成長 33.33%，PEG 0.28，QualityMomentum 5.06%，QualityFactor 0.80，ValuationRaw 84.20，估值判定：合理偏低",
+      "最終說明": "趨勢面：TrendRaw -2.37，狀態 neutral。結構面：ShortSwing 4.28，甜度已反映。時機面：Snapshot 2.68。估值面：ValuationClass CYCLICAL，AnchorPE 12，Forward PE 9.47，PE Ratio 0.79，EPS成長 33.33%，PEG 0.28，QualityMomentum 5.06%，QualityFactor 0.80，ValuationRaw 84.20，估值判定：合理偏低。持倉面：投入比 0%（安全）。整體條件支持，可列入 FCN 候選。"
+    },
+    {
       "排名": 14,
       "股號": "TGT",
       "股名": "Target",
@@ -1220,12 +1220,12 @@
       "量比": 0.55,
       "valuation_score": 49.28,
       "trend_score": 9,
-      "structure_score": 2.15,
+      "structure_score": 2.49,
       "timing_score": 2.58,
       "money_score": 7,
       "quality_score": 1,
       "category_adjust": 1,
-      "today_score": 72.16,
+      "today_score": 72.44,
       "趨勢判讀": {
         "年線": "↑",
         "6月線": "↑",
@@ -1268,12 +1268,12 @@
         "估值原始分": 49.28,
         "估值分": 49.28,
         "趨勢分": 9,
-        "結構分": 2.15,
+        "結構分": 2.49,
         "時機分": 2.58,
         "資金分": 7,
         "品質分": 1,
         "類別調整": 1,
-        "總分": 72.16
+        "總分": 72.44
       },
       "持倉曝險": {
         "FCN數量": 1,
@@ -1306,7 +1306,7 @@
       "最終說明": "趨勢面：TrendRaw 23.77，狀態 up_strong。結構面：ShortSwing 2.2，甜度已反映。時機面：Snapshot 2.58。估值面：ValuationClass INCOME，AnchorPE 13，Forward PE 14.09，PE Ratio 1.08，EPS成長 8.64%，PEG 1.63，QualityMomentum 29.84%，QualityFactor 1.20，ValuationRaw 49.28，估值判定：合理偏低。持倉面：投入比 11.9%（安全）。整體條件支持，可列入 FCN 候選。"
     },
     {
-      "排名": 16,
+      "排名": 17,
       "股號": "AMD",
       "股名": "AMD",
       "產業": "AI_SEMI",
@@ -1325,12 +1325,12 @@
       "量比": 0.8,
       "valuation_score": 38.24,
       "trend_score": 10,
-      "structure_score": 6.23,
+      "structure_score": 4.31,
       "timing_score": 8.89,
       "money_score": 7,
       "quality_score": 0,
       "category_adjust": 2,
-      "today_score": 70.63,
+      "today_score": 69.1,
       "趨勢判讀": {
         "年線": "↑",
         "6月線": "↑",
@@ -1373,12 +1373,12 @@
         "估值原始分": 38.24,
         "估值分": 38.24,
         "趨勢分": 10,
-        "結構分": 6.23,
+        "結構分": 4.31,
         "時機分": 8.89,
         "資金分": 7,
         "品質分": 0,
         "類別調整": 2,
-        "總分": 70.63
+        "總分": 69.1
       },
       "持倉曝險": {
         "FCN數量": 7,
@@ -1434,12 +1434,12 @@
       "量比": 0.69,
       "valuation_score": 39.65,
       "trend_score": 10,
-      "structure_score": 3.83,
+      "structure_score": 3.3,
       "timing_score": 4.44,
       "money_score": 7,
       "quality_score": 2,
       "category_adjust": 2,
-      "today_score": 68.57,
+      "today_score": 68.14,
       "趨勢判讀": {
         "年線": "↑",
         "6月線": "↑",
@@ -1482,12 +1482,12 @@
         "估值原始分": 39.65,
         "估值分": 39.65,
         "趨勢分": 10,
-        "結構分": 3.83,
+        "結構分": 3.3,
         "時機分": 4.44,
         "資金分": 7,
         "品質分": 2,
         "類別調整": 2,
-        "總分": 68.57
+        "總分": 68.14
       },
       "持倉曝險": {
         "FCN數量": 15,
@@ -1544,12 +1544,12 @@
       "量比": 0.63,
       "valuation_score": 38.18,
       "trend_score": 9,
-      "structure_score": 6.78,
+      "structure_score": 4.53,
       "timing_score": 5.21,
       "money_score": 7,
       "quality_score": 0,
       "category_adjust": 2,
-      "today_score": 66.87,
+      "today_score": 65.08,
       "趨勢判讀": {
         "年線": "↑",
         "6月線": "↓",
@@ -1592,12 +1592,12 @@
         "估值原始分": 38.18,
         "估值分": 38.18,
         "趨勢分": 9,
-        "結構分": 6.78,
+        "結構分": 4.53,
         "時機分": 5.21,
         "資金分": 7,
         "品質分": 0,
         "類別調整": 2,
-        "總分": 66.87
+        "總分": 65.08
       },
       "持倉曝險": {
         "FCN數量": 8,
@@ -1652,12 +1652,12 @@
       "量比": 0.77,
       "valuation_score": 46.53,
       "trend_score": 6,
-      "structure_score": 0.28,
+      "structure_score": 1.32,
       "timing_score": 0.42,
       "money_score": 7,
       "quality_score": 2,
       "category_adjust": 0.5,
-      "today_score": 63.09,
+      "today_score": 63.92,
       "趨勢判讀": {
         "年線": "↑",
         "6月線": "↓",
@@ -1700,12 +1700,12 @@
         "估值原始分": 46.53,
         "估值分": 46.53,
         "趨勢分": 6,
-        "結構分": 0.28,
+        "結構分": 1.32,
         "時機分": 0.42,
         "資金分": 7,
         "品質分": 2,
         "類別調整": 0.5,
-        "總分": 63.09
+        "總分": 63.92
       },
       "持倉曝險": {
         "FCN數量": 0,
@@ -1759,12 +1759,12 @@
       "量比": 0.68,
       "valuation_score": 38.95,
       "trend_score": 8,
-      "structure_score": 2.31,
+      "structure_score": 2.58,
       "timing_score": 2.39,
       "money_score": 7,
       "quality_score": 2,
       "category_adjust": 2,
-      "today_score": 62.61,
+      "today_score": 62.82,
       "趨勢判讀": {
         "年線": "↑",
         "6月線": "↓",
@@ -1807,12 +1807,12 @@
         "估值原始分": 38.95,
         "估值分": 38.95,
         "趨勢分": 8,
-        "結構分": 2.31,
+        "結構分": 2.58,
         "時機分": 2.39,
         "資金分": 7,
         "品質分": 2,
         "類別調整": 2,
-        "總分": 62.61
+        "總分": 62.82
       },
       "持倉曝險": {
         "FCN數量": 21,
@@ -1851,113 +1851,6 @@
     },
     {
       "排名": 22,
-      "股號": "CCL",
-      "股名": "Carnival",
-      "產業": "TRAVEL",
-      "子產業": "CRUISE",
-      "分類": "cyclical_high_beta",
-      "估值模型": "PEG",
-      "風險等級": "高",
-      "股價": 27.85,
-      "PEG": 0.51,
-      "1日漲跌幅": 4.37,
-      "1週漲跌幅": 4.78,
-      "1月漲跌幅": 6.26,
-      "3月漲跌幅": -13.27,
-      "6月漲跌幅": -3,
-      "12月漲跌幅": 58.24,
-      "量比": 0.78,
-      "valuation_score": 37.24,
-      "trend_score": 8,
-      "structure_score": 5.43,
-      "timing_score": 4.89,
-      "money_score": 7,
-      "quality_score": 0,
-      "category_adjust": -0.2,
-      "today_score": 61.2,
-      "趨勢判讀": {
-        "年線": "↑",
-        "6月線": "↓",
-        "3月線": "↓",
-        "月線": "↑",
-        "趨勢狀態": "up_mild",
-        "結構狀態": "building",
-        "時機狀態": "warm"
-      },
-      "估值資料": {
-        "ValuationClass": "CYCLICAL",
-        "PEG": 0.51,
-        "ForwardPE": 18.57,
-        "AnchorPE": 12,
-        "PERatio": 1.55,
-        "EPS成長率": 36.36,
-        "PEScore": 6,
-        "GrowthScore": 22.04,
-        "GrowthScoreAdj": 13.22,
-        "QualityMomentum": 27.01,
-        "QualityFactor": 1.14,
-        "ValuationRaw": 37.24
-      },
-      "結構資料": {
-        "swing_days": [
-          4.37,
-          5.52,
-          2.85,
-          2.73,
-          4.21,
-          2.74
-        ],
-        "amp_1d": 4.37,
-        "ShortSwing": 3.93
-      },
-      "時機資料": {
-        "Snapshot": 4.89
-      },
-      "分數拆解": {
-        "估值原始分": 37.24,
-        "估值分": 37.24,
-        "趨勢分": 8,
-        "結構分": 5.43,
-        "時機分": 4.89,
-        "資金分": 7,
-        "品質分": 0,
-        "類別調整": -0.2,
-        "總分": 61.2
-      },
-      "持倉曝險": {
-        "FCN數量": 1,
-        "投入金額": 100000,
-        "投入資金比": 11.9,
-        "Danger": 0,
-        "Watch": 0,
-        "Healthy": 1,
-        "Pure平均": 5.2,
-        "Event平均": 5.2
-      },
-      "曝險警示": {
-        "level": "normal",
-        "text": "投入比 11.9%（安全）。",
-        "baseline": {
-          "safe": 20,
-          "warning": 30
-        }
-      },
-      "建議動作": "加入",
-      "ui_bucket": "積極推薦",
-      "is_today_highlight": false,
-      "today_highlight_reason": "趨勢未轉空 / 估值合理 / 曝險可控",
-      "why_yes": [
-        "估值合理",
-        "中期趨勢健康"
-      ],
-      "why_no": [
-        "PE 相對偏貴"
-      ],
-      "估值說明": "ValuationClass CYCLICAL，AnchorPE 12，Forward PE 18.57，PE Ratio 1.55，EPS成長 36.36%，PEG 0.51，QualityMomentum 27.01%，QualityFactor 1.14，ValuationRaw 37.24，估值判定：合理偏低",
-      "最終說明": "趨勢面：TrendRaw 12.06，狀態 up_mild。結構面：ShortSwing 3.93，甜度已反映。時機面：Snapshot 4.89。估值面：ValuationClass CYCLICAL，AnchorPE 12，Forward PE 18.57，PE Ratio 1.55，EPS成長 36.36%，PEG 0.51，QualityMomentum 27.01%，QualityFactor 1.14，ValuationRaw 37.24，估值判定：合理偏低。持倉面：投入比 11.9%（安全）。整體條件支持，可列入 FCN 候選。"
-    },
-    {
-      "排名": 23,
       "股號": "AVGO",
       "股名": "Broadcom",
       "產業": "AI_SEMI",
@@ -1976,12 +1869,12 @@
       "量比": 0.75,
       "valuation_score": 32.37,
       "trend_score": 9,
-      "structure_score": 3.28,
+      "structure_score": 3.05,
       "timing_score": 6.27,
       "money_score": 7,
       "quality_score": 2,
       "category_adjust": 2,
-      "today_score": 61.11,
+      "today_score": 60.92,
       "趨勢判讀": {
         "年線": "↑",
         "6月線": "↑",
@@ -2024,12 +1917,12 @@
         "估值原始分": 32.37,
         "估值分": 32.37,
         "趨勢分": 9,
-        "結構分": 3.28,
+        "結構分": 3.05,
         "時機分": 6.27,
         "資金分": 7,
         "品質分": 2,
         "類別調整": 2,
-        "總分": 61.11
+        "總分": 60.92
       },
       "持倉曝險": {
         "FCN數量": 10,
@@ -2067,6 +1960,113 @@
       "最終說明": "趨勢面：TrendRaw 29.6，狀態 up_strong。結構面：ShortSwing 2.86，甜度已反映。時機面：Snapshot 6.27。估值面：ValuationClass AI_SEMI_LEADER，AnchorPE 35，Forward PE 49.99，PE Ratio 1.43，EPS成長 20.34%，PEG 2.46，QualityMomentum 55.22%，QualityFactor 1.20，ValuationRaw 32.37，估值判定：合理偏低。持倉面：投入比 30.95%（安全）。整體條件支持，可列入 FCN 候選。"
     },
     {
+      "排名": 23,
+      "股號": "CCL",
+      "股名": "Carnival",
+      "產業": "TRAVEL",
+      "子產業": "CRUISE",
+      "分類": "cyclical_high_beta",
+      "估值模型": "PEG",
+      "風險等級": "高",
+      "股價": 27.85,
+      "PEG": 0.51,
+      "1日漲跌幅": 4.37,
+      "1週漲跌幅": 4.78,
+      "1月漲跌幅": 6.26,
+      "3月漲跌幅": -13.27,
+      "6月漲跌幅": -3,
+      "12月漲跌幅": 58.24,
+      "量比": 0.78,
+      "valuation_score": 37.24,
+      "trend_score": 8,
+      "structure_score": 3.99,
+      "timing_score": 4.89,
+      "money_score": 7,
+      "quality_score": 0,
+      "category_adjust": -0.2,
+      "today_score": 60.05,
+      "趨勢判讀": {
+        "年線": "↑",
+        "6月線": "↓",
+        "3月線": "↓",
+        "月線": "↑",
+        "趨勢狀態": "up_mild",
+        "結構狀態": "building",
+        "時機狀態": "warm"
+      },
+      "估值資料": {
+        "ValuationClass": "CYCLICAL",
+        "PEG": 0.51,
+        "ForwardPE": 18.57,
+        "AnchorPE": 12,
+        "PERatio": 1.55,
+        "EPS成長率": 36.36,
+        "PEScore": 6,
+        "GrowthScore": 22.04,
+        "GrowthScoreAdj": 13.22,
+        "QualityMomentum": 27.01,
+        "QualityFactor": 1.14,
+        "ValuationRaw": 37.24
+      },
+      "結構資料": {
+        "swing_days": [
+          4.37,
+          5.52,
+          2.85,
+          2.73,
+          4.21,
+          2.74
+        ],
+        "amp_1d": 4.37,
+        "ShortSwing": 3.93
+      },
+      "時機資料": {
+        "Snapshot": 4.89
+      },
+      "分數拆解": {
+        "估值原始分": 37.24,
+        "估值分": 37.24,
+        "趨勢分": 8,
+        "結構分": 3.99,
+        "時機分": 4.89,
+        "資金分": 7,
+        "品質分": 0,
+        "類別調整": -0.2,
+        "總分": 60.05
+      },
+      "持倉曝險": {
+        "FCN數量": 1,
+        "投入金額": 100000,
+        "投入資金比": 11.9,
+        "Danger": 0,
+        "Watch": 0,
+        "Healthy": 1,
+        "Pure平均": 5.2,
+        "Event平均": 5.2
+      },
+      "曝險警示": {
+        "level": "normal",
+        "text": "投入比 11.9%（安全）。",
+        "baseline": {
+          "safe": 20,
+          "warning": 30
+        }
+      },
+      "建議動作": "加入",
+      "ui_bucket": "積極推薦",
+      "is_today_highlight": false,
+      "today_highlight_reason": "趨勢未轉空 / 估值合理 / 曝險可控",
+      "why_yes": [
+        "估值合理",
+        "中期趨勢健康"
+      ],
+      "why_no": [
+        "PE 相對偏貴"
+      ],
+      "估值說明": "ValuationClass CYCLICAL，AnchorPE 12，Forward PE 18.57，PE Ratio 1.55，EPS成長 36.36%，PEG 0.51，QualityMomentum 27.01%，QualityFactor 1.14，ValuationRaw 37.24，估值判定：合理偏低",
+      "最終說明": "趨勢面：TrendRaw 12.06，狀態 up_mild。結構面：ShortSwing 3.93，甜度已反映。時機面：Snapshot 4.89。估值面：ValuationClass CYCLICAL，AnchorPE 12，Forward PE 18.57，PE Ratio 1.55，EPS成長 36.36%，PEG 0.51，QualityMomentum 27.01%，QualityFactor 1.14，ValuationRaw 37.24，估值判定：合理偏低。持倉面：投入比 11.9%（安全）。整體條件支持，可列入 FCN 候選。"
+    },
+    {
       "排名": 24,
       "股號": "AMAT",
       "股名": "Applied Materials",
@@ -2086,12 +2086,12 @@
       "量比": 0.84,
       "valuation_score": 27.28,
       "trend_score": 10,
-      "structure_score": 5.3,
+      "structure_score": 3.94,
       "timing_score": 8.94,
       "money_score": 7,
       "quality_score": 2,
       "category_adjust": 2,
-      "today_score": 60.98,
+      "today_score": 59.89,
       "趨勢判讀": {
         "年線": "↑",
         "6月線": "↑",
@@ -2134,12 +2134,12 @@
         "估值原始分": 27.28,
         "估值分": 27.28,
         "趨勢分": 10,
-        "結構分": 5.3,
+        "結構分": 3.94,
         "時機分": 8.94,
         "資金分": 7,
         "品質分": 2,
         "類別調整": 2,
-        "總分": 60.98
+        "總分": 59.89
       },
       "持倉曝險": {
         "FCN數量": 0,
@@ -2178,117 +2178,6 @@
     },
     {
       "排名": 25,
-      "股號": "AMZN",
-      "股名": "Amazon",
-      "產業": "AI_PLATFORM",
-      "子產業": "CLOUD_ECOM",
-      "分類": "core",
-      "估值模型": "PEG",
-      "風險等級": "中",
-      "股價": 233.65,
-      "PEG": 2.13,
-      "1日漲跌幅": 4.76,
-      "1週漲跌幅": 10.96,
-      "1月漲跌幅": 9.01,
-      "3月漲跌幅": -3.27,
-      "6月漲跌幅": 5.35,
-      "12月漲跌幅": 28.93,
-      "量比": 1.49,
-      "valuation_score": 25.36,
-      "trend_score": 8,
-      "structure_score": 3.84,
-      "timing_score": 7.78,
-      "money_score": 9,
-      "quality_score": 2,
-      "category_adjust": 2,
-      "today_score": 56.36,
-      "趨勢判讀": {
-        "年線": "↑",
-        "6月線": "↑",
-        "3月線": "↓",
-        "月線": "↑",
-        "趨勢狀態": "up_mild",
-        "結構狀態": "building",
-        "時機狀態": "warm"
-      },
-      "估值資料": {
-        "ValuationClass": "PLATFORM_MIXED",
-        "PEG": 2.13,
-        "ForwardPE": 46.73,
-        "AnchorPE": 28,
-        "PERatio": 1.67,
-        "EPS成長率": 21.95,
-        "PEScore": 6,
-        "GrowthScore": 14.78,
-        "GrowthScoreAdj": 8.87,
-        "QualityMomentum": 16.21,
-        "QualityFactor": 0.92,
-        "ValuationRaw": 25.36
-      },
-      "結構資料": {
-        "swing_days": [
-          4.76,
-          3.03,
-          2.3,
-          1.6,
-          3.47,
-          2.59
-        ],
-        "amp_1d": 4.76,
-        "ShortSwing": 3.16
-      },
-      "時機資料": {
-        "Snapshot": 7.78
-      },
-      "分數拆解": {
-        "估值原始分": 25.36,
-        "估值分": 25.36,
-        "趨勢分": 8,
-        "結構分": 3.84,
-        "時機分": 7.78,
-        "資金分": 9,
-        "品質分": 2,
-        "類別調整": 2,
-        "總分": 56.36
-      },
-      "持倉曝險": {
-        "FCN數量": 1,
-        "投入金額": 30000,
-        "投入資金比": 3.57,
-        "Danger": 0,
-        "Watch": 0,
-        "Healthy": 1,
-        "Pure平均": 9.8,
-        "Event平均": 9.8
-      },
-      "曝險警示": {
-        "level": "normal",
-        "text": "投入比 3.57%（安全）。",
-        "baseline": {
-          "safe": 40,
-          "warning": 50
-        }
-      },
-      "建議動作": "加入",
-      "ui_bucket": "積極推薦",
-      "is_today_highlight": false,
-      "today_highlight_reason": "趨勢未轉空 / 時機偏正 / 估值合理 / 曝險可控",
-      "why_yes": [
-        "核心股",
-        "品質佳",
-        "估值合理",
-        "中期趨勢健康",
-        "短線節奏偏佳",
-        "資金支持"
-      ],
-      "why_no": [
-        "PE 相對偏貴"
-      ],
-      "估值說明": "ValuationClass PLATFORM_MIXED，AnchorPE 28，Forward PE 46.73，PE Ratio 1.67，EPS成長 21.95%，PEG 2.13，QualityMomentum 16.21%，QualityFactor 0.92，ValuationRaw 25.36，估值判定：合理偏低",
-      "最終說明": "趨勢面：TrendRaw 10，狀態 up_mild。結構面：ShortSwing 3.16，甜度已反映。時機面：Snapshot 7.78。估值面：ValuationClass PLATFORM_MIXED，AnchorPE 28，Forward PE 46.73，PE Ratio 1.67，EPS成長 21.95%，PEG 2.13，QualityMomentum 16.21%，QualityFactor 0.92，ValuationRaw 25.36，估值判定：合理偏低。資金面尚可。持倉面：投入比 3.57%（安全）。整體條件支持，可列入 FCN 候選。"
-    },
-    {
-      "排名": 26,
       "股號": "LVS",
       "股名": "Las Vegas Sands",
       "產業": "TRAVEL",
@@ -2307,12 +2196,12 @@
       "量比": 0.94,
       "valuation_score": 35.74,
       "trend_score": 8,
-      "structure_score": 2.57,
+      "structure_score": 2.71,
       "timing_score": 1.07,
       "money_score": 8,
       "quality_score": 1,
       "category_adjust": -0.2,
-      "today_score": 56.25,
+      "today_score": 56.36,
       "趨勢判讀": {
         "年線": "↑",
         "6月線": "↑",
@@ -2355,12 +2244,12 @@
         "估值原始分": 35.74,
         "估值分": 35.74,
         "趨勢分": 8,
-        "結構分": 2.57,
+        "結構分": 2.71,
         "時機分": 1.07,
         "資金分": 8,
         "品質分": 1,
         "類別調整": -0.2,
-        "總分": 56.25
+        "總分": 56.36
       },
       "持倉曝險": {
         "FCN數量": 0,
@@ -2396,6 +2285,117 @@
       "最終說明": "趨勢面：TrendRaw 16.48，狀態 up_mild。結構面：ShortSwing 2.46，甜度已反映。時機面：Snapshot 1.07。估值面：ValuationClass CYCLICAL，AnchorPE 15，Forward PE 18.79，PE Ratio 1.25，EPS成長 20.83%，PEG 0.90，QualityMomentum 35.50%，QualityFactor 1.20，ValuationRaw 35.74，估值判定：合理偏低。資金面尚可。持倉面：投入比 0%（安全）。整體條件支持，可列入 FCN 候選。"
     },
     {
+      "排名": 26,
+      "股號": "AMZN",
+      "股名": "Amazon",
+      "產業": "AI_PLATFORM",
+      "子產業": "CLOUD_ECOM",
+      "分類": "core",
+      "估值模型": "PEG",
+      "風險等級": "中",
+      "股價": 233.65,
+      "PEG": 2.13,
+      "1日漲跌幅": 4.76,
+      "1週漲跌幅": 10.96,
+      "1月漲跌幅": 9.01,
+      "3月漲跌幅": -3.27,
+      "6月漲跌幅": 5.35,
+      "12月漲跌幅": 28.93,
+      "量比": 1.49,
+      "valuation_score": 25.36,
+      "trend_score": 8,
+      "structure_score": 3.31,
+      "timing_score": 7.78,
+      "money_score": 9,
+      "quality_score": 2,
+      "category_adjust": 2,
+      "today_score": 55.93,
+      "趨勢判讀": {
+        "年線": "↑",
+        "6月線": "↑",
+        "3月線": "↓",
+        "月線": "↑",
+        "趨勢狀態": "up_mild",
+        "結構狀態": "building",
+        "時機狀態": "warm"
+      },
+      "估值資料": {
+        "ValuationClass": "PLATFORM_MIXED",
+        "PEG": 2.13,
+        "ForwardPE": 46.73,
+        "AnchorPE": 28,
+        "PERatio": 1.67,
+        "EPS成長率": 21.95,
+        "PEScore": 6,
+        "GrowthScore": 14.78,
+        "GrowthScoreAdj": 8.87,
+        "QualityMomentum": 16.21,
+        "QualityFactor": 0.92,
+        "ValuationRaw": 25.36
+      },
+      "結構資料": {
+        "swing_days": [
+          4.76,
+          3.03,
+          2.3,
+          1.6,
+          3.47,
+          2.59
+        ],
+        "amp_1d": 4.76,
+        "ShortSwing": 3.16
+      },
+      "時機資料": {
+        "Snapshot": 7.78
+      },
+      "分數拆解": {
+        "估值原始分": 25.36,
+        "估值分": 25.36,
+        "趨勢分": 8,
+        "結構分": 3.31,
+        "時機分": 7.78,
+        "資金分": 9,
+        "品質分": 2,
+        "類別調整": 2,
+        "總分": 55.93
+      },
+      "持倉曝險": {
+        "FCN數量": 1,
+        "投入金額": 30000,
+        "投入資金比": 3.57,
+        "Danger": 0,
+        "Watch": 0,
+        "Healthy": 1,
+        "Pure平均": 9.8,
+        "Event平均": 9.8
+      },
+      "曝險警示": {
+        "level": "normal",
+        "text": "投入比 3.57%（安全）。",
+        "baseline": {
+          "safe": 40,
+          "warning": 50
+        }
+      },
+      "建議動作": "加入",
+      "ui_bucket": "積極推薦",
+      "is_today_highlight": false,
+      "today_highlight_reason": "趨勢未轉空 / 時機偏正 / 估值合理 / 曝險可控",
+      "why_yes": [
+        "核心股",
+        "品質佳",
+        "估值合理",
+        "中期趨勢健康",
+        "短線節奏偏佳",
+        "資金支持"
+      ],
+      "why_no": [
+        "PE 相對偏貴"
+      ],
+      "估值說明": "ValuationClass PLATFORM_MIXED，AnchorPE 28，Forward PE 46.73，PE Ratio 1.67，EPS成長 21.95%，PEG 2.13，QualityMomentum 16.21%，QualityFactor 0.92，ValuationRaw 25.36，估值判定：合理偏低",
+      "最終說明": "趨勢面：TrendRaw 10，狀態 up_mild。結構面：ShortSwing 3.16，甜度已反映。時機面：Snapshot 7.78。估值面：ValuationClass PLATFORM_MIXED，AnchorPE 28，Forward PE 46.73，PE Ratio 1.67，EPS成長 21.95%，PEG 2.13，QualityMomentum 16.21%，QualityFactor 0.92，ValuationRaw 25.36，估值判定：合理偏低。資金面尚可。持倉面：投入比 3.57%（安全）。整體條件支持，可列入 FCN 候選。"
+    },
+    {
       "排名": 27,
       "股號": "GOOG",
       "股名": "Google",
@@ -2415,12 +2415,12 @@
       "量比": 0.71,
       "valuation_score": 26.59,
       "trend_score": 10,
-      "structure_score": 2.73,
+      "structure_score": 2.78,
       "timing_score": 4.3,
       "money_score": 7,
       "quality_score": 2,
       "category_adjust": 2,
-      "today_score": 54.51,
+      "today_score": 54.56,
       "趨勢判讀": {
         "年線": "↑",
         "6月線": "↑",
@@ -2463,12 +2463,12 @@
         "估值原始分": 26.59,
         "估值分": 26.59,
         "趨勢分": 10,
-        "結構分": 2.73,
+        "結構分": 2.78,
         "時機分": 4.3,
         "資金分": 7,
         "品質分": 2,
         "類別調整": 2,
-        "總分": 54.51
+        "總分": 54.56
       },
       "持倉曝險": {
         "FCN數量": 4,
@@ -2524,12 +2524,12 @@
       "量比": 1.34,
       "valuation_score": 34.48,
       "trend_score": 0,
-      "structure_score": 6.3,
+      "structure_score": 4.34,
       "timing_score": 0,
       "money_score": 9,
       "quality_score": 1,
       "category_adjust": 2,
-      "today_score": 50.62,
+      "today_score": 49.05,
       "趨勢判讀": {
         "年線": "↑",
         "6月線": "↓",
@@ -2572,12 +2572,12 @@
         "估值原始分": 34.48,
         "估值分": 34.48,
         "趨勢分": 0,
-        "結構分": 6.3,
+        "結構分": 4.34,
         "時機分": 0,
         "資金分": 9,
         "品質分": 1,
         "類別調整": 2,
-        "總分": 50.62
+        "總分": 49.05
       },
       "持倉曝險": {
         "FCN數量": 2,
@@ -2614,7 +2614,7 @@
       "最終說明": "趨勢面：TrendRaw -21.09，狀態 weak。結構面：ShortSwing 4.31，甜度已反映。時機面：Snapshot -1.19。估值面：ValuationClass CORE_GENERIC，AnchorPE 20，Forward PE 21.54，PE Ratio 1.08，EPS成長 10.34%，PEG 2.08，QualityMomentum -16.23%，QualityFactor 0.80，ValuationRaw 34.48，估值判定：合理偏低。資金面尚可。持倉面：目前已有 Danger 持倉 1 檔，且投入比 4.76%，應先風控。整體條件支持，可列入 FCN 候選。"
     },
     {
-      "排名": 29,
+      "排名": 30,
       "股號": "EL",
       "股名": "Estee Lauder",
       "產業": "CONSUMER",
@@ -2633,12 +2633,12 @@
       "量比": 0.49,
       "valuation_score": 31.61,
       "trend_score": 4,
-      "structure_score": 7.52,
+      "structure_score": 4.82,
       "timing_score": 0,
       "money_score": 2,
       "quality_score": 1,
       "category_adjust": 2,
-      "today_score": 47.23,
+      "today_score": 45.07,
       "趨勢判讀": {
         "年線": "↑",
         "6月線": "↓",
@@ -2681,12 +2681,12 @@
         "估值原始分": 31.61,
         "估值分": 31.61,
         "趨勢分": 4,
-        "結構分": 7.52,
+        "結構分": 4.82,
         "時機分": 0,
         "資金分": 2,
         "品質分": 1,
         "類別調整": 2,
-        "總分": 47.23
+        "總分": 45.07
       },
       "持倉曝險": {
         "FCN數量": 1,
@@ -2740,12 +2740,12 @@
       "量比": 0.8,
       "valuation_score": 16.84,
       "trend_score": 8,
-      "structure_score": 1.45,
+      "structure_score": 2.11,
       "timing_score": 2.41,
       "money_score": 7,
       "quality_score": 2,
       "category_adjust": 1,
-      "today_score": 38.83,
+      "today_score": 39.36,
       "趨勢判讀": {
         "年線": "↑",
         "6月線": "↑",
@@ -2788,12 +2788,12 @@
         "估值原始分": 16.84,
         "估值分": 16.84,
         "趨勢分": 8,
-        "結構分": 1.45,
+        "結構分": 2.11,
         "時機分": 2.41,
         "資金分": 7,
         "品質分": 2,
         "類別調整": 1,
-        "總分": 38.83
+        "總分": 39.36
       },
       "持倉曝險": {
         "FCN數量": 0,
@@ -3069,12 +3069,12 @@
       "量比": 0.91,
       "valuation_score": 60,
       "trend_score": 0,
-      "structure_score": 4.18,
+      "structure_score": 3.46,
       "timing_score": 0,
       "money_score": 8,
       "quality_score": -1,
       "category_adjust": 2,
-      "today_score": 71.54,
+      "today_score": 70.97,
       "趨勢判讀": {
         "年線": "↓",
         "6月線": "↓",
@@ -3117,12 +3117,12 @@
         "估值原始分": 80.69,
         "估值分": 60,
         "趨勢分": 0,
-        "結構分": 4.18,
+        "結構分": 3.46,
         "時機分": 0,
         "資金分": 8,
         "品質分": -1,
         "類別調整": 2,
-        "總分": 71.54
+        "總分": 70.97
       },
       "持倉曝險": {
         "FCN數量": 1,
@@ -3159,7 +3159,7 @@
       "最終說明": "趨勢面：TrendRaw -26.8，狀態 down。結構面：ShortSwing 3.33，甜度已反映。時機面：Snapshot -3.24。估值面：ValuationClass CORE_GENERIC，AnchorPE 20，Forward PE 13.33，PE Ratio 0.67，EPS成長 13.79%，PEG 0.97，QualityMomentum -25.31%，QualityFactor 0.80，ValuationRaw 80.69，估值判定：合理偏低。資金面尚可。持倉面：目前已有 Danger 持倉 1 檔，且投入比 11.9%，應先風控。目前不適合做 FCN。"
     },
     {
-      "排名": 17,
+      "排名": 16,
       "股號": "ALAB",
       "股名": "Astera Labs",
       "產業": "AI_SEMI",
@@ -3271,7 +3271,7 @@
       "最終說明": "趨勢面：TrendRaw 17.56，狀態 up_mild。結構面：ShortSwing 7.34，甜度已反映。時機面：Snapshot 12.06。估值面：ValuationClass SPECULATIVE，AnchorPE 18，Forward PE 92.47，PE Ratio 5.14，EPS成長 55.56%，PEG 1.66，QualityMomentum 48.06%，QualityFactor 1.20，ValuationRaw 41.76，估值判定：合理偏低。持倉面：目前已有 Danger 持倉 1 檔，且投入比 4.76%，應先風控。目前不適合做 FCN。"
     },
     {
-      "排名": 30,
+      "排名": 29,
       "股號": "PLTR",
       "股名": "Palantir",
       "產業": "AI_SOFTWARE",
@@ -3399,12 +3399,12 @@
       "量比": 0.94,
       "valuation_score": 22.27,
       "trend_score": 4,
-      "structure_score": 5.78,
+      "structure_score": 4.13,
       "timing_score": 0,
       "money_score": 8,
       "quality_score": 0,
       "category_adjust": -0.5,
-      "today_score": 38.39,
+      "today_score": 37.08,
       "趨勢判讀": {
         "年線": "↑",
         "6月線": "↓",
@@ -3447,12 +3447,12 @@
         "估值原始分": 22.27,
         "估值分": 22.27,
         "趨勢分": 4,
-        "結構分": 5.78,
+        "結構分": 4.13,
         "時機分": 0,
         "資金分": 8,
         "品質分": 0,
         "類別調整": -0.5,
-        "總分": 38.39
+        "總分": 37.08
       },
       "持倉曝險": {
         "FCN數量": 14,
@@ -4064,12 +4064,12 @@
       "量比": 0.62,
       "valuation_score": 60,
       "trend_score": 10,
-      "structure_score": 2.81,
+      "structure_score": 2.83,
       "timing_score": 5.94,
       "money_score": 7,
       "quality_score": 2,
       "category_adjust": 0.5,
-      "today_score": 87.8,
+      "today_score": 87.81,
       "趨勢判讀": {
         "年線": "↑",
         "6月線": "↑",
@@ -4112,12 +4112,12 @@
         "估值原始分": 69.79,
         "估值分": 60,
         "趨勢分": 10,
-        "結構分": 2.81,
+        "結構分": 2.83,
         "時機分": 5.94,
         "資金分": 7,
         "品質分": 2,
         "類別調整": 0.5,
-        "總分": 87.8
+        "總分": 87.81
       },
       "持倉曝險": {
         "FCN數量": 3,
@@ -4170,12 +4170,12 @@
       "量比": 0.97,
       "valuation_score": 60,
       "trend_score": 8,
-      "structure_score": 1.93,
+      "structure_score": 2.38,
       "timing_score": 0.1,
       "money_score": 8,
       "quality_score": 1,
       "category_adjust": 1,
-      "today_score": 80.42,
+      "today_score": 80.78,
       "趨勢判讀": {
         "年線": "↑",
         "6月線": "↑",
@@ -4218,12 +4218,12 @@
         "估值原始分": 94.67,
         "估值分": 60,
         "趨勢分": 8,
-        "結構分": 1.93,
+        "結構分": 2.38,
         "時機分": 0.1,
         "資金分": 8,
         "品質分": 1,
         "類別調整": 1,
-        "總分": 80.42
+        "總分": 80.78
       },
       "持倉曝險": {
         "FCN數量": 0,
@@ -4276,12 +4276,12 @@
       "量比": 0.64,
       "valuation_score": 60,
       "trend_score": 6,
-      "structure_score": 1.74,
+      "structure_score": 2.27,
       "timing_score": 1.52,
       "money_score": 7,
       "quality_score": 2,
       "category_adjust": 2,
-      "today_score": 80.1,
+      "today_score": 80.53,
       "趨勢判讀": {
         "年線": "↑",
         "6月線": "↑",
@@ -4324,12 +4324,12 @@
         "估值原始分": 68.02,
         "估值分": 60,
         "趨勢分": 6,
-        "結構分": 1.74,
+        "結構分": 2.27,
         "時機分": 1.52,
         "資金分": 7,
         "品質分": 2,
         "類別調整": 2,
-        "總分": 80.1
+        "總分": 80.53
       },
       "持倉曝險": {
         "FCN數量": 1,
@@ -4385,12 +4385,12 @@
       "量比": 0.6,
       "valuation_score": 60,
       "trend_score": 2,
-      "structure_score": 2.29,
+      "structure_score": 2.57,
       "timing_score": 6.5,
       "money_score": 7,
       "quality_score": 2,
       "category_adjust": 1,
-      "today_score": 78.73,
+      "today_score": 78.95,
       "趨勢判讀": {
         "年線": "↓",
         "6月線": "↓",
@@ -4433,12 +4433,12 @@
         "估值原始分": 79.17,
         "估值分": 60,
         "趨勢分": 2,
-        "結構分": 2.29,
+        "結構分": 2.57,
         "時機分": 6.5,
         "資金分": 7,
         "品質分": 2,
         "類別調整": 1,
-        "總分": 78.73
+        "總分": 78.95
       },
       "持倉曝險": {
         "FCN數量": 2,
@@ -4493,12 +4493,12 @@
       "量比": 1.03,
       "valuation_score": 54.99,
       "trend_score": 4,
-      "structure_score": 4.47,
+      "structure_score": 3.58,
       "timing_score": 3.25,
       "money_score": 8,
       "quality_score": 2,
       "category_adjust": 2,
-      "today_score": 77.17,
+      "today_score": 76.46,
       "趨勢判讀": {
         "年線": "↑",
         "6月線": "↓",
@@ -4541,12 +4541,12 @@
         "估值原始分": 54.99,
         "估值分": 54.99,
         "趨勢分": 4,
-        "結構分": 4.47,
+        "結構分": 3.58,
         "時機分": 3.25,
         "資金分": 8,
         "品質分": 2,
         "類別調整": 2,
-        "總分": 77.17
+        "總分": 76.46
       },
       "持倉曝險": {
         "FCN數量": 1,
@@ -4582,110 +4582,6 @@
     },
     {
       "排名": 10,
-      "股號": "AAL",
-      "股名": "American Airlines",
-      "產業": "TRAVEL",
-      "子產業": "AIRLINE",
-      "分類": "cyclical_high_beta",
-      "估值模型": "PEG",
-      "風險等級": "高",
-      "股價": 11.37,
-      "PEG": 0.28,
-      "1日漲跌幅": 3.24,
-      "1週漲跌幅": 2.16,
-      "1月漲跌幅": 2.34,
-      "3月漲跌幅": -28.89,
-      "6月漲跌幅": -2.49,
-      "12月漲跌幅": 19.56,
-      "量比": 0.55,
-      "valuation_score": 60,
-      "trend_score": 4,
-      "structure_score": 6.25,
-      "timing_score": 2.68,
-      "money_score": 7,
-      "quality_score": -2,
-      "category_adjust": -0.2,
-      "today_score": 76.04,
-      "趨勢判讀": {
-        "年線": "↑",
-        "6月線": "↓",
-        "3月線": "↓",
-        "月線": "↑",
-        "趨勢狀態": "neutral",
-        "結構狀態": "building",
-        "時機狀態": "neutral"
-      },
-      "估值資料": {
-        "ValuationClass": "CYCLICAL",
-        "PEG": 0.28,
-        "ForwardPE": 9.47,
-        "AnchorPE": 12,
-        "PERatio": 0.79,
-        "EPS成長率": 33.33,
-        "PEScore": 32.21,
-        "GrowthScore": 20.92,
-        "GrowthScoreAdj": 12.55,
-        "QualityMomentum": 5.06,
-        "QualityFactor": 0.8,
-        "ValuationRaw": 84.2
-      },
-      "結構資料": {
-        "swing_days": [
-          3.24,
-          7.59,
-          2.75,
-          2.4,
-          4.94,
-          3.07
-        ],
-        "amp_1d": 3.24,
-        "ShortSwing": 4.28
-      },
-      "時機資料": {
-        "Snapshot": 2.68
-      },
-      "分數拆解": {
-        "估值原始分": 84.2,
-        "估值分": 60,
-        "趨勢分": 4,
-        "結構分": 6.25,
-        "時機分": 2.68,
-        "資金分": 7,
-        "品質分": -2,
-        "類別調整": -0.2,
-        "總分": 76.04
-      },
-      "持倉曝險": {
-        "FCN數量": 0,
-        "投入金額": 0,
-        "投入資金比": 0,
-        "Danger": 0,
-        "Watch": 0,
-        "Healthy": 0,
-        "Pure平均": null,
-        "Event平均": null
-      },
-      "曝險警示": {
-        "level": "normal",
-        "text": "投入比 0%（安全）。",
-        "baseline": {
-          "safe": 20,
-          "warning": 30
-        }
-      },
-      "建議動作": "加入",
-      "ui_bucket": "積極推薦",
-      "is_today_highlight": false,
-      "today_highlight_reason": "趨勢未轉空 / 估值合理 / 曝險可控",
-      "why_yes": [
-        "估值合理"
-      ],
-      "why_no": [],
-      "估值說明": "ValuationClass CYCLICAL，AnchorPE 12，Forward PE 9.47，PE Ratio 0.79，EPS成長 33.33%，PEG 0.28，QualityMomentum 5.06%，QualityFactor 0.80，ValuationRaw 84.20，估值判定：合理偏低",
-      "最終說明": "趨勢面：TrendRaw -2.37，狀態 neutral。結構面：ShortSwing 4.28，甜度已反映。時機面：Snapshot 2.68。估值面：ValuationClass CYCLICAL，AnchorPE 12，Forward PE 9.47，PE Ratio 0.79，EPS成長 33.33%，PEG 0.28，QualityMomentum 5.06%，QualityFactor 0.80，ValuationRaw 84.20，估值判定：合理偏低。持倉面：投入比 0%（安全）。整體條件支持，可列入 FCN 候選。"
-    },
-    {
-      "排名": 11,
       "股號": "MSFT",
       "股名": "Microsoft",
       "產業": "AI_PLATFORM",
@@ -4704,12 +4600,12 @@
       "量比": 0.9,
       "valuation_score": 60,
       "trend_score": 2,
-      "structure_score": 2.11,
+      "structure_score": 2.47,
       "timing_score": 0,
       "money_score": 8,
       "quality_score": 2,
       "category_adjust": 2,
-      "today_score": 75.28,
+      "today_score": 75.58,
       "趨勢判讀": {
         "年線": "↓",
         "6月線": "↓",
@@ -4752,12 +4648,12 @@
         "估值原始分": 71.3,
         "估值分": 60,
         "趨勢分": 2,
-        "結構分": 2.11,
+        "結構分": 2.47,
         "時機分": 0,
         "資金分": 8,
         "品質分": 2,
         "類別調整": 2,
-        "總分": 75.28
+        "總分": 75.58
       },
       "持倉曝險": {
         "FCN數量": 0,
@@ -4794,7 +4690,7 @@
       "最終說明": "趨勢面：TrendRaw -15.46，狀態 weak。結構面：ShortSwing 2.17，甜度已反映。時機面：Snapshot -0.49。估值面：ValuationClass AI_PLATFORM_CORE，AnchorPE 34，Forward PE 29.15，PE Ratio 0.86，EPS成長 14.29%，PEG 2.04，QualityMomentum -12.52%，QualityFactor 0.80，ValuationRaw 71.30，估值判定：合理偏低。資金面尚可。持倉面：投入比 0%（安全）。整體條件支持，可列入 FCN 候選。"
     },
     {
-      "排名": 12,
+      "排名": 11,
       "股號": "QQQ",
       "股名": "Invesco QQQ",
       "產業": "ETF",
@@ -4813,12 +4709,12 @@
       "量比": 0.57,
       "valuation_score": 56.21,
       "trend_score": 6,
-      "structure_score": 1.2,
+      "structure_score": 1.97,
       "timing_score": 2.18,
       "money_score": 7,
       "quality_score": 2,
       "category_adjust": 0.5,
-      "today_score": 74.92,
+      "today_score": 75.53,
       "趨勢判讀": {
         "年線": "↑",
         "6月線": "↑",
@@ -4861,12 +4757,12 @@
         "估值原始分": 56.21,
         "估值分": 56.21,
         "趨勢分": 6,
-        "結構分": 1.2,
+        "結構分": 1.97,
         "時機分": 2.18,
         "資金分": 7,
         "品質分": 2,
         "類別調整": 0.5,
-        "總分": 74.92
+        "總分": 75.53
       },
       "持倉曝險": {
         "FCN數量": 0,
@@ -4900,6 +4796,110 @@
       ],
       "估值說明": "ValuationClass ETF_GROWTH，AnchorPE 26，QualityMomentum 18.32%，QualityFactor 0.97，ValuationRaw 56.21，估值判定：合理偏低",
       "最終說明": "趨勢面：TrendRaw 8.97，狀態 up_mild。結構面：ShortSwing 1.53，甜度已反映。時機面：Snapshot 2.18。估值面：ValuationClass ETF_GROWTH，AnchorPE 26，QualityMomentum 18.32%，QualityFactor 0.97，ValuationRaw 56.21，估值判定：合理偏低。持倉面：投入比 0%（安全）。整體條件支持，可列入 FCN 候選。"
+    },
+    {
+      "排名": 12,
+      "股號": "AAL",
+      "股名": "American Airlines",
+      "產業": "TRAVEL",
+      "子產業": "AIRLINE",
+      "分類": "cyclical_high_beta",
+      "估值模型": "PEG",
+      "風險等級": "高",
+      "股價": 11.37,
+      "PEG": 0.28,
+      "1日漲跌幅": 3.24,
+      "1週漲跌幅": 2.16,
+      "1月漲跌幅": 2.34,
+      "3月漲跌幅": -28.89,
+      "6月漲跌幅": -2.49,
+      "12月漲跌幅": 19.56,
+      "量比": 0.55,
+      "valuation_score": 60,
+      "trend_score": 4,
+      "structure_score": 4.32,
+      "timing_score": 2.68,
+      "money_score": 7,
+      "quality_score": -2,
+      "category_adjust": -0.2,
+      "today_score": 74.5,
+      "趨勢判讀": {
+        "年線": "↑",
+        "6月線": "↓",
+        "3月線": "↓",
+        "月線": "↑",
+        "趨勢狀態": "neutral",
+        "結構狀態": "building",
+        "時機狀態": "neutral"
+      },
+      "估值資料": {
+        "ValuationClass": "CYCLICAL",
+        "PEG": 0.28,
+        "ForwardPE": 9.47,
+        "AnchorPE": 12,
+        "PERatio": 0.79,
+        "EPS成長率": 33.33,
+        "PEScore": 32.21,
+        "GrowthScore": 20.92,
+        "GrowthScoreAdj": 12.55,
+        "QualityMomentum": 5.06,
+        "QualityFactor": 0.8,
+        "ValuationRaw": 84.2
+      },
+      "結構資料": {
+        "swing_days": [
+          3.24,
+          7.59,
+          2.75,
+          2.4,
+          4.94,
+          3.07
+        ],
+        "amp_1d": 3.24,
+        "ShortSwing": 4.28
+      },
+      "時機資料": {
+        "Snapshot": 2.68
+      },
+      "分數拆解": {
+        "估值原始分": 84.2,
+        "估值分": 60,
+        "趨勢分": 4,
+        "結構分": 4.32,
+        "時機分": 2.68,
+        "資金分": 7,
+        "品質分": -2,
+        "類別調整": -0.2,
+        "總分": 74.5
+      },
+      "持倉曝險": {
+        "FCN數量": 0,
+        "投入金額": 0,
+        "投入資金比": 0,
+        "Danger": 0,
+        "Watch": 0,
+        "Healthy": 0,
+        "Pure平均": null,
+        "Event平均": null
+      },
+      "曝險警示": {
+        "level": "normal",
+        "text": "投入比 0%（安全）。",
+        "baseline": {
+          "safe": 20,
+          "warning": 30
+        }
+      },
+      "建議動作": "加入",
+      "ui_bucket": "積極推薦",
+      "is_today_highlight": false,
+      "today_highlight_reason": "趨勢未轉空 / 估值合理 / 曝險可控",
+      "why_yes": [
+        "估值合理"
+      ],
+      "why_no": [],
+      "估值說明": "ValuationClass CYCLICAL，AnchorPE 12，Forward PE 9.47，PE Ratio 0.79，EPS成長 33.33%，PEG 0.28，QualityMomentum 5.06%，QualityFactor 0.80，ValuationRaw 84.20，估值判定：合理偏低",
+      "最終說明": "趨勢面：TrendRaw -2.37，狀態 neutral。結構面：ShortSwing 4.28，甜度已反映。時機面：Snapshot 2.68。估值面：ValuationClass CYCLICAL，AnchorPE 12，Forward PE 9.47，PE Ratio 0.79，EPS成長 33.33%，PEG 0.28，QualityMomentum 5.06%，QualityFactor 0.80，ValuationRaw 84.20，估值判定：合理偏低。持倉面：投入比 0%（安全）。整體條件支持，可列入 FCN 候選。"
     },
     {
       "排名": 13,
@@ -5028,12 +5028,12 @@
       "量比": 0.55,
       "valuation_score": 49.28,
       "trend_score": 9,
-      "structure_score": 2.15,
+      "structure_score": 2.49,
       "timing_score": 2.58,
       "money_score": 7,
       "quality_score": 1,
       "category_adjust": 1,
-      "today_score": 72.16,
+      "today_score": 72.44,
       "趨勢判讀": {
         "年線": "↑",
         "6月線": "↑",
@@ -5076,12 +5076,12 @@
         "估值原始分": 49.28,
         "估值分": 49.28,
         "趨勢分": 9,
-        "結構分": 2.15,
+        "結構分": 2.49,
         "時機分": 2.58,
         "資金分": 7,
         "品質分": 1,
         "類別調整": 1,
-        "總分": 72.16
+        "總分": 72.44
       },
       "持倉曝險": {
         "FCN數量": 1,
@@ -5133,12 +5133,12 @@
       "量比": 0.91,
       "valuation_score": 60,
       "trend_score": 0,
-      "structure_score": 4.18,
+      "structure_score": 3.46,
       "timing_score": 0,
       "money_score": 8,
       "quality_score": -1,
       "category_adjust": 2,
-      "today_score": 71.54,
+      "today_score": 70.97,
       "趨勢判讀": {
         "年線": "↓",
         "6月線": "↓",
@@ -5181,12 +5181,12 @@
         "估值原始分": 80.69,
         "估值分": 60,
         "趨勢分": 0,
-        "結構分": 4.18,
+        "結構分": 3.46,
         "時機分": 0,
         "資金分": 8,
         "品質分": -1,
         "類別調整": 2,
-        "總分": 71.54
+        "總分": 70.97
       },
       "持倉曝險": {
         "FCN數量": 1,
@@ -5224,115 +5224,6 @@
     },
     {
       "排名": 16,
-      "股號": "AMD",
-      "股名": "AMD",
-      "產業": "AI_SEMI",
-      "子產業": "CPU_GPU",
-      "分類": "core",
-      "估值模型": "PEG",
-      "風險等級": "高",
-      "股價": 236.64,
-      "PEG": 1.48,
-      "1日漲跌幅": 2.67,
-      "1週漲跌幅": 12.57,
-      "1月漲跌幅": 16.44,
-      "3月漲跌幅": 12.68,
-      "6月漲跌幅": 11.88,
-      "12月漲跌幅": 166.79,
-      "量比": 0.8,
-      "valuation_score": 38.24,
-      "trend_score": 10,
-      "structure_score": 6.23,
-      "timing_score": 8.89,
-      "money_score": 7,
-      "quality_score": 0,
-      "category_adjust": 2,
-      "today_score": 70.63,
-      "趨勢判讀": {
-        "年線": "↑",
-        "6月線": "↑",
-        "3月線": "↑",
-        "月線": "↑",
-        "趨勢狀態": "up_strong",
-        "結構狀態": "building",
-        "時機狀態": "warm"
-      },
-      "估值資料": {
-        "ValuationClass": "AI_SEMI_CYCLICAL",
-        "PEG": 1.48,
-        "ForwardPE": 49.3,
-        "AnchorPE": 22,
-        "PERatio": 2.24,
-        "EPS成長率": 33.33,
-        "PEScore": 6,
-        "GrowthScore": 20.92,
-        "GrowthScoreAdj": 12.55,
-        "QualityMomentum": 89.91,
-        "QualityFactor": 1.2,
-        "ValuationRaw": 38.24
-      },
-      "結構資料": {
-        "swing_days": [
-          2.67,
-          3.12,
-          3.05,
-          3.94,
-          8.16,
-          3.93
-        ],
-        "amp_1d": 2.67,
-        "ShortSwing": 4.28
-      },
-      "時機資料": {
-        "Snapshot": 8.89
-      },
-      "分數拆解": {
-        "估值原始分": 38.24,
-        "估值分": 38.24,
-        "趨勢分": 10,
-        "結構分": 6.23,
-        "時機分": 8.89,
-        "資金分": 7,
-        "品質分": 0,
-        "類別調整": 2,
-        "總分": 70.63
-      },
-      "持倉曝險": {
-        "FCN數量": 7,
-        "投入金額": 110000,
-        "投入資金比": 13.1,
-        "Danger": 0,
-        "Watch": 0,
-        "Healthy": 7,
-        "Pure平均": 5.5,
-        "Event平均": 5.5
-      },
-      "曝險警示": {
-        "level": "normal",
-        "text": "投入比 13.1%（安全）。",
-        "baseline": {
-          "safe": 40,
-          "warning": 50
-        }
-      },
-      "建議動作": "加入",
-      "ui_bucket": "積極推薦",
-      "is_today_highlight": false,
-      "today_highlight_reason": "趨勢未轉空 / 時機偏正 / 估值合理 / 曝險可控",
-      "why_yes": [
-        "核心股",
-        "估值合理",
-        "中期趨勢健康",
-        "短線節奏偏佳"
-      ],
-      "why_no": [
-        "PE 相對偏貴"
-      ],
-      "估值說明": "ValuationClass AI_SEMI_CYCLICAL，AnchorPE 22，Forward PE 49.30，PE Ratio 2.24，EPS成長 33.33%，PEG 1.48，QualityMomentum 89.91%，QualityFactor 1.20，ValuationRaw 38.24，估值判定：合理偏低",
-      "最終說明": "趨勢面：TrendRaw 51.95，狀態 up_strong。結構面：ShortSwing 4.28，甜度已反映。時機面：Snapshot 8.89。估值面：ValuationClass AI_SEMI_CYCLICAL，AnchorPE 22，Forward PE 49.30，PE Ratio 2.24，EPS成長 33.33%，PEG 1.48，QualityMomentum 89.91%，QualityFactor 1.20，ValuationRaw 38.24，估值判定：合理偏低。持倉面：投入比 13.1%（安全）。整體條件支持，可列入 FCN 候選。"
-    },
-    {
-      "排名": 17,
       "股號": "ALAB",
       "股名": "Astera Labs",
       "產業": "AI_SEMI",
@@ -5444,6 +5335,115 @@
       "最終說明": "趨勢面：TrendRaw 17.56，狀態 up_mild。結構面：ShortSwing 7.34，甜度已反映。時機面：Snapshot 12.06。估值面：ValuationClass SPECULATIVE，AnchorPE 18，Forward PE 92.47，PE Ratio 5.14，EPS成長 55.56%，PEG 1.66，QualityMomentum 48.06%，QualityFactor 1.20，ValuationRaw 41.76，估值判定：合理偏低。持倉面：目前已有 Danger 持倉 1 檔，且投入比 4.76%，應先風控。目前不適合做 FCN。"
     },
     {
+      "排名": 17,
+      "股號": "AMD",
+      "股名": "AMD",
+      "產業": "AI_SEMI",
+      "子產業": "CPU_GPU",
+      "分類": "core",
+      "估值模型": "PEG",
+      "風險等級": "高",
+      "股價": 236.64,
+      "PEG": 1.48,
+      "1日漲跌幅": 2.67,
+      "1週漲跌幅": 12.57,
+      "1月漲跌幅": 16.44,
+      "3月漲跌幅": 12.68,
+      "6月漲跌幅": 11.88,
+      "12月漲跌幅": 166.79,
+      "量比": 0.8,
+      "valuation_score": 38.24,
+      "trend_score": 10,
+      "structure_score": 4.31,
+      "timing_score": 8.89,
+      "money_score": 7,
+      "quality_score": 0,
+      "category_adjust": 2,
+      "today_score": 69.1,
+      "趨勢判讀": {
+        "年線": "↑",
+        "6月線": "↑",
+        "3月線": "↑",
+        "月線": "↑",
+        "趨勢狀態": "up_strong",
+        "結構狀態": "building",
+        "時機狀態": "warm"
+      },
+      "估值資料": {
+        "ValuationClass": "AI_SEMI_CYCLICAL",
+        "PEG": 1.48,
+        "ForwardPE": 49.3,
+        "AnchorPE": 22,
+        "PERatio": 2.24,
+        "EPS成長率": 33.33,
+        "PEScore": 6,
+        "GrowthScore": 20.92,
+        "GrowthScoreAdj": 12.55,
+        "QualityMomentum": 89.91,
+        "QualityFactor": 1.2,
+        "ValuationRaw": 38.24
+      },
+      "結構資料": {
+        "swing_days": [
+          2.67,
+          3.12,
+          3.05,
+          3.94,
+          8.16,
+          3.93
+        ],
+        "amp_1d": 2.67,
+        "ShortSwing": 4.28
+      },
+      "時機資料": {
+        "Snapshot": 8.89
+      },
+      "分數拆解": {
+        "估值原始分": 38.24,
+        "估值分": 38.24,
+        "趨勢分": 10,
+        "結構分": 4.31,
+        "時機分": 8.89,
+        "資金分": 7,
+        "品質分": 0,
+        "類別調整": 2,
+        "總分": 69.1
+      },
+      "持倉曝險": {
+        "FCN數量": 7,
+        "投入金額": 110000,
+        "投入資金比": 13.1,
+        "Danger": 0,
+        "Watch": 0,
+        "Healthy": 7,
+        "Pure平均": 5.5,
+        "Event平均": 5.5
+      },
+      "曝險警示": {
+        "level": "normal",
+        "text": "投入比 13.1%（安全）。",
+        "baseline": {
+          "safe": 40,
+          "warning": 50
+        }
+      },
+      "建議動作": "加入",
+      "ui_bucket": "積極推薦",
+      "is_today_highlight": false,
+      "today_highlight_reason": "趨勢未轉空 / 時機偏正 / 估值合理 / 曝險可控",
+      "why_yes": [
+        "核心股",
+        "估值合理",
+        "中期趨勢健康",
+        "短線節奏偏佳"
+      ],
+      "why_no": [
+        "PE 相對偏貴"
+      ],
+      "估值說明": "ValuationClass AI_SEMI_CYCLICAL，AnchorPE 22，Forward PE 49.30，PE Ratio 2.24，EPS成長 33.33%，PEG 1.48，QualityMomentum 89.91%，QualityFactor 1.20，ValuationRaw 38.24，估值判定：合理偏低",
+      "最終說明": "趨勢面：TrendRaw 51.95，狀態 up_strong。結構面：ShortSwing 4.28，甜度已反映。時機面：Snapshot 8.89。估值面：ValuationClass AI_SEMI_CYCLICAL，AnchorPE 22，Forward PE 49.30，PE Ratio 2.24，EPS成長 33.33%，PEG 1.48，QualityMomentum 89.91%，QualityFactor 1.20，ValuationRaw 38.24，估值判定：合理偏低。持倉面：投入比 13.1%（安全）。整體條件支持，可列入 FCN 候選。"
+    },
+    {
       "排名": 18,
       "股號": "TSM",
       "股名": "TSMC",
@@ -5463,12 +5463,12 @@
       "量比": 0.69,
       "valuation_score": 39.65,
       "trend_score": 10,
-      "structure_score": 3.83,
+      "structure_score": 3.3,
       "timing_score": 4.44,
       "money_score": 7,
       "quality_score": 2,
       "category_adjust": 2,
-      "today_score": 68.57,
+      "today_score": 68.14,
       "趨勢判讀": {
         "年線": "↑",
         "6月線": "↑",
@@ -5511,12 +5511,12 @@
         "估值原始分": 39.65,
         "估值分": 39.65,
         "趨勢分": 10,
-        "結構分": 3.83,
+        "結構分": 3.3,
         "時機分": 4.44,
         "資金分": 7,
         "品質分": 2,
         "類別調整": 2,
-        "總分": 68.57
+        "總分": 68.14
       },
       "持倉曝險": {
         "FCN數量": 15,
@@ -5573,12 +5573,12 @@
       "量比": 0.63,
       "valuation_score": 38.18,
       "trend_score": 9,
-      "structure_score": 6.78,
+      "structure_score": 4.53,
       "timing_score": 5.21,
       "money_score": 7,
       "quality_score": 0,
       "category_adjust": 2,
-      "today_score": 66.87,
+      "today_score": 65.08,
       "趨勢判讀": {
         "年線": "↑",
         "6月線": "↓",
@@ -5621,12 +5621,12 @@
         "估值原始分": 38.18,
         "估值分": 38.18,
         "趨勢分": 9,
-        "結構分": 6.78,
+        "結構分": 4.53,
         "時機分": 5.21,
         "資金分": 7,
         "品質分": 0,
         "類別調整": 2,
-        "總分": 66.87
+        "總分": 65.08
       },
       "持倉曝險": {
         "FCN數量": 8,
@@ -5681,12 +5681,12 @@
       "量比": 0.77,
       "valuation_score": 46.53,
       "trend_score": 6,
-      "structure_score": 0.28,
+      "structure_score": 1.32,
       "timing_score": 0.42,
       "money_score": 7,
       "quality_score": 2,
       "category_adjust": 0.5,
-      "today_score": 63.09,
+      "today_score": 63.92,
       "趨勢判讀": {
         "年線": "↑",
         "6月線": "↓",
@@ -5729,12 +5729,12 @@
         "估值原始分": 46.53,
         "估值分": 46.53,
         "趨勢分": 6,
-        "結構分": 0.28,
+        "結構分": 1.32,
         "時機分": 0.42,
         "資金分": 7,
         "品質分": 2,
         "類別調整": 0.5,
-        "總分": 63.09
+        "總分": 63.92
       },
       "持倉曝險": {
         "FCN數量": 0,
@@ -5788,12 +5788,12 @@
       "量比": 0.68,
       "valuation_score": 38.95,
       "trend_score": 8,
-      "structure_score": 2.31,
+      "structure_score": 2.58,
       "timing_score": 2.39,
       "money_score": 7,
       "quality_score": 2,
       "category_adjust": 2,
-      "today_score": 62.61,
+      "today_score": 62.82,
       "趨勢判讀": {
         "年線": "↑",
         "6月線": "↓",
@@ -5836,12 +5836,12 @@
         "估值原始分": 38.95,
         "估值分": 38.95,
         "趨勢分": 8,
-        "結構分": 2.31,
+        "結構分": 2.58,
         "時機分": 2.39,
         "資金分": 7,
         "品質分": 2,
         "類別調整": 2,
-        "總分": 62.61
+        "總分": 62.82
       },
       "持倉曝險": {
         "FCN數量": 21,
@@ -5880,113 +5880,6 @@
     },
     {
       "排名": 22,
-      "股號": "CCL",
-      "股名": "Carnival",
-      "產業": "TRAVEL",
-      "子產業": "CRUISE",
-      "分類": "cyclical_high_beta",
-      "估值模型": "PEG",
-      "風險等級": "高",
-      "股價": 27.85,
-      "PEG": 0.51,
-      "1日漲跌幅": 4.37,
-      "1週漲跌幅": 4.78,
-      "1月漲跌幅": 6.26,
-      "3月漲跌幅": -13.27,
-      "6月漲跌幅": -3,
-      "12月漲跌幅": 58.24,
-      "量比": 0.78,
-      "valuation_score": 37.24,
-      "trend_score": 8,
-      "structure_score": 5.43,
-      "timing_score": 4.89,
-      "money_score": 7,
-      "quality_score": 0,
-      "category_adjust": -0.2,
-      "today_score": 61.2,
-      "趨勢判讀": {
-        "年線": "↑",
-        "6月線": "↓",
-        "3月線": "↓",
-        "月線": "↑",
-        "趨勢狀態": "up_mild",
-        "結構狀態": "building",
-        "時機狀態": "warm"
-      },
-      "估值資料": {
-        "ValuationClass": "CYCLICAL",
-        "PEG": 0.51,
-        "ForwardPE": 18.57,
-        "AnchorPE": 12,
-        "PERatio": 1.55,
-        "EPS成長率": 36.36,
-        "PEScore": 6,
-        "GrowthScore": 22.04,
-        "GrowthScoreAdj": 13.22,
-        "QualityMomentum": 27.01,
-        "QualityFactor": 1.14,
-        "ValuationRaw": 37.24
-      },
-      "結構資料": {
-        "swing_days": [
-          4.37,
-          5.52,
-          2.85,
-          2.73,
-          4.21,
-          2.74
-        ],
-        "amp_1d": 4.37,
-        "ShortSwing": 3.93
-      },
-      "時機資料": {
-        "Snapshot": 4.89
-      },
-      "分數拆解": {
-        "估值原始分": 37.24,
-        "估值分": 37.24,
-        "趨勢分": 8,
-        "結構分": 5.43,
-        "時機分": 4.89,
-        "資金分": 7,
-        "品質分": 0,
-        "類別調整": -0.2,
-        "總分": 61.2
-      },
-      "持倉曝險": {
-        "FCN數量": 1,
-        "投入金額": 100000,
-        "投入資金比": 11.9,
-        "Danger": 0,
-        "Watch": 0,
-        "Healthy": 1,
-        "Pure平均": 5.2,
-        "Event平均": 5.2
-      },
-      "曝險警示": {
-        "level": "normal",
-        "text": "投入比 11.9%（安全）。",
-        "baseline": {
-          "safe": 20,
-          "warning": 30
-        }
-      },
-      "建議動作": "加入",
-      "ui_bucket": "積極推薦",
-      "is_today_highlight": false,
-      "today_highlight_reason": "趨勢未轉空 / 估值合理 / 曝險可控",
-      "why_yes": [
-        "估值合理",
-        "中期趨勢健康"
-      ],
-      "why_no": [
-        "PE 相對偏貴"
-      ],
-      "估值說明": "ValuationClass CYCLICAL，AnchorPE 12，Forward PE 18.57，PE Ratio 1.55，EPS成長 36.36%，PEG 0.51，QualityMomentum 27.01%，QualityFactor 1.14，ValuationRaw 37.24，估值判定：合理偏低",
-      "最終說明": "趨勢面：TrendRaw 12.06，狀態 up_mild。結構面：ShortSwing 3.93，甜度已反映。時機面：Snapshot 4.89。估值面：ValuationClass CYCLICAL，AnchorPE 12，Forward PE 18.57，PE Ratio 1.55，EPS成長 36.36%，PEG 0.51，QualityMomentum 27.01%，QualityFactor 1.14，ValuationRaw 37.24，估值判定：合理偏低。持倉面：投入比 11.9%（安全）。整體條件支持，可列入 FCN 候選。"
-    },
-    {
-      "排名": 23,
       "股號": "AVGO",
       "股名": "Broadcom",
       "產業": "AI_SEMI",
@@ -6005,12 +5898,12 @@
       "量比": 0.75,
       "valuation_score": 32.37,
       "trend_score": 9,
-      "structure_score": 3.28,
+      "structure_score": 3.05,
       "timing_score": 6.27,
       "money_score": 7,
       "quality_score": 2,
       "category_adjust": 2,
-      "today_score": 61.11,
+      "today_score": 60.92,
       "趨勢判讀": {
         "年線": "↑",
         "6月線": "↑",
@@ -6053,12 +5946,12 @@
         "估值原始分": 32.37,
         "估值分": 32.37,
         "趨勢分": 9,
-        "結構分": 3.28,
+        "結構分": 3.05,
         "時機分": 6.27,
         "資金分": 7,
         "品質分": 2,
         "類別調整": 2,
-        "總分": 61.11
+        "總分": 60.92
       },
       "持倉曝險": {
         "FCN數量": 10,
@@ -6096,6 +5989,113 @@
       "最終說明": "趨勢面：TrendRaw 29.6，狀態 up_strong。結構面：ShortSwing 2.86，甜度已反映。時機面：Snapshot 6.27。估值面：ValuationClass AI_SEMI_LEADER，AnchorPE 35，Forward PE 49.99，PE Ratio 1.43，EPS成長 20.34%，PEG 2.46，QualityMomentum 55.22%，QualityFactor 1.20，ValuationRaw 32.37，估值判定：合理偏低。持倉面：投入比 30.95%（安全）。整體條件支持，可列入 FCN 候選。"
     },
     {
+      "排名": 23,
+      "股號": "CCL",
+      "股名": "Carnival",
+      "產業": "TRAVEL",
+      "子產業": "CRUISE",
+      "分類": "cyclical_high_beta",
+      "估值模型": "PEG",
+      "風險等級": "高",
+      "股價": 27.85,
+      "PEG": 0.51,
+      "1日漲跌幅": 4.37,
+      "1週漲跌幅": 4.78,
+      "1月漲跌幅": 6.26,
+      "3月漲跌幅": -13.27,
+      "6月漲跌幅": -3,
+      "12月漲跌幅": 58.24,
+      "量比": 0.78,
+      "valuation_score": 37.24,
+      "trend_score": 8,
+      "structure_score": 3.99,
+      "timing_score": 4.89,
+      "money_score": 7,
+      "quality_score": 0,
+      "category_adjust": -0.2,
+      "today_score": 60.05,
+      "趨勢判讀": {
+        "年線": "↑",
+        "6月線": "↓",
+        "3月線": "↓",
+        "月線": "↑",
+        "趨勢狀態": "up_mild",
+        "結構狀態": "building",
+        "時機狀態": "warm"
+      },
+      "估值資料": {
+        "ValuationClass": "CYCLICAL",
+        "PEG": 0.51,
+        "ForwardPE": 18.57,
+        "AnchorPE": 12,
+        "PERatio": 1.55,
+        "EPS成長率": 36.36,
+        "PEScore": 6,
+        "GrowthScore": 22.04,
+        "GrowthScoreAdj": 13.22,
+        "QualityMomentum": 27.01,
+        "QualityFactor": 1.14,
+        "ValuationRaw": 37.24
+      },
+      "結構資料": {
+        "swing_days": [
+          4.37,
+          5.52,
+          2.85,
+          2.73,
+          4.21,
+          2.74
+        ],
+        "amp_1d": 4.37,
+        "ShortSwing": 3.93
+      },
+      "時機資料": {
+        "Snapshot": 4.89
+      },
+      "分數拆解": {
+        "估值原始分": 37.24,
+        "估值分": 37.24,
+        "趨勢分": 8,
+        "結構分": 3.99,
+        "時機分": 4.89,
+        "資金分": 7,
+        "品質分": 0,
+        "類別調整": -0.2,
+        "總分": 60.05
+      },
+      "持倉曝險": {
+        "FCN數量": 1,
+        "投入金額": 100000,
+        "投入資金比": 11.9,
+        "Danger": 0,
+        "Watch": 0,
+        "Healthy": 1,
+        "Pure平均": 5.2,
+        "Event平均": 5.2
+      },
+      "曝險警示": {
+        "level": "normal",
+        "text": "投入比 11.9%（安全）。",
+        "baseline": {
+          "safe": 20,
+          "warning": 30
+        }
+      },
+      "建議動作": "加入",
+      "ui_bucket": "積極推薦",
+      "is_today_highlight": false,
+      "today_highlight_reason": "趨勢未轉空 / 估值合理 / 曝險可控",
+      "why_yes": [
+        "估值合理",
+        "中期趨勢健康"
+      ],
+      "why_no": [
+        "PE 相對偏貴"
+      ],
+      "估值說明": "ValuationClass CYCLICAL，AnchorPE 12，Forward PE 18.57，PE Ratio 1.55，EPS成長 36.36%，PEG 0.51，QualityMomentum 27.01%，QualityFactor 1.14，ValuationRaw 37.24，估值判定：合理偏低",
+      "最終說明": "趨勢面：TrendRaw 12.06，狀態 up_mild。結構面：ShortSwing 3.93，甜度已反映。時機面：Snapshot 4.89。估值面：ValuationClass CYCLICAL，AnchorPE 12，Forward PE 18.57，PE Ratio 1.55，EPS成長 36.36%，PEG 0.51，QualityMomentum 27.01%，QualityFactor 1.14，ValuationRaw 37.24，估值判定：合理偏低。持倉面：投入比 11.9%（安全）。整體條件支持，可列入 FCN 候選。"
+    },
+    {
       "排名": 24,
       "股號": "AMAT",
       "股名": "Applied Materials",
@@ -6115,12 +6115,12 @@
       "量比": 0.84,
       "valuation_score": 27.28,
       "trend_score": 10,
-      "structure_score": 5.3,
+      "structure_score": 3.94,
       "timing_score": 8.94,
       "money_score": 7,
       "quality_score": 2,
       "category_adjust": 2,
-      "today_score": 60.98,
+      "today_score": 59.89,
       "趨勢判讀": {
         "年線": "↑",
         "6月線": "↑",
@@ -6163,12 +6163,12 @@
         "估值原始分": 27.28,
         "估值分": 27.28,
         "趨勢分": 10,
-        "結構分": 5.3,
+        "結構分": 3.94,
         "時機分": 8.94,
         "資金分": 7,
         "品質分": 2,
         "類別調整": 2,
-        "總分": 60.98
+        "總分": 59.89
       },
       "持倉曝險": {
         "FCN數量": 0,
@@ -6207,117 +6207,6 @@
     },
     {
       "排名": 25,
-      "股號": "AMZN",
-      "股名": "Amazon",
-      "產業": "AI_PLATFORM",
-      "子產業": "CLOUD_ECOM",
-      "分類": "core",
-      "估值模型": "PEG",
-      "風險等級": "中",
-      "股價": 233.65,
-      "PEG": 2.13,
-      "1日漲跌幅": 4.76,
-      "1週漲跌幅": 10.96,
-      "1月漲跌幅": 9.01,
-      "3月漲跌幅": -3.27,
-      "6月漲跌幅": 5.35,
-      "12月漲跌幅": 28.93,
-      "量比": 1.49,
-      "valuation_score": 25.36,
-      "trend_score": 8,
-      "structure_score": 3.84,
-      "timing_score": 7.78,
-      "money_score": 9,
-      "quality_score": 2,
-      "category_adjust": 2,
-      "today_score": 56.36,
-      "趨勢判讀": {
-        "年線": "↑",
-        "6月線": "↑",
-        "3月線": "↓",
-        "月線": "↑",
-        "趨勢狀態": "up_mild",
-        "結構狀態": "building",
-        "時機狀態": "warm"
-      },
-      "估值資料": {
-        "ValuationClass": "PLATFORM_MIXED",
-        "PEG": 2.13,
-        "ForwardPE": 46.73,
-        "AnchorPE": 28,
-        "PERatio": 1.67,
-        "EPS成長率": 21.95,
-        "PEScore": 6,
-        "GrowthScore": 14.78,
-        "GrowthScoreAdj": 8.87,
-        "QualityMomentum": 16.21,
-        "QualityFactor": 0.92,
-        "ValuationRaw": 25.36
-      },
-      "結構資料": {
-        "swing_days": [
-          4.76,
-          3.03,
-          2.3,
-          1.6,
-          3.47,
-          2.59
-        ],
-        "amp_1d": 4.76,
-        "ShortSwing": 3.16
-      },
-      "時機資料": {
-        "Snapshot": 7.78
-      },
-      "分數拆解": {
-        "估值原始分": 25.36,
-        "估值分": 25.36,
-        "趨勢分": 8,
-        "結構分": 3.84,
-        "時機分": 7.78,
-        "資金分": 9,
-        "品質分": 2,
-        "類別調整": 2,
-        "總分": 56.36
-      },
-      "持倉曝險": {
-        "FCN數量": 1,
-        "投入金額": 30000,
-        "投入資金比": 3.57,
-        "Danger": 0,
-        "Watch": 0,
-        "Healthy": 1,
-        "Pure平均": 9.8,
-        "Event平均": 9.8
-      },
-      "曝險警示": {
-        "level": "normal",
-        "text": "投入比 3.57%（安全）。",
-        "baseline": {
-          "safe": 40,
-          "warning": 50
-        }
-      },
-      "建議動作": "加入",
-      "ui_bucket": "積極推薦",
-      "is_today_highlight": false,
-      "today_highlight_reason": "趨勢未轉空 / 時機偏正 / 估值合理 / 曝險可控",
-      "why_yes": [
-        "核心股",
-        "品質佳",
-        "估值合理",
-        "中期趨勢健康",
-        "短線節奏偏佳",
-        "資金支持"
-      ],
-      "why_no": [
-        "PE 相對偏貴"
-      ],
-      "估值說明": "ValuationClass PLATFORM_MIXED，AnchorPE 28，Forward PE 46.73，PE Ratio 1.67，EPS成長 21.95%，PEG 2.13，QualityMomentum 16.21%，QualityFactor 0.92，ValuationRaw 25.36，估值判定：合理偏低",
-      "最終說明": "趨勢面：TrendRaw 10，狀態 up_mild。結構面：ShortSwing 3.16，甜度已反映。時機面：Snapshot 7.78。估值面：ValuationClass PLATFORM_MIXED，AnchorPE 28，Forward PE 46.73，PE Ratio 1.67，EPS成長 21.95%，PEG 2.13，QualityMomentum 16.21%，QualityFactor 0.92，ValuationRaw 25.36，估值判定：合理偏低。資金面尚可。持倉面：投入比 3.57%（安全）。整體條件支持，可列入 FCN 候選。"
-    },
-    {
-      "排名": 26,
       "股號": "LVS",
       "股名": "Las Vegas Sands",
       "產業": "TRAVEL",
@@ -6336,12 +6225,12 @@
       "量比": 0.94,
       "valuation_score": 35.74,
       "trend_score": 8,
-      "structure_score": 2.57,
+      "structure_score": 2.71,
       "timing_score": 1.07,
       "money_score": 8,
       "quality_score": 1,
       "category_adjust": -0.2,
-      "today_score": 56.25,
+      "today_score": 56.36,
       "趨勢判讀": {
         "年線": "↑",
         "6月線": "↑",
@@ -6384,12 +6273,12 @@
         "估值原始分": 35.74,
         "估值分": 35.74,
         "趨勢分": 8,
-        "結構分": 2.57,
+        "結構分": 2.71,
         "時機分": 1.07,
         "資金分": 8,
         "品質分": 1,
         "類別調整": -0.2,
-        "總分": 56.25
+        "總分": 56.36
       },
       "持倉曝險": {
         "FCN數量": 0,
@@ -6425,6 +6314,117 @@
       "最終說明": "趨勢面：TrendRaw 16.48，狀態 up_mild。結構面：ShortSwing 2.46，甜度已反映。時機面：Snapshot 1.07。估值面：ValuationClass CYCLICAL，AnchorPE 15，Forward PE 18.79，PE Ratio 1.25，EPS成長 20.83%，PEG 0.90，QualityMomentum 35.50%，QualityFactor 1.20，ValuationRaw 35.74，估值判定：合理偏低。資金面尚可。持倉面：投入比 0%（安全）。整體條件支持，可列入 FCN 候選。"
     },
     {
+      "排名": 26,
+      "股號": "AMZN",
+      "股名": "Amazon",
+      "產業": "AI_PLATFORM",
+      "子產業": "CLOUD_ECOM",
+      "分類": "core",
+      "估值模型": "PEG",
+      "風險等級": "中",
+      "股價": 233.65,
+      "PEG": 2.13,
+      "1日漲跌幅": 4.76,
+      "1週漲跌幅": 10.96,
+      "1月漲跌幅": 9.01,
+      "3月漲跌幅": -3.27,
+      "6月漲跌幅": 5.35,
+      "12月漲跌幅": 28.93,
+      "量比": 1.49,
+      "valuation_score": 25.36,
+      "trend_score": 8,
+      "structure_score": 3.31,
+      "timing_score": 7.78,
+      "money_score": 9,
+      "quality_score": 2,
+      "category_adjust": 2,
+      "today_score": 55.93,
+      "趨勢判讀": {
+        "年線": "↑",
+        "6月線": "↑",
+        "3月線": "↓",
+        "月線": "↑",
+        "趨勢狀態": "up_mild",
+        "結構狀態": "building",
+        "時機狀態": "warm"
+      },
+      "估值資料": {
+        "ValuationClass": "PLATFORM_MIXED",
+        "PEG": 2.13,
+        "ForwardPE": 46.73,
+        "AnchorPE": 28,
+        "PERatio": 1.67,
+        "EPS成長率": 21.95,
+        "PEScore": 6,
+        "GrowthScore": 14.78,
+        "GrowthScoreAdj": 8.87,
+        "QualityMomentum": 16.21,
+        "QualityFactor": 0.92,
+        "ValuationRaw": 25.36
+      },
+      "結構資料": {
+        "swing_days": [
+          4.76,
+          3.03,
+          2.3,
+          1.6,
+          3.47,
+          2.59
+        ],
+        "amp_1d": 4.76,
+        "ShortSwing": 3.16
+      },
+      "時機資料": {
+        "Snapshot": 7.78
+      },
+      "分數拆解": {
+        "估值原始分": 25.36,
+        "估值分": 25.36,
+        "趨勢分": 8,
+        "結構分": 3.31,
+        "時機分": 7.78,
+        "資金分": 9,
+        "品質分": 2,
+        "類別調整": 2,
+        "總分": 55.93
+      },
+      "持倉曝險": {
+        "FCN數量": 1,
+        "投入金額": 30000,
+        "投入資金比": 3.57,
+        "Danger": 0,
+        "Watch": 0,
+        "Healthy": 1,
+        "Pure平均": 9.8,
+        "Event平均": 9.8
+      },
+      "曝險警示": {
+        "level": "normal",
+        "text": "投入比 3.57%（安全）。",
+        "baseline": {
+          "safe": 40,
+          "warning": 50
+        }
+      },
+      "建議動作": "加入",
+      "ui_bucket": "積極推薦",
+      "is_today_highlight": false,
+      "today_highlight_reason": "趨勢未轉空 / 時機偏正 / 估值合理 / 曝險可控",
+      "why_yes": [
+        "核心股",
+        "品質佳",
+        "估值合理",
+        "中期趨勢健康",
+        "短線節奏偏佳",
+        "資金支持"
+      ],
+      "why_no": [
+        "PE 相對偏貴"
+      ],
+      "估值說明": "ValuationClass PLATFORM_MIXED，AnchorPE 28，Forward PE 46.73，PE Ratio 1.67，EPS成長 21.95%，PEG 2.13，QualityMomentum 16.21%，QualityFactor 0.92，ValuationRaw 25.36，估值判定：合理偏低",
+      "最終說明": "趨勢面：TrendRaw 10，狀態 up_mild。結構面：ShortSwing 3.16，甜度已反映。時機面：Snapshot 7.78。估值面：ValuationClass PLATFORM_MIXED，AnchorPE 28，Forward PE 46.73，PE Ratio 1.67，EPS成長 21.95%，PEG 2.13，QualityMomentum 16.21%，QualityFactor 0.92，ValuationRaw 25.36，估值判定：合理偏低。資金面尚可。持倉面：投入比 3.57%（安全）。整體條件支持，可列入 FCN 候選。"
+    },
+    {
       "排名": 27,
       "股號": "GOOG",
       "股名": "Google",
@@ -6444,12 +6444,12 @@
       "量比": 0.71,
       "valuation_score": 26.59,
       "trend_score": 10,
-      "structure_score": 2.73,
+      "structure_score": 2.78,
       "timing_score": 4.3,
       "money_score": 7,
       "quality_score": 2,
       "category_adjust": 2,
-      "today_score": 54.51,
+      "today_score": 54.56,
       "趨勢判讀": {
         "年線": "↑",
         "6月線": "↑",
@@ -6492,12 +6492,12 @@
         "估值原始分": 26.59,
         "估值分": 26.59,
         "趨勢分": 10,
-        "結構分": 2.73,
+        "結構分": 2.78,
         "時機分": 4.3,
         "資金分": 7,
         "品質分": 2,
         "類別調整": 2,
-        "總分": 54.51
+        "總分": 54.56
       },
       "持倉曝險": {
         "FCN數量": 4,
@@ -6553,12 +6553,12 @@
       "量比": 1.34,
       "valuation_score": 34.48,
       "trend_score": 0,
-      "structure_score": 6.3,
+      "structure_score": 4.34,
       "timing_score": 0,
       "money_score": 9,
       "quality_score": 1,
       "category_adjust": 2,
-      "today_score": 50.62,
+      "today_score": 49.05,
       "趨勢判讀": {
         "年線": "↑",
         "6月線": "↓",
@@ -6601,12 +6601,12 @@
         "估值原始分": 34.48,
         "估值分": 34.48,
         "趨勢分": 0,
-        "結構分": 6.3,
+        "結構分": 4.34,
         "時機分": 0,
         "資金分": 9,
         "品質分": 1,
         "類別調整": 2,
-        "總分": 50.62
+        "總分": 49.05
       },
       "持倉曝險": {
         "FCN數量": 2,
@@ -6644,113 +6644,6 @@
     },
     {
       "排名": 29,
-      "股號": "EL",
-      "股名": "Estee Lauder",
-      "產業": "CONSUMER",
-      "子產業": "BEAUTY",
-      "分類": "core",
-      "估值模型": "PEG",
-      "風險等級": "中",
-      "股價": 73.29,
-      "PEG": 0.99,
-      "1日漲跌幅": 7.04,
-      "1週漲跌幅": 3.65,
-      "1月漲跌幅": -22.26,
-      "3月漲跌幅": -30.38,
-      "6月漲跌幅": -20.92,
-      "12月漲跌幅": 37.5,
-      "量比": 0.49,
-      "valuation_score": 31.61,
-      "trend_score": 4,
-      "structure_score": 7.52,
-      "timing_score": 0,
-      "money_score": 2,
-      "quality_score": 1,
-      "category_adjust": 2,
-      "today_score": 47.23,
-      "趨勢判讀": {
-        "年線": "↑",
-        "6月線": "↓",
-        "3月線": "↓",
-        "月線": "↓",
-        "趨勢狀態": "neutral",
-        "結構狀態": "building",
-        "時機狀態": "neutral"
-      },
-      "估值資料": {
-        "ValuationClass": "CORE_GENERIC",
-        "PEG": 0.99,
-        "ForwardPE": 22.9,
-        "AnchorPE": 20,
-        "PERatio": 1.15,
-        "EPS成長率": 23.08,
-        "PEScore": 10.19,
-        "GrowthScore": 15.23,
-        "GrowthScoreAdj": 9.14,
-        "QualityMomentum": 6.74,
-        "QualityFactor": 0.8,
-        "ValuationRaw": 31.61
-      },
-      "結構資料": {
-        "swing_days": [
-          7.04,
-          3.59,
-          3.33,
-          3.83,
-          4.62,
-          5.23
-        ],
-        "amp_1d": 7.04,
-        "ShortSwing": 4.81
-      },
-      "時機資料": {
-        "Snapshot": -0.01
-      },
-      "分數拆解": {
-        "估值原始分": 31.61,
-        "估值分": 31.61,
-        "趨勢分": 4,
-        "結構分": 7.52,
-        "時機分": 0,
-        "資金分": 2,
-        "品質分": 1,
-        "類別調整": 2,
-        "總分": 47.23
-      },
-      "持倉曝險": {
-        "FCN數量": 1,
-        "投入金額": 100000,
-        "投入資金比": 11.9,
-        "Danger": 0,
-        "Watch": 0,
-        "Healthy": 1,
-        "Pure平均": 5.6,
-        "Event平均": 5.6
-      },
-      "曝險警示": {
-        "level": "normal",
-        "text": "投入比 11.9%（安全）。",
-        "baseline": {
-          "safe": 40,
-          "warning": 50
-        }
-      },
-      "建議動作": "加入",
-      "ui_bucket": "積極推薦",
-      "is_today_highlight": false,
-      "today_highlight_reason": "趨勢未轉空 / 估值合理 / 曝險可控",
-      "why_yes": [
-        "核心股",
-        "估值合理"
-      ],
-      "why_no": [
-        "量比 0.49 偏低"
-      ],
-      "估值說明": "ValuationClass CORE_GENERIC，AnchorPE 20，Forward PE 22.90，PE Ratio 1.15，EPS成長 23.08%，PEG 0.99，QualityMomentum 6.74%，QualityFactor 0.80，ValuationRaw 31.61，估值判定：合理偏低",
-      "最終說明": "趨勢面：TrendRaw -9.01，狀態 neutral。結構面：ShortSwing 4.81，甜度已反映。時機面：Snapshot -0.01。估值面：ValuationClass CORE_GENERIC，AnchorPE 20，Forward PE 22.90，PE Ratio 1.15，EPS成長 23.08%，PEG 0.99，QualityMomentum 6.74%，QualityFactor 0.80，ValuationRaw 31.61，估值判定：合理偏低。資金面偏弱。持倉面：投入比 11.9%（安全）。整體條件支持，可列入 FCN 候選。"
-    },
-    {
-      "排名": 30,
       "股號": "PLTR",
       "股名": "Palantir",
       "產業": "AI_SOFTWARE",
@@ -6859,6 +6752,113 @@
       "最終說明": "趨勢面：TrendRaw -5.73，狀態 neutral。結構面：ShortSwing 6.45，甜度已反映。時機面：Snapshot -3.06。估值面：ValuationClass SPECULATIVE，AnchorPE 22，Forward PE 81.56，PE Ratio 3.71，EPS成長 33.33%，PEG 2.45，QualityMomentum 10.96%，QualityFactor 0.82，ValuationRaw 26.11，估值判定：合理偏低。資金面尚可。持倉面：投入比 25%（偏高），已高於 speculative 類安全 baseline，建議保守處理。目前不適合做 FCN。"
     },
     {
+      "排名": 30,
+      "股號": "EL",
+      "股名": "Estee Lauder",
+      "產業": "CONSUMER",
+      "子產業": "BEAUTY",
+      "分類": "core",
+      "估值模型": "PEG",
+      "風險等級": "中",
+      "股價": 73.29,
+      "PEG": 0.99,
+      "1日漲跌幅": 7.04,
+      "1週漲跌幅": 3.65,
+      "1月漲跌幅": -22.26,
+      "3月漲跌幅": -30.38,
+      "6月漲跌幅": -20.92,
+      "12月漲跌幅": 37.5,
+      "量比": 0.49,
+      "valuation_score": 31.61,
+      "trend_score": 4,
+      "structure_score": 4.82,
+      "timing_score": 0,
+      "money_score": 2,
+      "quality_score": 1,
+      "category_adjust": 2,
+      "today_score": 45.07,
+      "趨勢判讀": {
+        "年線": "↑",
+        "6月線": "↓",
+        "3月線": "↓",
+        "月線": "↓",
+        "趨勢狀態": "neutral",
+        "結構狀態": "building",
+        "時機狀態": "neutral"
+      },
+      "估值資料": {
+        "ValuationClass": "CORE_GENERIC",
+        "PEG": 0.99,
+        "ForwardPE": 22.9,
+        "AnchorPE": 20,
+        "PERatio": 1.15,
+        "EPS成長率": 23.08,
+        "PEScore": 10.19,
+        "GrowthScore": 15.23,
+        "GrowthScoreAdj": 9.14,
+        "QualityMomentum": 6.74,
+        "QualityFactor": 0.8,
+        "ValuationRaw": 31.61
+      },
+      "結構資料": {
+        "swing_days": [
+          7.04,
+          3.59,
+          3.33,
+          3.83,
+          4.62,
+          5.23
+        ],
+        "amp_1d": 7.04,
+        "ShortSwing": 4.81
+      },
+      "時機資料": {
+        "Snapshot": -0.01
+      },
+      "分數拆解": {
+        "估值原始分": 31.61,
+        "估值分": 31.61,
+        "趨勢分": 4,
+        "結構分": 4.82,
+        "時機分": 0,
+        "資金分": 2,
+        "品質分": 1,
+        "類別調整": 2,
+        "總分": 45.07
+      },
+      "持倉曝險": {
+        "FCN數量": 1,
+        "投入金額": 100000,
+        "投入資金比": 11.9,
+        "Danger": 0,
+        "Watch": 0,
+        "Healthy": 1,
+        "Pure平均": 5.6,
+        "Event平均": 5.6
+      },
+      "曝險警示": {
+        "level": "normal",
+        "text": "投入比 11.9%（安全）。",
+        "baseline": {
+          "safe": 40,
+          "warning": 50
+        }
+      },
+      "建議動作": "加入",
+      "ui_bucket": "積極推薦",
+      "is_today_highlight": false,
+      "today_highlight_reason": "趨勢未轉空 / 估值合理 / 曝險可控",
+      "why_yes": [
+        "核心股",
+        "估值合理"
+      ],
+      "why_no": [
+        "量比 0.49 偏低"
+      ],
+      "估值說明": "ValuationClass CORE_GENERIC，AnchorPE 20，Forward PE 22.90，PE Ratio 1.15，EPS成長 23.08%，PEG 0.99，QualityMomentum 6.74%，QualityFactor 0.80，ValuationRaw 31.61，估值判定：合理偏低",
+      "最終說明": "趨勢面：TrendRaw -9.01，狀態 neutral。結構面：ShortSwing 4.81，甜度已反映。時機面：Snapshot -0.01。估值面：ValuationClass CORE_GENERIC，AnchorPE 20，Forward PE 22.90，PE Ratio 1.15，EPS成長 23.08%，PEG 0.99，QualityMomentum 6.74%，QualityFactor 0.80，ValuationRaw 31.61，估值判定：合理偏低。資金面偏弱。持倉面：投入比 11.9%（安全）。整體條件支持，可列入 FCN 候選。"
+    },
+    {
       "排名": 31,
       "股號": "COST",
       "股名": "Costco",
@@ -6878,12 +6878,12 @@
       "量比": 0.8,
       "valuation_score": 16.84,
       "trend_score": 8,
-      "structure_score": 1.45,
+      "structure_score": 2.11,
       "timing_score": 2.41,
       "money_score": 7,
       "quality_score": 2,
       "category_adjust": 1,
-      "today_score": 38.83,
+      "today_score": 39.36,
       "趨勢判讀": {
         "年線": "↑",
         "6月線": "↑",
@@ -6926,12 +6926,12 @@
         "估值原始分": 16.84,
         "估值分": 16.84,
         "趨勢分": 8,
-        "結構分": 1.45,
+        "結構分": 2.11,
         "時機分": 2.41,
         "資金分": 7,
         "品質分": 2,
         "類別調整": 1,
-        "總分": 38.83
+        "總分": 39.36
       },
       "持倉曝險": {
         "FCN數量": 0,
@@ -6987,12 +6987,12 @@
       "量比": 0.94,
       "valuation_score": 22.27,
       "trend_score": 4,
-      "structure_score": 5.78,
+      "structure_score": 4.13,
       "timing_score": 0,
       "money_score": 8,
       "quality_score": 0,
       "category_adjust": -0.5,
-      "today_score": 38.39,
+      "today_score": 37.08,
       "趨勢判讀": {
         "年線": "↑",
         "6月線": "↓",
@@ -7035,12 +7035,12 @@
         "估值原始分": 22.27,
         "估值分": 22.27,
         "趨勢分": 4,
-        "結構分": 5.78,
+        "結構分": 4.13,
         "時機分": 0,
         "資金分": 8,
         "品質分": 0,
         "類別調整": -0.5,
-        "總分": 38.39
+        "總分": 37.08
       },
       "持倉曝險": {
         "FCN數量": 14,
