@@ -562,7 +562,9 @@ const delta = toNum(marketYield) - fairYield;
 
     pre_rate: round2(preRate),
     high_rate_brake: round2(highRateBrake),
-    fair_yield: round2(fairYield),
+    raw_fair_yield: round2(rawFairYield),
+yield_capped: yieldCapped,
+fair_yield: round2(fairYield),
     pricing_delta: round2(delta),
     pricing_view: pricingView(delta),
     note
