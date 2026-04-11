@@ -847,19 +847,19 @@
     function buildVolAdjExplain(v) {
       const basketVol = num(v);
 
-      if (basketVol <= 3.0) {
+      if (basketVol <= 2.0) {
         return {
-          bucket: "v ≤ 3",
+          bucket: "v ≤ 2",
           formula: "-0.6 + 0.35×v",
           substitution: `-0.6 + 0.35×${fmt(basketVol)}`
         };
       }
 
       if (basketVol <= 6.0) {
-        const d = basketVol - 3.0;
+        const d = basketVol - 2.0;
         return {
-          bucket: "3 < v ≤ 6",
-          formula: "0.45 + 0.85×(v-3) + 0.3×(v-3)^2",
+          bucket: "2 < v ≤ 6",
+          formula: "0.45 + 0.85×(v-2) + 0.3×(v-2)^2",
           substitution: `0.45 + 0.85×${fmt(d)} + 0.3×${fmt(d)}^2`
         };
       }
