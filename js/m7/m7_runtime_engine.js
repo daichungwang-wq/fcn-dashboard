@@ -226,7 +226,7 @@ function calcQualityFactor(q) {
 // ------------------------------------------
 // 估值
 // Valuation = (0.6 * peScore + 0.4 * growthScore_adj) * qualityFactor
-// valuation_norm = clamp(raw / 3.5, 0, 10)
+// valuation_norm = clamp(raw / 3.5, 0, 10) 取消
 // ------------------------------------------
 function inferValuationModel(row) {
   const sector = row.sector || "";
