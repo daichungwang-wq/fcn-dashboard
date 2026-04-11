@@ -12,6 +12,8 @@ async function loadM7() {
 
     renderTop(data);
     renderDashboard(data);
+    renderScoreDashboard(data);
+    renderScoreRanking(data);
     renderMainCards(data);
   } catch (err) {
     const wrap = document.getElementById("m7-sections");
