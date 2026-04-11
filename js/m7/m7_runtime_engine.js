@@ -1,10 +1,11 @@
 // ==========================================
-// M7 Runtime Engine FINAL
+// M7 Runtime Engine FINAL NORMALIZED
 // 讀取：
 //   data/m7/m7_fundamental_data.json
 //   data/m7/m2_stock_exposure.json
 // 輸出：
 //   data/m7/m7_new_stock_today.json
+//   data/m7/m7_scoreboard.json
 // ==========================================
 
 import fs from "fs";
@@ -13,6 +14,7 @@ import path from "path";
 const INPUT_FILE = path.resolve("./data/m7/m7_fundamental_data.json");
 const M2_FILE = path.resolve("./data/m7/m2_stock_exposure.json");
 const OUTPUT_FILE = path.resolve("./data/m7/m7_new_stock_today.json");
+const SCOREBOARD_FILE = path.resolve("./data/m7/m7_scoreboard.json");
 
 // ------------------------------------------
 // 工具
@@ -38,6 +40,11 @@ function clamp(v, min, max) {
   return Math.max(min, Math.min(v, max));
 }
 
+function getArrow(v) {
+  if (v === null || v === undefined) return "未知";
+  return v >= 0 ? "↑" : "↓";
+}
+
 // ------------------------------------------
 // 讀取 M2 曝險資料
 // ------------------------------------------
@@ -59,25 +66,54 @@ function loadM2Exposure() {
 }
 
 // ------------------------------------------
-// 類別 / Anchor / 類別加成
+// 類別 / valuation class / anchor
 // ------------------------------------------
+const VALUATION_OVERRIDE = {
+  MSFT: { valuation_class: "AI_PLATFORM_CORE", anchor_pe: 32 },
+  META: { valuation_class: "AI_PLATFORM_CORE", anchor_pe: 32 },
+  GOOGL: { valuation_class: "AI_PLATFORM_CORE", anchor_pe: 30 },
+  AMZN: { valuation_class: "PLATFORM_MIXED", anchor_pe: 28 },
+  AAPL: { valuation_class: "CONSUMER_PLATFORM", anchor_pe: 26 },
+
+  NVDA: { valuation_class: "AI_SEMI_LEADER", anchor_pe: 25 },
+  AVGO: { valuation_class: "AI_SEMI_LEADER", anchor_pe: 24 },
+  ARM: { valuation_class: "AI_SEMI_LEADER", anchor_pe: 24 },
+
+  TSM: { valuation_class: "AI_SEMI_CYCLICAL", anchor_pe: 22 },
+  AMAT: { valuation_class: "AI_SEMI_CYCLICAL", anchor_pe: 20 },
+  AMD: { valuation_class: "AI_SEMI_CYCLICAL", anchor_pe: 22 },
+  MU: { valuation_class: "AI_SEMI_CYCLICAL", anchor_pe: 22 },
+  MRVL: { valuation_class: "AI_SEMI_CYCLICAL", anchor_pe: 22 },
+
+  BAC: { valuation_class: "FINANCIAL", anchor_pe: 10 },
+  LQD: { valuation_class: "ETF_INCOME", anchor_pe: 18 },
+  QQQ: { valuation_class: "ETF_GROWTH", anchor_pe: 22 },
+
+  AAL: { valuation_class: "CYCLICAL", anchor_pe: 12 },
+  CCL: { valuation_class: "CYCLICAL", anchor_pe: 12 },
+  LVS: { valuation_class: "CYCLICAL", anchor_pe: 12 },
+
+  COIN: { valuation_class: "SPECULATIVE", anchor_pe: 18 },
+  SOFI: { valuation_class: "SPECULATIVE", anchor_pe: 18 },
+  ALAB: { valuation_class: "SPECULATIVE", anchor_pe: 18 },
+  CRDO: { valuation_class: "SPECULATIVE", anchor_pe: 18 },
+  TSLA: { valuation_class: "SPECULATIVE", anchor_pe: 20 },
+  PLTR: { valuation_class: "SPECULATIVE", anchor_pe: 22 }
+};
+
 function inferCategory(row) {
+  const symbol = row.symbol || "";
   const sector = row.sector || "";
   const subsector = row.subsector || "";
-  const symbol = row.symbol || "";
 
-  // 顯式禁區
-  const speculativeSet = new Set([
-    "COIN", "SOFI", "ALAB", "CRDO", "TSLA", "PLTR"
-  ]);
-  if (speculativeSet.has(symbol)) return "speculative";
+  if (["COIN", "SOFI", "ALAB", "CRDO", "TSLA", "PLTR"].includes(symbol)) {
+    return "speculative";
+  }
 
-  const travelSet = new Set(["AAL", "CCL", "LVS", "MGM"]);
-  if (travelSet.has(symbol)) return "cyclical_high_beta";
+  if (["AAL", "CCL", "LVS", "MGM"].includes(symbol)) {
+    return "cyclical_high_beta";
+  }
 
-  if (sector === "AI_APPLICATION") return "core";
-  if (sector === "AI_SEMI") return "core";
-  if (sector === "PLATFORM") return "core";
   if (sector === "FINANCIAL") return "income";
   if (sector === "ETF") return "income";
   if (sector === "DEFENSIVE") return "defensive";
@@ -88,62 +124,87 @@ function inferCategory(row) {
   return "core";
 }
 
-function getAnchorPE(row, category) {
+function inferValuationClass(row, category) {
+  const symbol = row.symbol || "";
   const sector = row.sector || "";
   const subsector = row.subsector || "";
-  const symbol = row.symbol || "";
 
-  if (category === "speculative") return 18;
-  if (category === "cyclical_high_beta") return 12;
-  if (category === "income") {
-    if (sector === "FINANCIAL") return 10;
-    if (sector === "ETF") return 18;
-    return 14;
+  if (VALUATION_OVERRIDE[symbol]?.valuation_class) {
+    return VALUATION_OVERRIDE[symbol].valuation_class;
   }
-  if (category === "defensive") return 22;
 
-  if (sector === "AI_APPLICATION") return 30;
-  if (sector === "PLATFORM") return 28;
+  if (category === "speculative") return "SPECULATIVE";
+  if (category === "cyclical_high_beta") return "CYCLICAL";
+  if (category === "defensive") return "DEFENSIVE";
+  if (category === "income") {
+    if (sector === "FINANCIAL") return "FINANCIAL";
+    return "ETF_INCOME";
+  }
+
+  if (sector === "AI_APPLICATION") return "AI_PLATFORM_CORE";
+  if (sector === "PLATFORM") return "CONSUMER_PLATFORM";
 
   if (sector === "AI_SEMI") {
-    if (subsector === "GPU" || subsector === "ASIC" || symbol === "NVDA" || symbol === "AVGO" || symbol === "ARM") {
-      return 25;
+    if (subsector === "GPU" || subsector === "ASIC" || subsector === "HBM") {
+      return "AI_SEMI_LEADER";
     }
-    if (symbol === "MU") return 16;
-    return 22;
+    return "AI_SEMI_CYCLICAL";
   }
 
-  return 20;
+  return "CORE_GENERIC";
 }
 
-function calcCategoryAdjust(category) {
-  if (category === "core") return 5;
-  if (category === "defensive") return 3;
-  if (category === "income") return 1;
-  if (category === "speculative") return -10;
-  if (category === "cyclical_high_beta") return -4;
+function getAnchorPE(row, category) {
+  const symbol = row.symbol || "";
+  const vClass = inferValuationClass(row, category);
+
+  if (VALUATION_OVERRIDE[symbol]?.anchor_pe) {
+    return VALUATION_OVERRIDE[symbol].anchor_pe;
+  }
+
+  const anchorMap = {
+    AI_PLATFORM_CORE: 32,
+    CONSUMER_PLATFORM: 26,
+    PLATFORM_MIXED: 28,
+    AI_SEMI_LEADER: 25,
+    AI_SEMI_CYCLICAL: 22,
+    DEFENSIVE: 22,
+    FINANCIAL: 10,
+    CYCLICAL: 12,
+    SPECULATIVE: 18,
+    ETF_INCOME: 18,
+    ETF_GROWTH: 22,
+    CORE_GENERIC: 20
+  };
+
+  return anchorMap[vClass] || 20;
+}
+
+function calcCategoryBonus(category) {
+  if (category === "core") return 2;
+  if (category === "defensive") return 1;
+  if (category === "income") return 0.5;
+  if (category === "cyclical_high_beta") return -1;
+  if (category === "speculative") return -2;
   return 0;
 }
 
 // ------------------------------------------
-// 品質分數（顯示用）
-// 品質倍率（估值用）
+// 品質 bonus / quality factor
 // ------------------------------------------
-function calcQualityScore(qualityLevel, riskLevel) {
-  let score = 0;
+function calcQualityBonus(qualityLevel, riskLevel) {
+  let bonus = 0;
 
-  if (qualityLevel === "高") score += 5;
-  else if (qualityLevel === "中") score += 2;
-  else score -= 5;
+  if (qualityLevel === "高") bonus += 2;
+  else if (qualityLevel === "中") bonus += 1;
+  else bonus -= 1;
 
-  if (riskLevel === "高") score -= 2;
-  else if (riskLevel === "低") score += 1;
+  if (riskLevel === "高") bonus -= 1;
+  else if (riskLevel === "低") bonus += 0.5;
 
-  return score;
+  return clamp(bonus, -2, 2);
 }
 
-// qualityMomentum =
-// 0.1 * 1M + 0.15 * 3M + 0.25 * 6M + 0.5 * 12M
 function calcQualityMomentum(r1m, r3m, r6m, r12m) {
   return (
     0.1 * (r1m ?? 0) +
@@ -153,78 +214,18 @@ function calcQualityMomentum(r1m, r3m, r6m, r12m) {
   );
 }
 
-// 定稿：std from 80% move to 100%, range 80%~120%
 function calcQualityFactor(q) {
   if (q >= 30) return 1.20;
-  if (q >= 20) return 1.00 + (q - 20) * 0.02; // 20 → 1.00, 30 → 1.20
-  if (q >= 10) return 0.80 + (q - 10) * 0.02; // 10 → 0.80, 20 → 1.00
-  return 0.80; // <= 10 不再往下削弱
+  if (q >= 20) return 1.00 + (q - 20) * 0.02; // 20 -> 1.00, 30 -> 1.20
+  if (q >= 10) return 0.80 + (q - 10) * 0.02; // 10 -> 0.80, 20 -> 1.00
+  return 0.80;
 }
 
 // ------------------------------------------
-// 估值：peScore + growthScore，再乘 qualityFactor
+// 估值
+// Valuation = (0.6 * peScore + 0.4 * growthScore_adj) * qualityFactor
+// valuation_norm = clamp(raw / 3.5, 0, 10)
 // ------------------------------------------
-function peScoreFromRatio(peRatio) {
-  if (peRatio === null || peRatio === undefined) return 20;
-
-  if (peRatio <= 0.7) return 34;
-  if (peRatio <= 0.8) return 32 + (0.8 - peRatio) * 20;
-  if (peRatio <= 0.9) return 28 + (0.9 - peRatio) * 40;
-  if (peRatio <= 1.1) return 20 - (peRatio - 1.0) * 80;
-  if (peRatio <= 1.2) return 12 - (peRatio - 1.1) * 40;
-  if (peRatio <= 1.3) return 8 - (peRatio - 1.2) * 20;
-  return 6;
-}
-
-function growthScoreBase(growth) {
-  // growth 用 %，例如 15 = 15%
-  if (growth === null || growth === undefined) return 3;
-
-  if (growth <= -30) return 0;
-
-  if (growth <= -20) {
-    return 1 + (growth + 20) * 0.1;
-  }
-
-  if (growth <= -10) {
-    return 2 + (growth + 10) * 0.1;
-  }
-
-  if (growth <= 0) {
-    return 3 + growth * 0.1;
-  }
-
-  // 0% ~ 10%：慢慢加，3 → 6
-  if (growth <= 10) {
-    return 3 + 0.3 * growth;
-  }
-
-  // 10% ~ 20%：拉開，6 → 14
-  if (growth <= 20) {
-    const x = growth - 10;
-    return 6 + 8 * Math.pow(x / 10, 1.5);
-  }
-
-  // 20% ~ 30%：線性，14 → 18
-  if (growth <= 30) {
-    return 14 + 0.4 * (growth - 20);
-  }
-
-  // 30%以上：鈍化，25封頂
-  return Math.min(25, 18 + 1.6 * Math.sqrt(growth - 30));
-}
-
-// 成長不變；衰退減半（相對 baseline = 3）
-function growthScoreFinal(growth) {
-  const base = 3;
-  const oldScore = growthScoreBase(growth);
-
-  if (growth === null || growth === undefined) return base;
-  if (growth >= 0) return oldScore;
-
-  return base + 0.5 * (oldScore - base);
-}
-
 function inferValuationModel(row) {
   const sector = row.sector || "";
   if (sector === "ETF") return "ETF";
@@ -242,6 +243,52 @@ function inferValuationModel(row) {
   return "NON_PEG";
 }
 
+function peScoreFromRatio(peRatio) {
+  if (peRatio === null || peRatio === undefined) return 20;
+
+  if (peRatio <= 0.7) return 34;
+  if (peRatio <= 0.8) return 32 + (0.8 - peRatio) * 20;
+  if (peRatio <= 0.9) return 28 + (0.9 - peRatio) * 40;
+  if (peRatio <= 1.1) return 20 - (peRatio - 1.0) * 80;
+  if (peRatio <= 1.2) return 12 - (peRatio - 1.1) * 40;
+  if (peRatio <= 1.3) return 8 - (peRatio - 1.2) * 20;
+  return 6;
+}
+
+function growthScoreBase(growth) {
+  if (growth === null || growth === undefined) return 3;
+
+  if (growth <= -30) return 0;
+
+  if (growth <= -20) return 1 + (growth + 20) * 0.1;
+  if (growth <= -10) return 2 + (growth + 10) * 0.1;
+  if (growth <= 0) return 3 + growth * 0.1;
+
+  if (growth <= 10) return 3 + 0.3 * growth;
+
+  if (growth <= 20) {
+    const x = growth - 10;
+    return 6 + 8 * Math.pow(x / 10, 1.5);
+  }
+
+  if (growth <= 30) {
+    return 14 + 0.4 * (growth - 20);
+  }
+
+  return Math.min(25, 18 + 1.6 * Math.sqrt(growth - 30));
+}
+
+// 成長不變；衰退減半（相對 baseline = 3）
+function growthScoreFinal(growth) {
+  const base = 3;
+  const oldScore = growthScoreBase(growth);
+
+  if (growth === null || growth === undefined) return base;
+  if (growth >= 0) return oldScore;
+
+  return base + 0.5 * (oldScore - base);
+}
+
 function buildValuationData(row, category) {
   const model = inferValuationModel(row);
   const price = safeNum(row.price, null);
@@ -256,54 +303,55 @@ function buildValuationData(row, category) {
   let growth = null;
   let peg = null;
   let peRatio = null;
-  let peScore = 20;
-  let growthScore = 3;
-  let qualityMomentum = calcQualityMomentum(r1m, r3m, r6m, r12m);
-  let qualityFactor = calcQualityFactor(qualityMomentum);
-  let rawScore = 23;
-  let finalScore = 18;
-  let level = "中性";
-  let text = "資料不足";
 
   const anchorPE = getAnchorPE(row, category);
 
   if (price !== null && epsNext !== null && epsNext > 0) {
     peForward = price / epsNext;
     peRatio = peForward / anchorPE;
-    peScore = peScoreFromRatio(peRatio);
   }
 
   if (epsNow !== null && epsNext !== null && epsNow > 0 && epsNext > 0) {
     growth = ((epsNext / epsNow) - 1) * 100;
-    growthScore = growthScoreFinal(growth);
-
     if (growth > 0 && peForward !== null) {
       peg = peForward / growth;
     }
   }
 
-  rawScore = peScore + growthScore;
-  finalScore = rawScore * qualityFactor;
-  finalScore = clamp(finalScore, 0, 40);
+  const peScore = peScoreFromRatio(peRatio);
+  const growthScore = growthScoreFinal(growth);
+  const growthScoreAdj = growthScore * 0.6;
 
-  if (finalScore >= 30) level = "合理偏低";
-  else if (finalScore >= 24) level = "合理";
-  else if (finalScore >= 18) level = "中性";
-  else if (finalScore >= 10) level = "偏高";
+  const qualityMomentum = calcQualityMomentum(r1m, r3m, r6m, r12m);
+  const qualityFactor = calcQualityFactor(qualityMomentum);
+
+  const valuationRaw = (0.6 * peScore + 0.4 * growthScoreAdj) * qualityFactor;
+  const valuationNorm = clamp(valuationRaw / 3.5, 0, 10);
+
+  let level = "中性";
+  if (valuationNorm >= 8) level = "合理偏低";
+  else if (valuationNorm >= 6.5) level = "合理";
+  else if (valuationNorm >= 5) level = "中性";
+  else if (valuationNorm >= 3) level = "偏高";
   else level = "高估";
 
-  text =
-    `AnchorPE ${anchorPE}` +
-    (peForward !== null ? `，Forward PE ${peForward.toFixed(1)}` : "") +
+  const vClass = inferValuationClass(row, category);
+
+  const text =
+    `ValuationClass ${vClass}` +
+    `，AnchorPE ${anchorPE}` +
+    (peForward !== null ? `，Forward PE ${peForward.toFixed(2)}` : "") +
     (peRatio !== null ? `，PE Ratio ${peRatio.toFixed(2)}` : "") +
-    (growth !== null ? `，EPS成長 ${growth.toFixed(1)}%` : "") +
+    (growth !== null ? `，EPS成長 ${growth.toFixed(2)}%` : "") +
     (peg !== null ? `，PEG ${peg.toFixed(2)}` : "") +
     `，QualityMomentum ${qualityMomentum.toFixed(2)}%` +
     `，QualityFactor ${qualityFactor.toFixed(2)}` +
+    `，ValuationRaw ${valuationRaw.toFixed(2)}` +
     `，估值判定：${level}`;
 
   return {
     model,
+    valuation_class: vClass,
     peg: round2(peg),
     pe_forward: round2(peForward),
     anchor_pe: round2(anchorPE),
@@ -311,24 +359,19 @@ function buildValuationData(row, category) {
     growth: round2(growth),
     pe_score: round2(peScore),
     growth_score: round2(growthScore),
+    growth_score_adj: round2(growthScoreAdj),
     quality_momentum: round2(qualityMomentum),
     quality_factor: round2(qualityFactor),
-    raw_score: round2(rawScore),
-    score: round2(finalScore),
+    raw_score: round2(valuationRaw),
+    norm_score: round2(valuationNorm),
     level,
     text
   };
 }
 
 // ------------------------------------------
-// 趨勢：方向，不是位置
-// trend_raw = 0.15*1M + 0.25*3M + 0.30*6M + 0.30*12M
+// 趨勢 normalize 0~10
 // ------------------------------------------
-function getArrow(v) {
-  if (v === null || v === undefined) return "未知";
-  return v >= 0 ? "↑" : "↓";
-}
-
 function calcTrendRaw(r1m, r3m, r6m, r12m) {
   return (
     0.15 * (r1m ?? 0) +
@@ -338,17 +381,14 @@ function calcTrendRaw(r1m, r3m, r6m, r12m) {
   );
 }
 
-function trendScoreFromRaw(trendRaw) {
-  if (trendRaw >= 30) return 30;
-  if (trendRaw >= 20) return 26 + (trendRaw - 20) * 0.4;
-  if (trendRaw >= 10) return 22 + (trendRaw - 10) * 0.4;
-  if (trendRaw >= 0) return 18 + trendRaw * 0.4;
-
-  if (trendRaw >= -10) return 18 + trendRaw * 0.4;
-  if (trendRaw >= -20) return 14 + (trendRaw + 10) * 0.4;
-  if (trendRaw >= -30) return 10 + (trendRaw + 20) * 0.4;
-
-  return 2;
+function trendScoreFromRawNormalized(trendRaw) {
+  if (trendRaw >= 30) return 10;
+  if (trendRaw >= 20) return 9;
+  if (trendRaw >= 10) return 8;
+  if (trendRaw >= 0) return 6;
+  if (trendRaw >= -10) return 4;
+  if (trendRaw >= -20) return 2;
+  return 0;
 }
 
 function inferTrendState(trendRaw) {
@@ -360,12 +400,7 @@ function inferTrendState(trendRaw) {
 }
 
 // ------------------------------------------
-// Structure：沿用 M8 ShortSwing
-// ShortSwing = 0.35*d0 + 0.25*d1 + 0.15*d2 + 0.10*d3 + 0.08*d4 + 0.07*d5
-// score:
-// 0~5% 曲線加速，0~8分
-// 5~10% 緩升，8~10分
-// >=10 封頂10
+// Structure：沿用 M8 ShortSwing，0~10
 // ------------------------------------------
 function calcShortSwing(swingDays, amp1d) {
   const days = Array.isArray(swingDays) ? swingDays : [];
@@ -388,15 +423,8 @@ function calcShortSwing(swingDays, amp1d) {
 
 function structureScoreFromShortSwing(shortSwing) {
   if (shortSwing <= 0) return 0;
-
-  if (shortSwing <= 5) {
-    return 8 * Math.pow(shortSwing / 5, 1.6);
-  }
-
-  if (shortSwing <= 10) {
-    return 8 + (shortSwing - 5) * 0.4;
-  }
-
+  if (shortSwing <= 5) return 8 * Math.pow(shortSwing / 5, 1.6);
+  if (shortSwing <= 10) return 8 + (shortSwing - 5) * 0.4;
   return 10;
 }
 
@@ -408,10 +436,7 @@ function inferStructureState(shortSwing) {
 }
 
 // ------------------------------------------
-// Timing：Snapshot
-// snapshot = 0.4*r1d + 0.5*r1w + 0.1*r1m
-// 無扣分版，0~10
-// -15% ~ +15% => 7.5 ~ 2.5
+// Timing：snapshot，0~10
 // ------------------------------------------
 function calcSnapshot(r1d, r1w, r1m) {
   return (
@@ -435,15 +460,16 @@ function inferTimingState(snapshot) {
 }
 
 // ------------------------------------------
-// 資金：沿用舊版
+// Money normalize 0~10
 // ------------------------------------------
-function calcMoneyScore(volumeRatio) {
+function calcMoneyScoreNormalized(volumeRatio) {
   const v = safeNum(volumeRatio, null);
-  if (v === null) return 8;
-  if (v >= 1.5) return 20;
-  if (v >= 1.2) return 15;
-  if (v >= 0.7) return 10;
-  return 5;
+  if (v === null) return 4;
+  if (v >= 1.5) return 10;
+  if (v >= 1.2) return 8;
+  if (v >= 0.9) return 6;
+  if (v >= 0.7) return 4;
+  return 2;
 }
 
 // ------------------------------------------
@@ -506,7 +532,39 @@ function buildExposureWarning(exposure, category) {
 }
 
 // ------------------------------------------
-// 今日推薦 / 行動
+// 最終總分
+// Final =
+// 0.30 valuation +
+// 0.20 trend +
+// 0.20 structure +
+// 0.15 timing +
+// 0.15 money +
+// quality_bonus +
+// category_bonus
+// ------------------------------------------
+function buildFinalScore({
+  valuationNorm,
+  trendNorm,
+  structureNorm,
+  timingNorm,
+  moneyNorm,
+  qualityBonus,
+  categoryBonus
+}) {
+  const total =
+    0.30 * valuationNorm +
+    0.20 * trendNorm +
+    0.20 * structureNorm +
+    0.15 * timingNorm +
+    0.15 * moneyNorm +
+    qualityBonus +
+    categoryBonus;
+
+  return round2(total);
+}
+
+// ------------------------------------------
+// 動作 / highlight / 說明
 // ------------------------------------------
 function evaluateTodayHighlight(candidate) {
   const reasons = [];
@@ -518,7 +576,7 @@ function evaluateTodayHighlight(candidate) {
     trend["結構狀態"] === "sweet_max";
   const timingGood = safeNum(candidate["timing_score"], 0) >= 6;
   const exposureOk = (candidate["曝險警示"]?.level || "normal") !== "high";
-  const valuationOk = safeNum(candidate["valuation_score"], 0) >= 18;
+  const valuationOk = safeNum(candidate["valuation_score"], 0) >= 5.5;
 
   if (notDown) reasons.push("趨勢未轉空");
   if (structureGood) reasons.push("結構夠甜");
@@ -542,8 +600,8 @@ function evaluateTodayHighlight(candidate) {
 function buildAction(row, trendState, total) {
   if (row.category === "speculative") return "移除";
   if (trendState === "down") return "移除";
-  if (total >= 75) return "加入";
-  if (total >= 55) return "觀察";
+  if (total >= 9) return "加入";
+  if (total >= 6.5) return "觀察";
   return "移除";
 }
 
@@ -553,19 +611,15 @@ function buildUIBucket(action) {
   return "建議剔除";
 }
 
-// ------------------------------------------
-// 解釋
-// ------------------------------------------
-function buildWhyYes(row, valuation, trendState, structureState, timingScore, moneyScore, qScore) {
+function buildWhyYes(row, valuation, trendState, structureState, timingScore, moneyScore, qualityBonus) {
   const arr = [];
   if ((row.category || inferCategory(row)) === "core") arr.push("核心股");
-  if ((row.category || inferCategory(row)) === "defensive") arr.push("防禦型");
-  if (qScore >= 5) arr.push("品質佳");
-  if (valuation.score >= 24) arr.push("估值合理");
+  if (qualityBonus >= 1.5) arr.push("品質佳");
+  if (valuation.norm_score >= 6.5) arr.push("估值合理");
   if (trendState === "up_strong" || trendState === "up_mild") arr.push("中期趨勢健康");
   if (structureState === "sweet" || structureState === "sweet_max") arr.push("價格已有甜度");
   if (timingScore >= 6) arr.push("短線節奏偏佳");
-  if (moneyScore >= 15) arr.push("資金支持");
+  if (moneyScore >= 8) arr.push("資金支持");
   return arr;
 }
 
@@ -577,7 +631,7 @@ function buildWhyNo(row, valuation, trendState, structureState, timingState, mon
   if (trendState === "weak") arr.push("中期偏弱");
   if (structureState === "flat") arr.push("結構不甜");
   if (timingState === "hot") arr.push("短期偏熱");
-  if (moneyScore <= 5) arr.push(`量比 ${row.volume_ratio ?? "--"} 偏低`);
+  if (moneyScore <= 2) arr.push(`量比 ${row.volume_ratio ?? "--"} 偏低`);
   if ((row.category || inferCategory(row)) === "speculative") arr.push("投機股不適合 FCN");
   if (exposureWarning.level === "high") arr.push("現有曝險偏高");
   return arr;
@@ -591,8 +645,8 @@ function buildFinalComment(action, valuation, trendRaw, trendState, shortSwing, 
   parts.push(`時機面：Snapshot ${round2(snapshot)}。`);
   parts.push(`估值面：${valuation.text}。`);
 
-  if (moneyScore <= 5) parts.push("資金面偏弱。");
-  else if (moneyScore >= 15) parts.push("資金面尚可。");
+  if (moneyScore <= 2) parts.push("資金面偏弱。");
+  else if (moneyScore >= 8) parts.push("資金面尚可。");
 
   if (exposureWarning?.text) parts.push(`持倉面：${exposureWarning.text}`);
 
@@ -601,6 +655,45 @@ function buildFinalComment(action, valuation, trendRaw, trendState, shortSwing, 
   else parts.push("目前不適合做 FCN。");
 
   return parts.join("");
+}
+
+// ------------------------------------------
+// score board
+// ------------------------------------------
+function buildScoreboard(sortedRows) {
+  const makeTable = (key) =>
+    [...sortedRows]
+      .sort((a, b) => (b["分數拆解"]?.[key] ?? 0) - (a["分數拆解"]?.[key] ?? 0))
+      .map((x, i) => ({
+        rank: i + 1,
+        symbol: x["股號"],
+        name: x["股名"],
+        score: x["分數拆解"]?.[key] ?? 0
+      }));
+
+  return {
+    generated_at: new Date().toISOString(),
+    formula: {
+      valuation: "Valuation = (0.6 * peScore + 0.4 * growthScore_adj) * qualityFactor ; valuation_norm = clamp(raw / 3.5, 0, 10)",
+      trend: "trendRaw = 0.15*1M + 0.25*3M + 0.30*6M + 0.30*12M ; bucket normalize to 0~10",
+      structure: "ShortSwing = 0.35*d0 + 0.25*d1 + 0.15*d2 + 0.10*d3 + 0.08*d4 + 0.07*d5 ; map to 0~10",
+      timing: "snapshot = 0.4*r1d + 0.5*r1w + 0.1*r1m ; timing = clamp(5 - 0.1667*snapshot, 0, 10)",
+      money: "volume_ratio -> 0~10",
+      final: "0.30*valuation + 0.20*trend + 0.20*structure + 0.15*timing + 0.15*money + quality_bonus + category_bonus"
+    },
+    examples: {
+      valuation_demo_1: "AAPL 31.2 = (0.6*30 + 0.4*20) * 1.2  // 示意公式，不代表實際輸出",
+      valuation_demo_2: "MSFT 28.2 = (0.6*28 + 0.4*18) * 1.17 // 示意公式，不代表實際輸出"
+    },
+    tables: {
+      valuation: makeTable("估值分"),
+      trend: makeTable("趨勢分"),
+      structure: makeTable("結構分"),
+      timing: makeTable("時機分"),
+      money: makeTable("資金分"),
+      final: makeTable("總分")
+    }
+  };
 }
 
 // ------------------------------------------
@@ -625,34 +718,36 @@ function run() {
     const vol = safeNum(row.volume_ratio, null);
 
     const category = row.category || inferCategory(row);
-    row.category = category; // 讓後續可直接沿用
+    row.category = category;
 
-    const qScore = calcQualityScore(row.quality_level, row.risk_level);
+    const qualityBonus = calcQualityBonus(row.quality_level, row.risk_level);
+    const categoryBonus = calcCategoryBonus(category);
+
     const valuation = buildValuationData(row, category);
 
     const trendRaw = calcTrendRaw(r1m ?? 0, r3m ?? 0, r6m ?? 0, r12m ?? 0);
-    const trendScore = trendScoreFromRaw(trendRaw);
+    const trendNorm = trendScoreFromRawNormalized(trendRaw);
     const trendState = inferTrendState(trendRaw);
 
     const shortSwing = calcShortSwing(row.swing_days, row.amp_1d);
-    const structureScore = structureScoreFromShortSwing(shortSwing);
+    const structureNorm = structureScoreFromShortSwing(shortSwing);
     const structureState = inferStructureState(shortSwing);
 
     const snapshot = calcSnapshot(r1d ?? 0, r1w ?? 0, r1m ?? 0);
-    const timingScore = timingScoreFromSnapshot(snapshot);
+    const timingNorm = timingScoreFromSnapshot(snapshot);
     const timingState = inferTimingState(snapshot);
 
-    const moneyScore = calcMoneyScore(vol);
-    const categoryAdjust = calcCategoryAdjust(category);
+    const moneyNorm = calcMoneyScoreNormalized(vol);
 
-    const total =
-      valuation.score +
-      trendScore +
-      structureScore +
-      timingScore +
-      moneyScore +
-      qScore +
-      categoryAdjust;
+    const total = buildFinalScore({
+      valuationNorm: valuation.norm_score,
+      trendNorm,
+      structureNorm,
+      timingNorm,
+      moneyNorm,
+      qualityBonus,
+      categoryBonus
+    });
 
     const action = buildAction(row, trendState, total);
 
@@ -678,13 +773,13 @@ function run() {
       "12月漲跌幅": round2(r12m),
       "量比": round2(vol),
 
-      "valuation_score": round2(valuation.score),
-      "trend_score": round2(trendScore),
-      "structure_score": round2(structureScore),
-      "timing_score": round2(timingScore),
-      "money_score": round2(moneyScore),
-      "quality_score": round2(qScore),
-      "category_adjust": round2(categoryAdjust),
+      "valuation_score": round2(valuation.norm_score),
+      "trend_score": round2(trendNorm),
+      "structure_score": round2(structureNorm),
+      "timing_score": round2(timingNorm),
+      "money_score": round2(moneyNorm),
+      "quality_score": round2(qualityBonus),
+      "category_adjust": round2(categoryBonus),
 
       "today_score": round2(total),
 
@@ -699,6 +794,7 @@ function run() {
       },
 
       "估值資料": {
+        "ValuationClass": valuation.valuation_class,
         "PEG": valuation.peg,
         "ForwardPE": valuation.pe_forward,
         "AnchorPE": valuation.anchor_pe,
@@ -706,6 +802,7 @@ function run() {
         "EPS成長率": valuation.growth,
         "PEScore": valuation.pe_score,
         "GrowthScore": valuation.growth_score,
+        "GrowthScoreAdj": valuation.growth_score_adj,
         "QualityMomentum": valuation.quality_momentum,
         "QualityFactor": valuation.quality_factor,
         "ValuationRaw": valuation.raw_score
@@ -722,13 +819,14 @@ function run() {
       },
 
       "分數拆解": {
-        "估值分": round2(valuation.score),
-        "趨勢分": round2(trendScore),
-        "結構分": round2(structureScore),
-        "時機分": round2(timingScore),
-        "資金分": round2(moneyScore),
-        "品質分": round2(qScore),
-        "類別調整": round2(categoryAdjust),
+        "估值原始分": round2(valuation.raw_score),
+        "估值分": round2(valuation.norm_score),
+        "趨勢分": round2(trendNorm),
+        "結構分": round2(structureNorm),
+        "時機分": round2(timingNorm),
+        "資金分": round2(moneyNorm),
+        "品質分": round2(qualityBonus),
+        "類別調整": round2(categoryBonus),
         "總分": round2(total)
       },
 
@@ -758,9 +856,9 @@ function run() {
       valuation,
       trendState,
       structureState,
-      timingScore,
-      moneyScore,
-      qScore
+      timingNorm,
+      moneyNorm,
+      qualityBonus
     );
 
     candidate.why_no = buildWhyNo(
@@ -769,7 +867,7 @@ function run() {
       trendState,
       structureState,
       timingState,
-      moneyScore,
+      moneyNorm,
       exposureWarning
     );
 
@@ -781,7 +879,7 @@ function run() {
       trendState,
       shortSwing,
       snapshot,
-      moneyScore,
+      moneyNorm,
       exposureWarning
     );
 
@@ -813,9 +911,7 @@ function run() {
       x["趨勢判讀"]?.["結構狀態"] === "sweet_max"
     ).length,
     hot_timing_count: sorted.filter(x => x["趨勢判讀"]?.["時機狀態"] === "hot").length,
-    downtrend_count: sorted.filter(x =>
-      x["趨勢判讀"]?.["趨勢狀態"] === "down"
-    ).length,
+    downtrend_count: sorted.filter(x => x["趨勢判讀"]?.["趨勢狀態"] === "down").length,
 
     high_exposure: sorted.filter(x => x["曝險警示"]?.level === "high").length,
     mid_exposure: sorted.filter(x => x["曝險警示"]?.level === "medium").length,
@@ -837,8 +933,13 @@ function run() {
     all: sorted
   };
 
+  const scoreboard = buildScoreboard(sorted);
+
   fs.writeFileSync(OUTPUT_FILE, JSON.stringify(output, null, 2), "utf-8");
+  fs.writeFileSync(SCOREBOARD_FILE, JSON.stringify(scoreboard, null, 2), "utf-8");
+
   console.log(`✅ m7_new_stock_today.json 已產出，共 ${sorted.length} 檔`);
+  console.log(`✅ m7_scoreboard.json 已產出`);
 }
 
 run();
