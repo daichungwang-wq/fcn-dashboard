@@ -327,8 +327,8 @@ function buildValuationData(row, category) {
   const qualityMomentum = calcQualityMomentum(r1m, r3m, r6m, r12m);
   const qualityFactor = calcQualityFactor(qualityMomentum);
 
-  const valuationRaw = (0.7 * peScore + 0.3 * growthScoreAdj) * qualityFactor;
-  const valuationNorm = clamp(valuationRaw / 3.5, 0, 60);
+  const valuationRaw = (0.4 * peScore + 0.6 * growthScoreAdj) * qualityFactor;
+  const valuationNorm = clamp(valuationRaw, 0, 60);
 
   let level = "中性";
   if (valuationNorm >= 8) level = "合理偏低";
