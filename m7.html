@@ -6,107 +6,280 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-      background: #f5f7fb;
+    :root {
+      --bg: #f3f6fb;
+      --card: rgba(255, 255, 255, 0.92);
+      --card-strong: #ffffff;
+      --line: #e5e7eb;
+      --text: #0f172a;
+      --muted: #64748b;
+      --muted-2: #94a3b8;
+      --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+      --shadow-soft: 0 4px 12px rgba(15, 23, 42, 0.05);
+
+      --blue: #2563eb;
+      --blue-soft: #eff6ff;
+      --green: #059669;
+      --green-soft: #ecfdf5;
+      --amber: #d97706;
+      --amber-soft: #fffbeb;
+      --red: #dc2626;
+      --red-soft: #fef2f2;
+      --purple: #7c3aed;
+      --purple-soft: #f5f3ff;
+      --slate-soft: #f8fafc;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
       margin: 0;
       padding: 0;
-      color: #111827;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans TC", Arial, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(37, 99, 235, 0.06), transparent 28%),
+        radial-gradient(circle at top right, rgba(124, 58, 237, 0.05), transparent 24%),
+        var(--bg);
+      color: var(--text);
+    }
+
+    body {
+      min-height: 100vh;
     }
 
     .container {
-      max-width: 1200px;
-      margin: auto;
-      padding: 16px;
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 24px 18px 40px;
     }
 
-    h1 {
-      margin: 0 0 6px;
-      font-size: 30px;
+    /* ---------------- Hero ---------------- */
+    .hero {
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.96), rgba(29, 78, 216, 0.92));
+      color: #fff;
+      border-radius: 24px;
+      padding: 22px 22px 18px;
+      box-shadow: 0 18px 36px rgba(37, 99, 235, 0.18);
+      margin-bottom: 18px;
+      position: relative;
+      overflow: hidden;
     }
 
-    #m7-time {
-      font-size: 13px;
-      color: #666;
-      margin-bottom: 2px;
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -80px -80px auto;
+      width: 240px;
+      height: 240px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      filter: blur(10px);
     }
 
-    #m7-subtitle {
+    .hero-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 14px;
+      flex-wrap: wrap;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-title {
+      margin: 0;
+      font-size: 34px;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      font-weight: 800;
+    }
+
+    .hero-sub {
+      margin-top: 8px;
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.88);
+      line-height: 1.7;
+      max-width: 780px;
+    }
+
+    .hero-badges {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .hero-pill {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.16);
+      border: 1px solid rgba(255, 255, 255, 0.18);
       font-size: 12px;
-      color: #999;
+      font-weight: 700;
+      white-space: nowrap;
+      backdrop-filter: blur(8px);
+    }
+
+    #m7-time,
+    #m7-subtitle {
+      display: inline-block;
+    }
+
+    /* ---------------- Generic cards ---------------- */
+    .panel-card,
+    .blueprint-card,
+    .main-card,
+    .dash-card {
+      background: var(--card);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      box-shadow: var(--shadow-soft);
+      backdrop-filter: blur(10px);
+    }
+
+    .panel-card,
+    .blueprint-card,
+    .main-card {
+      border-radius: 20px;
       margin-bottom: 16px;
+      overflow: hidden;
+    }
+
+    .section-head {
+      padding: 16px 18px 12px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,0.78), rgba(248,250,252,0.92));
+    }
+
+    .section-title {
+      margin: 0;
+      font-size: 24px;
+      letter-spacing: -0.02em;
+      font-weight: 800;
+    }
+
+    .section-desc {
+      margin-top: 6px;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.7;
     }
 
     .hidden {
-      display: none;
+      display: none !important;
     }
 
     /* ---------------- Blueprint ---------------- */
-    .blueprint-card {
-      background: #fff;
-      border-radius: 12px;
-      margin-bottom: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    .blueprint-header {
+      padding: 16px 18px;
+      font-weight: 800;
+      font-size: 16px;
+      cursor: pointer;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      background: linear-gradient(180deg, #ffffff, #f8fafc);
     }
 
-    .blueprint-header {
-      padding: 12px;
-      font-weight: bold;
-      cursor: pointer;
-      border-bottom: 1px solid #eee;
+    .blueprint-header:hover {
+      background: linear-gradient(180deg, #ffffff, #f1f5f9);
     }
 
     .blueprint-body {
-      padding: 12px;
+      padding: 18px;
       font-size: 13px;
-      line-height: 1.7;
+      line-height: 1.8;
+      color: #1e293b;
+      background: #fff;
     }
 
     .bp-toggle {
-      margin-bottom: 12px;
-    }
-
-    .bp-toggle button {
-      margin-right: 8px;
-      border: 0;
-      background: #111827;
-      color: #fff;
-      padding: 6px 10px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 12px;
-    }
-
-    .bp-section {
-      margin-bottom: 10px;
-    }
-
-    /* ---------------- Dashboard ---------------- */
-    .dash-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
       margin-bottom: 16px;
     }
 
+    .bp-toggle button {
+      border: 0;
+      background: #0f172a;
+      color: #fff;
+      padding: 9px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 700;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .bp-toggle button:hover {
+      opacity: 0.92;
+    }
+
+    .bp-section {
+      margin-bottom: 14px;
+      padding: 14px 14px 12px;
+      background: var(--slate-soft);
+      border: 1px solid #edf2f7;
+      border-radius: 14px;
+    }
+
+    .bp-section b {
+      display: inline-block;
+      margin-bottom: 6px;
+      font-size: 14px;
+      color: #0f172a;
+    }
+
+    /* ---------------- Top dashboard ---------------- */
+    .dash-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
     .dash-card {
-      background: #fff;
-      border-radius: 12px;
-      padding: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+      border-radius: 18px;
+      padding: 16px 16px 14px;
+      min-height: 150px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(248,250,252,0.94));
+    }
+
+    .dash-card::before {
+      content: "";
+      position: absolute;
+      inset: auto -18px -24px auto;
+      width: 92px;
+      height: 92px;
+      border-radius: 999px;
+      background: rgba(37, 99, 235, 0.05);
     }
 
     .dash-title {
+      position: relative;
+      z-index: 1;
       font-size: 13px;
-      color: #666;
-      margin-bottom: 6px;
+      color: var(--muted);
+      margin-bottom: 10px;
+      font-weight: 700;
+      letter-spacing: 0.01em;
     }
 
     .dash-value {
-      font-size: 14px;
-      font-weight: 700;
-      margin-bottom: 6px;
-      line-height: 1.7;
+      position: relative;
+      z-index: 1;
+      font-size: 18px;
+      font-weight: 800;
+      margin-bottom: 10px;
+      line-height: 1.75;
+      color: #0f172a;
     }
 
     .text-block {
@@ -114,89 +287,166 @@
     }
 
     .dash-desc {
+      position: relative;
+      z-index: 1;
       font-size: 12px;
-      color: #888;
-      line-height: 1.6;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    /* ---------------- Score dashboard ---------------- */
+    #m7-score-dashboard,
+    #m7-score-ranking,
+    #m7-sections,
+    #m7-dashboard {
+      margin-bottom: 16px;
+    }
+
+    .score-stat-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      padding: 16px;
+    }
+
+    .score-stat-card {
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      padding: 16px;
+      background: linear-gradient(180deg, #ffffff, #fafcff);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .score-stat-title {
+      font-size: 17px;
+      font-weight: 800;
+      margin-bottom: 12px;
+      color: #0f172a;
+      letter-spacing: -0.01em;
+    }
+
+    .score-stat-body {
+      display: grid;
+      gap: 8px;
+      color: #334155;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .score-stat-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: flex-start;
+      padding-bottom: 6px;
+      border-bottom: 1px dashed #edf2f7;
+    }
+
+    .score-stat-line:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .score-stat-label {
+      color: var(--muted);
+      flex-shrink: 0;
+      min-width: 76px;
+    }
+
+    .score-stat-value {
+      text-align: right;
+      font-weight: 700;
+      color: #0f172a;
     }
 
     /* ---------------- Main cards ---------------- */
-    .main-card {
-      background: #fff;
-      border-radius: 14px;
-      margin-bottom: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
-    }
-
     .main-header {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      gap: 12px;
-      padding: 12px;
+      gap: 14px;
+      padding: 16px 18px;
       cursor: pointer;
-      border-bottom: 1px solid #eee;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(248,250,252,0.94));
     }
 
     .main-title {
-      font-weight: bold;
-      font-size: 18px;
+      font-weight: 800;
+      font-size: 22px;
       margin-bottom: 4px;
+      letter-spacing: -0.02em;
     }
 
     .main-desc {
-      font-size: 12px;
-      color: #888;
-      line-height: 1.6;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 800px;
     }
 
     .main-count {
       font-size: 13px;
-      background: #111827;
+      background: #0f172a;
       color: #fff;
-      padding: 6px 10px;
+      padding: 8px 12px;
       border-radius: 999px;
       white-space: nowrap;
+      font-weight: 700;
+      box-shadow: var(--shadow-soft);
     }
 
     .main-body {
-      padding: 12px;
+      padding: 16px;
     }
 
     .name-summary {
-      font-size: 12px;
-      margin-bottom: 10px;
-      color: #444;
-      line-height: 1.6;
+      font-size: 13px;
+      margin-bottom: 14px;
+      color: #334155;
+      line-height: 1.8;
+      background: var(--slate-soft);
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid #edf2f7;
     }
 
     .toggle-row {
-      margin-top: 8px;
+      margin-top: 12px;
     }
 
     .toggle-btn,
     .detail-btn {
       border: 0;
-      background: #111827;
+      background: #0f172a;
       color: #fff;
-      padding: 8px 12px;
-      border-radius: 8px;
+      padding: 9px 14px;
+      border-radius: 10px;
       cursor: pointer;
       font-size: 12px;
+      font-weight: 700;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .toggle-btn:hover,
+    .detail-btn:hover {
+      opacity: 0.92;
     }
 
     /* ---------------- Stock cards ---------------- */
     .stock-card {
-      border: 1px solid #eee;
-      border-radius: 10px;
-      padding: 10px;
-      margin-bottom: 10px;
-      background: #fff;
+      border: 1px solid #e9edf3;
+      border-radius: 18px;
+      padding: 14px;
+      margin-bottom: 12px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(248,250,252,0.96));
+      box-shadow: var(--shadow-soft);
     }
 
     .card-head {
       display: flex;
       justify-content: space-between;
-      gap: 10px;
+      gap: 12px;
       align-items: flex-start;
     }
 
@@ -210,169 +460,226 @@
       align-items: center;
       flex-wrap: wrap;
       gap: 8px;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
     }
 
     .stock-title {
-      font-weight: bold;
-      font-size: 17px;
+      font-weight: 800;
+      font-size: 20px;
+      line-height: 1.3;
+      letter-spacing: -0.01em;
     }
 
     .today-tag {
       font-size: 12px;
-      background: #fff5cc;
-      color: #8a5b00;
-      padding: 2px 8px;
+      background: var(--amber-soft);
+      color: #9a6700;
+      padding: 4px 10px;
       border-radius: 999px;
+      font-weight: 700;
+      border: 1px solid #fde7b0;
     }
 
     .stock-sub {
-      font-size: 12px;
-      color: #666;
-      line-height: 1.6;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.8;
     }
 
     .card-right {
       text-align: right;
-      min-width: 70px;
+      min-width: 84px;
     }
 
     .score {
-      font-weight: bold;
-      font-size: 18px;
+      font-weight: 800;
+      font-size: 24px;
       cursor: pointer;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
     }
 
-    .score-good { color: #0a8; }
-    .score-mid { color: #f90; }
-    .score-bad { color: #c33; }
+    .score-good { color: var(--green); }
+    .score-mid { color: var(--amber); }
+    .score-bad { color: var(--red); }
 
     .action-pill {
       display: inline-block;
-      margin-top: 6px;
-      padding: 2px 6px;
-      border-radius: 6px;
+      margin-top: 8px;
+      padding: 5px 10px;
+      border-radius: 999px;
       font-size: 12px;
+      font-weight: 700;
+      border: 1px solid transparent;
     }
 
     .pill-add {
-      background: #e6f7f2;
-      color: #0a8;
+      background: var(--green-soft);
+      color: var(--green);
+      border-color: #c7f0df;
     }
 
     .pill-watch {
-      background: #fff5e6;
-      color: #f90;
+      background: var(--amber-soft);
+      color: var(--amber);
+      border-color: #fde7b0;
     }
 
     .pill-remove {
-      background: #ffeaea;
-      color: #c33;
+      background: var(--red-soft);
+      color: var(--red);
+      border-color: #fecaca;
     }
 
     .highlight-box {
-      background: #fff8e1;
-      padding: 8px;
-      margin-top: 8px;
-      border-radius: 8px;
+      background: linear-gradient(180deg, #fffdf5, #fff8df);
+      border: 1px solid #fde7b0;
+      padding: 10px 12px;
+      margin-top: 10px;
+      border-radius: 12px;
       font-size: 13px;
-      line-height: 1.6;
+      line-height: 1.8;
+      color: #7c5a03;
     }
 
     .summary-box {
-      margin-top: 8px;
+      margin-top: 10px;
       font-size: 13px;
-      line-height: 1.7;
+      line-height: 1.9;
+      background: #f8fafc;
+      border: 1px solid #edf2f7;
+      border-radius: 12px;
+      padding: 11px 12px;
+      color: #1e293b;
     }
 
     /* ---------------- Exposure ---------------- */
     .exposure-box {
-      margin-top: 8px;
-      background: #f7f9fc;
-      padding: 8px;
-      border-radius: 8px;
+      margin-top: 10px;
+      background: linear-gradient(180deg, #f8fbff, #f4f7fb);
+      padding: 10px;
+      border-radius: 14px;
+      border: 1px solid #e7edf5;
       font-size: 12px;
     }
 
     .exposure-head {
-      font-weight: bold;
-      margin-bottom: 6px;
+      font-weight: 800;
+      margin-bottom: 8px;
+      font-size: 13px;
+      color: #0f172a;
     }
 
     .mini-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 8px;
     }
 
     .mini-item {
       background: #fff;
-      border: 1px solid #eee;
-      border-radius: 8px;
-      padding: 8px;
+      border: 1px solid #ebeff5;
+      border-radius: 12px;
+      padding: 10px;
+      box-shadow: 0 1px 2px rgba(15,23,42,0.03);
     }
 
     .mini-label {
       display: block;
-      color: #666;
+      color: var(--muted);
       font-size: 11px;
       margin-bottom: 4px;
+      line-height: 1.5;
     }
 
     .mini-value {
-      font-size: 13px;
-      font-weight: 700;
+      font-size: 14px;
+      font-weight: 800;
+      color: #0f172a;
     }
 
     .warn-box {
-      margin-top: 8px;
+      margin-top: 10px;
       font-size: 12px;
-      line-height: 1.6;
+      line-height: 1.8;
+      border-radius: 12px;
+      padding: 9px 10px;
+      font-weight: 600;
     }
 
-    .warn-box.high { color: #c33; }
-    .warn-box.medium { color: #f90; }
-    .warn-box.normal { color: #0a8; }
+    .warn-box.high {
+      color: var(--red);
+      background: var(--red-soft);
+      border: 1px solid #fecaca;
+    }
+
+    .warn-box.medium {
+      color: var(--amber);
+      background: var(--amber-soft);
+      border: 1px solid #fde7b0;
+    }
+
+    .warn-box.normal {
+      color: var(--green);
+      background: var(--green-soft);
+      border: 1px solid #c7f0df;
+    }
 
     /* ---------------- Detail ---------------- */
     .detail-btn-row {
-      margin-top: 8px;
+      margin-top: 10px;
     }
 
     .detail-wrap {
-      margin-top: 10px;
+      margin-top: 12px;
     }
 
     .analysis-section {
       margin-top: 10px;
-      font-size: 12px;
-      background: #fafafa;
-      border: 1px solid #eee;
-      border-radius: 10px;
-      padding: 10px;
+      font-size: 13px;
+      background: linear-gradient(180deg, #fbfcfe, #f8fafc);
+      border: 1px solid #e9edf3;
+      border-radius: 16px;
+      padding: 12px;
     }
 
     .analysis-title {
-      font-weight: bold;
-      margin-bottom: 8px;
-      font-size: 13px;
+      font-weight: 800;
+      margin-bottom: 10px;
+      font-size: 14px;
+      color: #0f172a;
+      letter-spacing: -0.01em;
+    }
+
+    .analysis-table {
+      display: grid;
+      gap: 8px;
     }
 
     .analysis-row {
       display: flex;
-      margin-bottom: 6px;
-      gap: 10px;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 8px 0;
+      border-bottom: 1px dashed #e5e7eb;
+    }
+
+    .analysis-row:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
     }
 
     .analysis-label {
-      width: 80px;
-      color: #666;
+      width: 84px;
+      color: var(--muted);
       flex-shrink: 0;
+      font-weight: 700;
     }
 
     .analysis-value {
       flex: 1;
-      line-height: 1.7;
+      line-height: 1.8;
+      color: #1e293b;
     }
 
     .why-grid {
@@ -383,37 +690,66 @@
 
     .why-box {
       background: #fff;
-      border: 1px solid #eee;
-      border-radius: 8px;
-      padding: 8px;
+      border: 1px solid #ebeff5;
+      border-radius: 12px;
+      padding: 10px;
     }
 
     .why-title {
-      font-weight: bold;
-      margin-bottom: 6px;
+      font-weight: 800;
+      margin-bottom: 8px;
+      color: #0f172a;
     }
 
     .why-item {
-      margin-bottom: 4px;
-      line-height: 1.6;
+      margin-bottom: 5px;
+      line-height: 1.7;
+      color: #334155;
     }
 
     .error-box {
       background: #fff;
-      padding: 12px;
-      border-radius: 10px;
-      color: #c33;
+      padding: 14px 16px;
+      border-radius: 14px;
+      color: var(--red);
+      border: 1px solid #fecaca;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .ranking-line {
+      line-height: 1.9;
+      word-break: break-word;
+      color: #1e293b;
+    }
+
+    /* ---------------- Responsive ---------------- */
+    @media (max-width: 1180px) {
+      .dash-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .score-stat-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
     }
 
     @media (max-width: 900px) {
-      .dash-grid {
-        grid-template-columns: 1fr;
+      .container {
+        padding: 14px 12px 32px;
       }
 
-      .mini-grid {
-        grid-template-columns: 1fr;
+      .hero {
+        padding: 18px 16px 16px;
+        border-radius: 20px;
       }
 
+      .hero-title {
+        font-size: 28px;
+      }
+
+      .dash-grid,
+      .score-stat-grid,
+      .mini-grid,
       .why-grid {
         grid-template-columns: 1fr;
       }
@@ -428,24 +764,98 @@
 
       .analysis-row {
         flex-direction: column;
+        gap: 4px;
       }
 
       .analysis-label {
         width: auto;
       }
     }
+
+    @media (max-width: 640px) {
+      .hero-title {
+        font-size: 24px;
+      }
+
+      .main-title {
+        font-size: 20px;
+      }
+
+      .stock-title {
+        font-size: 18px;
+      }
+
+      .score {
+        font-size: 22px;
+      }
+
+      .main-header,
+      .section-head,
+      .blueprint-header {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+
+      .main-body,
+      .blueprint-body,
+      .score-stat-grid,
+      .container {
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+
+      .score-stat-grid {
+        padding-top: 12px;
+        padding-bottom: 12px;
+      }
+    }
   </style>
+
+  <script>
+    function toggleBlueprint() {
+      const el = document.getElementById("blueprint-body");
+      if (!el) return;
+      el.classList.toggle("hidden");
+    }
+
+    function setBPMode(mode) {
+      const simple = document.getElementById("bp-simple");
+      const pro = document.getElementById("bp-pro");
+      if (!simple || !pro) return;
+
+      if (mode === "simple") {
+        simple.classList.remove("hidden");
+        pro.classList.add("hidden");
+      } else {
+        simple.classList.add("hidden");
+        pro.classList.remove("hidden");
+      }
+    }
+  </script>
 </head>
 <body>
   <div class="container">
-    <h1>📊 M7 FCN Dashboard</h1>
+    <section class="hero">
+      <div class="hero-top">
+        <div>
+          <h1 class="hero-title">📊 M7 FCN Dashboard</h1>
+          <div class="hero-sub">
+            估值、趨勢、結構、時機、資金、品質與持倉曝險整合檢視。  
+            這頁的目標不是只看分數，而是快速判斷：今天哪些股票值得做 FCN、哪些只能觀察、哪些應剔除。
+          </div>
+        </div>
 
-    <div id="m7-time"></div>
-    <div id="m7-subtitle"></div>
+        <div class="hero-badges">
+          <div class="hero-pill" id="m7-time">更新時間：--</div>
+          <div class="hero-pill" id="m7-subtitle">M7 總樣本 -- 檔</div>
+        </div>
+      </div>
+    </section>
 
     <div class="blueprint-card">
       <div class="blueprint-header" onclick="toggleBlueprint()">
-        📘 M7 Blueprint（點擊展開）
+        <span>📘 M7 Blueprint（點擊展開 / 收合）</span>
+        <span style="font-size:12px;color:#64748b;">邏輯說明</span>
       </div>
 
       <div id="blueprint-body" class="blueprint-body hidden">
@@ -498,479 +908,20 @@
             <b>今日推薦邏輯</b><br>
             長期向上 + 中期回檔 + 曝險非高警示 → 今日推薦
           </div>
-          
+
           <div class="bp-section">
-            <b>m7作業邏輯</b><br>
-           細項參閱  docs/m7_blueprint.md
-           # 📊 M7 Blueprint（FCN 決策引擎）
-
----
-
-# 🎯 一、M7 的目的
-
-M7 的核心目標：
-
-> 將市場股票資料 → 轉換成「可做 FCN 的決策清單」
-
-並提供：
-
-- 今日推薦
-- 觀察名單
-- 建議剔除
-- 完整 Why / Why not 解釋
-- 持倉曝險控制
-
----
-
-# 🧠 二、核心三句話（最重要）
-
-1️⃣ 先確保不會死，再去賺利息  
-2️⃣ 你只會接到最爛的那一檔  
-3️⃣ 利率越高，我越懷疑  
-
----
-
-# 🏗 三、系統架構（三層）
-
-## 1️⃣ 資料層（Data Layer）
-
-來源：
-
-- `m7_new_stock_pool.json`
-- `m2_stock_exposure.json`
-- market runtime（價格 / 漲跌 / 量比）
-
-責任：
-
-> 提供乾淨、標準化的資料，不做判斷
-
----
-
-## 2️⃣ 引擎層（Engine Layer）
-
-檔案：
-# 📊 M7 Blueprint（FCN 決策引擎）
-
----
-
-# 🎯 一、M7 的目的
-
-M7 的核心目標：
-
-> 將市場股票資料 → 轉換成「可做 FCN 的決策清單」
-
-並提供：
-
-- 今日推薦
-- 觀察名單
-- 建議剔除
-- 完整 Why / Why not 解釋
-- 持倉曝險控制
-
----
-
-# 🧠 二、核心三句話（最重要）
-
-1️⃣ 先確保不會死，再去賺利息  
-2️⃣ 你只會接到最爛的那一檔  
-3️⃣ 利率越高，我越懷疑  
-
----
-
-# 🏗 三、系統架構（三層）
-
-## 1️⃣ 資料層（Data Layer）
-
-來源：
-
-- `m7_new_stock_pool.json`
-- `m2_stock_exposure.json`
-- market runtime（價格 / 漲跌 / 量比）
-
-責任：
-
-> 提供乾淨、標準化的資料，不做判斷
-
----
-
-## 2️⃣ 引擎層（Engine Layer）
-         責任：
-
-- 計算分數
-- 判斷趨勢 / 結構
-- 加入持倉曝險
-- 分類股票
-- 產出結果 JSON
-
-輸出：
-
-
-m7_new_stock_today.json
-
-
----
-
-## 3️⃣ 呈現層（UI Layer）
-
-檔案：
-
-- `m7_ui.js`
-- `m7.html`
-
-責任：
-
-- Dashboard
-- 三大分類卡片
-- 展開 / 收合
-- Why / Why not
-- Blueprint 顯示
-- 分數解釋
-
----
-
-# 📊 四、評分系統（Score System）
-
-總分由以下組成：
-
-
-總分 =
-估值 +
-趨勢 +
-結構 +
-時機 +
-資金 +
-品質 +
-類別調整
-
-
----
-
-## 1️⃣ 估值（Valuation）
-
-- PEG
-- Forward PE
-- EPS 成長率
-
-目的：
-
-> 判斷「價格 vs 成長」
-
----
-
-## 2️⃣ 趨勢（Trend）
-
-- 年線（12M）
-
-定義：
-
-- ↑ → 長期向上
-- ↓ → 長期轉弱（重要風險）
-
----
-
-## 3️⃣ 結構（Structure）
-
-使用：
-
-- 6M
-- 3M
-
-分類：
-
-| 類型 | 說明 |
-|------|------|
-| Pullback | 上升中回檔（最佳） |
-| Hot | 過熱 |
-| Top | 做頭（危險） |
-| Downtrend | 下降趨勢（禁止） |
-
----
-
-## 4️⃣ 時機（Timing）
-
-使用：
-
-- 1W
-
-邏輯：
-
-- 下跌 → 加分（買點）
-- 過熱 → 減分
-
----
-
-## 5️⃣ 資金（Money）
-
-使用：
-
-- 量比
-
-判斷：
-
-- 高 → 資金支持
-- 低 → 無人關注
-
----
-
-## 6️⃣ 品質（Quality）
-
-來自：
-
-- 股票分類（core / growth / defensive / speculative）
-
----
-
-## 7️⃣ 類別調整（Category Adjust）
-
-目的：
-
-> 避免選到錯的股票
-
----
-
-# 🧭 五、技術面核心邏輯（非常重要）
-
-## 判斷順序：
-
-
-年線 → 6M / 3M → 1W
-
-
----
-
-## 核心原則：
-
-### ✔ 長期（年線）
-決定「能不能做」
-
-### ✔ 中期（3M / 6M）
-決定「現在適不適合做」
-
-### ✔ 短期（1W）
-決定「進場時機」
-
----
-
-# 🚨 六、禁止條件（不做）
-
-以下情況直接列入「建議剔除」：
-
-- 年線下行
-- 結構為 Top（做頭）
-- speculative 類股票
-
----
-
-# 📊 七、三大分類（UI分類）
-
-## 1️⃣ 積極推薦
-
-條件：
-
-- 分數高
-- 結構良好
-- 可作 FCN
-
----
-
-## 2️⃣ 觀察名單
-
-條件：
-
-- 部分條件符合
-- 需要等待
-
----
-
-## 3️⃣ 建議剔除
-
-條件：
-
-- 結構錯誤
-- 趨勢錯誤
-- 風險過高
-
----
-
-# 🔥 八、今日推薦（Highlight）
-
-條件：
-
-
-長期向上
-
-中期回檔
-曝險不過高
-
-用途：
-
-> 排序優先，不強制下單
-
----
-
-# 💰 九、持倉曝險（M2整合）
-
-來源：
-
-
-m2_stock_exposure.json
-
-
----
-
-## 指標：
-
-- 投入金額
-- 投入比例 %
-- FCN數量
-- Danger / Watch / Healthy
-
----
-
-## Baseline
-
-| 類型 | 安全 | 警戒 |
-|------|------|------|
-| Core | 40% | 50% |
-| Growth | 25% | 35% |
-| Defensive | 35% | 45% |
-
----
-
-## 規則：
-
-- 超過 → 警示
-- ❌ 不擋單
-
----
-
-# 🧾 十、輸出資料（M7 Output）
-
-檔案：
-
-
-m7_new_stock_today.json
-
-
-內容包含：
-
-- today_score
-- 分數拆解
-- 趨勢判讀
-- 曝險
-- Why / Why not
-- 建議動作
-- 今日推薦標記
-
----
-
-# 🖥 十一、UI 功能
-
-## Dashboard
-
-- 技術面分析
-- Overall
-- 投資金額健檢
-- 今日組合推薦
-
----
-
-## 三大卡
-
-- 積極推薦（含今日推薦）
-- 觀察名單
-- 建議剔除
-
----
-
-## 卡片功能
-
-- 展開 / 收合
-- 分數拆解
-- 技術分析
-- 曝險顯示
-- Why / Why not
-
----
-
-## Blueprint
-
-用途：
-
-> 防止未來開發邏輯混亂
-
----
-
-# 🚀 十二、未來擴展（M8）
-
-M7 → M8
-
-下一步：
-
-- 自動 FCN 組合
-- Strike / KI 建議
-- Tenor 建議
-- Worst-of 模型
-
----
-
-# ✅ 最終結論
-
-M7 的本質：
-
-> 「把市場資料 → 轉成可執行的 FCN 決策系統」
-
----
-1. 規則會一直改
-
-像你這幾天已經一直在改：
-
-技術面怎麼看
-投入比 baseline
-今日推薦邏輯
-哪些要分區、哪些不要
-
-如果這些都跟 UI 綁在一起，之後每改一次就容易整個亂掉。
-
-2. UI 一定會一直重做
-
-你現在也已經證明了：
-
-dashboard 會改
-卡片區會改
-展開收合會改
-M2 風格要整合進來
-
-所以 UI 一定不是一次定稿。
-
-如果 UI 跟 engine 沒分開，後面每次改版型都可能把分數邏輯弄壞。
-
-3. 資料來源會增加
-
-你現在已經有：
-
-market runtime
-M2 持倉曝險
-M7 pool
-
-後面很可能還會加：
-
-M1 pool
-晨報資料
-FCN 模擬資料
-M8 自動組合資料
-
-所以資料來源一定會變多。
-越早把結構分開，後面越穩。
-             </div>
+            <b>M7 作業邏輯</b><br>
+            規則會一直改，UI 也一定會一直改，所以資料層、引擎層、呈現層必須分開。  
+            目前這頁只負責呈現 `m7_new_stock_today.json` 的結果，邏輯請以 engine 為主。
+          </div>
         </div>
       </div>
     </div>
 
     <div id="m7-dashboard"></div>
-    <div id="m7-sections"></div>
     <div id="m7-score-dashboard"></div>
     <div id="m7-score-ranking"></div>
+    <div id="m7-sections"></div>
   </div>
 
   <script src="./js/m7/m7_ui.js"></script>
