@@ -497,7 +497,7 @@ export async function runM8Case({
 
   const base = 6;
 
- const preRate =
+const preRate =
   base +
   basketPremium +
   structure.structure_total +
@@ -506,12 +506,7 @@ export async function runM8Case({
 
 const highRateBrake = calcHighRateBrake(preRate);
 
-const rawFairYield = preRate - highRateBrake;
-
-// 封頂 10%
-const fairYield = Math.min(rawFairYield, 10);
-const yieldCapped = rawFairYield > 10;
-
+const fairYield = preRate - highRateBrake;
 const delta = toNum(marketYield) - fairYield;
 
   let note = "";
