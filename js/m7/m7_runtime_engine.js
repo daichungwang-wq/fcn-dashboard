@@ -271,14 +271,15 @@ function growthScoreBase(growth) {
 
   if (growth <= 20) {
     const x = growth - 10;
-    return 6 + 8 * Math.pow(x / 10, 1.5);
+    return 6 + 6.5 * Math.pow(x / 10, 1.2);
   }
 
-  if (growth <= 30) {
-    return 14 + 0.4 * (growth - 20);
+  if (growth <= 27) {
+    const x = growth - 20;
+    return 14 + 5 * Math.pow(x*1.1 / 10, 1.6);
   }
 
-  return Math.min(25, 18 + 1.6 * Math.sqrt(growth - 30));
+  return Math.min(25, 19.4 + 0.8 * Math.sqrt(growth - 27));
 }
 
 // 成長不變；衰退減半（相對 baseline = 3）
@@ -566,7 +567,7 @@ function buildFinalScore({
     valuationNorm +
     0.8*trendNorm +
     0.8*structureNorm +
-    0.8*timingNorm +
+    timingNorm +
     moneyNorm +
     qualityBonus +
     categoryBonus;
