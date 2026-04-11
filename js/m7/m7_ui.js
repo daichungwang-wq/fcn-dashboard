@@ -1,11 +1,12 @@
 // ==========================================
-// M7 UI FINAL PRO + FIELD EXPLAIN + SCORE DASHBOARD
-// 對應新版 m7_runtime_engine.js
-// 功能：
-// 1. 三大分類卡片
-// 2. 逐欄解釋版
-// 3. Score Dashboard
-// 4. Score Ranking
+// M7 UI FINAL
+// 依振宇最新需求調整：
+// 1. Dashboard 只保留「今日總覽 / 投資金額健檢分析」
+// 2. 取消 技術面分析
+// 3. 取消 今日組合推薦
+// 4. Score Dashboard 取消 Category Bonus
+// 5. Score Ranking 加入一鍵展開 / 收合
+// 6. Score Ranking 每一項後面加上公式說明
 // ==========================================
 
 async function loadM7() {
@@ -47,6 +48,9 @@ function renderTop(data) {
 
 // ------------------------------------------
 // DASHBOARD
+// 只保留：
+// 1. 今日總覽
+// 2. 投資金額健檢分析
 // ------------------------------------------
 function renderDashboard(data) {
   const wrap = document.getElementById("m7-dashboard");
@@ -55,12 +59,6 @@ function renderDashboard(data) {
   const aggressive = data.aggressive_recommend || [];
   const watch = [...(data.watch_list || [])];
   const remove = data.remove_list || [];
-
-  const techSummary = [
-    `甜點：${num(data.sweet_count)}`,
-    `短線偏熱：${num(data.hot_timing_count)}`,
-    `下行趨勢：${num(data.downtrend_count)}`
-  ].join(" ｜ ");
 
   const overallSummary = [
     `總數：${num(data.total_count)}`,
@@ -74,18 +72,20 @@ function renderDashboard(data) {
     `中曝險：${num(data.mid_exposure)}`
   ].join(" ｜ ");
 
-  const combo = buildComboSummary(aggressive);
+  const allRows = Array.isArray(data.all) ? data.all : [];
+  const highExposureStocks = allRows
+    .filter(x => (x["曝險警示"]?.level || "") === "high")
+    .map(x => safe(x["股號"]))
+    .filter(Boolean);
+
+  const highExposureText = highExposureStocks.length
+    ? `高曝險股票：${highExposureStocks.join(" / ")}`
+    : "目前無高曝險股票。";
 
   wrap.innerHTML = `
-    <div class="dash-grid">
+    <div class="dash-grid" style="grid-template-columns: repeat(2, minmax(0, 1fr));">
       ${dashCard(
-        "技術面分析",
-        techSummary,
-        data.market_comment || "以趨勢 / 結構 / 時機三層判讀今日風向。"
-      )}
-
-      ${dashCard(
-        "Overall",
+        "今日總覽",
         overallSummary,
         "觀察目前篩選結果與三大分類分布。"
       )}
@@ -93,13 +93,7 @@ function renderDashboard(data) {
       ${dashCard(
         "投資金額健檢分析",
         investHealth,
-        "用持倉集中度與 Danger / Watch / Healthy 觀察是否該調整曝險。"
-      )}
-
-      ${dashCard(
-        "今日組合推薦",
-        combo.value,
-        combo.desc
+        highExposureText
       )}
     </div>
   `;
@@ -115,33 +109,9 @@ function dashCard(title, value, desc) {
   `;
 }
 
-function buildComboSummary(aggressive) {
-  if (!aggressive || !aggressive.length) {
-    return {
-      value: "目前無積極推薦",
-      desc: "暫無適合的 FCN 模擬組合。"
-    };
-  }
-
-  const byCategory = {};
-  aggressive.forEach(x => {
-    const key = x["分類"] || "other";
-    if (!byCategory[key]) byCategory[key] = [];
-    byCategory[key].push(x["股號"]);
-  });
-
-  const parts = Object.entries(byCategory).map(([k, arr]) => {
-    return `${k}：${arr.length}檔（${arr.join(" / ")}）`;
-  });
-
-  return {
-    value: parts.join(" ｜ "),
-    desc: "先完整顯示 baseline 分類 / 檔數 / 名字。"
-  };
-}
-
 // ------------------------------------------
 // SCORE DASHBOARD
+// 取消 Category Bonus
 // ------------------------------------------
 function renderScoreDashboard(data) {
   const wrap = document.getElementById("m7-score-dashboard");
@@ -159,8 +129,8 @@ function renderScoreDashboard(data) {
     { key: "結構分", label: "Structure" },
     { key: "時機分", label: "Timing" },
     { key: "資金分", label: "Money" },
-    { key: "品質分", label: "Quality Bonus" },
-    { key: "類別調整", label: "Category Bonus" }
+    { key: "品質分", label: "Quality Bonus" }
+    // 類別調整 Category Bonus 已取消
   ];
 
   const cards = metricDefs.map(def => {
@@ -248,6 +218,9 @@ function calcMetricStats(rows, metricKey) {
 
 // ------------------------------------------
 // SCORE RANKING
+// 1. 加上一鍵展開 / 收合
+// 2. 每個項目後面加上公式說明
+// 3. 排序內容不動
 // ------------------------------------------
 function renderScoreRanking(data) {
   const wrap = document.getElementById("m7-score-ranking");
@@ -260,13 +233,41 @@ function renderScoreRanking(data) {
   }
 
   const metricDefs = [
-    { key: "估值分", label: "估值" },
-    { key: "趨勢分", label: "Trend" },
-    { key: "結構分", label: "Structure" },
-    { key: "時機分", label: "Timing" },
-    { key: "資金分", label: "Money" },
-    { key: "品質分", label: "Quality Bonus" },
-    { key: "類別調整", label: "Category Bonus" }
+    {
+      key: "估值分",
+      label: "估值",
+      formula: "公式說明：Valuation = (0.6 × peScore + 0.4 × growthScore_adj) × qualityFactor"
+    },
+    {
+      key: "趨勢分",
+      label: "Trend",
+      formula: "公式說明：Trend = 1M / 3M / 6M / 12M 綜合方向判讀"
+    },
+    {
+      key: "結構分",
+      label: "Structure",
+      formula: "公式說明：Structure = ShortSwing 對應甜度分數，並依上限封頂"
+    },
+    {
+      key: "時機分",
+      label: "Timing",
+      formula: "公式說明：Timing = Snapshot = 0.4×1D + 0.5×1W + 0.1×1M，再映射成分數"
+    },
+    {
+      key: "資金分",
+      label: "Money",
+      formula: "公式說明：Money = 依量比 / 資金參與度映射分數"
+    },
+    {
+      key: "品質分",
+      label: "Quality Bonus",
+      formula: "公式說明：Quality Bonus = 依標的品質等級給予加減分"
+    },
+    {
+      key: "類別調整",
+      label: "Category Bonus",
+      formula: "公式說明：Category Bonus = 依 core / defensive / cyclical / speculative 類別調整"
+    }
   ];
 
   wrap.innerHTML = `
@@ -276,12 +277,22 @@ function renderScoreRanking(data) {
           <div class="main-title">Score Ranking</div>
           <div class="main-desc">依各分項由高到低排序</div>
         </div>
+        <div>
+          <button class="toggle-btn" onclick="toggleMainCard('score_ranking_body', this, '展開全部', '收合全部')">
+            展開全部
+          </button>
+        </div>
       </div>
-      <div class="main-body">
+
+      <div id="score_ranking_body" class="main-body hidden">
         ${metricDefs.map(def => `
           <div class="analysis-section">
             <div class="analysis-title">${def.label}</div>
             <div class="analysis-table">
+              <div class="analysis-row">
+                <div class="analysis-label">公式</div>
+                <div class="analysis-value">${def.formula}</div>
+              </div>
               <div class="analysis-row">
                 <div class="analysis-label">排序</div>
                 <div class="analysis-value ranking-line">${buildMetricRankingLine(rows, def.key)}</div>
@@ -346,7 +357,7 @@ function mainCard(title, list, desc, defaultOpen = false, previewCount = 3) {
 
   return `
     <div class="main-card">
-      <div class="main-header" onclick="toggleMainCard('${safeId}')">
+      <div class="main-header" onclick="toggleBodyOnly('${safeId}')">
         <div>
           <div class="main-title">${title}</div>
           <div class="main-desc">${desc}</div>
@@ -485,7 +496,7 @@ function exposureBlock(x, warnLevel) {
 }
 
 // ------------------------------------------
-// 詳細分析：逐欄解釋版
+// 詳細分析
 // ------------------------------------------
 function analysisBlock(x) {
   const score = x["分數拆解"] || {};
@@ -710,10 +721,19 @@ function showScoreDetail(encoded) {
 // ------------------------------------------
 // Toggle
 // ------------------------------------------
-function toggleMainCard(id) {
+function toggleBodyOnly(id) {
   const el = document.getElementById(id);
   if (!el) return;
   el.classList.toggle("hidden");
+}
+
+function toggleMainCard(id, btn, closedText = "展開", openedText = "收合") {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.toggle("hidden");
+  if (btn) {
+    btn.textContent = el.classList.contains("hidden") ? closedText : openedText;
+  }
 }
 
 function toggleList(id, btn, total) {
