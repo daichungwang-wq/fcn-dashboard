@@ -327,7 +327,7 @@ function buildValuationData(row, category) {
   const qualityMomentum = calcQualityMomentum(r1m, r3m, r6m, r12m);
   const qualityFactor = calcQualityFactor(qualityMomentum);
 
-  const valuationRaw = 5*( 0.7 * peScore + 0.3 * growthScoreAdj) * qualityFactor;
+  const valuationRaw = 4*( 0.6 * peScore + 0.3 * growthScoreAdj + 0.5 * pegScore) * qualityFactor;
   const valuationNorm = clamp(valuationRaw, 0, 60);
 
   let level = "中性";
@@ -465,7 +465,7 @@ function inferTimingState(snapshot) {
 // Money normalize 0~10
 // ------------------------------------------
 function calcMoneyScoreNormalized(volumeRatio) {
-  const v = safeNum(volumeRatio, null);
+  const v = safeNum(volumeRatio, 1);
   if (v === null) return 4;
   if (v >= 1.5) return 10;
   if (v >= 1.2) return 8;
