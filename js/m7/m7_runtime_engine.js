@@ -676,7 +676,7 @@ function buildScoreboard(sortedRows) {
   return {
     generated_at: new Date().toISOString(),
     formula: {
-      valuation: "Valuation = (0.6 * peScore + 0.4 * growthScore_adj) * qualityFactor ; valuation_norm = clamp(raw / 3.5, 0, 10)",
+      valuation: "Valuation = (0.6 * peScore + 0.4 * growthScore_adj) * qualityFactor ",
       trend: "trendRaw = 0.15*1M + 0.25*3M + 0.30*6M + 0.30*12M ; bucket normalize to 0~10",
       structure: "ShortSwing = 0.35*d0 + 0.25*d1 + 0.15*d2 + 0.10*d3 + 0.08*d4 + 0.07*d5 ; map to 0~10",
       timing: "snapshot = 0.4*r1d + 0.5*r1w + 0.1*r1m ; timing = clamp(5 - 0.1667*snapshot, 0, 10)",
