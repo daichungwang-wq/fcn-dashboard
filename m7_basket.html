@@ -1,42 +1,407 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-<meta charset="UTF-8">
-<title>M7 Basket FINAL</title>
+  <meta charset="UTF-8" />
+  <title>📊 M7 Basket Review</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<style>
-body { font-family: Arial; background:#f4f7fb; padding:20px;}
-.section { background:#fff; padding:16px; margin-bottom:20px; border-radius:12px;}
-.summary-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:10px;}
-.summary-item { background:#f1f5f9; padding:10px; border-radius:8px;}
-.stock-line { padding:6px 0; border-bottom:1px dashed #ddd;}
-.pill { background:#2563eb; color:#fff; padding:2px 6px; border-radius:6px; font-size:10px; margin-left:6px;}
-.cat-block { margin-bottom:10px;}
-</style>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --line: #e5e7eb;
+      --text: #0f172a;
+      --muted: #64748b;
+      --blue: #2563eb;
+      --blue-soft: #eff6ff;
+      --green: #059669;
+      --amber: #d97706;
+      --red: #dc2626;
+      --shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans TC", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px 16px 40px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, rgba(37,99,235,0.96), rgba(29,78,216,0.92));
+      color: #fff;
+      border-radius: 22px;
+      padding: 22px 20px;
+      box-shadow: 0 18px 36px rgba(37,99,235,0.18);
+      margin-bottom: 18px;
+    }
+
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: 30px;
+      font-weight: 800;
+    }
+
+    .hero p {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.8;
+      color: rgba(255,255,255,0.92);
+      max-width: 980px;
+    }
+
+    .section {
+      background: var(--card);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      margin-bottom: 18px;
+      overflow: hidden;
+    }
+
+    .section-head {
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(248,250,252,0.94));
+    }
+
+    .section-title {
+      font-size: 22px;
+      font-weight: 800;
+      margin: 0 0 4px;
+    }
+
+    .section-desc {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .section-body {
+      padding: 16px;
+    }
+
+    .meta-grid,
+    .summary-grid,
+    .slot-grid,
+    .basket-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .meta-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .summary-grid {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      margin-bottom: 14px;
+    }
+
+    .slot-grid,
+    .basket-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .meta-card,
+    .summary-item,
+    .category-card,
+    .slot-panel,
+    .basket-panel {
+      background: #fff;
+      border: 1px solid #e9edf3;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+    }
+
+    .meta-card,
+    .summary-item {
+      padding: 14px;
+    }
+
+    .meta-title,
+    .summary-item span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    .meta-value,
+    .summary-item strong {
+      font-size: 22px;
+      font-weight: 800;
+      line-height: 1.3;
+    }
+
+    .structure-comment {
+      background: var(--blue-soft);
+      border: 1px solid #dbeafe;
+      color: #1d4ed8;
+      border-radius: 14px;
+      padding: 12px 14px;
+      line-height: 1.8;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .category-card,
+    .slot-panel,
+    .basket-panel {
+      padding: 14px;
+    }
+
+    .category-title,
+    .style-title,
+    .basket-title {
+      font-size: 20px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .style-sub,
+    .basket-sub {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.7;
+      margin-top: 2px;
+    }
+
+    .style-desc {
+      margin-top: 8px;
+      font-size: 13px;
+      line-height: 1.8;
+      color: #334155;
+    }
+
+    .slot-card,
+    .basket-card,
+    .stock-line,
+    .candidate-line {
+      background: #fbfcfe;
+      border: 1px solid #ebeff5;
+      border-radius: 14px;
+    }
+
+    .slot-card,
+    .basket-card {
+      padding: 12px;
+      margin-top: 12px;
+    }
+
+    .stock-line,
+    .candidate-line {
+      padding: 10px 12px;
+      margin-top: 8px;
+    }
+
+    .slot-top,
+    .basket-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+
+    .slot-title {
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .slot-tag,
+    .basket-score,
+    .pill {
+      display: inline-block;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .slot-tag {
+      background: #0f172a;
+      color: #fff;
+      padding: 5px 10px;
+    }
+
+    .basket-score {
+      background: #0f172a;
+      color: #fff;
+      padding: 8px 12px;
+    }
+
+    .pill {
+      margin-left: 8px;
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1px solid #dbeafe;
+      padding: 2px 8px;
+      vertical-align: middle;
+    }
+
+    .muted-pill {
+      background: #f8fafc;
+      color: #475569;
+      border-color: #e2e8f0;
+    }
+
+    .slot-desc,
+    .candidate-meta,
+    .stock-score,
+    .stock-note,
+    .stats-line {
+      font-size: 12px;
+      line-height: 1.8;
+      color: var(--muted);
+    }
+
+    .block-title {
+      font-size: 14px;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .basket-block {
+      margin-top: 12px;
+      background: #fbfcfe;
+      border: 1px solid #ebeff5;
+      border-radius: 14px;
+      padding: 12px;
+      line-height: 1.8;
+      font-size: 13px;
+    }
+
+    .empty-line {
+      color: var(--muted);
+      font-size: 13px;
+      padding: 8px 0;
+    }
+
+    #basket-error {
+      color: var(--red);
+      font-weight: 700;
+      margin-top: 12px;
+      font-size: 14px;
+    }
+
+    @media (max-width: 1100px) {
+      .slot-grid,
+      .basket-grid,
+      .category-grid,
+      .meta-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .summary-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .slot-top,
+      .basket-top {
+        flex-direction: column;
+      }
+    }
+  </style>
 </head>
-
 <body>
+  <div class="container">
+    <section class="hero">
+      <h1>📊 M7 Basket Review</h1>
+      <p>
+        這一頁是 M7 最後考驗：不自己分類，不自己猜池子，只吃
+        <strong>m7_new_stock_pool.json</strong> 與
+        <strong>m7_new_stock_today.json</strong>。
+        先用 simulation_pool 做今日 universe，再依 pool 內既有分類產出
+        今日結構、分類＋曝險排序、三種風格的 slot 建議，以及 M7 預建議 basket。
+      </p>
+    </section>
 
-<div class="section">
-  <h2>今日股票結構（Simulation Pool）</h2>
-  <div id="today-structure"></div>
-</div>
+    <section class="section">
+      <div class="section-head">
+        <div class="section-title">資料對口</div>
+        <div class="section-desc">
+          只吃兩份 M7 JSON：pool 決定靜態分類與 allow_fcn；today 的 simulation_pool 決定今天可用股票。
+        </div>
+      </div>
+      <div class="section-body">
+        <div id="basket-meta"></div>
+      </div>
+    </section>
 
-<div class="section">
-  <h2>分類 + 曝險排序</h2>
-  <div id="category-breakdown"></div>
-</div>
+    <section class="section">
+      <div class="section-head">
+        <div class="section-title">今日股票結構</div>
+        <div class="section-desc">
+          先看 simulation_pool 今日 15 檔，在既有 pool 分類下的五大結構，再決定今天偏積極、理性還是保守。
+        </div>
+      </div>
+      <div class="section-body">
+        <div id="today-structure"></div>
+      </div>
+    </section>
 
-<div class="section">
-  <h2>Basket 建議</h2>
-  <div id="aggr"></div>
-  <hr>
-  <div id="rat"></div>
-  <hr>
-  <div id="cons"></div>
-</div>
+    <section class="section">
+      <div class="section-head">
+        <div class="section-title">分類＋曝險排序</div>
+        <div class="section-desc">
+          類別完全以 m7_new_stock_pool.json 為準；同類內先看曝險，再看總分。這是 review 用，不是最終下單。
+        </div>
+      </div>
+      <div class="section-body">
+        <div id="category-breakdown" class="category-grid"></div>
+      </div>
+    </section>
 
-<script src="./js/m7/m7_basket_engine.js"></script>
+    <section class="section">
+      <div class="section-head">
+        <div class="section-title">三種風格 Slot 建議</div>
+        <div class="section-desc">
+          這裡不是直接給唯一答案，而是先給每個 slot 的類型、分數條件與候選股票，方便人工檢視。
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="slot-grid">
+          <div class="slot-panel" id="aggressive-slots"></div>
+          <div class="slot-panel" id="rational-slots"></div>
+          <div class="slot-panel" id="conservative-slots"></div>
+        </div>
+      </div>
+    </section>
 
+    <section class="section">
+      <div class="section-head">
+        <div class="section-title">M7 預建議 Basket</div>
+        <div class="section-desc">
+          這裡只是依 slot 候選先取第一版預建議，供你人工 review。確認方向正確後，再接 M8 rate engine 驗證利率。
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="basket-grid">
+          <div class="basket-panel" id="aggressive-basket"></div>
+          <div class="basket-panel" id="rational-basket"></div>
+          <div class="basket-panel" id="conservative-basket"></div>
+        </div>
+        <div id="basket-error"></div>
+      </div>
+    </section>
+  </div>
+
+  <script src="./js/m7/m7_basket_engine.js"></script>
 </body>
 </html>
