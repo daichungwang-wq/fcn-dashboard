@@ -538,18 +538,16 @@ function stockCard(x, detailId) {
         <strong>第一層：摘要</strong><br>
         Total ${fmtNum(x["today_score"])}<br>
         Valuation ${fmtNum(x["valuation_score"])} ｜ Trend ${fmtNum(x["trend_score"])} ｜ Structure ${fmtNum(x["structure_score"])} ｜ Timing ${fmtNum(x["timing_score"])} ｜ Money ${fmtNum(x["money_score"])}<br>
-        短評：${safe(x["最終說明"])}
+        短評：${generateProfessionalComment(x)}
       </div>
 
-      <div class="highlight-box">
-        <strong>第二層：為什麼進這一池</strong><br>
-        ${safe(poolReason.pool)} ｜ ${safe(poolReason.reason_summary)}<br>
-        ${
-          Array.isArray(poolReason.detail) && poolReason.detail.length
-            ? poolReason.detail.map(v => `• ${safe(v)}`).join("<br>")
-            : "—"
-        }
-      </div>
+     <div id="${detailId}" class="detail-wrap hidden">
+
+  ${buildEvidenceBlock(x)}
+
+  ${analysisBlock(x)}
+
+</div>
 
       ${
         rejectType
