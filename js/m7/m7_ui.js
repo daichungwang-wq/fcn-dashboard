@@ -308,6 +308,148 @@ function buildMetricRankingLine(rows, metricKey) {
 // ------------------------------------------
 // 四大池：取代原本三大池
 // ------------------------------------------
+// ==========================================
+// 🔥 專業短評引擎（FCN Decision Language）
+// ==========================================
+function generateProfessionalComment(s) {
+
+  const trendState = s["趨勢判讀"]?.["趨勢狀態"];
+  const timingState = s["趨勢判讀"]?.["時機狀態"];
+  const structureState = s["趨勢判讀"]?.["結構狀態"];
+  const category = s["分類"];
+  const valuation = s["估值資料"] || {};
+  const exposure = s["曝險警示"] || {};
+
+  let parts = [];
+
+  // -------------------------
+  // 1️⃣ 趨勢判讀（中期）
+  // -------------------------
+  if (trendState === "up_strong") {
+    parts.push("中期趨勢強勁，市場資金持續推動股價");
+  } else if (trendState === "up_mild") {
+    parts.push("中期趨勢溫和向上");
+  } else if (trendState === "neutral") {
+    parts.push("中期趨勢偏盤整");
+  } else {
+    parts.push("中期趨勢轉弱");
+  }
+
+  // -------------------------
+  // 2️⃣ 時機（短線）
+  // -------------------------
+  if (timingState === "hot") {
+    parts.push("短線偏熱，屬於追價區");
+  } else if (timingState === "warm") {
+    parts.push("短線動能偏強");
+  } else if (timingState === "cold") {
+    parts.push("短線偏冷，接近低點區");
+  }
+
+  // -------------------------
+  // 3️⃣ 結構（甜度）
+  // -------------------------
+  if (structureState === "sweet_max") {
+    parts.push("價格結構處於高甜區");
+  } else if (structureState === "sweet") {
+    parts.push("價格具備一定甜度");
+  } else if (structureState === "flat") {
+    parts.push("價格結構尚未形成甜點");
+  }
+
+  // -------------------------
+  // 4️⃣ 估值判讀
+  // -------------------------
+  const peRatio = valuation.PERatio;
+
+  if (category === "speculative") {
+    parts.push("屬於投機型標的，估值穩定性不足");
+  } else if (peRatio !== null && peRatio > 1.5) {
+    parts.push("估值明顯偏高，容錯率較低");
+  } else if (peRatio !== null && peRatio < 1) {
+    parts.push("估值相對合理");
+  }
+
+  // -------------------------
+  // 5️⃣ FCN核心判斷（最重要）
+  // -------------------------
+  let fcnConclusion = "";
+
+  if (s.reject_type === "attribute") {
+    fcnConclusion = "屬性上不符合 FCN 可接原則";
+  } else if (s.reject_type === "quant") {
+    fcnConclusion = "數值條件顯示風險過高";
+  } else if (timingState === "hot") {
+    fcnConclusion = "短線過熱，不適合建立 FCN 部位";
+  } else if (category === "speculative") {
+    fcnConclusion = "不適合作為 FCN basket 標的";
+  } else {
+    fcnConclusion = "可列入 FCN 評估名單";
+  }
+
+  // -------------------------
+  // 6️⃣ 曝險補充
+  // -------------------------
+  if (exposure.level === "high") {
+    parts.push("目前持倉曝險偏高");
+  }
+
+  // -------------------------
+  // FINAL
+  // -------------------------
+  return parts.join("，") + "。因此" + fcnConclusion + "。";
+}
+
+function buildEvidenceBlock(s) {
+  return `
+  <div class="analysis-section">
+    <div class="analysis-title">第二層：決策證據</div>
+
+    <div class="analysis-row">
+      <div class="analysis-label">趨勢面</div>
+      <div class="analysis-value">
+        TrendRaw ${fmtNum(s.trendRaw)}（${s["趨勢判讀"]?.["趨勢狀態"]}）<br>
+        → 中期趨勢判讀
+      </div>
+    </div>
+
+    <div class="analysis-row">
+      <div class="analysis-label">結構面</div>
+      <div class="analysis-value">
+        ShortSwing ${fmtNum(s["結構資料"]?.["ShortSwing"])}<br>
+        → 價格甜度判斷
+      </div>
+    </div>
+
+    <div class="analysis-row">
+      <div class="analysis-label">時機面</div>
+      <div class="analysis-value">
+        Snapshot ${fmtNum(s.snapshot)}<br>
+        → 短線冷熱
+      </div>
+    </div>
+
+    <div class="analysis-row">
+      <div class="analysis-label">估值面</div>
+      <div class="analysis-value">
+        ${s["估值資料"]?.ValuationClass}<br>
+        PE Ratio ${fmtNum(s["估值資料"]?.PERatio)}<br>
+        EPS Growth ${fmtNum(s["估值資料"]?.["EPS成長率"])}%
+      </div>
+    </div>
+
+    <div class="analysis-row">
+      <div class="analysis-label">持倉面</div>
+      <div class="analysis-value">
+        投入比 ${fmtNum(s["持倉曝險"]?.["投入資金比"])}%<br>
+        → ${s["曝險警示"]?.level}
+      </div>
+    </div>
+
+  </div>
+  `;
+}
+
 function renderFourPools(data) {
   const wrap = document.getElementById("m7-sections");
   if (!wrap) return;
