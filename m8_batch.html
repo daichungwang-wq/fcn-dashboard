@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
@@ -453,6 +454,50 @@
           說明：Vol 模組已正式納入，不再另外加 ResonanceAdj。這版 storage 已升級為統一 schema，可供後續 M2 / M3 使用。
         </p>
 
+        <div class="section-title">Anchor-based Yield Proxy</div>
+
+        <div class="form-group">
+          <label for="proxySymbols">股票代號（逗號分隔，至少 2 檔）</label>
+          <textarea id="proxySymbols" placeholder="例如：GOOG,AAPL,TSM,QQQ,MRVL"></textarea>
+          <div class="small-note">系統會自動找出 today_score 最高者當 anchor。</div>
+        </div>
+
+        <div class="split-2">
+          <div class="form-group">
+            <label for="proxyKi">KI</label>
+            <input id="proxyKi" type="number" value="55" />
+          </div>
+
+          <div class="form-group">
+            <label for="proxyStrike">Strike</label>
+            <input id="proxyStrike" type="number" value="65" />
+          </div>
+        </div>
+
+        <div class="split-2">
+          <div class="form-group">
+            <label for="proxyTenor">Tenor（月）</label>
+            <input id="proxyTenor" type="number" value="6" />
+          </div>
+
+          <div class="form-group">
+            <label for="proxyType">Type</label>
+            <select id="proxyType">
+              <option value="EKI">EKI</option>
+              <option value="DACN">DACN</option>
+              <option value="AKI" selected>AKI</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn-success" id="runProxyBtn">產出 Anchor Proxy</button>
+        </div>
+
+        <div class="sticky-box" style="margin-top:10px;">
+          <div id="proxyResult" class="muted" style="padding:12px;">尚未執行</div>
+        </div>
+
         <div class="section-title">歷史詢價單</div>
         <div class="btn-row" style="margin-bottom:10px;">
           <button class="btn-secondary" id="exportJsonBtn">匯出 JSON</button>
@@ -502,7 +547,7 @@
 
     function badgeClass(view) {
       if (view === "便宜" || view === "略便宜") return "pill ok";
-      if (view === "合理") return "pill warn";
+      if (view === "合理") return "pill.warn";
       if (view === "尚未執行") return "pill info";
       return "pill bad";
     }
@@ -704,8 +749,6 @@
       for (const line of lines) {
         const parts = line.split(",").map(x => x.trim());
 
-        // 新格式：
-        // 承做機構,上手銀行,RM,CaseName,Symbols,KI,Strike,Tenor,Type,MarketYield,Note
         if (parts.length >= 10) {
           const issuer = parts[0] || "";
           const upstreamBank = parts[1] || "";
@@ -739,8 +782,6 @@
           continue;
         }
 
-        // 舊格式：
-        // CaseName,Symbols,KI,Strike,Tenor,Type,MarketYield
         if (parts.length >= 7) {
           const caseName = parts[0] || "Case";
           const symbolText = parts[1] || "";
@@ -854,7 +895,7 @@
           substitution: `-0.1 + 0.35×${fmt(basketVol)}`
         };
       }
-        if (basketVol <= 4.0) {
+      if (basketVol <= 4.0) {
         const d = basketVol - 2.0;
         return {
           bucket: "2 < v ≤ 4",
@@ -964,10 +1005,10 @@
         <div class="summary-grid">
           <div class="summary-box"><div class="k">Market Yield</div><div class="v">${fmt(r.market_yield)}%</div></div>
           <div class="summary-box">
-  <div class="k">Fair Yield</div>
-  <div class="v">${fmt(r.fair_yield)}%</div>
-  <div class="small-note">${r.yield_capped ? "已封頂 10%" : ""}</div>
-</div>
+            <div class="k">Fair Yield</div>
+            <div class="v">${fmt(r.fair_yield)}%</div>
+            <div class="small-note">${r.yield_capped ? "已封頂 10%" : ""}</div>
+          </div>
           <div class="summary-box"><div class="k">Pricing Delta</div><div class="v">${fmt(r.pricing_delta)}%</div></div>
           <div class="summary-box"><div class="k">BasketVol / VolAdj</div><div class="v">${fmt(r.basket_vol)} / ${fmt(r.vol_adj)}%</div></div>
         </div>
@@ -1103,6 +1144,56 @@
             <div class="mono">代入：${volAdjExplain.substitution}</div>
             <div class="mono">VolAdj = ${fmt(r.vol_adj)}</div>
           </div>
+        </div>
+      `;
+    }
+
+    function renderProxyResult(result) {
+      const box = $("proxyResult");
+      if (!box) return;
+
+      if (!result || !Array.isArray(result.proxies) || !result.proxies.length) {
+        box.innerHTML = "沒有可顯示的 proxy 結果";
+        return;
+      }
+
+      box.innerHTML = `
+        <div style="padding:12px;">
+          <div style="font-weight:800; margin-bottom:8px;">
+            Anchor：${result.anchor_symbol} ${result.anchor_name} ｜ today_score ${fmt(result.anchor_today_score)}
+          </div>
+          <div class="small-note" style="margin-bottom:10px;">
+            Normalization Base Yield：${fmt(result.base_yield_for_normalization)}
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Target</th>
+                <th>Today Score</th>
+                <th>Pair Fair Yield</th>
+                <th>BasketVol</th>
+                <th>VolAdj</th>
+                <th>Proxy</th>
+                <th>Normalized</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${result.proxies.map((x, idx) => `
+                <tr>
+                  <td>${idx + 1}</td>
+                  <td>${x.target_symbol}</td>
+                  <td>${fmt(x.target_today_score)}</td>
+                  <td>${fmt(x.pair_fair_yield)}</td>
+                  <td>${fmt(x.pair_basket_vol)}</td>
+                  <td>${fmt(x.pair_vol_adj)}</td>
+                  <td>${fmt(x.proxy_value)}</td>
+                  <td>${fmt(x.normalized_proxy)}</td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
         </div>
       `;
     }
@@ -1544,6 +1635,31 @@
       }
     }
 
+    async function runAnchorProxy() {
+      try {
+        const symbols = parseSymbols($("proxySymbols").value);
+        const KI = num($("proxyKi").value);
+        const Strike = num($("proxyStrike").value);
+        const T = num($("proxyTenor").value);
+        const type = $("proxyType").value;
+
+        const result = await runM8AnchorProxy({
+          symbols,
+          KI,
+          Strike,
+          T,
+          type
+        });
+
+        renderProxyResult(result);
+      } catch (err) {
+        const box = $("proxyResult");
+        if (box) {
+          box.innerHTML = `<div style="color:#b42318;padding:12px;">${err.message || err}</div>`;
+        }
+      }
+    }
+
     async function importBatchInquiry() {
       const inquiryDate = $("inquiryDate").value || todayStr();
       const rows = parseBatchText($("batchInput").value, inquiryDate);
@@ -1675,6 +1791,7 @@
       $("demoBtn").addEventListener("click", loadDemo);
       $("clearBtn").addEventListener("click", clearResult);
       $("importBatchBtn").addEventListener("click", importBatchInquiry);
+      $("runProxyBtn").addEventListener("click", runAnchorProxy);
 
       $("exportJsonBtn").addEventListener("click", exportHistoryJson);
       $("exportCsvBtn").addEventListener("click", exportHistoryCsv);
@@ -1692,3 +1809,5 @@
   </script>
 </body>
 </html>
+```
+
