@@ -171,52 +171,42 @@ def pct_to_percent_number(v):
 
 def calc_swing_days(hist):
     """
-    真實振幅版：
-    swing = (High - Low) / Prev Close * 100
-
-    規則：
-    - d0 = 最新一日
-    - 若前一日 close 取不到，fallback 用當日 open
-    - 若 high / low 無效，記 0
+    改為收盤價變化（Momentum）：
+    delta = (Close_today - Close_yesterday) / Close_yesterday * 100
     """
-    swings = []
+
+    deltas = []
+
     if hist is None or len(hist) == 0:
         return [0, 0, 0, 0, 0, 0]
 
-    hist = hist.copy()
-
     limit = min(6, len(hist))
+
     for i in range(limit):
         try:
-            row_idx = len(hist) - 1 - i
-            row = hist.iloc[row_idx]
+            idx = len(hist) - 1 - i
 
-            high_price = safe_number(row.get("High"), None)
-            low_price = safe_number(row.get("Low"), None)
-            open_price = safe_number(row.get("Open"), None)
+            close_today = safe_number(hist.iloc[idx].get("Close"), None)
 
             prev_close = None
-            if row_idx - 1 >= 0:
-                prev_close = safe_number(hist.iloc[row_idx - 1].get("Close"), None)
+            if idx - 1 >= 0:
+                prev_close = safe_number(hist.iloc[idx - 1].get("Close"), None)
 
-            base_price = prev_close
-            if base_price in (None, 0):
-                base_price = open_price
-
-            if high_price in (None, 0) or low_price in (None, 0) or base_price in (None, 0):
-                swings.append(0)
+            if close_today in (None, 0) or prev_close in (None, 0):
+                deltas.append(0)
                 continue
 
             delta = (close_today - prev_close) / prev_close * 100
-            swings.append(round(max(0, amp), 2))
+
+            deltas.append(round(delta, 2))
 
         except Exception:
-            swings.append(0)
+            deltas.append(0)
 
-    while len(swings) < 6:
-        swings.append(0)
+    while len(deltas) < 6:
+        deltas.append(0)
 
-    return swings
+    return deltas
 
 def load_pool():
     with open(POOL_PATH, "r", encoding="utf-8") as f:
