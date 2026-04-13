@@ -108,12 +108,6 @@
       font-size: 13px;
     }
 
-    .two-grid {
-      display: grid;
-      grid-template-columns: 1.05fr 0.95fr;
-      gap: 14px;
-    }
-
     .three-grid {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
@@ -160,14 +154,6 @@
       display: block;
     }
 
-    .mini-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px 18px;
-      margin-top: 8px;
-      margin-bottom: 8px;
-    }
-
     .section-body {
       display: none;
       margin-top: 10px;
@@ -182,6 +168,14 @@
       gap: 8px;
       align-items: center;
       margin-bottom: 10px;
+    }
+
+    .mini-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 18px;
+      margin-top: 8px;
+      margin-bottom: 8px;
     }
 
     .pill {
@@ -316,7 +310,6 @@
 
     @media (max-width: 980px) {
       .summary-grid { grid-template-columns: 1fr 1fr; }
-      .two-grid { grid-template-columns: 1fr; }
       .three-grid { grid-template-columns: 1fr; }
       .mini-grid { grid-template-columns: 1fr; }
       .kpi-grid { grid-template-columns: 1fr 1fr; }
@@ -347,7 +340,7 @@
         <button class="light" id="expandAllBtn">一鍵展開</button>
         <button class="light" id="collapseAllBtn">一鍵收合</button>
       </div>
-      <div id="runtimeMeta" class="muted">尚未執行 M3</div>
+      <div id="runtimeMeta" class="muted">尚未找到 M3 cache，請先按「執行 M3」</div>
       <div class="note">
         M3 讀取：
         <b>pool30.json</b>、
@@ -448,11 +441,6 @@
       return `${sign}${n.toFixed(digits)}%`;
     }
 
-    function round(v, digits = 2) {
-      const f = 10 ** digits;
-      return Math.round(toNumber(v, 0) * f) / f;
-    }
-
     function readCache() {
       try {
         const raw = localStorage.getItem(M3_CACHE_KEY);
@@ -462,211 +450,118 @@
       }
     }
 
-   function writeCache(data) {
-  const lite = {
-    generated_at: data.generated_at,
+    function writeCache(data) {
+      const lite = {
+        generated_at: data.generated_at,
+        summary: data.summary || {},
+        dashboard: data.dashboard || {},
+        scenarioSummary: data.scenarioSummary || [],
+        rateDistribution: data.rateDistribution || [],
+        finalDecision: (data.finalDecision || []).slice(0, 5),
 
-    summary: data.summary || {},
-    dashboard: data.dashboard || {},
-    scenarioSummary: (data.scenarioSummary || []).slice(0, 20),
-    rateDistribution: data.rateDistribution || [],
-    finalDecision: (data.finalDecision || []).slice(0, 5),
+        stockResults: (data.stockResults || []).slice(0, 40).map(x => ({
+          symbol: x.symbol,
+          bucket: x.bucket,
+          baseline_label: x.baseline_label,
+          baseline_score: x.baseline_score,
+          pure_stock_score: x.pure_stock_score,
+          pure_reason: x.pure_reason,
+          snapshot_score: x.snapshot_score,
+          snapshot_bucket: x.snapshot_bucket,
+          snapshot_reason: x.snapshot_reason,
+          ret_1d: x.ret_1d,
+          ret_1w: x.ret_1w,
+          ret_1m: x.ret_1m,
+          ret_3m: x.ret_3m,
+          ret_6m: x.ret_6m,
+          ret_12m: x.ret_12m,
+          event_stock_score: x.event_stock_score,
+          m1_event_score: x.m1_event_score,
+          delta_stock_score: x.delta_stock_score,
+          trend: x.trend,
+          trend_label: x.trend_label,
+          trend_note: x.trend_note,
+          trend_rate: x.trend_rate,
+          long_trend_label: x.long_trend_label,
+          long_trend_note: x.long_trend_note,
+          mid_trend_label: x.mid_trend_label,
+          mid_trend_note: x.mid_trend_note,
+          trend_profile_label: x.trend_profile_label,
+          trend_profile_note: x.trend_profile_note,
+          suggestion: x.suggestion,
+          why: x.why || [],
+          whyNot: x.whyNot || []
+        })),
 
-    stockResults: (data.stockResults || []).slice(0, 40).map(x => ({
-      symbol: x.symbol,
-      bucket: x.bucket,
-      baseline_label: x.baseline_label,
-      baseline_score: x.baseline_score,
-      pure_stock_score: x.pure_stock_score,
-      pure_reason: x.pure_reason,
-      snapshot_score: x.snapshot_score,
-      snapshot_bucket: x.snapshot_bucket,
-      snapshot_reason: x.snapshot_reason,
-      ret_1d: x.ret_1d,
-      ret_1w: x.ret_1w,
-      ret_1m: x.ret_1m,
-      ret_3m: x.ret_3m,
-      ret_6m: x.ret_6m,
-      ret_12m: x.ret_12m,
-      event_stock_score: x.event_stock_score,
-      m1_event_score: x.m1_event_score,
-      delta_stock_score: x.delta_stock_score,
-      trend: x.trend,
-      trend_label: x.trend_label,
-      trend_note: x.trend_note,
-      trend_rate: x.trend_rate,
-      long_trend_label: x.long_trend_label,
-      long_trend_note: x.long_trend_note,
-      mid_trend_label: x.mid_trend_label,
-      mid_trend_note: x.mid_trend_note,
-      trend_profile_label: x.trend_profile_label,
-      trend_profile_note: x.trend_profile_note,
-      suggestion: x.suggestion,
-      why: x.why || [],
-      whyNot: x.whyNot || []
-    })),
+        selection: {
+          clean_pool: (data.selection?.clean_pool || []).slice(0, 20),
+          watch_list: (data.selection?.watch_list || []).slice(0, 20),
+          reject_list: (data.selection?.reject_list || []).slice(0, 20)
+        },
 
-    selection: {
-      clean_pool: (data.selection?.clean_pool || []).slice(0, 20).map(x => ({
-        symbol: x.symbol,
-        bucket: x.bucket,
-        baseline_label: x.baseline_label,
-        baseline_score: x.baseline_score,
-        pure_stock_score: x.pure_stock_score,
-        pure_reason: x.pure_reason,
-        snapshot_score: x.snapshot_score,
-        snapshot_bucket: x.snapshot_bucket,
-        snapshot_reason: x.snapshot_reason,
-        ret_1d: x.ret_1d,
-        ret_1w: x.ret_1w,
-        ret_1m: x.ret_1m,
-        ret_3m: x.ret_3m,
-        ret_6m: x.ret_6m,
-        ret_12m: x.ret_12m,
-        event_stock_score: x.event_stock_score,
-        m1_event_score: x.m1_event_score,
-        delta_stock_score: x.delta_stock_score,
-        trend: x.trend,
-        trend_label: x.trend_label,
-        trend_note: x.trend_note,
-        trend_rate: x.trend_rate,
-        long_trend_label: x.long_trend_label,
-        long_trend_note: x.long_trend_note,
-        mid_trend_label: x.mid_trend_label,
-        mid_trend_note: x.mid_trend_note,
-        trend_profile_label: x.trend_profile_label,
-        trend_profile_note: x.trend_profile_note,
-        suggestion: x.suggestion,
-        why: x.why || [],
-        whyNot: x.whyNot || []
-      })),
-      watch_list: (data.selection?.watch_list || []).slice(0, 20).map(x => ({
-        symbol: x.symbol,
-        bucket: x.bucket,
-        baseline_label: x.baseline_label,
-        baseline_score: x.baseline_score,
-        pure_stock_score: x.pure_stock_score,
-        pure_reason: x.pure_reason,
-        snapshot_score: x.snapshot_score,
-        snapshot_bucket: x.snapshot_bucket,
-        snapshot_reason: x.snapshot_reason,
-        ret_1d: x.ret_1d,
-        ret_1w: x.ret_1w,
-        ret_1m: x.ret_1m,
-        ret_3m: x.ret_3m,
-        ret_6m: x.ret_6m,
-        ret_12m: x.ret_12m,
-        event_stock_score: x.event_stock_score,
-        m1_event_score: x.m1_event_score,
-        delta_stock_score: x.delta_stock_score,
-        trend: x.trend,
-        trend_label: x.trend_label,
-        trend_note: x.trend_note,
-        trend_rate: x.trend_rate,
-        long_trend_label: x.long_trend_label,
-        long_trend_note: x.long_trend_note,
-        mid_trend_label: x.mid_trend_label,
-        mid_trend_note: x.mid_trend_note,
-        trend_profile_label: x.trend_profile_label,
-        trend_profile_note: x.trend_profile_note,
-        suggestion: x.suggestion,
-        why: x.why || [],
-        whyNot: x.whyNot || []
-      })),
-      reject_list: (data.selection?.reject_list || []).slice(0, 20).map(x => ({
-        symbol: x.symbol,
-        bucket: x.bucket,
-        baseline_label: x.baseline_label,
-        baseline_score: x.baseline_score,
-        pure_stock_score: x.pure_stock_score,
-        pure_reason: x.pure_reason,
-        snapshot_score: x.snapshot_score,
-        snapshot_bucket: x.snapshot_bucket,
-        snapshot_reason: x.snapshot_reason,
-        ret_1d: x.ret_1d,
-        ret_1w: x.ret_1w,
-        ret_1m: x.ret_1m,
-        ret_3m: x.ret_3m,
-        ret_6m: x.ret_6m,
-        ret_12m: x.ret_12m,
-        event_stock_score: x.event_stock_score,
-        m1_event_score: x.m1_event_score,
-        delta_stock_score: x.delta_stock_score,
-        trend: x.trend,
-        trend_label: x.trend_label,
-        trend_note: x.trend_note,
-        trend_rate: x.trend_rate,
-        long_trend_label: x.long_trend_label,
-        long_trend_note: x.long_trend_note,
-        mid_trend_label: x.mid_trend_label,
-        mid_trend_note: x.mid_trend_note,
-        trend_profile_label: x.trend_profile_label,
-        trend_profile_note: x.trend_profile_note,
-        suggestion: x.suggestion,
-        why: x.why || [],
-        whyNot: x.whyNot || []
-      }))
-    },
+        simulationResults: (data.simulationResults || []).slice(0, 50).map(x => ({
+          id: x.id,
+          scenario_name: x.scenario_name,
+          scenario_comment: x.scenario_comment,
+          basket: x.basket,
+          basket_size: x.basket_size,
+          ki: x.ki,
+          strike: x.strike,
+          tenor: x.tenor,
+          eki: x.eki,
+          worst_of: x.worst_of,
+          pure_fcn: x.pure_fcn,
+          event_fcn: x.event_fcn,
+          delta_fcn_pct: x.delta_fcn_pct,
+          simulation_rate: x.simulation_rate,
+          fair_rate: x.fair_rate,
+          fair_gap: x.fair_gap,
+          fair_flag: x.fair_flag,
+          health_pct: x.health_pct,
+          preference_level: x.preference_level,
+          market_level: x.market_level,
+          reason: x.reason,
+          avgPureStock: x.avgPureStock,
+          avgEventStock: x.avgEventStock,
+          rateScore: x.rateScore,
+          periodScore: x.periodScore,
+          priskScore: x.priskScore,
+          sri: x.sri,
+          ekiBonus: x.ekiBonus,
+          suggestion: x.suggestion,
+          r1: x.r1 ? {
+            symbol: x.r1.symbol,
+            trend_label: x.r1.trend_label,
+            trend_note: x.r1.trend_note
+          } : null,
+          r2: x.r2 ? {
+            symbol: x.r2.symbol,
+            trend_label: x.r2.trend_label,
+            trend_note: x.r2.trend_note
+          } : null,
+          r3: x.r3 ? {
+            symbol: x.r3.symbol,
+            trend_label: x.r3.trend_label,
+            trend_note: x.r3.trend_note
+          } : null,
+          components: (x.components || []).map(c => ({
+            symbol: c.symbol,
+            pure_stock_score: c.pure_stock_score,
+            snapshot_score: c.snapshot_score,
+            event_stock_score: c.event_stock_score,
+            snapshot_reason: c.snapshot_reason,
+            trend_label: c.trend_label,
+            trend_note: c.trend_note
+          }))
+        }))
+      };
 
-    simulationResults: (data.simulationResults || []).slice(0, 50).map(x => ({
-      id: x.id,
-      scenario_name: x.scenario_name,
-      scenario_comment: x.scenario_comment,
-      basket: x.basket,
-      basket_size: x.basket_size,
-      ki: x.ki,
-      strike: x.strike,
-      tenor: x.tenor,
-      eki: x.eki,
-      worst_of: x.worst_of,
-      pure_fcn: x.pure_fcn,
-      event_fcn: x.event_fcn,
-      delta_fcn_pct: x.delta_fcn_pct,
-      simulation_rate: x.simulation_rate,
-      fair_rate: x.fair_rate,
-      fair_gap: x.fair_gap,
-      fair_flag: x.fair_flag,
-      health_pct: x.health_pct,
-      preference_level: x.preference_level,
-      market_level: x.market_level,
-      reason: x.reason,
-      avgPureStock: x.avgPureStock,
-      avgEventStock: x.avgEventStock,
-      rateScore: x.rateScore,
-      periodScore: x.periodScore,
-      priskScore: x.priskScore,
-      sri: x.sri,
-      ekiBonus: x.ekiBonus,
-      suggestion: x.suggestion,
-      r1: x.r1 ? {
-        symbol: x.r1.symbol,
-        trend_label: x.r1.trend_label,
-        trend_note: x.r1.trend_note
-      } : null,
-      r2: x.r2 ? {
-        symbol: x.r2.symbol,
-        trend_label: x.r2.trend_label,
-        trend_note: x.r2.trend_note
-      } : null,
-      r3: x.r3 ? {
-        symbol: x.r3.symbol,
-        trend_label: x.r3.trend_label,
-        trend_note: x.r3.trend_note
-      } : null,
-      components: (x.components || []).map(c => ({
-        symbol: c.symbol,
-        pure_stock_score: c.pure_stock_score,
-        snapshot_score: c.snapshot_score,
-        event_stock_score: c.event_stock_score,
-        snapshot_reason: c.snapshot_reason,
-        trend_label: c.trend_label,
-        trend_note: c.trend_note
-      }))
-    }))
-  };
-
-  localStorage.setItem(M3_CACHE_KEY, JSON.stringify(lite));
-}
+      try {
+        localStorage.setItem(M3_CACHE_KEY, JSON.stringify(lite));
+      } catch (err) {
+        console.warn("M3 cache 寫入失敗，改用 runtime memory：", err);
+      }
+    }
 
     function deltaClass(v) {
       const n = toNumber(v, 0);
@@ -779,7 +674,7 @@ M3 Dashboard
     }
 
     function buildSelectionBlock(cache) {
-      const { clean_pool, watch_list, reject_list } = cache.selection;
+      const { clean_pool = [], watch_list = [], reject_list = [] } = cache.selection || {};
 
       const renderCol = (title, list) => `
         <div class="list-box">
@@ -1058,8 +953,8 @@ M3 Dashboard
       return list.slice(0, 30).map(renderSimulationCard).join("");
     }
 
-    function renderM3() {
-      const cache = readCache();
+    function renderM3(runtimeData = null) {
+      const cache = runtimeData || window.__M3_RUNTIME__ || readCache();
 
       const runtimeMeta = document.getElementById("runtimeMeta");
       const summaryBlock = document.getElementById("summaryBlock");
@@ -1090,7 +985,7 @@ M3 Dashboard
       }
 
       runtimeMeta.innerHTML =
-        `最新 M3 執行時間：<b>${safeText(cache.generated_at)}</b> ｜ Stock：<b>${cache.stockResults.length}</b> ｜ Clean：<b>${cache.selection.clean_pool.length}</b> ｜ FCN：<b>${cache.simulationResults.length}</b>`;
+        `最新 M3 執行時間：<b>${safeText(cache.generated_at)}</b> ｜ Stock：<b>${cache.stockResults?.length || 0}</b> ｜ Clean：<b>${cache.selection?.clean_pool?.length || 0}</b> ｜ FCN：<b>${cache.simulationResults?.length || 0}</b>`;
 
       summaryBlock.innerHTML = buildSummaryBlock(cache);
       selectionBlock.innerHTML = buildSelectionBlock(cache);
@@ -1115,8 +1010,9 @@ M3 Dashboard
     async function runM3() {
       try {
         const result = await runM3Engine();
-          writeCache(result);
-        renderM3();
+        window.__M3_RUNTIME__ = result;
+        writeCache(result);
+        renderM3(result);
         alert("M3 執行成功");
       } catch (err) {
         console.error("M3 run error", err);
@@ -1129,7 +1025,7 @@ M3 Dashboard
     }
 
     document.getElementById("runBtn").addEventListener("click", runM3);
-    document.getElementById("refreshBtn").addEventListener("click", renderM3);
+    document.getElementById("refreshBtn").addEventListener("click", () => renderM3());
 
     document.getElementById("toggleBlueprintBtn").addEventListener("click", () => {
       blueprintOpen = !blueprintOpen;
