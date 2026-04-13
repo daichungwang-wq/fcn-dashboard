@@ -2,12 +2,12 @@
   "說明": "M3 系統主參數表（股票篩選 + FCN 模擬 + 排名邏輯）",
 
   "M3_股票篩選情境參數": {
-    "reject_if_suggestion_avoid": false,
+    "reject_if_suggestion_avoid": true,
 
     "clean_min_pure": 6,
     "clean_min_event": 6,
     "clean_min_delta": 1,
-    "clean_use_delta_gate": false,
+    "clean_use_delta_gate": true,
 
     "watch_min_pure": 5,
     "watch_min_event": 5,
