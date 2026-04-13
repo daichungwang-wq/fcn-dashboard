@@ -481,37 +481,14 @@ M3.6 Blueprint
 `;
     }
 
-   function reviewStockForM3(stock) {
-  const pure = toNumber(stock.pure_stock_score, 0);
-  const eventStock = toNumber(stock.event_stock_score, 0);
-  const m1EventScore = toNumber(stock.event_score, 0);
+    function buildWhyWhyNot(stock) {
+      const pure = toNumber(stock.pure_stock_score, 0);
+      const snapshot = toNumber(stock.snapshot_score, 0);
+      const eventScore = toNumber(stock.event_stock_score, 0);
+      const delta = toNumber(stock.delta_stock_score, 0);
 
-  const delta = round(eventStock - pure, 2);
-
-  let bucket = "clean";
-
-  if (pure < 4 || stock.suggestion === "避免納入 FCN") {
-    bucket = "reject";
-  } else if (pure < 5 || eventStock < 6 || delta <= 0) {
-    bucket = "watch";
-  } else {
-    bucket = "clean";
-  }
-
-  const { why, whyNot } = buildWhyWhyNot({
-    ...stock,
-    delta_stock_score: delta
-  });
-
-  return {
-    ...stock,
-    m1_event_score: m1EventScore,   // ✅ 關鍵修正
-    delta_stock_score: delta,
-    bucket,
-    why,
-    whyNot
-  };
-}
+      const why = [];
+      const whyNot = [];
 
       if (pure >= 7) why.push("Pure 分數高，屬高品質可接股");
       else if (pure >= 5) why.push("Pure 分數合格，可納入 FCN 考慮");
@@ -560,12 +537,12 @@ M3.6 Blueprint
 
       return {
         ...stock,
-         m1_event_score: m1EventScore,
-         delta_stock_score: delta,
-         bucket,
-         why,
-         whyNot
-     };
+        m1_event_score: 0,
+        delta_stock_score: delta,
+        bucket,
+        why,
+        whyNot
+      };
     }
 
     function generateCombinations(arr, size) {
