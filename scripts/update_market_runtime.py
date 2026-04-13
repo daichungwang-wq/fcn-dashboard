@@ -207,7 +207,7 @@ def calc_swing_days(hist):
                 swings.append(0)
                 continue
 
-            amp = (high_price - low_price) / base_price * 100
+            delta = (close_today - prev_close) / prev_close * 100
             swings.append(round(max(0, amp), 2))
 
         except Exception:
