@@ -99,6 +99,17 @@
 
     .muted { color: #666; }
 
+    .mini-summary {
+      margin: 8px 0 10px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: #f7f9fc;
+      border: 1px solid #dde4ee;
+      font-size: 14px;
+      color: #333;
+      line-height: 1.6;
+    }
+
     .summary-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -513,7 +524,7 @@
     <h1>M2｜FCN 持倉健檢 + FCN Pool 管理</h1>
     <div class="subtitle">
       只看 <b>active</b> 持倉。<br>
-      今日重點：<b>一鍵展開收合</b>、<b>FCN Pool 新增 / 修改 / 刪除</b>。
+      今日重點：<b>區塊級收合</b>、<b>一鍵展開收合</b>、<b>FCN Pool 新增 / 修改 / 刪除</b>。
     </div>
 
     <div class="card">
@@ -540,23 +551,31 @@
     <div class="card">
       <h2>2. 持倉分區</h2>
       <div class="sub-toolbar">
-        <button class="light" onclick="expandAllZoneFCNs()">全部展開</button>
-        <button class="light" onclick="collapseAllZoneFCNs()">全部收合</button>
+        <button class="light" onclick="toggleZoneSection()">
+          展開 / 收合區塊
+        </button>
+        <button class="light" onclick="expandAllZoneFCNs()">全部展開卡片</button>
+        <button class="light" onclick="collapseAllZoneFCNs()">全部收合卡片</button>
         <button class="light" onclick="expandDangerWatchOnly()">只展開 Danger / Watch</button>
         <button class="light" onclick="toggleHealthyZoneGlobal()">健康區展開 / 收合</button>
       </div>
+      <div id="zoneSummaryMini" class="mini-summary" style="display:none;"></div>
       <div id="zoneBlock"></div>
     </div>
 
     <div class="card">
       <h2>5. 股票風險分析</h2>
       <div class="sub-toolbar">
+        <button class="light" onclick="toggleStockSection()">
+          展開 / 收合區塊
+        </button>
         <button class="light" onclick="expandAllStockBlocks()">全部展開</button>
         <button class="light" onclick="collapseAllStockBlocks()">全部收合</button>
         <button class="light" onclick="expandDangerStocksOnly()">只展開跌破 KI</button>
         <button class="light" onclick="expandWatchStocksOnly()">只展開跌破 Strike</button>
         <button class="light" onclick="collapseAllStockFCNDetails()">收合所有 FCN 明細</button>
       </div>
+      <div id="stockSummaryMini" class="mini-summary" style="display:none;"></div>
       <div id="stockAnalysisBlock"></div>
     </div>
 
@@ -727,6 +746,9 @@
 
     let showAllHealthy = false;
 
+    let zoneSectionCollapsed = false;
+    let stockSectionCollapsed = false;
+
     const expandedFCNIds = new Set();
     const expandedStockIds = new Set();
     const expandedStockFCNIds = new Set();
@@ -892,6 +914,16 @@
       renderM2();
     };
 
+    window.toggleZoneSection = function() {
+      zoneSectionCollapsed = !zoneSectionCollapsed;
+      renderM2();
+    };
+
+    window.toggleStockSection = function() {
+      stockSectionCollapsed = !stockSectionCollapsed;
+      renderM2();
+    };
+
     window.expandAllZoneFCNs = function() {
       const cache = readCache();
       if (!cache || !cache.fcns) return;
@@ -906,6 +938,7 @@
       });
 
       showAllHealthy = true;
+      zoneSectionCollapsed = false;
       renderM2();
     };
 
@@ -929,11 +962,13 @@
       });
 
       showAllHealthy = false;
+      zoneSectionCollapsed = false;
       renderM2();
     };
 
     window.toggleHealthyZoneGlobal = function() {
       showAllHealthy = !showAllHealthy;
+      zoneSectionCollapsed = false;
       renderM2();
     };
 
@@ -972,6 +1007,7 @@
         });
       });
 
+      stockSectionCollapsed = false;
       renderM2();
     };
 
@@ -998,6 +1034,7 @@
         });
       });
 
+      stockSectionCollapsed = false;
       renderM2();
     };
 
@@ -1018,6 +1055,7 @@
         });
       });
 
+      stockSectionCollapsed = false;
       renderM2();
     };
 
@@ -1630,6 +1668,8 @@
         document.getElementById("summaryBlock").innerHTML = `<div class="muted">尚無資料</div>`;
         document.getElementById("zoneBlock").innerHTML = `<div class="muted">尚無資料</div>`;
         document.getElementById("stockAnalysisBlock").innerHTML = `<div class="muted">尚無資料</div>`;
+        document.getElementById("zoneSummaryMini").style.display = "none";
+        document.getElementById("stockSummaryMini").style.display = "none";
         return;
       }
 
@@ -1637,8 +1677,37 @@
         `最新 M2 Health 執行時間：<b>${cache.generated_at || "-"}</b>`;
 
       document.getElementById("summaryBlock").innerHTML = buildSummary(cache);
-      document.getElementById("zoneBlock").innerHTML = buildZoneBlock(cache);
-      document.getElementById("stockAnalysisBlock").innerHTML = buildStockAnalysis(cache);
+
+      const zoneSummaryMini = document.getElementById("zoneSummaryMini");
+      const zoneBlock = document.getElementById("zoneBlock");
+
+      if (zoneSectionCollapsed) {
+        zoneSummaryMini.style.display = "block";
+        zoneSummaryMini.innerHTML =
+          `Danger <b>${cache.danger.length}</b> ｜ Watch <b>${cache.watch.length}</b> ｜ Healthy <b>${cache.healthy.length}</b> ｜ Total USD <b>${fmt(cache.total_amt, 0)}</b>`;
+        zoneBlock.innerHTML = "";
+      } else {
+        zoneSummaryMini.style.display = "none";
+        zoneSummaryMini.innerHTML = "";
+        zoneBlock.innerHTML = buildZoneBlock(cache);
+      }
+
+      const stockSummaryMini = document.getElementById("stockSummaryMini");
+      const stockAnalysisBlock = document.getElementById("stockAnalysisBlock");
+      const dangerRows = (cache.stockMap || []).filter(x => x.danger > 0);
+      const watchRows = (cache.stockMap || []).filter(x => x.watch > 0);
+      const exposureRows = cache.stockMap || [];
+
+      if (stockSectionCollapsed) {
+        stockSummaryMini.style.display = "block";
+        stockSummaryMini.innerHTML =
+          `跌破 KI <b>${dangerRows.length}</b> 檔 ｜ 跌破 Strike <b>${watchRows.length}</b> 檔 ｜ 總股票曝險 <b>${exposureRows.length}</b> 檔`;
+        stockAnalysisBlock.innerHTML = "";
+      } else {
+        stockSummaryMini.style.display = "none";
+        stockSummaryMini.innerHTML = "";
+        stockAnalysisBlock.innerHTML = buildStockAnalysis(cache);
+      }
     }
 
     function createEmptyFCN() {
