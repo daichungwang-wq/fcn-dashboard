@@ -131,7 +131,7 @@
     "decline_downtrend",
     "decline_rebound"
   ]
-}
+ },
   
   "TREND_ENGINE": {
     "enabled": true,
