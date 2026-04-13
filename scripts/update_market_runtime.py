@@ -272,7 +272,7 @@ def fetch_market_runtime(symbols):
                 "ret_12m": safe_number(calc_return(price_now, ref_prices["12m"]), 0),
 
                 "swing_days": swing_days,
-                "amp_1d": swing_days[0] if swing_days else 0
+                "delta_1d": swing_days[0] if swing_days else 0
             }
 
         except Exception as e:
