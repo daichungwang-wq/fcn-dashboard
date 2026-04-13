@@ -764,6 +764,22 @@ export function getStockBias(stock = {}, context = {}) {
 }
 
 export function getSuggestion(stock = {}, context = {}) {
+
+  // ===== ✅ Trend 風控（最優先）=====
+  const trendCfg = getCfg(context, "TREND_FILTER", {});
+
+  const trendRate = toNumber(stock.trend_rate, 0);
+  const profile = stock.trend_profile || "";
+
+  if (trendRate <= toNumber(trendCfg.reject_trend_rate_lte, -0.12)) {
+    return "避免納入 FCN";
+  }
+
+  if ((trendCfg.reject_profiles || []).includes(profile)) {
+    return "避免納入 FCN";
+  }
+
+  // ===== 原本邏輯開始 =====
   const cfg = getCfg(context, "STOCK_SUGGESTION", DEFAULTS.STOCK_SUGGESTION);
   const texts = getObject(cfg.texts, DEFAULTS.STOCK_SUGGESTION.texts);
   const thresholds = getObject(cfg.event_stock_thresholds, DEFAULTS.STOCK_SUGGESTION.event_stock_thresholds);
