@@ -123,6 +123,16 @@
     }
   },
 
+  "TREND_FILTER": {
+  "reject_trend_rate_lte": -0.12,
+  "watch_trend_rate_lte": -0.05,
+
+  "reject_profiles": [
+    "decline_downtrend",
+    "decline_rebound"
+  ]
+}
+  
   "TREND_ENGINE": {
     "enabled": true,
     "use_negative_only_for_trend_rate": true,
