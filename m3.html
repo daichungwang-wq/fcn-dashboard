@@ -23,6 +23,7 @@
     h1 { margin: 0 0 10px; font-size: 32px; }
     h2 { margin: 0 0 12px; font-size: 24px; }
     h3 { margin: 0 0 10px; font-size: 18px; }
+    h4 { margin: 12px 0 8px; font-size: 15px; color: #444; }
 
     .subtitle {
       color: #555;
@@ -107,15 +108,15 @@
       font-size: 13px;
     }
 
-    .three-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 14px;
-    }
-
     .two-grid {
       display: grid;
       grid-template-columns: 1.05fr 0.95fr;
+      gap: 14px;
+    }
+
+    .three-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
       gap: 14px;
     }
 
@@ -165,6 +166,22 @@
       gap: 10px 18px;
       margin-top: 8px;
       margin-bottom: 8px;
+    }
+
+    .section-body {
+      display: none;
+      margin-top: 10px;
+    }
+
+    .section-body.show {
+      display: block;
+    }
+
+    .section-toolbar {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 10px;
     }
 
     .pill {
@@ -217,6 +234,37 @@
     .red { color: #c62828; }
     .orange { color: #ef6c00; }
 
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .kpi-card {
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 14px;
+      padding: 14px;
+    }
+
+    .kpi-title {
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 6px;
+    }
+
+    .kpi-value {
+      font-size: 26px;
+      font-weight: 700;
+    }
+
+    .kpi-note {
+      margin-top: 4px;
+      font-size: 12px;
+      color: #666;
+    }
+
     .table-wrap {
       width: 100%;
       overflow-x: auto;
@@ -268,9 +316,10 @@
 
     @media (max-width: 980px) {
       .summary-grid { grid-template-columns: 1fr 1fr; }
-      .three-grid { grid-template-columns: 1fr; }
       .two-grid { grid-template-columns: 1fr; }
+      .three-grid { grid-template-columns: 1fr; }
       .mini-grid { grid-template-columns: 1fr; }
+      .kpi-grid { grid-template-columns: 1fr 1fr; }
     }
 
     @media (max-width: 680px) {
@@ -279,6 +328,7 @@
       .summary-grid { grid-template-columns: 1fr; }
       .toolbar { flex-direction: column; align-items: stretch; }
       button { width: 100%; }
+      .kpi-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -294,6 +344,8 @@
         <button id="runBtn">執行 M3</button>
         <button class="secondary" id="refreshBtn">刷新 M3</button>
         <button class="light" id="toggleBlueprintBtn">展開 / 收合 M3 Blueprint</button>
+        <button class="light" id="expandAllBtn">一鍵展開</button>
+        <button class="light" id="collapseAllBtn">一鍵收合</button>
       </div>
       <div id="runtimeMeta" class="muted">尚未執行 M3</div>
       <div class="note">
@@ -316,61 +368,57 @@
     </div>
 
     <div class="card">
-      <h2>3. M3.2 Stock Selection</h2>
-      <div id="selectionBlock"></div>
-    </div>
-
-    <div class="two-grid">
-      <div class="card">
-        <h2>4. M3.5 Final Decision</h2>
-        <div id="finalDecisionBlock"></div>
+      <div class="section-toolbar">
+        <h2 style="margin:0;">3. M3.2 Stock Selection</h2>
+        <button class="light" data-section="selectionSection">展開 / 收合</button>
       </div>
-
-      <div class="card">
-        <h2>5. M3.4 Scenario Summary</h2>
-        <div id="scenarioSummaryBlock"></div>
-        <div id="m3-dashboard">
-
-  <h3>📊 M3 模擬 Dashboard</h3>
-
-  <!-- 模擬摘要 -->
-  <div id="m3-summary"></div>
-
-  <!-- 情境分析 -->
-  <h4>策略達標分析</h4>
-  <div id="m3-scenario-table"></div>
-
-  <!-- Rate 分布 -->
-  <h4>Rate 分布 × 達標率</h4>
-  <div id="m3-rate-table"></div>
-
-  <!-- 結論 -->
-  <h4>本次模擬結論</h4>
-  <div id="m3-conclusion"></div>
-
-</div>
-      </div>
+      <div id="selectionSection" class="section-body"></div>
     </div>
 
     <div class="card">
-      <h2>6. M3.4 FCN Ranking</h2>
-      <div id="rankingBlock"></div>
+      <h2>5. M3 Simulation Dashboard</h2>
+      <div id="dashboardBlock"></div>
     </div>
 
     <div class="card">
-      <h2>7. M3.3 Simulation Detail</h2>
-      <div id="simulationBlock"></div>
+      <div class="section-toolbar">
+        <h2 style="margin:0;">4. M3.5 Final Decision（達標組 Top 5）</h2>
+        <button class="light" data-section="finalDecisionSection">展開 / 收合</button>
+      </div>
+      <div id="finalDecisionSection" class="section-body"></div>
+    </div>
+
+    <div class="card">
+      <div class="section-toolbar">
+        <h2 style="margin:0;">6. M3.4 FCN Ranking</h2>
+        <button class="light" data-section="rankingSection">展開 / 收合</button>
+      </div>
+      <div id="rankingSection" class="section-body"></div>
+    </div>
+
+    <div class="card">
+      <div class="section-toolbar">
+        <h2 style="margin:0;">7. M3.3 Simulation Detail</h2>
+        <button class="light" data-section="simulationSection">展開 / 收合</button>
+      </div>
+      <div id="simulationSection" class="section-body"></div>
     </div>
   </div>
 
   <script type="module">
-    import { mergeStockData, evaluateStock } from "./js/core/stock_engine.js";
-    import { evaluateFCN } from "./js/core/fcn_engine.js";
+    import { runM3Engine, buildDashboardConclusion, isQualified } from "./js/modules/m3_engine.js";
 
-    const M3_CACHE_KEY = "m3_full_cache_real_engine";
+    const M3_CACHE_KEY = "m3_full_cache_final_v1";
     const expandedStockIds = new Set();
     const expandedSimIds = new Set();
     let blueprintOpen = false;
+
+    const sectionState = {
+      selectionSection: false,
+      finalDecisionSection: false,
+      rankingSection: false,
+      simulationSection: false
+    };
 
     function toNumber(v, d = 0) {
       const n = Number(v);
@@ -378,7 +426,8 @@
     }
 
     function fmt(v, digits = 2) {
-      return toNumber(v, 0).toFixed(digits);
+      const n = Number(v);
+      return Number.isFinite(n) ? n.toFixed(digits) : "-";
     }
 
     function safeText(v, fallback = "-") {
@@ -386,35 +435,35 @@
       return String(v);
     }
 
+    function normalizePctMaybe(v) {
+      const n = Number(v);
+      if (!Number.isFinite(n)) return 0;
+      if (Math.abs(n) <= 1.5) return n * 100;
+      return n;
+    }
+
+    function formatPctMaybe(v, digits = 2) {
+      const n = normalizePctMaybe(v);
+      const sign = n > 0 ? "+" : "";
+      return `${sign}${n.toFixed(digits)}%`;
+    }
+
+    function round(v, digits = 2) {
+      const f = 10 ** digits;
+      return Math.round(toNumber(v, 0) * f) / f;
+    }
+
     function readCache() {
-  try {
-    const raw = localStorage.getItem(M3_CACHE_KEY);
-    return raw ? JSON.parse(raw) : null;
-  } catch {
-    return null;
-  }
-}
+      try {
+        const raw = localStorage.getItem(M3_CACHE_KEY);
+        return raw ? JSON.parse(raw) : null;
+      } catch {
+        return null;
+      }
+    }
 
     function writeCache(data) {
-  const lite = {
-    generated_at: data.generated_at,
-    stockResults: (data.stockResults || []).slice(0, 50),
-    selection: data.selection || {
-      reviewed: [],
-      clean_pool: [],
-      watch_list: [],
-      reject_list: []
-    },
-    simulationResults: (data.simulationResults || []).slice(0, 50)
-  };
-
-  localStorage.setItem(M3_CACHE_KEY, JSON.stringify(lite));
-}
-
-    async function loadJSON(path) {
-      const res = await fetch(path);
-      if (!res.ok) throw new Error(`${path} 載入失敗：${res.status}`);
-      return await res.json();
+      localStorage.setItem(M3_CACHE_KEY, JSON.stringify(data));
     }
 
     function deltaClass(v) {
@@ -432,35 +481,23 @@
 
     function suggestionPill(text = "") {
       const t = String(text);
-      if (t.includes("強烈建議") || t.includes("可做")) return `<span class="pill pill-do">${t}</span>`;
+      if (t.includes("強烈建議") || t.includes("可做") || t.includes("優先")) return `<span class="pill pill-do">${t}</span>`;
       if (t.includes("觀察")) return `<span class="pill pill-observe">${t}</span>`;
       return `<span class="pill pill-no">${t}</span>`;
-    }
-
-    function normalizePctMaybe(v) {
-      const n = Number(v);
-      if (!Number.isFinite(n)) return 0;
-      if (Math.abs(n) <= 1.5) return n * 100;
-      return n;
-    }
-
-    function formatPctMaybe(v) {
-      const n = normalizePctMaybe(v);
-      const sign = n > 0 ? "+" : "";
-      return `${sign}${fmt(n, 2)}%`;
-    }
-
-    function round(v, digits = 2) {
-      const f = 10 ** digits;
-      return Math.round(toNumber(v, 0) * f) / f;
     }
 
     function buildBlueprintText() {
       return `
 【M3 系統正式藍圖】
 
+M3 定位：
+- M3 = 主觀偏好模擬器
+- 股票來源 = Clean Pool
+- 不要求每天一定要有推薦
+- 重點是：在主觀偏好的 FCN 情境中，找出你真正想做的單
+
 M3.1 Stock Scoring
-- 輸入：pool30 + market_runtime +（未來）M1 event score
+- 輸入：pool30 + market_runtime + stock_engine
 - 輸出：pure_stock_score / snapshot_score / event_stock_score / trend / suggestion
 
 M3.2 Stock Selection
@@ -470,8 +507,6 @@ M3.2 Stock Selection
   Delta stock score = Event - Pure
 - 輸出：
   clean_pool / watch_list / reject_list
-- 每檔股票需可展開查看：
-  Baseline / Pure / Snapshot / Event / Trend / Why / Why not
 
 M3.3 FCN Simulation
 - 輸入：
@@ -479,225 +514,22 @@ M3.3 FCN Simulation
 - Simulation：
   股票組合 × 情境參數
 - 情境由 parameter_matrix.json 控制：
-  basket_size / ki / strike / tenor / rate / eki / enabled
-- 輸出：
-  pure_fcn / event_fcn / delta_fcn_pct / suggestion / reason / r1 / r2 / r3
+  basket_size / ki / strike / tenor / rate / eki
 
 M3.4 Ranking
-- 依 event_fcn 由高到低排序
-- 分級：
-  >=12 強烈建議
-  >=9 可做
-  >=6 觀察
-  <6 不做
+- 全部模擬結果排序
+- 先看主觀偏好，再看市場 fair rate（接 M8 後）
 
 M3.5 Final Decision
-- 輸出 Top 3~5 組
-- 給今日承做建議與策略方向
+- 本次模擬中，符合達標條件的 FCN 組合前 5 名
+- 達標條件：
+  1. event_fcn >= 9
+  2. fair_gap >= 0
+  3. health_pct >= 70%
 
-M3.6 Blueprint
-- 本區塊固定保存 M3 定義
-- 後續不得把 M3 做成 M2 的持倉檢查頁
+M3 Dashboard
+- 顯示模擬總覽、策略達標分析、Rate 分布 × 達標率、模擬結論
 `;
-    }
-
-    function buildWhyWhyNot(stock) {
-      const pure = toNumber(stock.pure_stock_score, 0);
-      const snapshot = toNumber(stock.snapshot_score, 0);
-      const eventScore = toNumber(stock.event_stock_score, 0);
-      const delta = toNumber(stock.delta_stock_score, 0);
-
-      const why = [];
-      const whyNot = [];
-
-      if (pure >= 7) why.push("Pure 分數高，屬高品質可接股");
-      else if (pure >= 5) why.push("Pure 分數合格，可納入 FCN 考慮");
-      else if (pure >= 4) why.push("Pure 分數勉強合格，僅可列觀察");
-      else whyNot.push("Pure 分數太低，不願意接這種股票");
-
-      if (eventScore >= 10) why.push("Event 分數高，現在時點偏甜");
-      else if (eventScore >= 6) why.push("Event 分數合理，現在價格可接受");
-      else if (eventScore >= 4) whyNot.push("Event 分數普通，現在不夠便宜");
-      else whyNot.push("Event 分數過低，時點不適合");
-
-      if (snapshot > 0) why.push("Snapshot 為正，短期位置有甜度");
-      else if (snapshot < 0) whyNot.push("Snapshot 為負，位置偏高或偏熱");
-      else whyNot.push("Snapshot 中性，沒有明顯甜度");
-
-      if (delta > 0) why.push("Delta 為正，現在比平常更甜");
-      else if (delta === 0) whyNot.push("Delta = 0，目前沒有額外甜度");
-      else whyNot.push("Delta 為負，現在比平常更貴");
-
-      if (stock.suggestion === "避免納入 FCN") whyNot.push("Stock Engine 已建議避免納入 FCN");
-      if (stock.trend === "downtrend") whyNot.push("趨勢屬弱勢下跌");
-      if (stock.trend === "dead_cat_bounce") whyNot.push("屬弱勢反彈，不宜誤判為甜點");
-
-      return { why, whyNot };
-    }
-
-   function reviewStockForM3(stock) {
-  const pure = toNumber(stock.pure_stock_score, 0);
-  const eventScore = toNumber(stock.event_stock_score, 0);
-  const delta = round(eventScore - pure, 2);
-
-  let bucket = "clean";
-
-  if (pure < 4 || stock.suggestion === "避免納入 FCN") {
-    bucket = "reject";
-  } else if (pure < 5 || eventScore < 6 || delta <= 0) {
-    bucket = "watch";
-  } else {
-    bucket = "clean";
-  }
-
-  const { why, whyNot } = buildWhyWhyNot({
-    ...stock,
-    delta_stock_score: delta
-  });
-
-  return {
-    ...stock,
-    m1_event_score: toNumber(stock.event_score, 0),
-    delta_stock_score: delta,
-    bucket,
-    why,
-    whyNot
-  };
-}
-
-    function generateCombinations(arr, size) {
-      const result = [];
-
-      function helper(start, combo) {
-        if (combo.length === size) {
-          result.push([...combo]);
-          return;
-        }
-        for (let i = start; i < arr.length; i++) {
-          combo.push(arr[i]);
-          helper(i + 1, combo);
-          combo.pop();
-        }
-      }
-
-      if (size > 0 && arr.length >= size) helper(0, []);
-      return result;
-    }
-
-    function splitByBucket(stocks) {
-      return {
-        reviewed: stocks,
-        clean_pool: stocks.filter(x => x.bucket === "clean"),
-        watch_list: stocks.filter(x => x.bucket === "watch"),
-        reject_list: stocks.filter(x => x.bucket === "reject")
-      };
-    }
-
-    function getScenarioArrays(scenario) {
-      const normalizeToArray = (v, fallback = []) => Array.isArray(v) ? v : (v === undefined ? fallback : [v]);
-
-      return {
-        basket_sizes: normalizeToArray(scenario.basket_size),
-        kis: normalizeToArray(scenario.ki),
-        strikes: normalizeToArray(scenario.strike),
-        tenors: normalizeToArray(scenario.tenor),
-        rates: normalizeToArray(scenario.rate),
-        ekis: normalizeToArray(scenario.eki)
-      };
-    }
-
-    function runSimulation(cleanPool, config) {
-      const results = [];
-      const scenarioGroup = config["M3_FCN情境組合參數"] || {};
-      const scenarios = scenarioGroup.scenarios || [];
-      const rankingCfg = config["M3_排名評分參數"] || {};
-      const simCfg = config["M3_模擬控制參數"] || {};
-
-      const maxCombinations = toNumber(simCfg.max_combinations, 200);
-
-      scenarios.forEach((scenario) => {
-        const arrays = getScenarioArrays(scenario);
-
-        arrays.basket_sizes.forEach((basketSize) => {
-          const combos = generateCombinations(cleanPool, toNumber(basketSize, 0)).slice(0, maxCombinations);
-
-          combos.forEach((combo, idx) => {
-            arrays.kis.forEach((ki) => {
-              arrays.strikes.forEach((strike) => {
-                arrays.tenors.forEach((tenor) => {
-                  arrays.rates.forEach((rate) => {
-                    arrays.ekis.forEach((eki) => {
-                      const fcn = evaluateFCN({
-                        id: `${safeText(scenario["名稱"], "SC")}_${idx + 1}`,
-                        basket: combo.map(s => s.symbol),
-                        ki: toNumber(ki, 0),
-                        strike: toNumber(strike, 0),
-                        yield: toNumber(rate, 0),
-                        period: toNumber(tenor, 0),
-                        eki: !!eki
-                      }, combo);
-
-                      if (!fcn) return;
-
-                      results.push({
-                        ...fcn,
-                        scenario_name: safeText(scenario["名稱"], "未命名情境"),
-                        scenario_comment: safeText(scenario["說明"], ""),
-                        basket_size: toNumber(basketSize, 0),
-                        rate: toNumber(rate, 0),
-                        tenor: toNumber(tenor, 0),
-                        suggestion_rank: (
-                          toNumber(fcn.event_fcn, 0) >= toNumber(rankingCfg.strong_buy_min_event_fcn, 12) ? "strong" :
-                          toNumber(fcn.event_fcn, 0) >= toNumber(rankingCfg.buy_min_event_fcn, 9) ? "buy" :
-                          toNumber(fcn.event_fcn, 0) >= toNumber(rankingCfg.watch_min_event_fcn, 6) ? "watch" :
-                          "avoid"
-                        )
-                      });
-                    });
-                  });
-                });
-              });
-            });
-          });
-        });
-      });
-
-      results.sort((a, b) => toNumber(b.event_fcn, -999) - toNumber(a.event_fcn, -999));
-      return results;
-    }
-
-    function buildSummary(cache) {
-      const reviewed = cache.selection.reviewed || [];
-      const clean = cache.selection.clean_pool || [];
-      const watch = cache.selection.watch_list || [];
-      const reject = cache.selection.reject_list || [];
-      const sims = cache.simulationResults || [];
-      const top = sims[0];
-
-      return `
-        <div class="summary-grid">
-          <div class="summary-box">
-            <div class="summary-label">Review 股票數</div>
-            <div class="summary-value">${reviewed.length}</div>
-            <div class="summary-sub">M3.1 評分完成</div>
-          </div>
-          <div class="summary-box">
-            <div class="summary-label">Clean / Watch / Reject</div>
-            <div class="summary-value">${clean.length} / ${watch.length} / ${reject.length}</div>
-            <div class="summary-sub">M3.2 輸出</div>
-          </div>
-          <div class="summary-box">
-            <div class="summary-label">Simulation 組數</div>
-            <div class="summary-value">${sims.length}</div>
-            <div class="summary-sub">M3.3 股票 × 情境</div>
-          </div>
-          <div class="summary-box">
-            <div class="summary-label">最佳 Event FCN</div>
-            <div class="summary-value">${top ? fmt(top.event_fcn) : "-"}</div>
-            <div class="summary-sub">${top ? `${top.scenario_name} ｜ ${top.basket}` : "尚無結果"}</div>
-          </div>
-        </div>
-      `;
     }
 
     function renderStockCard(stock, idx) {
@@ -708,7 +540,7 @@ M3.6 Blueprint
         <div class="item-card">
           <div class="item-title">${safeText(stock.symbol)} ｜ ${bucketPill(stock.bucket)}</div>
           <div class="item-line">
-            Baseline ${fmt(stock.baseline_score || 0)} ｜ Pure ${fmt(stock.pure_stock_score)} ｜ Snapshot ${fmt(stock.snapshot_score)} ｜ Event ${fmt(stock.event_stock_score)} ｜ Delta <span class="${deltaClass(stock.delta_stock_score)}">${stock.delta_stock_score >= 0 ? "+" : ""}${fmt(stock.delta_stock_score)}</span>
+            Baseline ${fmt(stock.baseline_score || 0)} ｜ Pure ${fmt(stock.pure_stock_score)} ｜ Snapshot ${fmt(stock.snapshot_score)} ｜ Event ${fmt(stock.event_stock_score)} ｜ Delta <span class="${deltaClass(stock.delta_stock_score)}">${toNumber(stock.delta_stock_score) >= 0 ? "+" : ""}${fmt(stock.delta_stock_score)}</span>
           </div>
           <div class="item-line">Suggestion：${safeText(stock.suggestion)}</div>
 
@@ -726,19 +558,19 @@ M3.6 Blueprint
               <div class="item-line">1D：${formatPctMaybe(stock.ret_1d)}</div>
               <div class="item-line">1W：${formatPctMaybe(stock.ret_1w)}</div>
               <div class="item-line">1M：${formatPctMaybe(stock.ret_1m)}</div>
+              <div class="item-line">3M：${formatPctMaybe(stock.ret_3m)}</div>
               <div class="item-line">6M：${formatPctMaybe(stock.ret_6m)}</div>
               <div class="item-line">12M：${formatPctMaybe(stock.ret_12m)}</div>
-              <div class="item-line">Snapshot Bucket：${safeText(stock.snapshot_bucket)}</div>
             </div>
 
             <div class="item-line"><b>Event</b>：${fmt(stock.event_stock_score)} ｜ M1 event score：${fmt(stock.m1_event_score)}</div>
             <div class="item-line"><b>Trend explain</b>：${safeText(stock.trend_label)} ｜ ${safeText(stock.trend_note)}</div>
             <div class="item-line"><b>Trend Rate</b>：${fmt(stock.trend_rate, 4)}</div>
-<div class="item-line"><b>Long Trend</b>：${safeText(stock.long_trend_label)} ｜ ${safeText(stock.long_trend_note)}</div>
-<div class="item-line"><b>Mid Trend</b>：${safeText(stock.mid_trend_label)} ｜ ${safeText(stock.mid_trend_note)}</div>
-<div class="item-line"><b>Trend Profile</b>：${safeText(stock.trend_profile_label)} ｜ ${safeText(stock.trend_profile_note)}</div>
-            <div class="item-line"><b>Why</b>：${stock.why.length ? stock.why.join("；") : "-"}</div>
-            <div class="item-line"><b>Why not</b>：${stock.whyNot.length ? stock.whyNot.join("；") : "-"}</div>
+            <div class="item-line"><b>Long Trend</b>：${safeText(stock.long_trend_label)} ｜ ${safeText(stock.long_trend_note)}</div>
+            <div class="item-line"><b>Mid Trend</b>：${safeText(stock.mid_trend_label)} ｜ ${safeText(stock.mid_trend_note)}</div>
+            <div class="item-line"><b>Trend Profile</b>：${safeText(stock.trend_profile_label)} ｜ ${safeText(stock.trend_profile_note)}</div>
+            <div class="item-line"><b>Why</b>：${stock.why?.length ? stock.why.join("；") : "-"}</div>
+            <div class="item-line"><b>Why not</b>：${stock.whyNot?.length ? stock.whyNot.join("；") : "-"}</div>
           </div>
         </div>
       `;
@@ -763,62 +595,175 @@ M3.6 Blueprint
       `;
     }
 
-    function buildFinalDecision(cache) {
-      const top = (cache.simulationResults || []).slice(0, 5);
-      if (!top.length) return `<div class="empty">尚無 Final Decision</div>`;
-
+    function buildSummaryBlock(cache) {
+      const s = cache.summary || {};
       return `
-        ${top.map((x, idx) => `
-          <div class="item-card">
-            <div class="item-title">#${idx + 1} ${safeText(x.scenario_name)}</div>
-            <div class="item-line">Basket：${safeText(x.basket)}</div>
-            <div class="item-line">條件：${x.basket_size}檔 / KI ${x.ki} / Strike ${x.strike} / Rate ${x.rate}% / ${x.tenor}M / EKI ${x.eki ? "YES" : "NO"}</div>
-            <div class="item-line">Worst-of：${safeText(x.worst_of)}</div>
-            <div class="item-line">Pure FCN ${fmt(x.pure_fcn)} ｜ Event FCN ${fmt(x.event_fcn)} ｜ Delta <span class="${deltaClass(x.delta_fcn_pct)}">${toNumber(x.delta_fcn_pct) >= 0 ? "+" : ""}${fmt(x.delta_fcn_pct, 1)}%</span></div>
-            <div class="item-line">建議：${suggestionPill(x.suggestion)}</div>
-            <div class="item-line">理由：${safeText(x.reason)}</div>
+        <div class="summary-grid">
+          <div class="summary-box">
+            <div class="summary-label">Review 股票數</div>
+            <div class="summary-value">${toNumber(s.reviewed_count, 0)}</div>
+            <div class="summary-sub">M3.1 評分完成</div>
           </div>
-        `).join("")}
+          <div class="summary-box">
+            <div class="summary-label">Clean / Watch / Reject</div>
+            <div class="summary-value">${toNumber(s.clean_count, 0)} / ${toNumber(s.watch_count, 0)} / ${toNumber(s.reject_count, 0)}</div>
+            <div class="summary-sub">M3.2 輸出</div>
+          </div>
+          <div class="summary-box">
+            <div class="summary-label">Simulation 組數</div>
+            <div class="summary-value">${toNumber(s.simulation_count, 0)}</div>
+            <div class="summary-sub">M3.3 股票 × 情境</div>
+          </div>
+          <div class="summary-box">
+            <div class="summary-label">最佳 Event FCN</div>
+            <div class="summary-value">${s.best_event_fcn !== null ? fmt(s.best_event_fcn, 2) : "-"}</div>
+            <div class="summary-sub">${safeText(s.best_basket, "尚無結果")}</div>
+          </div>
+        </div>
       `;
     }
 
-    function buildScenarioSummary(cache) {
-      const sims = cache.simulationResults || [];
-      if (!sims.length) return `<div class="empty">尚無 Scenario Summary</div>`;
+    function buildDashboardBlock(cache) {
+      const d = cache.dashboard || {};
+      const bestQualified = d.best_qualified || null;
+      const bestScenario = d.best_scenario || null;
+      const scenarioRows = cache.scenarioSummary || [];
+      const rateRows = cache.rateDistribution || [];
 
-      const map = {};
-      sims.forEach(x => {
-        if (!map[x.scenario_name]) {
-          map[x.scenario_name] = {
-            name: x.scenario_name,
-            count: 0,
-            best_event: -999,
-            best_basket: "",
-            avg_event: 0,
-            rows: []
-          };
-        }
-        map[x.scenario_name].count += 1;
-        map[x.scenario_name].rows.push(x);
-        if (toNumber(x.event_fcn, -999) > map[x.scenario_name].best_event) {
-          map[x.scenario_name].best_event = toNumber(x.event_fcn, -999);
-          map[x.scenario_name].best_basket = x.basket;
-        }
-      });
+      return `
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-title">總模擬組數</div>
+            <div class="kpi-value">${toNumber(d.total_simulations, 0)}</div>
+            <div class="kpi-note">Clean Pool 展開後的 FCN 模擬總數</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">達標組數</div>
+            <div class="kpi-value">${toNumber(d.total_qualified, 0)}</div>
+            <div class="kpi-note">event_fcn >= 9 / fair_gap >= 0 / health_pct >= 70</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">總達標率</div>
+            <div class="kpi-value">${fmt(d.overall_success_rate, 1)}%</div>
+            <div class="kpi-note">本次模擬有效度</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">最有效策略</div>
+            <div class="kpi-value" style="font-size:18px;">${safeText(bestScenario?.scenario_name, "-")}</div>
+            <div class="kpi-note">${bestScenario ? `達標率 ${fmt(bestScenario.success_rate, 1)}%` : "尚無結果"}</div>
+          </div>
+        </div>
 
-      Object.values(map).forEach(m => {
-        const avg = m.rows.reduce((s, r) => s + toNumber(r.event_fcn, 0), 0) / m.rows.length;
-        m.avg_event = round(avg, 2);
-      });
-
-      const rows = Object.values(map).sort((a, b) => b.best_event - a.best_event);
-
-      return rows.map(x => `
         <div class="item-card">
-          <div class="item-title">${safeText(x.name)}</div>
-          <div class="item-line">組數：${x.count}</div>
-          <div class="item-line">Best Event FCN：${fmt(x.best_event)} ｜ Avg Event FCN：${fmt(x.avg_event)}</div>
-          <div class="item-line">最佳 Basket：${safeText(x.best_basket)}</div>
+          <div class="item-title">最佳達標單</div>
+          ${
+            bestQualified ? `
+              <div class="item-line">Basket：${safeText(bestQualified.basket)}</div>
+              <div class="item-line">結構：${bestQualified.basket_size}檔 / KI ${bestQualified.ki} / Strike ${bestQualified.strike} / Tenor ${bestQualified.tenor}M / EKI ${bestQualified.eki ? "YES" : "NO"}</div>
+              <div class="item-line">Worst-of：${safeText(bestQualified.worst_of)}</div>
+              <div class="item-line">M3 Preference Score：${fmt(bestQualified.event_fcn)}</div>
+              <div class="item-line">Simulation Rate：${fmt(bestQualified.simulation_rate, 1)}%</div>
+              <div class="item-line">M8 Fair Rate：${bestQualified.fair_rate === null ? "待接 M8" : `${fmt(bestQualified.fair_rate, 1)}%`}</div>
+              <div class="item-line">Rate Gap：${bestQualified.fair_gap === null ? "待接 M8" : `${bestQualified.fair_gap >= 0 ? "+" : ""}${fmt(bestQualified.fair_gap, 1)}%`}</div>
+              <div class="item-line">偏好程度：${safeText(bestQualified.preference_level)} ｜ 市場買單：${safeText(bestQualified.market_level)} ｜ 健康度：${fmt(bestQualified.health_pct, 1)}%</div>
+            ` : `
+              <div class="item-line">本次無達標組。</div>
+            `
+          }
+        </div>
+
+        <h3>📈 策略達標分析</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Scenario</th>
+                <th>組數</th>
+                <th>達標</th>
+                <th>達標率</th>
+                <th>Best Event</th>
+                <th>Avg Event</th>
+                <th>最佳 Basket</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${
+                scenarioRows.length ? scenarioRows.map(row => `
+                  <tr>
+                    <td>${safeText(row.scenario_name)}</td>
+                    <td>${toNumber(row.total, 0)}</td>
+                    <td>${toNumber(row.qualified, 0)}</td>
+                    <td>${fmt(row.success_rate, 1)}%</td>
+                    <td>${fmt(row.best_event_fcn, 2)}</td>
+                    <td>${fmt(row.avg_event_fcn, 2)}</td>
+                    <td>${safeText(row.best_basket)}</td>
+                  </tr>
+                `).join("") : `
+                  <tr><td colspan="7" class="empty">尚無資料</td></tr>
+                `
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <h3>📊 Rate 分布 × 達標率</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Rate 區間</th>
+                <th>組數</th>
+                <th>達標</th>
+                <th>達標率</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${
+                rateRows.length ? rateRows.map(row => `
+                  <tr>
+                    <td>${safeText(row.bucket)}%</td>
+                    <td>${toNumber(row.total, 0)}</td>
+                    <td>${toNumber(row.qualified, 0)}</td>
+                    <td>${fmt(row.success_rate, 1)}%</td>
+                  </tr>
+                `).join("") : `
+                  <tr><td colspan="4" class="empty">尚無資料</td></tr>
+                `
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <h3>🧠 本次模擬結論</h3>
+        <div class="item-card">
+          <div class="item-line">${safeText(buildDashboardConclusion(cache), "尚無結論")}</div>
+        </div>
+      `;
+    }
+
+    function buildFinalDecisionBlock(cache) {
+      const top = cache.finalDecision || [];
+      if (!top.length) {
+        return `
+          <div class="item-card">
+            <div class="item-title">本次無達標組</div>
+            <div class="item-line">原因可能為：fair gap 未達標、偏好分數不足，或結構健康度不足。</div>
+          </div>
+        `;
+      }
+
+      return top.map((x, idx) => `
+        <div class="item-card">
+          <div class="item-title">#${idx + 1} ${safeText(x.scenario_name)}</div>
+          <div class="item-line">Basket：${safeText(x.basket)}</div>
+          <div class="item-line">結構：${x.basket_size}檔 / KI ${x.ki} / Strike ${x.strike} / Tenor ${x.tenor}M / EKI ${x.eki ? "YES" : "NO"}</div>
+          <div class="item-line">Worst-of：${safeText(x.worst_of)}</div>
+          <div class="item-line">M3 Preference Score：${fmt(x.event_fcn)}</div>
+          <div class="item-line">Simulation Rate：${fmt(x.simulation_rate, 1)}%</div>
+          <div class="item-line">M8 Fair Rate：${x.fair_rate === null ? "待接 M8" : `${fmt(x.fair_rate, 1)}%`}</div>
+          <div class="item-line">Rate Gap：${x.fair_gap === null ? "待接 M8" : `<span class="${deltaClass(x.fair_gap)}">${x.fair_gap >= 0 ? "+" : ""}${fmt(x.fair_gap, 1)}%</span>`}</div>
+          <div class="item-line">偏好程度：${safeText(x.preference_level)} ｜ 市場買單：${safeText(x.market_level)} ｜ 健康度：${fmt(x.health_pct, 1)}%</div>
+          <div class="item-line">判讀：高偏好 + 結構健康${x.fair_gap === null ? "，等待 M8 市場 fair rate 接入" : "，且市場買單"}。</div>
         </div>
       `).join("");
     }
@@ -836,10 +781,12 @@ M3.6 Blueprint
                 <th>Scenario</th>
                 <th>Basket</th>
                 <th>Worst</th>
-                <th>Pure</th>
-                <th>Event</th>
-                <th>Delta</th>
-                <th>建議</th>
+                <th>M3 Score</th>
+                <th>Simulation Rate</th>
+                <th>Fair Rate</th>
+                <th>Gap</th>
+                <th>Health</th>
+                <th>Qualified</th>
               </tr>
             </thead>
             <tbody>
@@ -849,10 +796,12 @@ M3.6 Blueprint
                   <td>${safeText(x.scenario_name)}</td>
                   <td>${safeText(x.basket)}</td>
                   <td>${safeText(x.worst_of)}</td>
-                  <td>${fmt(x.pure_fcn)}</td>
                   <td>${fmt(x.event_fcn)}</td>
-                  <td class="${deltaClass(x.delta_fcn_pct)}">${toNumber(x.delta_fcn_pct) >= 0 ? "+" : ""}${fmt(x.delta_fcn_pct, 1)}%</td>
-                  <td>${suggestionPill(x.suggestion)}</td>
+                  <td>${fmt(x.simulation_rate, 1)}%</td>
+                  <td>${x.fair_rate === null ? "待接 M8" : `${fmt(x.fair_rate, 1)}%`}</td>
+                  <td class="${x.fair_gap === null ? "" : deltaClass(x.fair_gap)}">${x.fair_gap === null ? "待接 M8" : `${x.fair_gap >= 0 ? "+" : ""}${fmt(x.fair_gap, 1)}%`}</td>
+                  <td>${fmt(x.health_pct, 1)}%</td>
+                  <td>${isQualified(x) ? '<span class="pill pill-do">達標</span>' : '<span class="pill pill-no">未達標</span>'}</td>
                 </tr>
               `).join("")}
             </tbody>
@@ -870,9 +819,10 @@ M3.6 Blueprint
           <div class="item-title">${safeText(sim.scenario_name)}</div>
           <div class="item-line">Basket：${safeText(sim.basket)}</div>
           <div class="item-line">Scenario comment：${safeText(sim.scenario_comment)}</div>
-          <div class="item-line">結構：${sim.basket_size}檔 / KI ${sim.ki} / Strike ${sim.strike} / Rate ${sim.rate}% / ${sim.tenor}M / EKI ${sim.eki ? "YES" : "NO"}</div>
-          <div class="item-line">Pure FCN ${fmt(sim.pure_fcn)} ｜ Event FCN ${fmt(sim.event_fcn)} ｜ Delta <span class="${deltaClass(sim.delta_fcn_pct)}">${toNumber(sim.delta_fcn_pct) >= 0 ? "+" : ""}${fmt(sim.delta_fcn_pct, 1)}%</span></div>
-          <div class="item-line">建議：${suggestionPill(sim.suggestion)}</div>
+          <div class="item-line">結構：${sim.basket_size}檔 / KI ${sim.ki} / Strike ${sim.strike} / Tenor ${sim.tenor}M / EKI ${sim.eki ? "YES" : "NO"}</div>
+          <div class="item-line">M3 Score ${fmt(sim.event_fcn)} ｜ Simulation Rate ${fmt(sim.simulation_rate, 1)}% ｜ Health ${fmt(sim.health_pct, 1)}%</div>
+          <div class="item-line">Fair Rate：${sim.fair_rate === null ? "待接 M8" : `${fmt(sim.fair_rate, 1)}%`} ｜ Gap：${sim.fair_gap === null ? "待接 M8" : `${sim.fair_gap >= 0 ? "+" : ""}${fmt(sim.fair_gap, 1)}%`}</div>
+          <div class="item-line">達標狀態：${isQualified(sim) ? "✅ 達標" : "❌ 未達標"}</div>
 
           <button class="light" onclick="window.toggleM3SimDetail('${id}')">
             ${open ? "收合" : "展開"}
@@ -881,6 +831,7 @@ M3.6 Blueprint
           <div class="detail-box ${open ? "show" : ""}">
             <div class="item-line"><b>Reason</b>：${safeText(sim.reason)}</div>
             <div class="item-line"><b>Score breakdown</b>：Avg Pure ${fmt(sim.avgPureStock)} / Avg Event ${fmt(sim.avgEventStock)} / Rate ${fmt(sim.rateScore)} / Period ${fmt(sim.periodScore)} / P-risk ${fmt(sim.priskScore)} / SRI ${fmt(sim.sri)} / EKI Bonus ${fmt(sim.ekiBonus)}</div>
+            <div class="item-line"><b>Preference</b>：${safeText(sim.preference_level)} ｜ <b>Market</b>：${safeText(sim.market_level)}</div>
             <div class="item-line"><b>R1</b>：${safeText(sim.r1?.symbol)} ｜ ${safeText(sim.r1?.trend_label)} ｜ ${safeText(sim.r1?.trend_note)}</div>
             <div class="item-line"><b>R2</b>：${safeText(sim.r2?.symbol)} ｜ ${safeText(sim.r2?.trend_label)} ｜ ${safeText(sim.r2?.trend_note)}</div>
             <div class="item-line"><b>R3</b>：${safeText(sim.r3?.symbol)} ｜ ${safeText(sim.r3?.trend_label)} ｜ ${safeText(sim.r3?.trend_note)}</div>
@@ -911,21 +862,26 @@ M3.6 Blueprint
       const runtimeMeta = document.getElementById("runtimeMeta");
       const summaryBlock = document.getElementById("summaryBlock");
       const blueprintBlock = document.getElementById("blueprintBlock");
-      const selectionBlock = document.getElementById("selectionBlock");
-      const finalDecisionBlock = document.getElementById("finalDecisionBlock");
-      const scenarioSummaryBlock = document.getElementById("scenarioSummaryBlock");
-      const rankingBlock = document.getElementById("rankingBlock");
-      const simulationBlock = document.getElementById("simulationBlock");
+      const selectionBlock = document.getElementById("selectionSection");
+      const dashboardBlock = document.getElementById("dashboardBlock");
+      const finalDecisionBlock = document.getElementById("finalDecisionSection");
+      const rankingBlock = document.getElementById("rankingSection");
+      const simulationBlock = document.getElementById("simulationSection");
 
       blueprintBlock.innerHTML = `<div class="blueprint-box">${buildBlueprintText()}</div>`;
       blueprintBlock.className = blueprintOpen ? "detail-box show" : "detail-box";
+
+      Object.keys(sectionState).forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.className = sectionState[id] ? "section-body show" : "section-body";
+      });
 
       if (!cache) {
         runtimeMeta.innerHTML = "尚未找到 M3 cache，請先按「執行 M3」";
         summaryBlock.innerHTML = `<div class="empty">尚無資料</div>`;
         selectionBlock.innerHTML = `<div class="empty">尚無資料</div>`;
+        dashboardBlock.innerHTML = `<div class="empty">尚無資料</div>`;
         finalDecisionBlock.innerHTML = `<div class="empty">尚無資料</div>`;
-        scenarioSummaryBlock.innerHTML = `<div class="empty">尚無資料</div>`;
         rankingBlock.innerHTML = `<div class="empty">尚無資料</div>`;
         simulationBlock.innerHTML = `<div class="empty">尚無資料</div>`;
         return;
@@ -934,10 +890,10 @@ M3.6 Blueprint
       runtimeMeta.innerHTML =
         `最新 M3 執行時間：<b>${safeText(cache.generated_at)}</b> ｜ Stock：<b>${cache.stockResults.length}</b> ｜ Clean：<b>${cache.selection.clean_pool.length}</b> ｜ FCN：<b>${cache.simulationResults.length}</b>`;
 
-      summaryBlock.innerHTML = buildSummary(cache);
+      summaryBlock.innerHTML = buildSummaryBlock(cache);
       selectionBlock.innerHTML = buildSelectionBlock(cache);
-      finalDecisionBlock.innerHTML = buildFinalDecision(cache);
-      scenarioSummaryBlock.innerHTML = buildScenarioSummary(cache);
+      dashboardBlock.innerHTML = buildDashboardBlock(cache);
+      finalDecisionBlock.innerHTML = buildFinalDecisionBlock(cache);
       rankingBlock.innerHTML = buildRankingBlock(cache);
       simulationBlock.innerHTML = buildSimulationBlock(cache);
     }
@@ -954,89 +910,46 @@ M3.6 Blueprint
       renderM3();
     };
 
-   async function runM3() {
-  try {
-    const [pool30, marketRuntime, config] = await Promise.all([
-      loadJSON("./data/pool30.json"),
-      loadJSON("./data/market_runtime.json"),
-      loadJSON("./data/parameter_matrix.json")
-    ]);
-
-    const stockSelectionCfg = config["M3_股票篩選情境參數"] || {};
-
-    const cleanMinPure = toNumber(stockSelectionCfg.clean_min_pure, 6);
-    const cleanMinEvent = toNumber(stockSelectionCfg.clean_min_event, 6);
-    const cleanMinDelta = toNumber(stockSelectionCfg.clean_min_delta, 0);
-    const cleanUseDeltaGate = !!stockSelectionCfg.clean_use_delta_gate;
-
-    const watchMinPure = toNumber(stockSelectionCfg.watch_min_pure, 5);
-    const watchMinEvent = toNumber(stockSelectionCfg.watch_min_event, 5);
-    const watchUseOrLogic = stockSelectionCfg.watch_use_or_logic !== false;
-
-    const rejectIfAvoid = !!stockSelectionCfg.reject_if_suggestion_avoid;
-
-    const stockResults = (pool30 || [])
-      .map(stock => mergeStockData(stock, marketRuntime || {}))
-      .map(stock => evaluateStock(stock, config))
-      .map(stock => {
-        const reviewed = reviewStockForM3(stock);
-        const pure = toNumber(reviewed.pure_stock_score, 0);
-        const eventStock = toNumber(reviewed.event_stock_score, 0);
-
-        const passCleanBase =
-          pure >= cleanMinPure &&
-          eventStock >= cleanMinEvent;
-
-        const passCleanDelta =
-          !cleanUseDeltaGate || reviewed.delta_stock_score >= cleanMinDelta;
-
-        const passWatch =
-          watchUseOrLogic
-            ? (pure >= watchMinPure || eventStock >= watchMinEvent)
-            : (pure >= watchMinPure && eventStock >= watchMinEvent);
-
-        if (rejectIfAvoid && reviewed.suggestion === "避免納入 FCN") {
-          reviewed.bucket = "reject";
-        } else if (passCleanBase && passCleanDelta) {
-          reviewed.bucket = "clean";
-        } else if (passWatch) {
-          reviewed.bucket = "watch";
-        } else {
-          reviewed.bucket = "reject";
-        }
-
-        return reviewed;
-      })
-      .sort((a, b) => toNumber(b.event_stock_score, 0) - toNumber(a.event_stock_score, 0));
-
-    const selection = splitByBucket(stockResults);
-    const simulationResults = runSimulation(selection.clean_pool, config);
-
-    const cache = {
-      generated_at: new Date().toISOString(),
-      stockResults,
-      selection,
-      simulationResults
-    };
-
-    writeCache(cache);
-    renderM3();
-    alert("M3 執行成功");
-  } catch (err) {
-    console.error("M3 run error", err);
-    document.getElementById("summaryBlock").innerHTML = `
-      <div class="error-card">
-        M3 執行失敗：${safeText(err.message)}
-      </div>
-    `;
-  }
-}
+    async function runM3() {
+      try {
+        const result = await runM3Engine();
+        writeCache(result);
+        renderM3();
+        alert("M3 執行成功");
+      } catch (err) {
+        console.error("M3 run error", err);
+        document.getElementById("summaryBlock").innerHTML = `
+          <div class="error-card">
+            M3 執行失敗：${safeText(err.message)}
+          </div>
+        `;
+      }
+    }
 
     document.getElementById("runBtn").addEventListener("click", runM3);
     document.getElementById("refreshBtn").addEventListener("click", renderM3);
+
     document.getElementById("toggleBlueprintBtn").addEventListener("click", () => {
       blueprintOpen = !blueprintOpen;
       renderM3();
+    });
+
+    document.getElementById("expandAllBtn").addEventListener("click", () => {
+      Object.keys(sectionState).forEach(k => sectionState[k] = true);
+      renderM3();
+    });
+
+    document.getElementById("collapseAllBtn").addEventListener("click", () => {
+      Object.keys(sectionState).forEach(k => sectionState[k] = false);
+      renderM3();
+    });
+
+    document.querySelectorAll("[data-section]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const id = btn.getAttribute("data-section");
+        sectionState[id] = !sectionState[id];
+        renderM3();
+      });
     });
 
     renderM3();
