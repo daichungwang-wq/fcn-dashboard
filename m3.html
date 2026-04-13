@@ -713,6 +713,10 @@ M3.6 Blueprint
 
             <div class="item-line"><b>Event</b>：${fmt(stock.event_stock_score)} ｜ M1 event score：${fmt(stock.m1_event_score)}</div>
             <div class="item-line"><b>Trend explain</b>：${safeText(stock.trend_label)} ｜ ${safeText(stock.trend_note)}</div>
+            <div class="item-line"><b>Trend Rate</b>：${fmt(stock.trend_rate, 4)}</div>
+<div class="item-line"><b>Long Trend</b>：${safeText(stock.long_trend_label)} ｜ ${safeText(stock.long_trend_note)}</div>
+<div class="item-line"><b>Mid Trend</b>：${safeText(stock.mid_trend_label)} ｜ ${safeText(stock.mid_trend_note)}</div>
+<div class="item-line"><b>Trend Profile</b>：${safeText(stock.trend_profile_label)} ｜ ${safeText(stock.trend_profile_note)}</div>
             <div class="item-line"><b>Why</b>：${stock.why.length ? stock.why.join("；") : "-"}</div>
             <div class="item-line"><b>Why not</b>：${stock.whyNot.length ? stock.whyNot.join("；") : "-"}</div>
           </div>
