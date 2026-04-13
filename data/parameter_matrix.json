@@ -285,112 +285,56 @@
   },
 
   "M3_FCN情境組合參數": {
-    "scenarios": [
-      {
-        "名稱": "科技核心收益",
-        "說明": "以核心科技股為主，追求穩健 FCN 收益",
-        "basket_size": [3, 4],
-        "ki": [50, 55],
-        "strike": [65],
-        "tenor": [6, 9],
-        "rate": [16, 18, 20],
-        "eki": [false]
-      },
-      {
-        "名稱": "科技混合收益",
-        "說明": "核心科技搭配中風險成長股，提升收益",
-        "basket_size": [4, 5],
-        "ki": [50, 55],
-        "strike": [65, 70],
-        "tenor": [6, 9, 12],
-        "rate": [18, 20, 22],
-        "eki": [false]
-      },
-      {
-        "名稱": "保守收益",
-        "說明": "偏保守組合，利率要求較低但穩定性較高",
-        "basket_size": [2, 3],
-        "ki": [50],
-        "strike": [60, 65],
-        "tenor": [6],
-        "rate": [14, 16, 18],
-        "eki": [false]
-      },
-      {
-        "名稱": "正常組A",
-        "basket_size": [4],
-        "ki": [55],
-        "strike": [70],
-        "tenor": [9],
-        "rate": [15],
-        "eki": [true]
-      },
-      {
-        "名稱": "正常組C",
-        "basket_size": [3],
-        "ki": [55],
-        "strike": [65],
-        "tenor": [9],
-        "rate": [18],
-        "eki": [true]
-      },
-      {
-        "名稱": "正常組E",
-        "basket_size": [4],
-        "ki": [55],
-        "strike": [70],
-        "tenor": [6],
-        "rate": [18],
-        "eki": [true]
-      },
-      {
-        "名稱": "積極組A",
-        "basket_size": [5],
-        "ki": [55],
-        "strike": [70],
-        "tenor": [9],
-        "rate": [22],
-        "eki": [true]
-      },
-      {
-        "名稱": "積極組B",
-        "basket_size": [5],
-        "ki": [55],
-        "strike": [70],
-        "tenor": [9],
-        "rate": [24],
-        "eki": [false]
-      },
-      {
-        "名稱": "夢幻組A",
-        "basket_size": [3],
-        "ki": [55],
-        "strike": [70],
-        "tenor": [3],
-        "rate": [17],
-        "eki": [true]
-      },
-      {
-        "名稱": "夢幻組C",
-        "basket_size": [5],
-        "ki": [55],
-        "strike": [70],
-        "tenor": [9],
-        "rate": [22],
-        "eki": [true]
-      },
-      {
-        "名稱": "接股組A",
-        "basket_size": [3],
-        "ki": [65],
-        "strike": [80],
-        "tenor": [2],
-        "rate": [30],
-        "eki": [true]
-      }
-    ]
-  },
+  "scenarios": [
+    {
+      "名稱": "科技核心收益型",
+      "說明": "高品質科技股，追求穩定收益",
 
+      "類型": "core_income",
+
+      "basket_size": [3],
+      "ki": [55],
+      "strike": [70],
+      "tenor": [6, 9],
+      "rate": [18, 20],
+      "eki": [true],
+
+      "目標": {
+        "min_event_fcn": 9,
+        "min_gap": 0,
+        "min_health": 70
+      }
+    },
+
+    {
+      "名稱": "混合收益型",
+      "說明": "科技 + 傳統，提高 yield",
+
+      "類型": "balanced_income",
+
+      "basket_size": [3, 4],
+      "ki": [55, 60],
+      "strike": [70],
+      "tenor": [6, 9],
+      "rate": [18, 20, 22],
+      "eki": [true, false]
+    },
+
+    {
+      "名稱": "夢幻高收益型",
+      "說明": "測試市場是否給超高價",
+
+      "類型": "aggressive",
+
+      "basket_size": [3],
+      "ki": [50],
+      "strike": [75],
+      "tenor": [12],
+      "rate": [24, 26],
+      "eki": [true]
+    }
+  ]
+ },
   "系統參數": {
     "version": "M3_V2_TEMPLATE",
     "enable_debug_log": false
