@@ -930,64 +930,83 @@ M3.6 Blueprint
       renderM3();
     };
 
-    async function runM3() {
-      try {
-       const stockResults = (pool30 || [])
-  .map(stock => mergeStockData(stock, marketRuntime || {}))
-  .map(stock => evaluateStock(stock, config))
-  .map(stock => {
-    const reviewed = reviewStockForM3(stock);
-    const pure = toNumber(reviewed.pure_stock_score, 0);
-    const eventScore = toNumber(reviewed.event_stock_score, 0);
+   async function runM3() {
+  try {
+    const [pool30, marketRuntime, config] = await Promise.all([
+      loadJSON("./data/pool30.json"),
+      loadJSON("./data/market_runtime.json"),
+      loadJSON("./data/parameter_matrix.json")
+    ]);
 
-    const passCleanBase =
-      pure >= cleanMinPure &&
-      eventScore >= cleanMinEvent;
+    const stockSelectionCfg = config["M3_股票篩選情境參數"] || {};
 
-    const passCleanDelta =
-      !cleanUseDeltaGate || reviewed.delta_stock_score >= cleanMinDelta;
+    const cleanMinPure = toNumber(stockSelectionCfg.clean_min_pure, 6);
+    const cleanMinEvent = toNumber(stockSelectionCfg.clean_min_event, 6);
+    const cleanMinDelta = toNumber(stockSelectionCfg.clean_min_delta, 0);
+    const cleanUseDeltaGate = !!stockSelectionCfg.clean_use_delta_gate;
 
-    const passWatch =
-      watchUseOrLogic
-        ? (pure >= watchMinPure || eventScore >= watchMinEvent)
-        : (pure >= watchMinPure && eventScore >= watchMinEvent);
+    const watchMinPure = toNumber(stockSelectionCfg.watch_min_pure, 5);
+    const watchMinEvent = toNumber(stockSelectionCfg.watch_min_event, 5);
+    const watchUseOrLogic = stockSelectionCfg.watch_use_or_logic !== false;
 
-    if (rejectIfAvoid && reviewed.suggestion === "避免納入 FCN") {
-      reviewed.bucket = "reject";
-    } else if (passCleanBase && passCleanDelta) {
-      reviewed.bucket = "clean";
-    } else if (passWatch) {
-      reviewed.bucket = "watch";
-    } else {
-      reviewed.bucket = "reject";
-    }
+    const rejectIfAvoid = !!stockSelectionCfg.reject_if_suggestion_avoid;
 
-    return reviewed;
-  })
-  .sort((a, b) => toNumber(b.event_stock_score, 0) - toNumber(a.event_stock_score, 0));
+    const stockResults = (pool30 || [])
+      .map(stock => mergeStockData(stock, marketRuntime || {}))
+      .map(stock => evaluateStock(stock, config))
+      .map(stock => {
+        const reviewed = reviewStockForM3(stock);
+        const pure = toNumber(reviewed.pure_stock_score, 0);
+        const eventStock = toNumber(reviewed.event_stock_score, 0);
 
-        const selection = splitByBucket(stockResults);
-        const simulationResults = runSimulation(selection.clean_pool, config);
+        const passCleanBase =
+          pure >= cleanMinPure &&
+          eventStock >= cleanMinEvent;
 
-        const cache = {
-          generated_at: new Date().toISOString(),
-          stockResults,
-          selection,
-          simulationResults
-        };
+        const passCleanDelta =
+          !cleanUseDeltaGate || reviewed.delta_stock_score >= cleanMinDelta;
 
-        writeCache(cache);
-        renderM3();
-        alert("M3 執行成功");
-      } catch (err) {
-        console.error("M3 run error", err);
-        document.getElementById("summaryBlock").innerHTML = `
-          <div class="error-card">
-            M3 執行失敗：${safeText(err.message)}
-          </div>
-        `;
-      }
-    }
+        const passWatch =
+          watchUseOrLogic
+            ? (pure >= watchMinPure || eventStock >= watchMinEvent)
+            : (pure >= watchMinPure && eventStock >= watchMinEvent);
+
+        if (rejectIfAvoid && reviewed.suggestion === "避免納入 FCN") {
+          reviewed.bucket = "reject";
+        } else if (passCleanBase && passCleanDelta) {
+          reviewed.bucket = "clean";
+        } else if (passWatch) {
+          reviewed.bucket = "watch";
+        } else {
+          reviewed.bucket = "reject";
+        }
+
+        return reviewed;
+      })
+      .sort((a, b) => toNumber(b.event_stock_score, 0) - toNumber(a.event_stock_score, 0));
+
+    const selection = splitByBucket(stockResults);
+    const simulationResults = runSimulation(selection.clean_pool, config);
+
+    const cache = {
+      generated_at: new Date().toISOString(),
+      stockResults,
+      selection,
+      simulationResults
+    };
+
+    writeCache(cache);
+    renderM3();
+    alert("M3 執行成功");
+  } catch (err) {
+    console.error("M3 run error", err);
+    document.getElementById("summaryBlock").innerHTML = `
+      <div class="error-card">
+        M3 執行失敗：${safeText(err.message)}
+      </div>
+    `;
+  }
+}
 
     document.getElementById("runBtn").addEventListener("click", runM3);
     document.getElementById("refreshBtn").addEventListener("click", renderM3);
