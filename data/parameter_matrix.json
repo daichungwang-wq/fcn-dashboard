@@ -4,11 +4,26 @@
   "M3_股票篩選情境參數": {
   {
   "STOCK_CATEGORY_BASELINE": {
-    "core": { "label": "核心", "base": 10 },
-    "defensive": { "label": "防禦", "base": 7 },
-    "growth": { "label": "成長", "base": 8 },
-    "income": { "label": "收益", "base": 6 },
-    "speculative": { "label": "投機", "base": 4 }
+    "core": {
+      "label": "核心",
+      "base": 10
+    },
+    "defensive": {
+      "label": "防禦",
+      "base": 7
+    },
+    "growth": {
+      "label": "成長",
+      "base": 8
+    },
+    "income": {
+      "label": "收益",
+      "base": 6
+    },
+    "speculative": {
+      "label": "投機",
+      "base": 4
+    }
   },
 
   "STOCK_VOLATILITY": {
@@ -75,65 +90,6 @@
     ]
   },
 
-  "STOCK_TREND": {
-    "pullback_in_uptrend": {
-      "enabled": true,
-      "r12m_gt": 0.2,
-      "r6m_gt": 0,
-      "r1m_lt": 0,
-      "trend": "pullback_in_uptrend",
-      "trend_label": "長多回檔",
-      "trend_note": "長期趨勢仍強，短期回檔，較符合 FCN 觀察時點"
-    },
-    "strong_uptrend": {
-      "enabled": true,
-      "r12m_gt": 0.2,
-      "r1m_gt": 0.05,
-      "trend": "strong_uptrend",
-      "trend_label": "高位強勢",
-      "trend_note": "中長期很強，但位置偏高，FCN 不宜追價"
-    },
-    "breakout": {
-      "enabled": true,
-      "r12m_gt": 0,
-      "r6m_gt": 0,
-      "r1m_gt": 0,
-      "trend": "breakout",
-      "trend_label": "突破轉強",
-      "trend_note": "近期轉強，但 FCN 時點不一定最好"
-    },
-    "downtrend": {
-      "enabled": true,
-      "r12m_lt": -0.2,
-      "r6m_lt": -0.1,
-      "r1m_lt": -0.05,
-      "trend": "downtrend",
-      "trend_label": "弱勢下跌",
-      "trend_note": "中長期偏弱，需避免當成 FCN 核心標的"
-    },
-    "dead_cat_bounce": {
-      "enabled": true,
-      "r12m_lt": -0.15,
-      "r1m_gt": 0.03,
-      "trend": "dead_cat_bounce",
-      "trend_label": "弱勢反彈",
-      "trend_note": "長期仍弱，短期反彈不代表安全"
-    },
-    "sharp_pullback": {
-      "enabled": true,
-      "r1m_lt": -0.12,
-      "r12m_gt": 0,
-      "trend": "sharp_pullback",
-      "trend_label": "急跌修正",
-      "trend_note": "跌得夠深，利率可能轉甜，但要小心不是壞掉"
-    },
-    "neutral": {
-      "trend": "neutral",
-      "trend_label": "中性",
-      "trend_note": "沒有明確趨勢優勢，需要搭配 Snapshot 判斷"
-    }
-  },
-
   "STOCK_EVENT": {
     "short_swing_weights": [0.35, 0.25, 0.15, 0.10, 0.08, 0.07],
     "score_curve": {
@@ -169,6 +125,141 @@
     }
   },
 
+  "TREND_ENGINE": {
+    "enabled": true,
+    "use_negative_only_for_trend_rate": true,
+
+    "trend_rate_weights": {
+      "r1m": 0.10,
+      "r3m": 0.20,
+      "r6m": 0.25,
+      "r12m": 0.45,
+      "r3y": 0.00,
+      "r5y": 0.00,
+      "r10y": 0.00
+    },
+
+    "long_trend_rules": {
+      "secular_growth": {
+        "r12m_gte": 0.20,
+        "r6m_gte": 0.08,
+        "label": "長期成長",
+        "note": "長期結構向上，可作長期觀察與持有核心"
+      },
+      "stable_compounder": {
+        "r12m_gte": 0.08,
+        "r6m_gte": 0.00,
+        "r12m_lte": 0.20,
+        "label": "穩定複利",
+        "note": "長期偏正但不暴衝，適合保守核心"
+      },
+      "sideways": {
+        "r12m_gt": -0.08,
+        "r12m_lt": 0.08,
+        "label": "長期盤整",
+        "note": "長期方向不明，偏中性"
+      },
+      "structural_decline": {
+        "r12m_lte": -0.20,
+        "r6m_lte": -0.08,
+        "label": "結構轉弱",
+        "note": "不是短期修正，長期結構偏弱"
+      },
+      "cyclical_uptrend": {
+        "r12m_gte": 0.10,
+        "r6m_lt": 0.08,
+        "label": "循環向上",
+        "note": "長期仍偏上，但波動較高，需搭配產業循環判讀"
+      },
+      "default": {
+        "label": "長期中性",
+        "note": "長期結構尚不明確"
+      }
+    },
+
+    "mid_trend_rules": {
+      "accelerating_uptrend": {
+        "r1m_gte": 0.05,
+        "r3m_gte": 0.10,
+        "r6m_gte": 0.12,
+        "label": "加速上行",
+        "note": "短中期同步走強，位置可能偏熱"
+      },
+      "healthy_pullback": {
+        "r1m_lte": -0.03,
+        "r3m_gte": 0.00,
+        "r6m_gte": 0.05,
+        "label": "健康回檔",
+        "note": "長線未壞，短線修正，常是較好的 FCN 觀察點"
+      },
+      "basing": {
+        "r1m_gt": -0.03,
+        "r1m_lt": 0.03,
+        "r3m_gt": -0.05,
+        "r3m_lt": 0.05,
+        "label": "築底整理",
+        "note": "趨勢暫時止穩，但尚未明確轉強"
+      },
+      "weak_rebound": {
+        "r1m_gte": 0.03,
+        "r6m_lte": -0.10,
+        "label": "弱勢反彈",
+        "note": "短期反彈，但中期仍弱，需保守看待"
+      },
+      "persistent_downtrend": {
+        "r1m_lte": -0.05,
+        "r3m_lte": -0.08,
+        "r6m_lte": -0.12,
+        "label": "持續下跌",
+        "note": "跌勢延續中，不宜當成普通修正"
+      },
+      "overheated": {
+        "r1m_gte": 0.10,
+        "r3m_gte": 0.18,
+        "label": "高位過熱",
+        "note": "公司可能很好，但目前時點偏熱"
+      },
+      "default": {
+        "label": "中期中性",
+        "note": "沒有明顯中期位置優勢"
+      }
+    },
+
+    "profile_map": {
+      "secular_growth|healthy_pullback": {
+        "profile": "long_growth_pullback",
+        "label": "長期成長＋健康回檔",
+        "note": "最值得優先觀察的一類"
+      },
+      "secular_growth|accelerating_uptrend": {
+        "profile": "long_growth_hot",
+        "label": "長期成長＋加速上行",
+        "note": "公司很好，但現在可能偏熱"
+      },
+      "stable_compounder|healthy_pullback": {
+        "profile": "stable_pullback",
+        "label": "穩定複利＋健康回檔",
+        "note": "適合保守型 FCN 與中長期持有"
+      },
+      "structural_decline|weak_rebound": {
+        "profile": "decline_rebound",
+        "label": "結構轉弱＋弱勢反彈",
+        "note": "容易誤判，不宜太早樂觀"
+      },
+      "structural_decline|persistent_downtrend": {
+        "profile": "decline_downtrend",
+        "label": "結構轉弱＋持續下跌",
+        "note": "高風險型態，未來可直接接 reject"
+      }
+    },
+
+    "default_profile": {
+      "profile": "mixed",
+      "label": "混合型態",
+      "note": "長中期訊號不一致，需搭配其他分數判斷"
+    }
+  },
+
   "M3_股票篩選情境參數": {
     "clean_min_pure": 6,
     "clean_min_event": 6,
@@ -180,13 +271,51 @@
     "watch_use_or_logic": true,
 
     "reject_if_suggestion_avoid": true
-  }
-}
+  },
+
+  "M3_模擬控制參數": {
+    "max_combinations": 200
+  },
+
+  "M3_排名評分參數": {
+    "strong_buy_min_event_fcn": 12,
+    "buy_min_event_fcn": 9,
+    "watch_min_event_fcn": 6
+  },
 
   "M3_FCN情境組合參數": {
     "scenarios": [
-
       {
+        "名稱": "科技核心收益",
+        "說明": "以核心科技股為主，追求穩健 FCN 收益",
+        "basket_size": [3, 4],
+        "ki": [50, 55],
+        "strike": [65],
+        "tenor": [6, 9],
+        "rate": [16, 18, 20],
+        "eki": [false]
+      },
+      {
+        "名稱": "科技混合收益",
+        "說明": "核心科技搭配中風險成長股，提升收益",
+        "basket_size": [4, 5],
+        "ki": [50, 55],
+        "strike": [65, 70],
+        "tenor": [6, 9, 12],
+        "rate": [18, 20, 22],
+        "eki": [false]
+      },
+      {
+        "名稱": "保守收益",
+        "說明": "偏保守組合，利率要求較低但穩定性較高",
+        "basket_size": [2, 3],
+        "ki": [50],
+        "strike": [60, 65],
+        "tenor": [6],
+        "rate": [14, 16, 18],
+        "eki": [false]
+      }
+        {
         "名稱": "正常組A",
         "basket_size": [4],
         "ki": [55],
@@ -261,9 +390,13 @@
         "rate": [30],
         "eki": [true]
       }
-
     ]
-  },
+  }
+}
+  
+    
+
+    
 
   "M3_排名評分參數": {
     "strong_buy_min_event_fcn": 12,
@@ -280,4 +413,4 @@
     "version": "M3_V2_TEMPLATE",
     "enable_debug_log": false
   }
-}
+
