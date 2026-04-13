@@ -300,9 +300,9 @@
       "eki": [true],
 
       "目標": {
-        "min_event_fcn": 8,
+        "min_event_fcn": 5,
         "min_gap": 0,
-        "min_health": 70
+        "min_health": 30
       }
     },
 
