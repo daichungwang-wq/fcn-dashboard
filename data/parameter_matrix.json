@@ -292,11 +292,11 @@
 
       "類型": "core_income",
 
-      "basket_size": [3,4],
+      "basket_size": [4],
       "ki": [50],
       "strike": [70],
-      "tenor": [9, 12],
-      "rate": [15,18],
+      "tenor": [9],
+      "rate": [18],
       "eki": [true],
 
       "目標": {
@@ -316,7 +316,7 @@
       "ki": [55],
       "strike": [70],
       "tenor": [6, 9],
-      "rate": [18, 20],
+      "rate": [20],
       "eki": [true, false]
     },
 
@@ -330,7 +330,7 @@
       "ki": [65],
       "strike": [75],
       "tenor": [12],
-      "rate": [20, 24],
+      "rate": [22],
       "eki": [true]
     }
   ]
