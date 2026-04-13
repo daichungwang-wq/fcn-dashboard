@@ -2,17 +2,186 @@
   "說明": "M3 系統主參數表（股票篩選 + FCN 模擬 + 排名邏輯）",
 
   "M3_股票篩選情境參數": {
-    "reject_if_suggestion_avoid": true,
+  {
+  "STOCK_CATEGORY_BASELINE": {
+    "core": { "label": "核心", "base": 10 },
+    "defensive": { "label": "防禦", "base": 7 },
+    "growth": { "label": "成長", "base": 8 },
+    "income": { "label": "收益", "base": 6 },
+    "speculative": { "label": "投機", "base": 4 }
+  },
 
+  "STOCK_VOLATILITY": {
+    "weights": {
+      "r1m": 0.1,
+      "r6m": 0.3,
+      "r12m": 0.6
+    },
+    "score_bands": [
+      { "max": 0.05, "score": 0 },
+      { "max": 0.10, "score": -0.18 },
+      { "max": 0.15, "score": -0.36 },
+      { "max": 0.20, "score": -0.55 },
+      { "max": 0.25, "score": -0.73 },
+      { "max": 0.30, "score": -0.91 },
+      { "max": 0.35, "score": -1.09 },
+      { "max": 0.40, "score": -1.27 },
+      { "max": 0.45, "score": -1.45 },
+      { "max": 0.50, "score": -1.64 },
+      { "max": 0.55, "score": -1.82 },
+      { "max": 0.60, "score": -2.00 },
+      { "max": 0.65, "score": -2.13 },
+      { "max": 0.70, "score": -2.25 },
+      { "max": 0.75, "score": -2.38 },
+      { "max": 0.80, "score": -2.50 }
+    ],
+    "floor_score": -3,
+    "labels": [
+      { "max": 0.05, "label": "極穩定" },
+      { "max": 0.10, "label": "穩定" },
+      { "max": 0.20, "label": "偏穩" },
+      { "max": 0.40, "label": "中等波動" },
+      { "max": 0.60, "label": "偏高波動" },
+      { "max": 0.80, "label": "高波動" },
+      { "max": 999, "label": "極高波動" }
+    ]
+  },
+
+  "STOCK_SNAPSHOT": {
+    "momentum_weights": {
+      "r1d": 0.4,
+      "r1w": 0.5,
+      "r1m": 0.1
+    },
+    "score_bands": [
+      { "max": -28, "score": 10, "bucket": "<= -28%", "reason": "急跌超甜，但要確認不是壞掉" },
+      { "max": -26, "score": 9, "bucket": "-28% ~ -26%", "reason": "很甜" },
+      { "max": -22, "score": 8, "bucket": "-26% ~ -22%", "reason": "很甜" },
+      { "max": -18, "score": 7, "bucket": "-22% ~ -18%", "reason": "甜" },
+      { "max": -14, "score": 6, "bucket": "-18% ~ -14%", "reason": "偏甜" },
+      { "max": -11, "score": 5, "bucket": "-14% ~ -11%", "reason": "健康修正" },
+      { "max": -8, "score": 4, "bucket": "-11% ~ -8%", "reason": "健康修正" },
+      { "max": -5, "score": 3, "bucket": "-8% ~ -5%", "reason": "開始變甜" },
+      { "max": -3, "score": 2, "bucket": "-5% ~ -3%", "reason": "微甜" },
+      { "max": -1, "score": 1, "bucket": "-3% ~ -1%", "reason": "小幅修正" },
+      { "max": 1, "score": 0, "bucket": "-1% ~ +1%", "reason": "中性區" },
+      { "max": 5, "score": -1, "bucket": "+1% ~ +5%", "reason": "偏貴" },
+      { "max": 8, "score": -2, "bucket": "+5% ~ +8%", "reason": "不甜" },
+      { "max": 13, "score": -3, "bucket": "+8% ~ +13%", "reason": "偏熱" },
+      { "max": 18, "score": -4, "bucket": "+13% ~ +18%", "reason": "過熱" },
+      { "max": 25, "score": -5, "bucket": "+18% ~ +25%", "reason": "高位風險" },
+      { "max": 30, "score": -6, "bucket": "+25% ~ +30%", "reason": "明顯過熱" },
+      { "max": 999, "score": -8, "bucket": "> +30%", "reason": "極度過熱" }
+    ]
+  },
+
+  "STOCK_TREND": {
+    "pullback_in_uptrend": {
+      "enabled": true,
+      "r12m_gt": 0.2,
+      "r6m_gt": 0,
+      "r1m_lt": 0,
+      "trend": "pullback_in_uptrend",
+      "trend_label": "長多回檔",
+      "trend_note": "長期趨勢仍強，短期回檔，較符合 FCN 觀察時點"
+    },
+    "strong_uptrend": {
+      "enabled": true,
+      "r12m_gt": 0.2,
+      "r1m_gt": 0.05,
+      "trend": "strong_uptrend",
+      "trend_label": "高位強勢",
+      "trend_note": "中長期很強，但位置偏高，FCN 不宜追價"
+    },
+    "breakout": {
+      "enabled": true,
+      "r12m_gt": 0,
+      "r6m_gt": 0,
+      "r1m_gt": 0,
+      "trend": "breakout",
+      "trend_label": "突破轉強",
+      "trend_note": "近期轉強，但 FCN 時點不一定最好"
+    },
+    "downtrend": {
+      "enabled": true,
+      "r12m_lt": -0.2,
+      "r6m_lt": -0.1,
+      "r1m_lt": -0.05,
+      "trend": "downtrend",
+      "trend_label": "弱勢下跌",
+      "trend_note": "中長期偏弱，需避免當成 FCN 核心標的"
+    },
+    "dead_cat_bounce": {
+      "enabled": true,
+      "r12m_lt": -0.15,
+      "r1m_gt": 0.03,
+      "trend": "dead_cat_bounce",
+      "trend_label": "弱勢反彈",
+      "trend_note": "長期仍弱，短期反彈不代表安全"
+    },
+    "sharp_pullback": {
+      "enabled": true,
+      "r1m_lt": -0.12,
+      "r12m_gt": 0,
+      "trend": "sharp_pullback",
+      "trend_label": "急跌修正",
+      "trend_note": "跌得夠深，利率可能轉甜，但要小心不是壞掉"
+    },
+    "neutral": {
+      "trend": "neutral",
+      "trend_label": "中性",
+      "trend_note": "沒有明確趨勢優勢，需要搭配 Snapshot 判斷"
+    }
+  },
+
+  "STOCK_EVENT": {
+    "short_swing_weights": [0.35, 0.25, 0.15, 0.10, 0.08, 0.07],
+    "score_curve": {
+      "center_left_x": -2,
+      "center_right_x": 2,
+      "left_mid_score": -3,
+      "right_mid_score": 5,
+      "left_outer_x": -10,
+      "right_outer_x": 10,
+      "left_outer_score": -5,
+      "right_outer_score": 9,
+      "left_cap_score": -6,
+      "right_cap_score": 10,
+      "cap_extend_range": 4
+    }
+  },
+
+  "STOCK_SUGGESTION": {
+    "reject_if_pure_lt": 3,
+    "reject_trends": ["downtrend", "dead_cat_bounce"],
+    "event_stock_thresholds": {
+      "priority": 16,
+      "include": 12,
+      "neutral": 7
+    },
+    "conservative_if_event_score_lte": -4,
+    "texts": {
+      "reject": "避免納入 FCN",
+      "priority": "優先列入 FCN 候選",
+      "include": "可列入 FCN 候選",
+      "neutral": "中性觀察",
+      "conservative": "保守觀察"
+    }
+  },
+
+  "M3_股票篩選情境參數": {
     "clean_min_pure": 6,
     "clean_min_event": 6,
-    "clean_min_delta": 0.2,
+    "clean_min_delta": 1,
     "clean_use_delta_gate": true,
 
     "watch_min_pure": 5,
     "watch_min_event": 5,
-    "watch_use_or_logic": true
-  },
+    "watch_use_or_logic": true,
+
+    "reject_if_suggestion_avoid": true
+  }
+}
 
   "M3_FCN情境組合參數": {
     "scenarios": [
