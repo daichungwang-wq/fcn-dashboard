@@ -763,6 +763,24 @@ export function getStockBias(stock = {}, context = {}) {
   return "neutral";
 }
 
+// ⭐⭐ 放這裡（就在 getSuggestion 上面）⭐⭐
+export function isTrendReject(stock = {}, context = {}) {
+  const cfg = getCfg(context, "TREND_FILTER", {});
+
+  const trendRate = toNumber(stock.trend_rate, 0);
+  const profile = stock.trend_profile || "";
+
+  if (trendRate <= toNumber(cfg.reject_trend_rate_lte, -0.12)) {
+    return true;
+  }
+
+  const rejectProfiles = getArray(cfg.reject_profiles, []);
+  if (rejectProfiles.includes(profile)) {
+    return true;
+  }
+
+  return false;
+}
 export function getSuggestion(stock = {}, context = {}) {
 
   // ===== ✅ Trend 風控（最優先）=====
