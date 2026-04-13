@@ -1677,37 +1677,37 @@
       "TSM": 298.2288
     }
   },
-  {
-    "date": "2025-10-27",
-    "fcn_id": "FCN931K 富邦",
-    "basket": [
-      "ARM",
-      "PLTR",
-      "TSLA"
-    ],
-    "tenor": 5,
-    "rate": 16.16,
-    "autocall": 100,
-    "strike": 69.0,
-    "ki": 55.0,
-    "eki": false,
-    "bank": "摩根大通",
-    "has_position": true,
-    "amt": 10000.0,
-    "currency": "USD",
-    "status": "active",
-    "created_time": "2025-10-27T09:00",
-    "entry_time": "2025-10-27T09:00",
-    "exit_time": null,
-    "decision_flag": "manual",
-    "is_portfolio": true,
-    "note": "標的價格=VWAP",
-    "entry_prices": {
-      "ARM": 178.2604,
-      "PLTR": 190.4281,
-      "TSLA": 452.3927
-    }
-  },
+ {
+  "date": "2025-10-27",
+  "fcn_id": "FCN931K 富邦",
+  "basket": [
+    "ARM",
+    "PLTR",
+    "TSLA"
+  ],
+  "tenor": 5,
+  "rate": 16.16,
+  "autocall": 100,
+  "strike": 69,
+  "ki": 55,
+  "eki": false,
+  "bank": "摩根大通",
+  "has_position": true,
+  "amt": 10000,
+  "currency": "USD",
+  "status": "closed",
+  "created_time": "2025-10-27T09:00",
+  "entry_time": "2025-10-27T09:00",
+  "exit_time": "2026-04-07T12:48",
+  "decision_flag": "manual",
+  "is_portfolio": true,
+  "note": "標的價格=VWAP",
+  "entry_prices": {
+    "ARM": 178.2604,
+    "PLTR": 190.4281,
+    "TSLA": 452.3927
+  }
+},
   {
     "date": "2025-10-27",
     "fcn_id": "FCN935K 富邦",
