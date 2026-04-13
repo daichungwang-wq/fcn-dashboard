@@ -292,15 +292,15 @@
 
       "類型": "core_income",
 
-      "basket_size": [3],
-      "ki": [55],
+      "basket_size": [3,4],
+      "ki": [50],
       "strike": [70],
-      "tenor": [6, 9],
-      "rate": [18, 20],
+      "tenor": [9, 12],
+      "rate": [15,18],
       "eki": [true],
 
       "目標": {
-        "min_event_fcn": 9,
+        "min_event_fcn": 8,
         "min_gap": 0,
         "min_health": 70
       }
@@ -312,11 +312,11 @@
 
       "類型": "balanced_income",
 
-      "basket_size": [3, 4],
-      "ki": [55, 60],
+      "basket_size": [4, 5],
+      "ki": [55],
       "strike": [70],
       "tenor": [6, 9],
-      "rate": [18, 20, 22],
+      "rate": [18, 20],
       "eki": [true, false]
     },
 
@@ -326,11 +326,11 @@
 
       "類型": "aggressive",
 
-      "basket_size": [3],
-      "ki": [50],
+      "basket_size": [4,5],
+      "ki": [65],
       "strike": [75],
       "tenor": [12],
-      "rate": [24, 26],
+      "rate": [20, 24],
       "eki": [true]
     }
   ]
