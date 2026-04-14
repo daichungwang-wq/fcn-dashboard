@@ -1,7 +1,7 @@
 // ==========================================
 // m3_engine.js
 // 振宇 FCN 系統｜M3 主觀偏好模擬引擎
-// 版本：Scenario-driven Qualification
+// 完整版：Scenario-driven Qualification + Analytics + M5 Payload
 // ==========================================
 
 import { runM8Case } from "../core/m8_batch_engine.js";
@@ -31,12 +31,6 @@ function normalizePctMaybe(v) {
   if (!Number.isFinite(n)) return 0;
   if (Math.abs(n) <= 1.5) return n * 100;
   return n;
-}
-
-function formatPctMaybe(v, digits = 2) {
-  const n = normalizePctMaybe(v);
-  const sign = n > 0 ? "+" : "";
-  return `${sign}${n.toFixed(digits)}%`;
 }
 
 async function loadJSON(path) {
@@ -74,6 +68,20 @@ function calcStats(values) {
 
 function uniqueArray(arr) {
   return [...new Set((arr || []).filter(Boolean))];
+}
+
+function mean(values) {
+  const arr = (values || []).map(Number).filter(Number.isFinite);
+  if (!arr.length) return 0;
+  return arr.reduce((a, b) => a + b, 0) / arr.length;
+}
+
+function std(values) {
+  const arr = (values || []).map(Number).filter(Number.isFinite);
+  if (arr.length <= 1) return 0;
+  const m = mean(arr);
+  const v = mean(arr.map(x => Math.pow(x - m, 2)));
+  return Math.sqrt(v);
 }
 
 // ------------------------------------------
@@ -387,13 +395,22 @@ async function runSimulation(cleanPool, config) {
                     health_score: healthPct
                   };
 
+                  // 彙總上游 stock 因子（供 analytics / M5 用）
+                  const componentPure = (combo || []).map(s => toNumber(s.pure_stock_score, null)).filter(Number.isFinite);
+                  const componentSnapshot = (combo || []).map(s => toNumber(s.snapshot_score, null)).filter(Number.isFinite);
+                  const componentEvent = (combo || []).map(s => toNumber(s.event_score, null)).filter(Number.isFinite);
+                  const componentEventStock = (combo || []).map(s => toNumber(s.event_stock_score, null)).filter(Number.isFinite);
+                  const componentSwing = (combo || []).map(s => toNumber(s.short_swing, null)).filter(Number.isFinite);
+                  const componentTrendRate = (combo || []).map(s => toNumber(s.trend_rate, null)).filter(Number.isFinite);
+                  const componentMidVol = (combo || []).map(s => toNumber(s.mid_term_volatility, null)).filter(Number.isFinite);
+
                   const row = {
                     ...fcn,
 
                     scenario_name: safeText(scenario["名稱"], "未命名情境"),
                     scenario_comment: safeText(scenario["說明"], ""),
                     scenario_type: safeText(scenario["類型"], ""),
-                    scenario_goal: scenario["目標"] || null,
+                    scenario_goal: scenario["目標"] || scenario.target || null,
 
                     scenario_raw: scenario,
                     qualification: scenario.qualification_resolved,
@@ -416,7 +433,16 @@ async function runSimulation(cleanPool, config) {
                     // 新欄位
                     profit,
                     satisfy,
-                    safety
+                    safety,
+
+                    // analytics / M5 用的上游因子
+                    pure_stock_score: round(mean(componentPure), 4),
+                    snapshot_score: round(mean(componentSnapshot), 4),
+                    event_score: round(mean(componentEvent), 4),
+                    event_stock_score: round(mean(componentEventStock), 4),
+                    short_swing: round(mean(componentSwing), 4),
+                    trend_rate: round(mean(componentTrendRate), 4),
+                    mid_term_volatility: round(mean(componentMidVol), 4)
                   };
 
                   row.qualified = isQualified(row, scenario);
@@ -699,6 +725,146 @@ function buildCompareStats(simMeta, qualifiedMeta) {
 }
 
 // ------------------------------------------
+// Scenario Analytics（M5-ready）
+// Qualified vs Not Qualified 比較
+// ------------------------------------------
+function buildScenarioAnalytics(simulationResults = []) {
+  const scenarioMap = {};
+
+  for (const row of simulationResults) {
+    const key = row.scenario_name || "未知情境";
+    if (!scenarioMap[key]) scenarioMap[key] = [];
+    scenarioMap[key].push(row);
+  }
+
+  const factors = [
+    "mid_term_volatility",
+    "snapshot_score",
+    "short_swing",
+    "event_score",
+    "pure_stock_score",
+    "event_stock_score",
+    "trend_rate",
+    "health_pct",
+    "fair_gap",
+    "simulation_rate",
+    "fair_rate"
+  ];
+
+  const result = [];
+
+  for (const scenarioName of Object.keys(scenarioMap)) {
+    const rows = scenarioMap[scenarioName];
+    const qualified = rows.filter(r => r.qualified);
+    const notQualified = rows.filter(r => !r.qualified);
+
+    const factorStats = {
+      qualified: {},
+      not_qualified: {},
+      delta: {}
+    };
+
+    for (const factor of factors) {
+      const qArr = qualified.map(r => toNumber(r[factor], null)).filter(Number.isFinite);
+      const nArr = notQualified.map(r => toNumber(r[factor], null)).filter(Number.isFinite);
+
+      const qMean = mean(qArr);
+      const nMean = mean(nArr);
+
+      factorStats.qualified[factor] = {
+        mean: round(qMean, 4),
+        std: round(std(qArr), 4),
+        count: qArr.length,
+        min: qArr.length ? round(Math.min(...qArr), 4) : null,
+        max: qArr.length ? round(Math.max(...qArr), 4) : null
+      };
+
+      factorStats.not_qualified[factor] = {
+        mean: round(nMean, 4),
+        std: round(std(nArr), 4),
+        count: nArr.length,
+        min: nArr.length ? round(Math.min(...nArr), 4) : null,
+        max: nArr.length ? round(Math.max(...nArr), 4) : null
+      };
+
+      factorStats.delta[factor] = round(qMean - nMean, 4);
+    }
+
+    // 使用股票 / worst-of / qualified stocks
+    const usedStocks = {};
+    const qualifiedStocks = {};
+    const worstOfStocks = {};
+
+    rows.forEach(row => {
+      const basket = Array.isArray(row.basket)
+        ? row.basket
+        : String(row.basket || "").split(",").map(s => s.trim()).filter(Boolean);
+
+      basket.forEach(sym => {
+        if (!usedStocks[sym]) usedStocks[sym] = { symbol: sym, count: 0 };
+        usedStocks[sym].count += 1;
+
+        if (row.qualified) {
+          if (!qualifiedStocks[sym]) qualifiedStocks[sym] = { symbol: sym, count: 0 };
+          qualifiedStocks[sym].count += 1;
+        }
+      });
+
+      const worstList = [row.r1?.symbol, row.r2?.symbol, row.r3?.symbol].filter(Boolean);
+      worstList.forEach(sym => {
+        if (!worstOfStocks[sym]) worstOfStocks[sym] = { symbol: sym, count: 0 };
+        worstOfStocks[sym].count += 1;
+      });
+    });
+
+    const topUsedStocks = Object.values(usedStocks).sort((a, b) => b.count - a.count).slice(0, 10);
+    const topQualifiedStocks = Object.values(qualifiedStocks).sort((a, b) => b.count - a.count).slice(0, 10);
+    const topWorstOfStocks = Object.values(worstOfStocks).sort((a, b) => b.count - a.count).slice(0, 10);
+
+    // M3語言簡版
+    const d = factorStats.delta;
+    let pattern = "成功模式尚未明確";
+    if (d.event_score > 1.5 && d.pure_stock_score > 1.0 && d.snapshot_score > 0.5) {
+      pattern = "高 Event + 高 Pure + 偏甜";
+    } else if (d.fair_gap > 0.5 && d.health_pct > 3) {
+      pattern = "市場溢價 + 健康度優勢";
+    } else if (d.pure_stock_score > 1.0 && d.trend_rate > 0.02) {
+      pattern = "高品質 + 趨勢穩定";
+    }
+
+    const conclusion =
+      d.fair_gap > 0
+        ? "市場略有溢價，結構可承作"
+        : d.fair_gap < 0
+          ? "市場未明顯支持，需保守看待"
+          : "市場定價大致合理";
+
+    result.push({
+      scenario: scenarioName,
+      counts: {
+        total: rows.length,
+        qualified: qualified.length,
+        not_qualified: notQualified.length,
+        success_rate: rows.length ? round((qualified.length / rows.length) * 100, 2) : 0
+      },
+      qualification: rows[0]?.qualification || null,
+      factor_stats: factorStats,
+      stock_stats: {
+        used: topUsedStocks,
+        qualified: topQualifiedStocks,
+        worst_of: topWorstOfStocks
+      },
+      m3_summary: {
+        pattern,
+        conclusion
+      }
+    });
+  }
+
+  return result.sort((a, b) => b.counts.success_rate - a.counts.success_rate);
+}
+
+// ------------------------------------------
 // Best example / Dashboard / Decision
 // ------------------------------------------
 function pickBestQualifiedExample(sims) {
@@ -768,10 +934,16 @@ function buildFinalDecision(sims, topN = 5) {
     .slice(0, topN);
 }
 
-function buildM5Payload(selection, sims, dashboard, finalDecision) {
+function buildM5Payload(selection, sims, dashboard, finalDecision, scenarioAnalytics) {
   return {
     generated_at: new Date().toISOString(),
     source: "M3 Engine",
+
+    raw: {
+      total: sims.length,
+      rows: sims
+    },
+
     simulated_universe: {
       clean_pool_symbols: (selection?.clean_pool || []).map(x => x.symbol),
       simulated_stock_count: dashboard?.simulation_meta?.simulated_stock_count || 0,
@@ -781,6 +953,7 @@ function buildM5Payload(selection, sims, dashboard, finalDecision) {
       m3_stats: dashboard?.simulation_meta?.m3_stats || {},
       health_stats: dashboard?.simulation_meta?.health_stats || {}
     },
+
     qualified_universe: {
       qualified_count: dashboard?.qualified_meta?.qualified_count || 0,
       qualified_stock_count: dashboard?.qualified_meta?.qualified_stock_count || 0,
@@ -790,11 +963,12 @@ function buildM5Payload(selection, sims, dashboard, finalDecision) {
       health_stats: dashboard?.qualified_meta?.health_stats || {},
       rate_stats: dashboard?.qualified_meta?.rate_stats || {}
     },
+
     compare_stats: dashboard?.compare_stats || {},
     qualified_symbol_stats: dashboard?.qualified_meta?.symbol_stats || [],
     qualified_scenario_stats: dashboard?.qualified_meta?.scenario_stats || [],
     top_qualified_examples: finalDecision || [],
-    total_simulations: sims.length
+    scenario_analytics: scenarioAnalytics || []
   };
 }
 
@@ -870,10 +1044,18 @@ export async function runM3Engine() {
     selection
   );
 
+  const scenarioAnalytics = buildScenarioAnalytics(simulationResults);
+
   const simCfg = config["M3_模擬控制參數"] || {};
   const topNOutput = toNumber(simCfg.top_n_output, 5);
   const finalDecision = buildFinalDecision(simulationResults, Math.min(topNOutput, 5));
-  const m5_payload = buildM5Payload(selection, simulationResults, dashboard, finalDecision);
+  const m5_payload = buildM5Payload(
+    selection,
+    simulationResults,
+    dashboard,
+    finalDecision,
+    scenarioAnalytics
+  );
 
   return {
     generated_at: new Date().toISOString(),
@@ -886,6 +1068,7 @@ export async function runM3Engine() {
     rateDistribution,
     dashboard,
     finalDecision,
+    scenarioAnalytics,
     m5_payload
   };
 }
