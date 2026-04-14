@@ -184,13 +184,29 @@ function getPreferenceLevel(eventFcn) {
   return "低偏好";
 }
 
+function getMarketScore(gap) {
+  const g = Number(gap);
+  if (!Number.isFinite(g)) return 0;
+  if (g >= 2.0) return 5;
+  if (g >= 1.5) return 4;
+  if (g >= 1.0) return 3;
+  if (g >= 0.5) return 2;
+  if (g >= 0.0) return 1;
+  if (g >= -0.5) return -1;
+  if (g >= -1.0) return -2;
+  if (g >= -1.5) return -3;
+  if (g >= -2.0) return -4;
+  return -5;
+}
 function getMarketLevel(gap) {
   const g = Number(gap);
   if (!Number.isFinite(g)) return "待接 M8";
-  if (g >= 1.5) return "市場明顯買單";
-  if (g >= 0.5) return "市場略買單";
-  if (g >= -0.5) return "市場接受";
-  return "市場不買單";
+  if (g >= 1.5) return "非常划算";
+  if (g >= 0.5) return "偏划算";
+  if (g >= 0.0) return "合理可做";
+  if (g >= -0.5) return "略嫌不足";
+  if (g >= -1.5) return "不划算";
+  return "明顯不划算";
 }
 
 // ------------------------------------------
