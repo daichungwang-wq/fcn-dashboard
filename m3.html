@@ -777,41 +777,203 @@ M3 定位：
       }).join("");
     }
 
-    function buildAnalyticsBlock(cache) {
-      const list = cache.scenarioAnalytics || cache.m5_payload?.scenario_analytics || [];
-      if (!list.length) return `<div class="empty">尚無資料</div>`;
+   function buildAnalyticsBlock(cache) {
+  const list = cache.scenarioAnalytics || cache.m5_payload?.scenario_analytics || [];
+  if (!list.length) return `<div class="empty">尚無資料</div>`;
 
-      return list.map(sc => {
-        const qualifiedStocks = ((sc.stock_stats?.qualified || []).slice(0, 3).map(x => x.symbol).join(" / ")) || "-";
-        const successRate = Number(sc.counts?.success_rate || 0).toFixed(1);
-        const bestRate = sc.factor_stats?.qualified?.simulation_rate?.mean;
-        const bestRateText = Number.isFinite(bestRate) ? `${Number(bestRate).toFixed(0)}%` : "-";
-        const pattern = safeText(sc.m3_summary?.pattern || "", "-");
-        const conclusion = safeText(sc.m3_summary?.conclusion || "", "-");
+  const fieldMap = {
+    mid_term_volatility: "中期波動",
+    snapshot_score: "Snapshot",
+    short_swing: "Swing Score",
+    event_score: "Event Score",
+    pure_stock_score: "Pure Score",
+    event_stock_score: "Event Stock Score",
+    trend_rate: "Trend Rate",
+    health_pct: "Health",
+    fair_gap: "Gap",
+    simulation_rate: "Simulation Rate",
+    fair_rate: "Fair Rate"
+  };
 
-        return `
-          <div class="scenario-card">
+  function renderFactorRows(stats, key) {
+    const rows = stats?.[key] || {};
+    return Object.keys(fieldMap).map(f => {
+      const item = rows[f] || {};
+      return `
+        <tr>
+          <td>${fieldMap[f]}</td>
+          <td>${item.mean != null ? fmt(item.mean, 3) : "-"}</td>
+          <td>${item.std != null ? fmt(item.std, 3) : "-"}</td>
+          <td>${item.count != null ? toNumber(item.count, 0) : "-"}</td>
+          <td>${item.min != null ? fmt(item.min, 3) : "-"}</td>
+          <td>${item.max != null ? fmt(item.max, 3) : "-"}</td>
+        </tr>
+      `;
+    }).join("");
+  }
+
+  function renderDeltaRows(stats) {
+    const rows = stats?.delta || {};
+    return Object.keys(fieldMap).map(f => {
+      const v = rows[f];
+      return `
+        <tr>
+          <td>${fieldMap[f]}</td>
+          <td class="${deltaClass(v)}">${v != null ? fmt(v, 3) : "-"}</td>
+        </tr>
+      `;
+    }).join("");
+  }
+
+  function renderStockList(title, rows) {
+    const list = rows || [];
+    return `
+      <div class="info-box">
+        <h3>${title}</h3>
+        ${
+          list.length
+            ? list.slice(0, 10).map(x => `
+              <div class="item-line">
+                ${safeText(x.symbol)}：${toNumber(x.count, 0)} 次
+              </div>
+            `).join("")
+            : `<div class="empty">尚無資料</div>`
+        }
+      </div>
+    `;
+  }
+
+  return list.map(sc => {
+    const qualifiedStocks = ((sc.stock_stats?.qualified || []).slice(0, 3).map(x => x.symbol).join(" / ")) || "-";
+    const usedStocks = ((sc.stock_stats?.used || []).slice(0, 3).map(x => x.symbol).join(" / ")) || "-";
+    const worstOfStocks = ((sc.stock_stats?.worst_of || []).slice(0, 3).map(x => x.symbol).join(" / ")) || "-";
+    const successRate = Number(sc.counts?.success_rate || 0).toFixed(1);
+    const bestRate = sc.factor_stats?.qualified?.simulation_rate?.mean;
+    const bestRateText = Number.isFinite(bestRate) ? `${Number(bestRate).toFixed(0)}%` : "-";
+    const pattern = safeText(sc.m3_summary?.pattern || "", "-");
+    const conclusion = safeText(sc.m3_summary?.conclusion || "", "-");
+
+    const deltas = sc.factor_stats?.delta || {};
+    const sortedFactors = Object.entries(deltas)
+      .sort((a, b) => Math.abs((b[1] ?? 0)) - Math.abs((a[1] ?? 0)))
+      .slice(0, 3)
+      .map(([k]) => fieldMap[k] || k)
+      .join(" / ") || "-";
+
+    return `
+      <div class="scenario-card">
+        <div class="scenario-title-row">
+          <div>
             <div class="item-title">${safeText(sc.scenario)}</div>
-
-            <div class="item-line">
-              達標率：<b>${successRate}%</b>
-            </div>
-
-            <div class="item-line">
-              最佳 Target：約 ${bestRateText}
-            </div>
-
-            <div class="item-line">
-              代表股票：${qualifiedStocks}
-            </div>
-
-            <div class="item-line subtle">
-              ${pattern} ｜ ${conclusion}
+            <div class="subtle">
+              總數 ${toNumber(sc.counts?.total, 0)} ｜ 
+              達標 ${toNumber(sc.counts?.qualified, 0)} ｜ 
+              未達標 ${toNumber(sc.counts?.not_qualified, 0)}
             </div>
           </div>
-        `;
-      }).join("");
-    }
+          <div>${passPill(toNumber(sc.counts?.qualified, 0) > 0, `達標率 ${successRate}%`)}</div>
+        </div>
+
+        <div class="grid-4" style="margin-top:10px;">
+          <div class="metric-chip">
+            <div class="label">達標率</div>
+            <div class="value">${successRate}%</div>
+          </div>
+          <div class="metric-chip">
+            <div class="label">最佳 Target</div>
+            <div class="value">${bestRateText}</div>
+          </div>
+          <div class="metric-chip">
+            <div class="label">關鍵因子</div>
+            <div class="value" style="font-size:14px;">${sortedFactors}</div>
+          </div>
+          <div class="metric-chip">
+            <div class="label">代表股票</div>
+            <div class="value" style="font-size:14px;">${qualifiedStocks}</div>
+          </div>
+        </div>
+
+        <div class="item-card" style="margin-top:12px;">
+          <div class="item-line"><b>Used Stocks：</b>${usedStocks}</div>
+          <div class="item-line"><b>Qualified Stocks：</b>${qualifiedStocks}</div>
+          <div class="item-line"><b>Worst-of：</b>${worstOfStocks}</div>
+          <div class="item-line"><b>M3 結論：</b>${pattern} ｜ ${conclusion}</div>
+        </div>
+
+        <details style="margin-top:12px;">
+          <summary style="cursor:pointer; font-weight:700;">展開統計細節</summary>
+
+          <div class="grid-2" style="margin-top:12px;">
+            <div class="info-box">
+              <h3>Qualified 統計</h3>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Factor</th>
+                      <th>Mean</th>
+                      <th>Std</th>
+                      <th>Count</th>
+                      <th>Min</th>
+                      <th>Max</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${renderFactorRows(sc.factor_stats, "qualified")}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="info-box">
+              <h3>Not Qualified 統計</h3>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Factor</th>
+                      <th>Mean</th>
+                      <th>Std</th>
+                      <th>Count</th>
+                      <th>Min</th>
+                      <th>Max</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${renderFactorRows(sc.factor_stats, "not_qualified")}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="info-box" style="margin-top:12px;">
+            <h3>Delta（Qualified - Not Qualified）</h3>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Factor</th>
+                    <th>Delta</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${renderDeltaRows(sc.factor_stats)}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="grid-3" style="margin-top:12px;">
+            ${renderStockList("Used Stocks Top 10", sc.stock_stats?.used)}
+            ${renderStockList("Qualified Stocks Top 10", sc.stock_stats?.qualified)}
+            ${renderStockList("Worst-of Top 10", sc.stock_stats?.worst_of)}
+          </div>
+        </details>
+      </div>
+    `;
+  }).join("");
+}
 
     function buildQualifiedLayerBlock(cache) {
       const d = cache.dashboard || {};
