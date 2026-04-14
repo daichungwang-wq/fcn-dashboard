@@ -284,12 +284,10 @@
     "watch_min_event_fcn": 6
   },
 
-  "M3_FCN情境組合參數": {
+ "M3_FCN情境組合參數": {
   "scenarios": [
     {
       "名稱": "科技核心收益型",
-      "說明": "高品質科技股，追求穩定收益",
-
       "類型": "core_income",
 
       "basket_size": [4],
@@ -299,17 +297,15 @@
       "rate": [15],
       "eki": [true],
 
-      "目標": {
-        "min_event_fcn": 5,
-        "min_gap": 0,
-        "min_health": 30
+      "qualification": {
+        "profit": { "min_gap": 0 },
+        "satisfy": { "min_m3_score": 5 },
+        "safety": { "min_health_score": 30 }
       }
     },
 
     {
       "名稱": "混合收益型",
-      "說明": "科技 + 傳統，提高 yield",
-
       "類型": "balanced_income",
 
       "basket_size": [4, 5],
@@ -317,26 +313,31 @@
       "strike": [70],
       "tenor": [6, 9],
       "rate": [18],
-      "eki": [true, false]
+      "eki": [true, false],
+
+      "qualification": {
+        "profit": { "min_gap": -1 },
+        "satisfy": { "min_m3_score": 8 },
+        "safety": { "min_health_score": 30 }
+      }
     },
 
     {
       "名稱": "夢幻高收益型",
-      "說明": "測試市場是否給超高價",
-
       "類型": "aggressive",
 
-      "basket_size": [4,5],
+      "basket_size": [4, 5],
       "ki": [65],
       "strike": [75],
       "tenor": [12],
       "rate": [19],
-      "eki": [true]
+      "eki": [true],
+
+      "qualification": {
+        "profit": { "min_gap": 0 },
+        "satisfy": { "min_m3_score": 8.5 },
+        "safety": { "min_health_score": 30 }
+      }
     }
   ]
- },
-  "系統參數": {
-    "version": "M3_V2_TEMPLATE",
-    "enable_debug_log": false
-  }
 }
