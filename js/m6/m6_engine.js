@@ -1,6 +1,6 @@
 // ==========================================
-// M6 Engine v1
-// 振宇專用｜Positions + Market Runtime 聚合引擎
+// M6 Engine v2
+// 振宇專用｜Positions + Market Runtime + M7 Today 聚合引擎
 // 路徑：/js/m6/m6_engine.js
 // ==========================================
 
@@ -40,36 +40,79 @@ export async function loadJson(url) {
   return await res.json();
 }
 
-export async function loadM6Data(options = {}) {
-  const positionsUrl = options.positionsUrl || "data/positions.json";
-  const marketUrl = options.marketUrl || "data/market_runtime.json";
-  const metaUrl = options.metaUrl || "data/stock_meta.json";
+function normalizeM7TodayMap(m7TodayRaw = []) {
+  const arr = Array.isArray(m7TodayRaw) ? m7TodayRaw : [];
+  const map = {};
 
-  const [positions, marketRuntime, stockMeta] = await Promise.all([
+  for (const item of arr) {
+    const symbol = String(item["股號"] || item.symbol || "").toUpperCase().trim();
+    if (!symbol) continue;
+
+    map[symbol] = {
+      symbol,
+      name: item["股名"] || item.name || symbol,
+      sector: item["產業"] || item.sector || "",
+      subsector: item["子產業"] || item.subsector || "",
+      category: item["分類"] || item.category || "",
+      risk_level: item["風險等級"] || item.risk_level || "",
+      today_score: toNumber(item["today_score"], null),
+      rank_today: toNumber(item["排名"], null),
+
+      trend_state: item["趨勢判讀"]?.["趨勢狀態"] || "",
+      structure_state: item["趨勢判讀"]?.["結構狀態"] || "",
+      timing_state: item["趨勢判讀"]?.["時機狀態"] || "",
+
+      valuation_score: toNumber(item["valuation_score"], null),
+      trend_score: toNumber(item["trend_score"], null),
+      structure_score: toNumber(item["structure_score"], null),
+      timing_score: toNumber(item["timing_score"], null),
+      money_score: toNumber(item["money_score"], null),
+      quality_score: toNumber(item["quality_score"], null),
+
+      ui_bucket: item["ui_bucket"] || "",
+      action_today: item["建議動作"] || "",
+      exposure: item["持倉曝險"] || {},
+      exposure_alert: item["曝險警示"] || {},
+      why_yes: Array.isArray(item["why_yes"]) ? item["why_yes"] : [],
+      why_no: Array.isArray(item["why_no"]) ? item["why_no"] : [],
+      valuation_note: item["估值說明"] || "",
+      final_note: item["最終說明"] || "",
+    };
+  }
+
+  return map;
+}
+
+export async function loadM6Data(options = {}) {
+  const positionsUrl = options.positionsUrl || "./data/positions.json";
+  const marketUrl = options.marketUrl || "./data/market_runtime.json";
+  const m7TodayUrl = options.m7TodayUrl || "./data/m7/m7_new_stock_today.json";
+
+  const [positions, marketRuntime, m7TodayRaw] = await Promise.all([
     loadJson(positionsUrl),
     loadJson(marketUrl),
-    loadJson(metaUrl).catch(() => ({}))
+    loadJson(m7TodayUrl).catch(() => []),
   ]);
 
   return {
     positions: Array.isArray(positions) ? positions : [],
     marketRuntime: marketRuntime && typeof marketRuntime === "object" ? marketRuntime : {},
-    stockMeta: stockMeta && typeof stockMeta === "object" ? stockMeta : {}
+    m7TodayMap: normalizeM7TodayMap(m7TodayRaw),
   };
 }
 
 // ==========================================
-// Runtime 對接
+// Runtime + M7 Today 對接
 // 先用：
 // 1M -> 代 MA50
 // 6M -> 代 MA200
 // 12M -> 年線
 // ==========================================
 
-export function applyMarketRuntime(positionLike, marketRuntime = {}, stockMeta = {}) {
+export function applyDataSources(positionLike, marketRuntime = {}, m7TodayMap = {}) {
   const symbol = String(positionLike.symbol || "").toUpperCase();
   const rt = marketRuntime[symbol] || {};
-  const meta = stockMeta[symbol] || {};
+  const m7 = m7TodayMap[symbol] || {};
 
   const current = toNumber(
     rt.price_now,
@@ -84,17 +127,40 @@ export function applyMarketRuntime(positionLike, marketRuntime = {}, stockMeta =
   return {
     ...positionLike,
     symbol,
-    name: meta.name || positionLike.name || symbol,
-    category: meta.category || positionLike.category || "",
-    risk_level: meta.risk_level || positionLike.risk_level || "",
-    switch_to: Array.isArray(meta.switch_to) ? meta.switch_to : (positionLike.switch_to || []),
 
+    // M7 Today
+    name: m7.name || positionLike.name || symbol,
+    sector: m7.sector || positionLike.sector || "",
+    subsector: m7.subsector || positionLike.subsector || "",
+    category: m7.category || positionLike.category || "",
+    risk_level: m7.risk_level || positionLike.risk_level || "",
+
+    today_score: m7.today_score,
+    rank_today: m7.rank_today,
+    trend_state: m7.trend_state || "",
+    structure_state: m7.structure_state || "",
+    timing_state: m7.timing_state || "",
+    valuation_score: m7.valuation_score,
+    trend_score: m7.trend_score,
+    structure_score: m7.structure_score,
+    timing_score: m7.timing_score,
+    money_score: m7.money_score,
+    quality_score: m7.quality_score,
+    ui_bucket: m7.ui_bucket || "",
+    action_today: m7.action_today || "",
+    exposure: m7.exposure || {},
+    exposure_alert: m7.exposure_alert || {},
+    why_yes: Array.isArray(m7.why_yes) ? clone(m7.why_yes) : [],
+    why_no: Array.isArray(m7.why_no) ? clone(m7.why_no) : [],
+    valuation_note: m7.valuation_note || "",
+    final_note: m7.final_note || "",
+
+    // Market runtime
     current,
     line_1w: line1W,
     line_1m: line1M,
     line_6m: line6M,
     line_12m: line12M,
-
     volume: toNumber(rt.volume, 0),
     volume_ratio: toNumber(rt.volume_ratio, 0),
     delta_1d: toNumber(rt.delta_1d, 0),
@@ -104,9 +170,8 @@ export function applyMarketRuntime(positionLike, marketRuntime = {}, stockMeta =
     ret_3m: toNumber(rt.ret_3m, 0),
     ret_6m: toNumber(rt.ret_6m, 0),
     ret_12m: toNumber(rt.ret_12m, 0),
-    swing_days: Array.isArray(rt.swing_days) ? rt.swing_days : [],
-
-    last_update: rt.last_update || "-"
+    swing_days: Array.isArray(rt.swing_days) ? clone(rt.swing_days) : [],
+    last_update: rt.last_update || "-",
   };
 }
 
@@ -133,13 +198,12 @@ export function calcPositionPnl(position) {
     total_cost: totalCost,
     pnl_amount: pnlAmount,
     pnl_pct: pnlPct,
-    price_gap: priceGap
+    price_gap: priceGap,
   };
 }
 
 // ==========================================
 // 強弱 / 狀態 引擎
-// 先走簡版規則
 // ==========================================
 
 export function calcStrength(item) {
@@ -151,16 +215,19 @@ export function calcStrength(item) {
   const line1M = toNumber(item.line_1m, current);
   const line6M = toNumber(item.line_6m, current);
   const line12M = toNumber(item.line_12m, current);
-  const rsi = toNumber(item.rsi, 55);
 
   if (current >= line1W) score += 1;
   if (current >= line1M) score += 2;
   if (current >= line6M) score += 2;
   if (current >= line12M) score += 1;
-  if (rsi >= 50 && rsi <= 70) score += 1;
   if (current > cost) score += 2;
 
-  if (score >= 6) return "強";
+  if (item.trend_state === "strong") score += 1;
+  if (item.timing_state === "good") score += 1;
+  if (item.risk_level === "低") score += 1;
+  if (item.risk_level === "高") score -= 1;
+
+  if (score >= 7) return "強";
   if (score >= 3) return "中";
   return "弱";
 }
@@ -170,20 +237,34 @@ export function calcStatus(item) {
   const cost = toNumber(item.cost, 0);
   const line1M = toNumber(item.line_1m, current);
   const line6M = toNumber(item.line_6m, current);
+  const pnlPct = round2(safeDivide(current - cost, cost, 0) * 100);
+
   const support1 = Array.isArray(item.support) && item.support.length
     ? toNumber(item.support[0], 0)
     : 0;
 
-  const pnlPct = round2(safeDivide(current - cost, cost, 0) * 100);
   const nearSupport = support1 > 0 ? current <= support1 * 1.03 : false;
   const below1M = current < line1M;
   const below6M = current < line6M;
+  const exposureLevel = String(item.exposure_alert?.level || "").toLowerCase();
+  const actionToday = String(item.action_today || "");
 
-  if (pnlPct <= -8 || (nearSupport && below1M) || (below1M && below6M && current < cost)) {
+  if (
+    pnlPct <= -8 ||
+    (nearSupport && below1M) ||
+    (below1M && below6M && current < cost) ||
+    exposureLevel === "high" ||
+    actionToday === "移除"
+  ) {
     return "危險";
   }
 
-  if (pnlPct < 0 || below1M) {
+  if (
+    pnlPct < 0 ||
+    below1M ||
+    actionToday === "觀察" ||
+    item.trend_state === "weak"
+  ) {
     return "觀察";
   }
 
@@ -195,7 +276,8 @@ export function calcHealthNote(item) {
   const status = calcStatus(item);
 
   if (status === "危險") {
-    return "低於 1M 代理線，且接近支撐，列優先處理";
+    if (item.exposure_alert?.text) return item.exposure_alert.text;
+    return "低於 1M 代理線或曝險偏高，列優先處理";
   }
 
   if (status === "觀察" && strength === "弱") {
@@ -213,20 +295,20 @@ export function calcHealthNote(item) {
 // 單筆部位 enrich
 // ==========================================
 
-export function enrichPosition(position, marketRuntime = {}, stockMeta = {}) {
-  const base = applyMarketRuntime(position, marketRuntime, stockMeta);
+export function enrichPosition(position, marketRuntime = {}, m7TodayMap = {}) {
+  const base = applyDataSources(position, marketRuntime, m7TodayMap);
   const pnl = calcPositionPnl(base);
 
   const merged = {
     ...base,
-    ...pnl
+    ...pnl,
   };
 
   return {
     ...merged,
     strength: calcStrength(merged),
     status_eval: calcStatus(merged),
-    health_note: calcHealthNote(merged)
+    health_note: calcHealthNote(merged),
   };
 }
 
@@ -235,8 +317,8 @@ export function enrichPosition(position, marketRuntime = {}, stockMeta = {}) {
 // 左側總覽卡使用
 // ==========================================
 
-export function aggregatePositions(positions = [], marketRuntime = {}, stockMeta = {}) {
-  const enriched = positions.map((p) => enrichPosition(p, marketRuntime, stockMeta));
+export function aggregatePositions(positions = [], marketRuntime = {}, m7TodayMap = {}) {
+  const enriched = positions.map((p) => enrichPosition(p, marketRuntime, m7TodayMap));
   const map = new Map();
 
   for (const p of enriched) {
@@ -246,9 +328,30 @@ export function aggregatePositions(positions = [], marketRuntime = {}, stockMeta
       map.set(symbol, {
         symbol,
         name: p.name || symbol,
+        sector: p.sector || "",
+        subsector: p.subsector || "",
         category: p.category || "",
         risk_level: p.risk_level || "",
-        switch_to: Array.isArray(p.switch_to) ? clone(p.switch_to) : [],
+
+        today_score: p.today_score,
+        rank_today: p.rank_today,
+        trend_state: p.trend_state,
+        structure_state: p.structure_state,
+        timing_state: p.timing_state,
+        valuation_score: p.valuation_score,
+        trend_score: p.trend_score,
+        structure_score: p.structure_score,
+        timing_score: p.timing_score,
+        money_score: p.money_score,
+        quality_score: p.quality_score,
+        ui_bucket: p.ui_bucket || "",
+        action_today: p.action_today || "",
+        exposure: clone(p.exposure || {}),
+        exposure_alert: clone(p.exposure_alert || {}),
+        why_yes: clone(p.why_yes || []),
+        why_no: clone(p.why_no || []),
+        valuation_note: p.valuation_note || "",
+        final_note: p.final_note || "",
 
         quantity: 0,
         total_cost_amount: 0,
@@ -263,6 +366,13 @@ export function aggregatePositions(positions = [], marketRuntime = {}, stockMeta
         volume: p.volume,
         volume_ratio: p.volume_ratio,
         delta_1d: p.delta_1d,
+        ret_1d: p.ret_1d,
+        ret_1w: p.ret_1w,
+        ret_1m: p.ret_1m,
+        ret_3m: p.ret_3m,
+        ret_6m: p.ret_6m,
+        ret_12m: p.ret_12m,
+        swing_days: clone(p.swing_days || []),
         last_update: p.last_update,
 
         source_types: new Set(),
@@ -270,7 +380,7 @@ export function aggregatePositions(positions = [], marketRuntime = {}, stockMeta
         banks: new Set(),
         roles: new Set(),
 
-        details: []
+        details: [],
       });
     }
 
@@ -301,9 +411,30 @@ export function aggregatePositions(positions = [], marketRuntime = {}, stockMeta
     const aggregateItem = {
       symbol: row.symbol,
       name: row.name,
+      sector: row.sector,
+      subsector: row.subsector,
       category: row.category,
       risk_level: row.risk_level,
-      switch_to: row.switch_to,
+
+      today_score: row.today_score,
+      rank_today: row.rank_today,
+      trend_state: row.trend_state,
+      structure_state: row.structure_state,
+      timing_state: row.timing_state,
+      valuation_score: row.valuation_score,
+      trend_score: row.trend_score,
+      structure_score: row.structure_score,
+      timing_score: row.timing_score,
+      money_score: row.money_score,
+      quality_score: row.quality_score,
+      ui_bucket: row.ui_bucket,
+      action_today: row.action_today,
+      exposure: row.exposure,
+      exposure_alert: row.exposure_alert,
+      why_yes: row.why_yes,
+      why_no: row.why_no,
+      valuation_note: row.valuation_note,
+      final_note: row.final_note,
 
       quantity,
       cost,
@@ -322,6 +453,13 @@ export function aggregatePositions(positions = [], marketRuntime = {}, stockMeta
       volume: row.volume,
       volume_ratio: row.volume_ratio,
       delta_1d: row.delta_1d,
+      ret_1d: row.ret_1d,
+      ret_1w: row.ret_1w,
+      ret_1m: row.ret_1m,
+      ret_3m: row.ret_3m,
+      ret_6m: row.ret_6m,
+      ret_12m: row.ret_12m,
+      swing_days: row.swing_days,
       last_update: row.last_update,
 
       source_type: Array.from(row.source_types).filter(Boolean).join(" / "),
@@ -329,14 +467,14 @@ export function aggregatePositions(positions = [], marketRuntime = {}, stockMeta
       bank: Array.from(row.banks).filter(Boolean).join(" / "),
       role: Array.from(row.roles).filter(Boolean).join(" / "),
 
-      details: row.details
+      details: row.details,
     };
 
     result.push({
       ...aggregateItem,
       strength: calcStrength(aggregateItem),
       status_eval: calcStatus(aggregateItem),
-      health_note: calcHealthNote(aggregateItem)
+      health_note: calcHealthNote(aggregateItem),
     });
   }
 
@@ -347,12 +485,12 @@ export function aggregatePositions(positions = [], marketRuntime = {}, stockMeta
 // 右側詳情卡：某股票所有原始部位
 // ==========================================
 
-export function buildPositionDetails(symbol, positions = [], marketRuntime = {}, stockMeta = {}) {
+export function buildPositionDetails(symbol, positions = [], marketRuntime = {}, m7TodayMap = {}) {
   const target = String(symbol || "").toUpperCase();
 
   return positions
     .filter((p) => String(p.symbol || "").toUpperCase() === target)
-    .map((p) => enrichPosition(p, marketRuntime, stockMeta))
+    .map((p) => enrichPosition(p, marketRuntime, m7TodayMap))
     .sort((a, b) => {
       const aMain = a.role === "核心部位" ? 0 : 1;
       const bMain = b.role === "核心部位" ? 0 : 1;
@@ -384,6 +522,7 @@ export function sortAggregates(items = [], mode = "risk") {
       return (
         statusWeight(a.status_eval) - statusWeight(b.status_eval) ||
         strengthWeight(a.strength) - strengthWeight(b.strength) ||
+        toNumber(a.today_score, -999) - toNumber(b.today_score, -999) ||
         a.symbol.localeCompare(b.symbol)
       );
     }
@@ -391,7 +530,7 @@ export function sortAggregates(items = [], mode = "risk") {
     if (mode === "strength") {
       return (
         strengthWeight(b.strength) - strengthWeight(a.strength) ||
-        statusWeight(a.status_eval) - statusWeight(b.status_eval) ||
+        toNumber(b.today_score, -999) - toNumber(a.today_score, -999) ||
         a.symbol.localeCompare(b.symbol)
       );
     }
@@ -402,6 +541,10 @@ export function sortAggregates(items = [], mode = "risk") {
 
     if (mode === "return") {
       return toNumber(a.pnl_pct, 0) - toNumber(b.pnl_pct, 0);
+    }
+
+    if (mode === "score") {
+      return toNumber(b.today_score, -999) - toNumber(a.today_score, -999);
     }
 
     return a.symbol.localeCompare(b.symbol);
@@ -431,13 +574,12 @@ export function buildSummary(aggregateItems = []) {
     total_pnl: totalPnl,
     healthy,
     watch,
-    danger
+    danger,
   };
 }
 
 // ==========================================
-// 策略模擬（先做基礎版）
-// 之後可給 M6 / M7 共用
+// 策略模擬（基礎版）
 // ==========================================
 
 export function simulateSell(positionOrAggregate, sellPrice, sellQty) {
@@ -455,7 +597,7 @@ export function simulateSell(positionOrAggregate, sellPrice, sellQty) {
     sell_qty: qty,
     cash_back: cashBack,
     realized_pnl: realizedPnl,
-    remaining_qty: remainingQty
+    remaining_qty: remainingQty,
   };
 }
 
@@ -467,22 +609,21 @@ export function simulateSellByRatio(positionOrAggregate, sellPrice, ratio) {
 
 // ==========================================
 // M6 主流程
-// 給 UI 一次吃
 // ==========================================
 
 export function buildM6ViewModel(raw = {}) {
   const positions = Array.isArray(raw.positions) ? raw.positions : [];
   const marketRuntime = raw.marketRuntime || {};
-  const stockMeta = raw.stockMeta || {};
+  const m7TodayMap = raw.m7TodayMap || {};
 
-  const aggregateItems = aggregatePositions(positions, marketRuntime, stockMeta);
+  const aggregateItems = aggregatePositions(positions, marketRuntime, m7TodayMap);
   const summary = buildSummary(aggregateItems);
 
   return {
     positions,
     marketRuntime,
-    stockMeta,
+    m7TodayMap,
     aggregates: aggregateItems,
-    summary
+    summary,
   };
 }
