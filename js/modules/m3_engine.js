@@ -277,9 +277,9 @@ async function runSimulation(cleanPool, config) {
                     });
 
                     fairRate = toNumber(m8?.fair_yield, null);
-                    fairGap = Number.isFinite(fairRate)
-                      ? round(toNumber(rate, 0) - fairRate, 2)
-                      : null;
+                   fairGap = Number.isFinite(fairRate)
+                    ? round(fairRate - toNumber(rate, 0), 2)
+                    : null;
                     fairFlag = safeText(m8?.pricing_view, getFairFlag(fairGap));
                     fairReason = safeText(m8?.note, "");
                   } catch (err) {
