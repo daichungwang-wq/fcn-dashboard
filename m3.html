@@ -868,49 +868,50 @@ M3 定位：
       `;
     }
 
-    function buildScenarioLayerBlock(cache) {
-      const scenarios = cache.dashboard?.simulation_meta?.scenarios || [];
-      const summaryRows = cache.scenarioSummary || [];
+              function buildScenarioLayerBlock(cache) {
+  const scenarios = cache.dashboard?.simulation_meta?.scenarios || [];
+  const summaryRows = cache.scenarioSummary || [];
 
-      const merged = scenarios.map(sc => {
-        const matched = summaryRows.find(x => x.scenario_name === sc.scenario_name) || {};
-        return {
-          ...sc,
-          ...matched
-        };
-      });
+  return scenarios.map(sc => {
+    const sum = summaryRows.find(x => x.scenario_name === sc.scenario_name) || {};
 
-      if (!merged.length) return `<div class="empty">尚無情境資料</div>`;
+    const q = sc.qualification || {
+      profit: { min_gap: -1 },
+      satisfy: { min_m3_score: 8 },
+      safety: { min_health_score: 30 }
+    };
 
-      return merged.map(sc => {
-        const q = sc.qualification || {
-          profit: { min_gap: -1 },
-          satisfy: { min_m3_score: 8 },
-          safety: { min_health_score: 30 }
-        };
+    return `
+      <div class="scenario-card">
 
-        return `
-          <div class="scenario-card">
-            <div class="scenario-title-row">
-              <div>
-                <div class="item-title">${safeText(sc.scenario_name)}</div>
-                <div class="subtle">${safeText(sc.scenario_type)} ｜ ${safeText(sc.source)}</div>
-              </div>
-              <div>${passPill(toNumber(sc.success_rate, 0) >= 1, `達標率 ${fmt(sc.success_rate, 1)}%`)}</div>
-            </div>
+        <div class="item-title">${sc.scenario_name}</div>
+        <div class="subtle">${sc.scenario_type} ｜ ${sc.source}</div>
 
-            <div class="item-line" style="margin-top:8px;">
-              function formatScenarioTarget(sc) {
-  const rates =
-    sc?.scenario_raw?.rate ||
-    sc?.scenario_goal?.rate ||
-    [];
+        <div class="item-line">
+          <b>Target：</b>${formatScenarioTarget(sc)}
+        </div>
 
-  if (!Array.isArray(rates) || !rates.length) return "-";
+        <div class="item-line">
+          <b>Qualification：</b>
+          Gap ≥ ${q.profit.min_gap}% ｜ 
+          M3 ≥ ${q.satisfy.min_m3_score} ｜ 
+          Health ≥ ${q.safety.min_health_score}%
+        </div>
 
-  return rates
-    .map(r => `${Number(r).toFixed(0)}%`)
-    .join(" / ");
+        <div class="item-line">
+          模擬 ${sum.total || 0} ｜ 達標 ${sum.qualified || 0} ｜ 
+          達標率 <b>${(sum.success_rate || 0).toFixed(1)}%</b>
+        </div>
+
+        <div class="item-line subtle">
+          Avg M3：${(sum.avg_event_fcn || 0).toFixed(2)} ｜ 
+          Gap：${(sum.avg_gap || 0).toFixed(2)} ｜ 
+          Health：${(sum.avg_health || 0).toFixed(1)}
+        </div>
+
+      </div>
+    `;
+  }).join("");
 }
             </div>
 
