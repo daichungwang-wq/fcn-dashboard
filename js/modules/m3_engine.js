@@ -214,9 +214,9 @@ function getMarketLevel(gap) {
 // ------------------------------------------
 export function isQualified(f) {
   return (
-    toNumber(f.event_fcn, 0) >= 9 &&
+    toNumber(f.event_fcn, 0) >= 8 &&
     toNumber(f.fair_gap, -999) >= -1 &&
-    toNumber(f.health_pct, 0) >= 70
+    toNumber(f.health_pct, 0) >= 30
   );
 }
 
