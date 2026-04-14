@@ -917,7 +917,8 @@ M3 Dashboard
           <div class="item-line">Scenario comment：${safeText(sim.scenario_comment)}</div>
           <div class="item-line">結構：${sim.basket_size}檔 / KI ${sim.ki} / Strike ${sim.strike} / Tenor ${sim.tenor}M / EKI ${sim.eki ? "YES" : "NO"}</div>
           <div class="item-line">M3 Score ${fmt(sim.event_fcn)} ｜ Simulation Rate ${fmt(sim.simulation_rate, 1)}% ｜ Health ${fmt(sim.health_pct, 1)}%</div>
-          <div class="item-line">Fair Rate：${sim.fair_rate === null ? "待接 M8" : `${fmt(sim.fair_rate, 1)}%`} ｜ Gap：${sim.fair_gap === null ? "待接 M8" : `${sim.fair_gap >= 0 ? "+" : ""}${fmt(sim.fair_gap, 1)}%`}</div>
+          <div class="item-line">Fair Rate：${sim.fair_rate === null ? "待接 M8" : `${fmt(sim.fair_rate, 1)}%`} ｜ 市場溢價 Gap：${sim.fair_gap === null ? "待接 M8" : `${sim.fair_gap >= 0 ? "+" : ""}${fmt(sim.fair_gap, 1)}%`}</div>
+          <div class="item-line">市場評價：${safeText(sim.market_level)} ｜ Market Score：${safeText(sim.market_score, "-")}</div>
           <div class="item-line">達標狀態：${isQualified(sim) ? "✅ 達標" : "❌ 未達標"}</div>
 
           <button class="light" onclick="window.toggleM3SimDetail('${id}')">
