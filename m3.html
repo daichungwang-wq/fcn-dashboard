@@ -984,113 +984,83 @@ M3 定位：
       `;
     }
 
-    function buildAnalyticsBlock(cache) {
-      const list = cache.scenarioAnalytics || cache.m5_payload?.scenario_analytics || [];
-      if (!list.length) return `<div class="empty">尚無 Scenario Analytics</div>`;
+     function buildAnalyticsBlock(cache) {
+  const list = cache.scenarioAnalytics || [];
 
-      const fields = [
-        { key: "mid_term_volatility", label: "中期波動" },
-        { key: "snapshot_score", label: "Snapshot" },
-        { key: "short_swing", label: "Swing Score" },
-        { key: "event_score", label: "Event Score" },
-        { key: "pure_stock_score", label: "Pure Score" },
-        { key: "event_stock_score", label: "Event Stock Score" },
-        { key: "trend_rate", label: "Trend Rate" },
-        { key: "health_pct", label: "Health" },
-        { key: "fair_gap", label: "Gap" },
-        { key: "simulation_rate", label: "Simulation Rate" },
-        { key: "fair_rate", label: "Fair Rate" }
-      ];
+  if (!list.length) return `<div class="empty">尚無資料</div>`;
 
-      return list.map(sc => `
-        <div class="scenario-card">
-          <div class="scenario-title-row">
-            <div>
-              <div class="item-title">${safeText(sc.scenario)}</div>
-              <div class="subtle">
-                總數 ${toNumber(sc.counts?.total, 0)} ｜ 達標 ${toNumber(sc.counts?.qualified, 0)} ｜ 未達標 ${toNumber(sc.counts?.not_qualified, 0)} ｜ 達標率 ${fmt(sc.counts?.success_rate, 1)}%
-              </div>
-            </div>
-          </div>
+  return list.map(sc => {
 
-          <div class="grid-2" style="margin-top:10px;">
-            <div class="info-box">
-              <h3>Qualified</h3>
-              ${renderFactorCompareTable("因子", sc.factor_stats?.qualified, fields)}
-            </div>
-            <div class="info-box">
-              <h3>Not Qualified</h3>
-              ${renderFactorCompareTable("因子", sc.factor_stats?.not_qualified, fields)}
-            </div>
-          </div>
+    const deltas = sc.factor_stats?.delta || {};
+    const sorted = Object.entries(deltas)
+      .sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]));
 
-          <div class="info-box" style="margin-top:12px;">
-            <h3>Delta（Qualified - Not Qualified）</h3>
-            <div class="table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Factor</th>
-                    <th>Delta</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${fields.map(f => `
-                    <tr>
-                      <td>${f.label}</td>
-                      <td class="${deltaClass(sc.factor_stats?.delta?.[f.key])}">
-                        ${sc.factor_stats?.delta?.[f.key] != null ? fmt(sc.factor_stats.delta[f.key], 3) : "-"}
-                      </td>
-                    </tr>
-                  `).join("")}
-                </tbody>
-              </table>
-            </div>
-          </div>
+    const topFactors = sorted.slice(0, 3)
+      .map(x => x[0].replaceAll("_", " "))
+      .join(" / ");
 
-          <div class="grid-3" style="margin-top:12px;">
-            <div class="info-box">
-              <h3>Used Stocks</h3>
-              ${
-                (sc.stock_stats?.used || []).length
-                  ? sc.stock_stats.used.slice(0, 6).map(x => `
-                    <div class="item-line">${safeText(x.symbol)}：${toNumber(x.count, 0)} 次</div>
-                  `).join("")
-                  : `<div class="empty">尚無資料</div>`
-              }
-            </div>
+    const bestRate = sc.factor_stats?.qualified?.simulation_rate?.mean;
 
-            <div class="info-box">
-              <h3>Qualified Stocks</h3>
-              ${
-                (sc.stock_stats?.qualified || []).length
-                  ? sc.stock_stats.qualified.slice(0, 6).map(x => `
-                    <div class="item-line">${safeText(x.symbol)}：${toNumber(x.count, 0)} 次</div>
-                  `).join("")
-                  : `<div class="empty">尚無資料</div>`
-              }
-            </div>
+    return `
+      <div class="scenario-card">
 
-            <div class="info-box">
-              <h3>Worst-of</h3>
-              ${
-                (sc.stock_stats?.worst_of || []).length
-                  ? sc.stock_stats.worst_of.slice(0, 6).map(x => `
-                    <div class="item-line">${safeText(x.symbol)}：${toNumber(x.count, 0)} 次</div>
-                  `).join("")
-                  : `<div class="empty">尚無資料</div>`
-              }
-            </div>
-          </div>
+        <div class="item-title">${sc.scenario}</div>
 
-          <div class="item-card" style="margin-top:12px;">
-            <div class="item-title">M3 語言結論</div>
-            <div class="item-line"><b>Pattern：</b>${safeText(sc.m3_summary?.pattern, "-")}</div>
-            <div class="item-line"><b>Conclusion：</b>${safeText(sc.m3_summary?.conclusion, "-")}</div>
-          </div>
+        <div class="item-line">
+          達標率：<b>${sc.counts.success_rate.toFixed(1)}%</b>
         </div>
-      `).join("");
-    }
+
+        <div class="item-line">
+          最佳 Target：約 ${bestRate ? bestRate.toFixed(0) + "%" : "-"}
+        </div>
+
+        <div class="item-line">
+          關鍵因子：<b>${topFactors}</b>
+        </div>
+
+        <div class="item-line">
+          代表股票：
+          ${(sc.stock_stats?.qualified || [])
+            .slice(0, 3)
+            .map(x => x.symbol)
+            .join(" / ") || "-"}
+        </div>
+
+        <div class="item-line subtle">
+          ${sc.m3_summary?.pattern || ""} ｜ ${sc.m3_summary?.conclusion || ""}
+        </div>
+
+        <details style="margin-top:10px;">
+          <summary style="cursor:pointer;">展開統計細節</summary>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Factor</th>
+                  <th>Delta</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${
+                  Object.entries(deltas)
+                    .map(([k, v]) => `
+                      <tr>
+                        <td>${k}</td>
+                        <td>${v.toFixed(3)}</td>
+                      </tr>
+                    `).join("")
+                }
+              </tbody>
+            </table>
+          </div>
+
+        </details>
+
+      </div>
+    `;
+  }).join("");
+}
 
     function buildQualifiedLayerBlock(cache) {
       const d = cache.dashboard || {};
