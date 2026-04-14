@@ -458,6 +458,17 @@
       return String(v);
     }
 
+      function formatScenarioTarget(sc) {
+        const rates =
+         sc?.scenario_raw?.rate ||
+         sc?.scenario_goal?.rate ||
+        [];
+
+  if (!Array.isArray(rates) || !rates.length) return "-";
+
+  return rates.map(r => `${Number(r).toFixed(0)}%`).join(" / ");
+}
+    
     function normalizePctMaybe(v) {
       const n = Number(v);
       if (!Number.isFinite(n)) return 0;
