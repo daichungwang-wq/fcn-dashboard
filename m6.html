@@ -749,7 +749,7 @@ function selectStock(symbol){
 window.selectStock = selectStock;
 
 function rerender(){
-  const filtered = getFilteredStocks();
+  const filtered = sortAggregates(vm.aggregates, "risk");
   renderSummary(filtered);
   renderList(filtered);
   const stock = filtered.find(s => s.symbol === selectedSymbol) || filtered[0];
