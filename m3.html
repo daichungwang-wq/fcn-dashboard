@@ -858,8 +858,7 @@ M3 Dashboard
           <div class="item-line">M3 Preference Score：${fmt(x.event_fcn)}</div>
           <div class="item-line">Simulation Rate：${fmt(x.simulation_rate, 1)}%</div>
           <div class="item-line">M8 Fair Rate：${x.fair_rate === null ? "待接 M8" : `${fmt(x.fair_rate, 1)}%`}</div>
-          <div class="item-line">Rate Gap：${x.fair_gap === null ? "待接 M8" : `<span class="${deltaClass(x.fair_gap)}">${x.fair_gap >= 0 ? "+" : ""}${fmt(x.fair_gap, 1)}%</span>`}</div>
-          <div class="item-line">偏好程度：${safeText(x.preference_level)} ｜ 市場買單：${safeText(x.market_level)} ｜ 健康度：${fmt(x.health_pct, 1)}%</div>
+          <div class="item-line">Rate Gap：${x.fair_gap === null
           <div class="item-line">判讀：高偏好 + 結構健康${x.fair_gap === null ? "，等待 M8 市場 fair rate 接入" : "，且市場買單"}。</div>
         </div>
       `).join("");
