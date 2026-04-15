@@ -195,74 +195,64 @@ function calcEarlyExit(fcn, marketRuntime = {}, state = {}) {
   const eligible = !!checkStartDate && now >= checkStartDate;
   const beforeMaturity = maturityDate ? now < maturityDate : true;
 
+  // 🔥 核心：優先讀 fcn_pool
+  const fcnRecord = fcn.early_exit_record || {};
+
   if (!state[fcnId]) state[fcnId] = {};
-  const bucket = state[fcnId];
+  const legacy = state[fcnId];
+
+  const mergedRecord = {};
 
   const stocks = basket.map(symbol => {
-    if (!bucket[symbol]) {
-      bucket[symbol] = {
-        met: false,
-        remark_date: ""
-      };
-    }
 
-    const entryPrice = toNumber(fcn.entry_prices?.[symbol], 0);
-    const runtime = marketRuntime?.[symbol] || {};
-    const priceNow = toNumber(runtime.price_now, 0);
+    const rec = fcnRecord[symbol] || {};
+    const old = legacy[symbol] || {};
 
-    const prevMet = !!bucket[symbol].met;
-    const prevDate = bucket[symbol].remark_date || "";
+    const prevHit = rec.hit || old.met || false;
+    const prevDate = rec.first_hit_time || old.remark_date || "";
 
-    const canRemarkToday =
+    const entry = Number(fcn.entry_prices?.[symbol]);
+    const price = Number(marketRuntime?.[symbol]?.price_now);
+
+    const hitToday =
       eligible &&
-      entryPrice > 0 &&
-      priceNow > 0 &&
-      priceNow > entryPrice;
+      beforeMaturity &&
+      Number.isFinite(entry) &&
+      Number.isFinite(price) &&
+      price > entry;
 
-    const met = prevMet || canRemarkToday;
-    const remarkDate = prevDate || (canRemarkToday ? formatDate(now) : "");
+    const hit = prevHit || hitToday;
+    const date = prevDate || (hitToday ? formatDate(now) : "");
 
-    if (met) {
-      bucket[symbol].met = true;
-      bucket[symbol].remark_date = remarkDate;
-    }
+    mergedRecord[symbol] = {
+      hit,
+      first_hit_time: date
+    };
+
+    // fallback 保留
+    legacy[symbol] = {
+      met: hit,
+      remark_date: date
+    };
 
     return {
       symbol,
-      entry_price: round(entryPrice),
-      price_now: round(priceNow),
-      met,
-      remark_date: remarkDate,
-      remark_label: met ? "滿足出場條件" : "未滿足"
+      met: hit,
+      remark_date: date
     };
   });
 
-  const remarkCount = stocks.filter(s => s.met).length;
-  const totalCount = stocks.length;
-  const allMet = totalCount > 0 && remarkCount === totalCount;
-  const ready = eligible && beforeMaturity && allMet;
-
-  const remarkDates = stocks
-    .map(s => s.remark_date)
-    .filter(Boolean)
-    .sort();
-
-  const lastRemarkDate = remarkDates.length ? remarkDates[remarkDates.length - 1] : "";
-  const interestInfo = ready
-    ? calcEarlyExitInterest(fcn, lastRemarkDate)
-    : calcEarlyExitInterest(fcn, formatDate(now));
+  const total = basket.length;
+  const hitCount = stocks.filter(s => s.met).length;
+  const ready = eligible && beforeMaturity && hitCount === total;
 
   return {
+    early_exit_record: mergedRecord,
     early_exit_eligible: eligible,
-    early_exit_before_maturity: beforeMaturity,
     early_exit_ready: ready,
-    early_exit_check_start_date: formatDate(checkStartDate),
-    early_exit_maturity_date: formatDate(maturityDate),
-    early_exit_remark_count: remarkCount,
-    early_exit_total_count: totalCount,
-    early_exit_last_remark_date: lastRemarkDate,
-    early_exit_stocks: stocks,
-    ...interestInfo
+    early_exit_remark_count: hitCount,
+    early_exit_total_count: total,
+    early_exit_check_start_date: formatDate(checkStartDate)
   };
 }
 
