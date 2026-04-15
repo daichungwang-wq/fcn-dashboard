@@ -1530,15 +1530,48 @@
     }
 
     function buildZoneBlock(data) {
-      return `
-        <div class="zone-grid">
-          ${renderZoneColumn("⏩ 提早出場", "zone-exit", data.early_exit || [], "early_exit", false)}
-          ${renderZoneColumn("🚨 積極處理｜破下限價", "zone-danger", data.danger || [], "danger", false)}
-          ${renderZoneColumn("⚠️ 持續追蹤", "zone-watch", data.watch || [], "watch", false)}
-          ${renderZoneColumn("✅ 健康", "zone-healthy", data.healthy || [], "healthy", true)}
+  return `
+    <div class="zone-grid">
+      <div class="zone-card zone-maturity">
+        <div class="zone-title">📌 到期專區</div>
+        <div class="zone-meta">
+          ${(data.maturity_zone || []).length} 檔 ｜ USD ${fmt((data.maturity_zone || []).reduce((s, x) => s + toNumber(x.amt), 0), 0)}
         </div>
-      `;
-    }
+
+        <div class="zone-card zone-exit-blue" style="min-height:auto; margin-bottom:10px;">
+          <div class="zone-title" style="font-size:16px;">⏩ 提早出場</div>
+          <div class="zone-meta">${(data.maturity_exit || []).length} 檔</div>
+          ${(data.maturity_exit || []).length
+            ? (data.maturity_exit || []).map((f, idx) => renderFCNCard(f, "maturity_exit", idx)).join("")
+            : `<div class="muted">目前沒有資料</div>`
+          }
+        </div>
+
+        <div class="zone-card zone-exit-green" style="min-height:auto; margin-bottom:10px;">
+          <div class="zone-title" style="font-size:16px;">✅ 滿期安全</div>
+          <div class="zone-meta">${(data.maturity_safe || []).length} 檔</div>
+          ${(data.maturity_safe || []).length
+            ? (data.maturity_safe || []).map((f, idx) => renderFCNCard(f, "maturity_safe", idx)).join("")
+            : `<div class="muted">目前沒有資料</div>`
+          }
+        </div>
+
+        <div class="zone-card zone-exit-red" style="min-height:auto;">
+          <div class="zone-title" style="font-size:16px;">🚨 接股可能</div>
+          <div class="zone-meta">${(data.maturity_risk || []).length} 檔</div>
+          ${(data.maturity_risk || []).length
+            ? (data.maturity_risk || []).map((f, idx) => renderFCNCard(f, "maturity_risk", idx)).join("")
+            : `<div class="muted">目前沒有資料</div>`
+          }
+        </div>
+      </div>
+
+      ${renderZoneColumn("🚨 積極處理｜破下限價", "zone-danger", data.danger || [], "danger", false)}
+      ${renderZoneColumn("⚠️ 持續追蹤", "zone-watch", data.watch || [], "watch", false)}
+      ${renderZoneColumn("✅ 健康", "zone-healthy", data.healthy || [], "healthy", true)}
+    </div>
+  `;
+}
 
     function renderStockFCNDetailCard(d, subId, subOpen) {
       const worst = d.fcn?.worst_of || d.stock?.symbol || "UNKNOWN";
