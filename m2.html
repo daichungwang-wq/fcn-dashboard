@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
@@ -755,6 +756,33 @@
             <div class="field">
               <label for="fcn_exit_time">exit_time</label>
               <input id="fcn_exit_time" type="datetime-local" />
+            </div>
+
+            <div class="field">
+              <label for="fcn_maturity_time">maturity_time</label>
+              <input id="fcn_maturity_time" type="datetime-local" />
+            </div>
+
+            <div class="field">
+              <label for="fcn_has_ki_breach">has_ki_breach</label>
+              <select id="fcn_has_ki_breach">
+                <option value="false">false</option>
+                <option value="true">true</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="fcn_first_ki_breach_time">first_ki_breach_time</label>
+              <input id="fcn_first_ki_breach_time" type="datetime-local" />
+            </div>
+
+            <div class="field form-full">
+              <label for="fcn_early_exit_record">early_exit_record</label>
+              <textarea id="fcn_early_exit_record" placeholder='{
+  "NVDA": { "hit": true, "first_hit_time": "2026-04-15T09:00" },
+  "TSM": { "hit": false, "first_hit_time": "" }
+}'></textarea>
+              <div class="hint">請輸入 JSON。每檔股票一筆：{ "股票": { "hit": true/false, "first_hit_time": "YYYY-MM-DDTHH:mm" } }</div>
             </div>
 
             <div class="field form-full">
@@ -1878,6 +1906,10 @@
         created_time: localDateTime,
         entry_time: localDateTime,
         exit_time: "",
+        maturity_time: "",
+        has_ki_breach: false,
+        first_ki_breach_time: "",
+        early_exit_record: {},
         decision_flag: "manual",
         is_portfolio: true,
         note: "",
@@ -1904,8 +1936,12 @@
       document.getElementById("fcn_created_time").value = normalizeDateTimeLocalValue(fcn.created_time);
       document.getElementById("fcn_entry_time").value = normalizeDateTimeLocalValue(fcn.entry_time);
       document.getElementById("fcn_exit_time").value = normalizeDateTimeLocalValue(fcn.exit_time);
+      document.getElementById("fcn_maturity_time").value = normalizeDateTimeLocalValue(fcn.maturity_time);
+      document.getElementById("fcn_has_ki_breach").value = String(Boolean(fcn.has_ki_breach));
+      document.getElementById("fcn_first_ki_breach_time").value = normalizeDateTimeLocalValue(fcn.first_ki_breach_time);
       document.getElementById("fcn_basket").value = Array.isArray(fcn.basket) ? fcn.basket.join(",") : "";
       document.getElementById("fcn_entry_prices").value = objectToEntryPriceLines(fcn.entry_prices || {});
+      document.getElementById("fcn_early_exit_record").value = JSON.stringify(fcn.early_exit_record || {}, null, 2);
       document.getElementById("fcn_note").value = fcn.note || "";
 
       currentEditingFCNId = fcn.fcn_id || null;
@@ -1963,9 +1999,32 @@
         .join("\n");
     }
 
+    function parseEarlyExitRecord(text) {
+      const raw = String(text || "").trim();
+      if (!raw) return {};
+      try {
+        const parsed = JSON.parse(raw);
+        if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+          throw new Error("early_exit_record 必須是 object");
+        }
+        const clean = {};
+        Object.entries(parsed).forEach(([symbol, value]) => {
+          const key = String(symbol || "").trim().toUpperCase();
+          if (!key) return;
+          const hit = !!value?.hit;
+          const first_hit_time = value?.first_hit_time ? String(value.first_hit_time) : "";
+          clean[key] = { hit, first_hit_time };
+        });
+        return clean;
+      } catch (err) {
+        throw new Error("early_exit_record JSON 格式錯誤");
+      }
+    }
+
     function getFormData() {
       const basket = parseBasketText(document.getElementById("fcn_basket").value);
       const entry_prices = parseEntryPriceLines(document.getElementById("fcn_entry_prices").value);
+      const early_exit_record = parseEarlyExitRecord(document.getElementById("fcn_early_exit_record").value);
 
       return {
         date: document.getElementById("fcn_date").value || "",
@@ -1985,10 +2044,14 @@
         created_time: document.getElementById("fcn_created_time").value || "",
         entry_time: document.getElementById("fcn_entry_time").value || "",
         exit_time: document.getElementById("fcn_exit_time").value || "",
+        maturity_time: document.getElementById("fcn_maturity_time").value || "",
+        has_ki_breach: parseBoolean(document.getElementById("fcn_has_ki_breach").value),
+        first_ki_breach_time: document.getElementById("fcn_first_ki_breach_time").value || "",
         decision_flag: document.getElementById("fcn_decision_flag").value.trim() || "manual",
         is_portfolio: parseBoolean(document.getElementById("fcn_is_portfolio").value),
         note: document.getElementById("fcn_note").value,
-        entry_prices
+        entry_prices,
+        early_exit_record
       };
     }
 
@@ -2005,7 +2068,13 @@
     }
 
     function saveFCN() {
-      const data = getFormData();
+      let data;
+      try {
+        data = getFormData();
+      } catch (err) {
+        alert(err.message || "表單資料格式錯誤");
+        return;
+      }
       if (!validateFCN(data)) return;
 
       const existsIndex = editableFCNPool.findIndex(x => x.fcn_id === data.fcn_id);
@@ -2032,7 +2101,13 @@
     }
 
     function duplicateCurrentFCN() {
-      const data = getFormData();
+      let data;
+      try {
+        data = getFormData();
+      } catch (err) {
+        alert(err.message || "表單資料格式錯誤");
+        return;
+      }
       if (!validateFCN(data)) return;
 
       const dup = {
@@ -2068,8 +2143,12 @@
     }
 
     function updateJsonPreview() {
-      const data = getFormData();
-      document.getElementById("jsonPreview").textContent = JSON.stringify(data, null, 2);
+      try {
+        const data = getFormData();
+        document.getElementById("jsonPreview").textContent = JSON.stringify(data, null, 2);
+      } catch (err) {
+        document.getElementById("jsonPreview").textContent = `JSON 預覽失敗：${err.message || err}`;
+      }
     }
 
     function getFilteredManagerList() {
@@ -2208,8 +2287,8 @@
       "fcn_date","fcn_id","fcn_status","fcn_currency","fcn_amt","fcn_bank",
       "fcn_tenor","fcn_rate","fcn_autocall","fcn_strike","fcn_ki","fcn_eki",
       "fcn_has_position","fcn_is_portfolio","fcn_decision_flag",
-      "fcn_created_time","fcn_entry_time","fcn_exit_time",
-      "fcn_basket","fcn_entry_prices","fcn_note"
+      "fcn_created_time","fcn_entry_time","fcn_exit_time","fcn_maturity_time","fcn_has_ki_breach","fcn_first_ki_breach_time",
+      "fcn_basket","fcn_entry_prices","fcn_early_exit_record","fcn_note"
     ].forEach(id => {
       const el = document.getElementById(id);
       el.addEventListener("input", updateJsonPreview);
