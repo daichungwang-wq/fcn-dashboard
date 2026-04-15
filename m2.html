@@ -1355,27 +1355,7 @@
         holdToEndNote = "若 Worst-of 再走弱，持有到期的風險會明顯上升。";
       }
 
-      const snapshot = worst.snapshot_score ?? worst.snapshot ?? "-";
-      
-
-      let mainBadge = "";
-
-      // 🔵 提早出場
-      if (isEarlyExit) {
-        mainBadge = `<span class="pill pill-exit">⏩ 提早出場</span>`;
-      }
-      // 🟢 滿期安全
-       else if (isMaturitySafe) {
-        mainBadge = `<span class="pill pill-healthy">✅ 滿期安全</span>`;
-     }
-      // 🔴 接股可能
-      else if (isMaturityRisk) {
-       mainBadge = `<span class="pill pill-danger">🚨 接股可能</span>`;
-      }
-      // ⚪ 一般
-       else {
-         mainBadge = `<span class="${healthPillClass(fcn.fcn_health)}">${healthLabel(fcn.fcn_health)}</span>`;
-      }
+     
       return `
         <div class="fcn-card ${cardClass}">
           <div class="fcn-head">
