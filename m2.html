@@ -97,17 +97,18 @@
       margin-top: 8px;
     }
 
-     .ki-breach-warning {
-  margin: 8px 0;
-  padding: 8px 10px;
-  border-radius: 8px;
-  background: #ffe5e5;
-  color: #c62828;
-  font-weight: 600;
-  font-size: 13px;
-  border: 1px solid #f5c2c2;
-}
-    
+
+    .ki-breach-warning {
+      margin: 8px 0;
+      padding: 8px 10px;
+      border-radius: 8px;
+      background: #ffe5e5;
+      color: #c62828;
+      font-weight: 600;
+      font-size: 13px;
+      border: 1px solid #f5c2c2;
+    }
+
     .muted { color: #666; }
 
     .mini-summary {
@@ -1433,11 +1434,11 @@
 
           ${buildFCNMeta(fcn)}
 
-           ${(!fcn.eki && fcn.has_ki_breach) ? `
-           <div class="ki-breach-warning">
-            🔴 跌破 KI（已記憶）｜首次：${fcn.first_ki_breach_time || "-"}
+          ${(!fcn.eki && (fcn.has_knock_in || fcn.has_ki_breach)) ? `
+            <div class="ki-breach-warning">
+              🔴 跌破 KI（已記憶）｜首次：${fcn.first_ki_breach_time || fcn.knock_in_date || "-"}
             </div>
-           ` : ``}
+          ` : ``}
 
           ${(isEarlyExit || fcn.maturity?.in_maturity_window) ? `
             <div class="decision-box decision-exit">
