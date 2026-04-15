@@ -1422,6 +1422,12 @@
 
           ${buildFCNMeta(fcn)}
 
+           ${(!fcn.eki && fcn.has_ki_breach) ? `
+           <div class="ki-breach-warning">
+            🔴 跌破 KI（已記憶）｜首次：${fcn.first_ki_breach_time || "-"}
+            </div>
+           ` : ``}
+
           ${(isEarlyExit || fcn.maturity?.in_maturity_window) ? `
             <div class="decision-box decision-exit">
               <div><b>📌 到期專區：</b>${isEarlyExit ? "提早出場" : (fcn.maturity?.maturity_label || "到期前追蹤")}</div>
