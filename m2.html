@@ -1451,11 +1451,21 @@
            </div>
           ` : ``}
 
-         ${(fcn.eki && (fcn.stocks || []).some(s => Number(s.price_now) < Number(s.ki_price))) ? `
-            <div class="ki-live-warning">
-           🟠 目前低於 KI（即時）
-            </div>
-          ` : ``}
+        ${(fcn.eki && (fcn.stocks || []).some(s => Number(s.price_now) < Number(s.ki_price))) ? `
+          <div class="ki-live-warning">
+          🟠 目前低於 KI（即時）
+            ｜Worst-of：${
+             (fcn.stocks || [])
+              .filter(s => Number(s.price_now) < Number(s.ki_price))
+             .sort((a,b) => a.dist_to_ki_pct - b.dist_to_ki_pct)[0]?.symbol || "-"
+           }
+         ｜距 KI：${
+           ((fcn.stocks || [])
+          .filter(s => Number(s.price_now) < Number(s.ki_price))
+          .sort((a,b) => a.dist_to_ki_pct - b.dist_to_ki_pct)[0]?.dist_to_ki_pct ?? 0).toFixed(2)
+          }%
+        </div>
+       ` : ``}
 
           ${(isEarlyExit || fcn.maturity?.in_maturity_window) ? `
             <div class="decision-box decision-exit">
