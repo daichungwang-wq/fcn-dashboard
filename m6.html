@@ -895,8 +895,9 @@
         vm.m7TodayMap
       );
 
-      const marketComment = window.marketComments?.[stock.symbol] || null;
-
+      const marketComment =
+  window.marketComments?.[stock.symbol] ||
+  buildAutoComment(stock);
       panel.innerHTML = `
         <div class="detail-head">
           <div>
