@@ -612,19 +612,26 @@
     }
 
     function renderDetail(stock){
-      const panel = document.getElementById("detailPanel");
+  const panel = document.getElementById("detailPanel");
 
-      if (!stock) {
-        panel.innerHTML = `<div class="empty">沒有可顯示的股票。</div>`;
-        return;
-      }
+  if (!stock) {
+    panel.innerHTML = `<div class="empty">沒有可顯示的股票。</div>`;
+    return;
+  }
 
-      const details = buildPositionDetails(
-        stock.symbol,
-        vm.positions,
-        vm.marketRuntime,
-        vm.m7TodayMap
-      );
+  const details = buildPositionDetails(
+    stock.symbol,
+    vm.positions,
+    vm.marketRuntime,
+    vm.m7TodayMap
+  );
+
+  const marketComment = window.marketComments?.[stock.symbol] || null;
+
+  panel.innerHTML = `
+    ...
+  `;
+}
 
       panel.innerHTML = `
         <div class="detail-head">
