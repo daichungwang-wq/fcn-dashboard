@@ -421,42 +421,48 @@ function sortStocks(stocks) {
 // AKI / DACN：KI 記憶
 // EKI：不記憶
 // ------------------------------
-function updateKnockInState(fcn, stocks, knockInState) {
+  function updateKnockInState(fcn, stocks, knockInState) {
   const fcnId = getFCNId(fcn);
-  if (!fcnId) return { has_knock_in: false, knock_in_date: "" };
 
-  const isEKI = !!fcn.eki;
-
-  if (isEKI) {
+  if (fcn.eki) {
     return {
       has_knock_in: false,
-      knock_in_date: ""
+      knock_in_date: "",
+      has_ki_breach: false,
+      first_ki_breach_time: ""
     };
   }
 
   if (!knockInState[fcnId]) {
-    knockInState[fcnId] = {
-      has_knock_in: false,
-      knock_in_date: ""
-    };
+    knockInState[fcnId] = {};
   }
 
   const bucket = knockInState[fcnId];
+
   const today = formatDate(new Date());
 
-  const knockedToday = (stocks || []).some(s => toNumber(s.price_now) < toNumber(s.ki_price));
+  // 🔥 核心：優先讀 fcn_pool
+  const prevHas = fcn.has_ki_breach || bucket.has_knock_in || false;
+  const prevDate = fcn.first_ki_breach_time || bucket.knock_in_date || "";
 
-  if (knockedToday) {
-    bucket.has_knock_in = true;
-    bucket.knock_in_date = bucket.knock_in_date || today;
-  }
+  const breachToday = stocks.some(
+    s => Number(s.price_now) < Number(s.ki_price)
+  );
+
+  const has = prevHas || breachToday;
+  const date = prevDate || (breachToday ? today : "");
+
+  // fallback
+  bucket.has_knock_in = has;
+  bucket.knock_in_date = date;
 
   return {
-    has_knock_in: !!bucket.has_knock_in,
-    knock_in_date: bucket.knock_in_date || ""
+    has_knock_in: has,
+    knock_in_date: date,
+    has_ki_breach: has,
+    first_ki_breach_time: date
   };
 }
-
 // ------------------------------
 // 到期專區
 // 提早出場 / 滿期安全 / 接股可能
