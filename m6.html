@@ -346,48 +346,53 @@
 </head>
 <body>
   <div class="wrap">
-    <div class="hero">
-      <h1>M6 Stocks Dashboard</h1>
-      <div class="sub">振宇持股管理沙盒｜專業版 UI（高對比、清晰決策）｜M6 真資料版</div>
-      <div class="toolbar">
-        <input id="searchInput" class="input" placeholder="搜尋股票代號或名稱，例如 ORCL / COIN" />
-        <select id="sourceFilter" class="select">
-          <option value="all">全部來源</option>
-          <option value="FCN接股">FCN接股</option>
-          <option value="主動買進">主動買進</option>
-        </select>
-        <select id="statusFilter" class="select">
-          <option value="all">全部狀態</option>
-          <option value="健康">健康</option>
-          <option value="觀察">觀察</option>
-          <option value="危險">危險</option>
-        </select>
-        <select id="sortMode" class="select">
-          <option value="risk">依風險排序</option>
-          <option value="strength">依強弱排序</option>
-          <option value="pnl">依損益金額排序</option>
-          <option value="return">依損益率排序</option>
-          <option value="score">依 today score 排序</option>
-          <option value="symbol">依代號排序</option>
-        </select>
+   <div class="top-sticky">
+  <div class="hero">
+    <h1>M6 Stocks Dashboard</h1>
+    <div class="sub">振宇持股管理沙盒｜專業版 UI（高對比、清晰決策）｜M6 真資料版</div>
+    <div class="toolbar">
+      <input id="searchInput" class="input" placeholder="搜尋股票代號或名稱，例如 ORCL / COIN" />
+      <select id="sourceFilter" class="select">
+        <option value="all">全部來源</option>
+        <option value="FCN接股">FCN接股</option>
+        <option value="主動買進">主動買進</option>
+      </select>
+      <select id="statusFilter" class="select">
+        <option value="all">全部狀態</option>
+        <option value="健康">健康</option>
+        <option value="觀察">觀察</option>
+        <option value="危險">危險</option>
+      </select>
+      <select id="sortMode" class="select">
+        <option value="risk">依風險排序</option>
+        <option value="strength">依強弱排序</option>
+        <option value="pnl">依損益金額排序</option>
+        <option value="return">依損益率排序</option>
+        <option value="score">依 today score 排序</option>
+        <option value="symbol">依代號排序</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="grid summary-grid-sticky" id="summaryGrid"></div>
+
+  <div class="card full reading-bar">
+    <div class="row" style="flex-wrap:wrap; gap:10px;">
+      <div class="small">
+        <b style="color:var(--text)">閱讀原則：</b>
+        白卡看數字、色塊看風險、徽章看強弱；目前已接真價格，1M 代 MA50、6M 代 MA200、12M 作年線。
+      </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <span class="badge green">健康</span>
+        <span class="badge yellow">觀察</span>
+        <span class="badge red">危險</span>
+        <span class="strength-badge strength-strong">強</span>
+        <span class="strength-badge strength-neutral">中</span>
+        <span class="strength-badge strength-weak">弱</span>
       </div>
     </div>
-
-    <div class="grid" id="summaryGrid"></div>
-
-    <div class="card full" style="padding:12px 16px; margin-top:12px;">
-      <div class="row" style="flex-wrap:wrap; gap:10px;">
-        <div class="small"><b style="color:var(--text)">閱讀原則：</b>白卡看數字、色塊看風險、徽章看強弱；目前已接真價格，1M 代 MA50、6M 代 MA200、12M 作年線。</div>
-        <div style="display:flex; gap:8px; flex-wrap:wrap;">
-          <span class="badge green">健康</span>
-          <span class="badge yellow">觀察</span>
-          <span class="badge red">危險</span>
-          <span class="strength-badge strength-strong">強</span>
-          <span class="strength-badge strength-neutral">中</span>
-          <span class="strength-badge strength-weak">弱</span>
-        </div>
-      </div>
-    </div>
+  </div>
+</div>
 
     <div class="grid" style="margin-top:16px;">
       <div class="card list-panel">
