@@ -39,7 +39,18 @@
       margin-bottom: 16px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.03);
     }
-
+      
+      .ki-live-warning {
+       margin: 6px 0;
+       padding: 8px 10px;
+       border-radius: 8px;
+       background: #fff4e5;
+       color: #b26a00;
+       font-weight: 600;
+       font-size: 13px;
+       border: 1px solid #ffd8a8;
+    }
+    
     .toolbar {
       display: flex;
       flex-wrap: wrap;
@@ -1434,9 +1445,15 @@
 
           ${buildFCNMeta(fcn)}
 
-          ${(!fcn.eki && (fcn.has_knock_in || fcn.has_ki_breach)) ? `
-            <div class="ki-breach-warning">
-              🔴 跌破 KI（已記憶）｜首次：${fcn.first_ki_breach_time || fcn.knock_in_date || "-"}
+         ${(!fcn.eki && (fcn.has_knock_in || fcn.has_ki_breach)) ? `
+           <div class="ki-breach-warning">
+           🔴 跌破 KI（已記憶）｜首次：${fcn.first_ki_breach_time || "-"}
+           </div>
+          ` : ``}
+
+         ${(fcn.eki && (fcn.stocks || []).some(s => Number(s.price_now) < Number(s.ki_price))) ? `
+            <div class="ki-live-warning">
+           🟠 目前低於 KI（即時）
             </div>
           ` : ``}
 
