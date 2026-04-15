@@ -1357,7 +1357,27 @@
 
       const snapshot = worst.snapshot_score ?? worst.snapshot ?? "-";
       const isEarlyExit = !!fcn.early_exit_ready;
+      const isMaturitySafe = !!fcn.maturity?.maturity_safe;
+      const isMaturityRisk = !!fcn.maturity?.maturity_risk;
 
+      let mainBadge = "";
+
+      // 🔵 提早出場
+      if (isEarlyExit) {
+        mainBadge = `<span class="pill pill-exit">⏩ 提早出場</span>`;
+      }
+      // 🟢 滿期安全
+       else if (isMaturitySafe) {
+        mainBadge = `<span class="pill pill-healthy">✅ 滿期安全</span>`;
+     }
+      // 🔴 接股可能
+      else if (isMaturityRisk) {
+       mainBadge = `<span class="pill pill-danger">🚨 接股可能</span>`;
+      }
+      // ⚪ 一般
+       else {
+         mainBadge = `<span class="${healthPillClass(fcn.fcn_health)}">${healthLabel(fcn.fcn_health)}</span>`;
+      }
       return `
         <div class="fcn-card ${cardClass}">
           <div class="fcn-head">
@@ -1368,7 +1388,7 @@
               <div class="fcn-line">金額：USD ${fmt(fcn.amt, 0)}</div>
             </div>
             <div style="display:flex; flex-direction:column; gap:6px; align-items:flex-end;">
-              ${isEarlyExit ? `<span class="pill pill-exit">快了｜可提早出場</span>` : `<span class="${healthPillClass(fcn.fcn_health)}">${healthLabel(fcn.fcn_health)}</span>`}
+            ${mainBadge}
               ${!isEarlyExit && fcn.early_exit_eligible ? `<span class="pill pill-exit">${fcn.early_exit_remark_count}/${fcn.early_exit_total_count}</span>` : ``}
             </div>
           </div>
