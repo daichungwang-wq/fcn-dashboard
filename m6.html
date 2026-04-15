@@ -22,6 +22,120 @@
       --border:#dbe7f0;
       --shadow:0 10px 28px rgba(15, 23, 42, .08);
     }
+
+    .trade-panel{
+  background:linear-gradient(180deg,#ffffff 0%, #f8fbff 100%);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:16px;
+  box-shadow:0 10px 28px rgba(15, 23, 42, .06);
+}
+
+.trade-panel-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:12px;
+  margin-bottom:14px;
+}
+
+.trade-kicker{
+  font-size:12px;
+  font-weight:800;
+  color:#64748b;
+  letter-spacing:.4px;
+  margin-bottom:4px;
+}
+
+.trade-title{
+  font-size:22px;
+  font-weight:900;
+  color:#0f172a;
+  line-height:1.2;
+}
+
+.trade-updated{
+  font-size:12px;
+  color:#64748b;
+  margin-top:6px;
+}
+
+.trade-head-badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:8px 12px;
+  border-radius:999px;
+  background:linear-gradient(135deg,#173b8f 0%, #0b1220 100%);
+  color:#fff;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.6px;
+}
+
+.trade-summary-card{
+  background:linear-gradient(180deg,#eef6ff 0%, #ffffff 100%);
+  border:1px solid #d7e7fb;
+  border-radius:16px;
+  padding:14px;
+  margin-bottom:12px;
+}
+
+.trade-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+}
+
+.trade-card{
+  background:#ffffff;
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:14px;
+}
+
+.trade-defense{
+  background:linear-gradient(180deg,#fff7ed 0%, #ffffff 100%);
+  border-color:#fed7aa;
+}
+
+.trade-action{
+  background:linear-gradient(180deg,#eff6ff 0%, #ffffff 100%);
+  border-color:#bfdbfe;
+}
+
+.trade-reminder{
+  background:linear-gradient(180deg,#f0fdf4 0%, #ffffff 100%);
+  border:1px solid #bbf7d0;
+  border-radius:16px;
+  padding:14px;
+}
+
+.trade-block-title{
+  font-size:13px;
+  font-weight:900;
+  color:#334155;
+  margin-bottom:8px;
+  letter-spacing:.2px;
+}
+
+@media (max-width: 980px){
+  .trade-grid{
+    grid-template-columns:1fr;
+  }
+
+  .trade-title{
+    font-size:20px;
+  }
+
+  .trade-panel-head{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+  html{
+  scroll-padding-top: 220px;
+}
+}
 .top-sticky{
   position:sticky;
   top:0;
@@ -676,10 +790,10 @@
       `;
     }
 
-     function renderMarketCommentBlock(marketComment){
+   function renderMarketCommentBlock(marketComment){
   if (!marketComment) return "";
 
-  const title = marketComment.title || "Market Comment";
+  const title = marketComment.title || "市場評論 / 技術提醒";
   const updated = marketComment.last_update || marketComment.updated_at || marketComment.date || "";
   const summary = marketComment.summary || marketComment.comment || marketComment.text || "";
   const bullets = Array.isArray(marketComment.bullets) ? marketComment.bullets : [];
@@ -689,38 +803,46 @@
   const tags = Array.isArray(marketComment.tags) ? marketComment.tags : [];
 
   return `
-    <div class="mini" style="margin-bottom:14px;">
-      <div class="section-title">市場評論 / 技術提醒</div>
-      <div class="small" style="margin-bottom:8px;">${safeText(title)}</div>
-      ${updated ? `<div class="small" style="margin-bottom:8px;">更新：${safeText(updated)}</div>` : ""}
+    <div class="trade-panel" style="margin-bottom:14px;">
+      <div class="trade-panel-head">
+        <div>
+          <div class="trade-kicker">市場評論 / 技術提醒</div>
+          <div class="trade-title">${safeText(title)}</div>
+          ${updated ? `<div class="trade-updated">更新：${safeText(updated)}</div>` : ""}
+        </div>
+        <div class="trade-head-badge">TRADING PANEL</div>
+      </div>
 
       ${summary ? `
-        <div class="comment-box" style="margin-bottom:10px;">
-          ${safeText(summary)}
+        <div class="trade-summary-card">
+          <div class="trade-block-title">核心判讀</div>
+          <div class="comment-box">${safeText(summary)}</div>
         </div>
       ` : ""}
 
-      ${bullets.length ? `
-        <div style="margin-top:10px;">
-          <div class="label">近期盤勢特徵與結構位置</div>
-          <div class="comment-box">
-            ${bullets.map(x => `• ${safeText(x)}`).join("<br>")}
+      <div class="trade-grid">
+        ${bullets.length ? `
+          <div class="trade-card">
+            <div class="trade-block-title">技術結構</div>
+            <div class="comment-box">
+              ${bullets.map(x => `• ${safeText(x)}`).join("<br>")}
+            </div>
           </div>
-        </div>
-      ` : ""}
+        ` : ""}
 
-      ${defense.length ? `
-        <div style="margin-top:12px;">
-          <div class="label">防守區 / 停損提醒</div>
-          <div class="comment-box">
-            ${defense.map(x => `• ${safeText(x)}`).join("<br>")}
+        ${defense.length ? `
+          <div class="trade-card trade-defense">
+            <div class="trade-block-title">防守策略</div>
+            <div class="comment-box">
+              ${defense.map(x => `• ${safeText(x)}`).join("<br>")}
+            </div>
           </div>
-        </div>
-      ` : ""}
+        ` : ""}
+      </div>
 
       ${trim.length ? `
-        <div style="margin-top:12px;">
-          <div class="label">減碼 / 壓力區提醒</div>
+        <div class="trade-card trade-action" style="margin-top:12px;">
+          <div class="trade-block-title">操作策略 / 減碼區</div>
           <div class="comment-box">
             ${trim.map(x => `• ${safeText(x)}`).join("<br>")}
           </div>
@@ -728,8 +850,8 @@
       ` : ""}
 
       ${reminder ? `
-        <div style="margin-top:12px;">
-          <div class="label">交易思維提醒</div>
+        <div class="trade-reminder" style="margin-top:12px;">
+          <div class="trade-block-title">FCN → 股票思維切換提醒</div>
           <div class="comment-box">${safeText(reminder)}</div>
         </div>
       ` : ""}
