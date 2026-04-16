@@ -1,6 +1,12 @@
 // ==========================================
 // M7 Stock Profile
 // ==========================================
+// 振宇 FCN 系統
+// Proprietary System - All Rights Reserved
+// Unauthorized copying or commercial use is prohibited
+// All rights reserved by Gaya.Wang
+// ==========================================
+// ==========================================
 
 export const STOCK_PROFILE = {
   NVDA: { sector: "AI_SEMI", subsector: "GPU", category: "core", valuation_model: "PEG", allow_fcn: true },
