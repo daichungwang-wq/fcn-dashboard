@@ -4,6 +4,12 @@
 // 完整版：Scenario-driven Qualification + Analytics + M5 Payload
 // ＋ M6 市場評論整合版（why / whyNot / market_comment）
 // ==========================================
+// 振宇 FCN 系統
+// Proprietary System - All Rights Reserved
+// Unauthorized copying or commercial use is prohibited
+// All rights reserved by Gaya.Wang
+// ==========================================
+// ==========================================
 
 import { runM8Case } from "../core/m8_batch_engine.js";
 import { mergeStockData, evaluateStock } from "../core/stock_engine.js";
