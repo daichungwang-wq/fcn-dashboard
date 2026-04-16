@@ -633,7 +633,7 @@
       buildM6ViewModel,
       sortAggregates,
       buildPositionDetails
-    } from "./js/m6/m6_engine.js?v=20260416c";
+    } from "./js/m6/m6_engine.js?v=20260416d";
 
     let vm = null;
     let selectedSymbol = "";
@@ -670,6 +670,12 @@
     }
 
     function fmtNum(value, digits = 2){
+      const n = Number(value);
+      if (!Number.isFinite(n)) return "-";
+      return n.toFixed(digits);
+    }
+
+    function fmtMaybeNum(value, digits = 2){
       const n = Number(value);
       if (!Number.isFinite(n)) return "-";
       return n.toFixed(digits);
@@ -1003,15 +1009,82 @@
       `;
     }
 
+    function buildSignedPct(value){
+      const n = Number(value);
+      if (!Number.isFinite(n)) return "-";
+      return `${n >= 0 ? "+" : ""}${n.toFixed(2)}%`;
+    }
+
     function renderMarketCommentBlock(item) {
-      const comment = item?.display_comment || item?.market_comment || "暫無市場評論";
-      const why = Array.isArray(item?.why) ? item.why : [];
-      const whyNot = Array.isArray(item?.whyNot) ? item.whyNot : [];
+      const comment = item?.market_comment || item?.display_comment || "暫無市場評論";
+      const why = Array.isArray(item?.why) && item.why.length
+        ? item.why
+        : (Array.isArray(item?.why_yes) ? item.why_yes : []);
+      const whyNot = Array.isArray(item?.whyNot) && item.whyNot.length
+        ? item.whyNot
+        : (Array.isArray(item?.why_no) ? item.why_no : []);
+      const d = item?.m3_detail || {};
+
+      const detailRows = [];
+      if (Number.isFinite(Number(d.event_score)) || Number.isFinite(Number(d.short_swing))) {
+        detailRows.push(`Event：${fmtMaybeNum(d.event_score)} ｜ ShortSwing：${fmtMaybeNum(d.short_swing)}`);
+      }
+      if (Number.isFinite(Number(d.mid_term_volatility))) {
+        detailRows.push(`Mid-Term Volatility：${fmtMaybeNum(d.mid_term_volatility, 4)}`);
+      }
+      if (Number.isFinite(Number(d.trend_rate))) {
+        detailRows.push(`Trend Rate：${fmtMaybeNum(d.trend_rate, 4)}`);
+      }
+      if (d.long_trend_text) {
+        detailRows.push(`Long Trend：${safeText(d.long_trend_text)}`);
+      }
+      if (d.mid_trend_text) {
+        detailRows.push(`Mid Trend：${safeText(d.mid_trend_text)}`);
+      }
+      if (d.trend_profile_text) {
+        detailRows.push(`Trend Profile：${safeText(d.trend_profile_text)}`);
+      }
+
+      const perfRows = [];
+      if ([d.ret_1d, d.ret_1w, d.ret_1m, d.ret_3m, d.ret_6m, d.ret_12m].some(v => Number.isFinite(Number(v)))) {
+        perfRows.push(`1D：${buildSignedPct(d.ret_1d)} ｜ 1W：${buildSignedPct(d.ret_1w)} ｜ 1M：${buildSignedPct(d.ret_1m)}`);
+        perfRows.push(`3M：${buildSignedPct(d.ret_3m)} ｜ 6M：${buildSignedPct(d.ret_6m)} ｜ 12M：${buildSignedPct(d.ret_12m)}`);
+      }
+
+      const topRows = [];
+      if (item?.pure_stock_score != null || d.baseline_label || item?.snapshot_score != null) {
+        const baselinePart = d.baseline_label ? `Baseline：${safeText(d.baseline_label)}${Number.isFinite(Number(d.baseline_score)) ? ` / ${fmtMaybeNum(d.baseline_score)}` : ""}` : "";
+        const purePart = item?.pure_stock_score != null ? `Pure：${fmtMaybeNum(item.pure_stock_score)}` : "";
+        const snapshotPart = item?.snapshot_score != null ? `Snapshot：${fmtMaybeNum(item.snapshot_score)}` : "";
+        topRows.push([baselinePart, purePart, snapshotPart].filter(Boolean).join(" ｜ "));
+      }
+      if (d.pure_text) topRows.push(d.pure_text);
+      if (d.snapshot_band || d.snapshot_heat) {
+        topRows.push([d.snapshot_band, d.snapshot_heat].filter(Boolean).join(" ｜ "));
+      }
 
       return `
         <div class="m6-market-comment">
           <div class="m6-market-comment-title">Market Comment</div>
           <div class="m6-market-comment-text">${safeText(comment)}</div>
+
+          ${topRows.length ? `
+            <div class="comment-box" style="margin-bottom:10px;">
+              ${topRows.map(x => `<div>${safeText(x)}</div>`).join("")}
+            </div>
+          ` : ""}
+
+          ${perfRows.length ? `
+            <div class="comment-box" style="margin-bottom:10px;">
+              ${perfRows.map(x => `<div>${safeText(x)}</div>`).join("")}
+            </div>
+          ` : ""}
+
+          ${detailRows.length ? `
+            <div class="comment-box" style="margin-bottom:10px;">
+              ${detailRows.map(x => `<div>${safeText(x)}</div>`).join("")}
+            </div>
+          ` : ""}
 
           ${
             why.length
@@ -1034,6 +1107,43 @@
             `
               : ""
           }
+        </div>
+      `;
+    }
+
+    function renderValuationDataBlock(stock){
+      const v = stock?.valuation_data || {};
+      const hasValuationData = Object.keys(v).length > 0;
+
+      const valuationHeadline = hasValuationData
+        ? `${safeText(v.ValuationClass || "-")} / PE Ratio ${fmtMaybeNum(v.PERatio)} / EPS Growth ${fmtMaybeNum(v["EPS成長率"])}%`
+        : safeText(stock?.valuation_note || "-");
+
+      return `
+        <div class="mini" style="margin-bottom:14px;">
+          <div class="section-title">估值 / 最終說明</div>
+          <div class="strategy">
+            <div><b>估值：</b>${valuationHeadline}</div>
+            ${hasValuationData ? `
+              <div style="margin-top:8px;">
+                <b>估值資料：</b>
+                ValuationClass ${safeText(v.ValuationClass || "-")}，
+                PEG ${fmtMaybeNum(v.PEG)}，
+                Forward PE ${fmtMaybeNum(v.ForwardPE)}，
+                Anchor PE ${fmtMaybeNum(v.AnchorPE, 0)}，
+                PE Ratio ${fmtMaybeNum(v.PERatio)}，
+                EPS成長 ${fmtMaybeNum(v["EPS成長率"])}%，
+                PE Score ${fmtMaybeNum(v.PEScore)}，
+                Growth Score ${fmtMaybeNum(v.GrowthScore)}，
+                GrowthScoreAdj ${fmtMaybeNum(v.GrowthScoreAdj)}，
+                QualityMomentum ${fmtMaybeNum(v.QualityMomentum)}%，
+                QualityFactor ${fmtMaybeNum(v.QualityFactor)}，
+                ValuationRaw ${fmtMaybeNum(v.ValuationRaw)}
+              </div>
+            ` : ""}
+            <div style="margin-top:8px;"><b>估值說明：</b>${safeText(stock?.valuation_note || "-")}</div>
+            <div style="margin-top:8px;"><b>最終說明：</b>${safeText(stock?.final_note || "-")}</div>
+          </div>
         </div>
       `;
     }
@@ -1087,11 +1197,11 @@
 
           <div class="mini">
             <div class="label">技術 / 今日評估</div>
+            <div class="kv"><div class="small">today score</div><div>${fmtMaybeNum(stock.today_score)}</div></div>
+            <div class="kv"><div class="small">趨勢 / 結構 / 時機</div><div>${fmtMaybeNum(stock.trend_score)} / ${fmtMaybeNum(stock.structure_score)} / ${fmtMaybeNum(stock.timing_score)}</div></div>
+            <div class="kv"><div class="small">估值 / 資金</div><div>${fmtMaybeNum(stock.valuation_score)} / ${fmtMaybeNum(stock.money_score)}</div></div>
             <div class="kv"><div class="small">1W / 1M線</div><div>${fmtNum(stock.line_1w)} / ${fmtNum(stock.line_1m)}</div></div>
             <div class="kv"><div class="small">3M線 / 年線</div><div>${fmtNum(stock.line_3m ?? stock.line_6m)} / ${fmtNum(stock.line_12m)}</div></div>
-            <div class="kv"><div class="small">量比</div><div>${fmtNum(stock.volume_ratio)}</div></div>
-            <div class="kv"><div class="small">today score</div><div>${stock.today_score ?? "-"}</div></div>
-            <div class="kv"><div class="small">趨勢 / 結構 / 時機</div><div>${safeText(stock.trend_state || "-")} / ${safeText(stock.structure_state || "-")} / ${safeText(stock.timing_state || "-")}</div></div>
             <div class="kv"><div class="small">自動判讀</div><div>${safeText(stock.health_note || "-")}</div></div>
           </div>
         </div>
@@ -1137,9 +1247,11 @@
             <div class="section-title">Why Yes</div>
             <div class="chip-row">
               ${
-                (stock.why && stock.why.length)
-                  ? stock.why.map(x => `<span class="badge green">${safeText(x)}</span>`).join("")
-                  : `<span class="small">無</span>`
+                (stock.why_yes && stock.why_yes.length)
+                  ? stock.why_yes.map(x => `<span class="badge green">${safeText(x)}</span>`).join("")
+                  : ((stock.why && stock.why.length)
+                      ? stock.why.map(x => `<span class="badge green">${safeText(x)}</span>`).join("")
+                      : `<span class="small">無</span>`)
               }
             </div>
           </div>
@@ -1148,21 +1260,17 @@
             <div class="section-title">Why No</div>
             <div class="chip-row">
               ${
-                (stock.whyNot && stock.whyNot.length)
-                  ? stock.whyNot.map(x => `<span class="badge red">${safeText(x)}</span>`).join("")
-                  : `<span class="small">無</span>`
+                (stock.why_no && stock.why_no.length)
+                  ? stock.why_no.map(x => `<span class="badge red">${safeText(x)}</span>`).join("")
+                  : ((stock.whyNot && stock.whyNot.length)
+                      ? stock.whyNot.map(x => `<span class="badge red">${safeText(x)}</span>`).join("")
+                      : `<span class="small">無</span>`)
               }
             </div>
           </div>
         </div>
 
-        <div class="mini" style="margin-bottom:14px;">
-          <div class="section-title">估值 / 最終說明</div>
-          <div class="strategy">
-            <div><b>估值說明：</b>${safeText(stock.valuation_note || "-")}</div>
-            <div style="margin-top:8px;"><b>最終說明：</b>${safeText(stock.final_note || "-")}</div>
-          </div>
-        </div>
+        ${renderValuationDataBlock(stock)}
       `;
     }
 
@@ -1221,3 +1329,4 @@
   </script>
 </body>
 </html>
+
