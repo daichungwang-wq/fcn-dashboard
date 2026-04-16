@@ -3,6 +3,12 @@
 // fundamental_data → m7_new_stock_pool
 // 保留原始邏輯 + stock profile
 // ==========================================
+// 振宇 FCN 系統
+// Proprietary System - All Rights Reserved
+// Unauthorized copying or commercial use is prohibited
+// All rights reserved by Gaya.Wang
+// ==========================================
+// ==========================================
 
 import fs from "fs";
 import path from "path";
