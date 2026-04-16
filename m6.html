@@ -493,47 +493,55 @@
       letter-spacing:.2px;
     }
 
-     .m6-market-comment{
-  margin-top:12px;
-  margin-bottom:14px;
-  padding:14px 16px;
-  border-radius:14px;
-  background:#ffffff;
-  border:1px solid #d7e7fb;
-  color:#0f172a;
-  opacity:1;
-}
+ 
+    .m6-market-comment{
+      margin-top:12px;
+      margin-bottom:14px;
+      padding:14px 16px;
+      border-radius:14px;
+      background:#ffffff;
+      border:1px solid #d7e7fb;
+      color:#0f172a;
+      opacity:1;
+    }
 
-.m6-market-comment-title{
-  font-size:16px;
-  font-weight:900;
-  color:#1d4ed8;
-  margin-bottom:10px;
-}
+    .m6-market-comment-title{
+      font-size:16px;
+      font-weight:900;
+      letter-spacing:.08em;
+      color:#1d4ed8;
+      margin-bottom:10px;
+      text-transform:none;
+    }
 
-.m6-market-comment-text{
-  font-size:16px;
-  line-height:1.9;
-  font-weight:500;
-  color:#020617;   /* ✅ 真正黑 */
-}
+    .m6-market-comment-text{
+      font-size:16px;
+      line-height:1.9;
+      font-weight:500;
+      color:#020617;
+      white-space:pre-wrap;
+      margin-bottom:10px;
+    }
 
-.m6-comment-subtitle{
-  font-size:14px;
-  font-weight:800;
-  color:#1e293b;
-  margin-top:10px;
-}
+    .m6-comment-subtitle{
+      margin-top:10px;
+      margin-bottom:6px;
+      font-size:14px;
+      font-weight:800;
+      color:#1e293b;
+    }
 
-.m6-comment-list{
-  font-size:16px;
-  color:#166534;
-  line-height:1.8;
-}
+    .m6-comment-list{
+      margin:0;
+      padding-left:18px;
+      font-size:16px;
+      line-height:1.8;
+      color:#166534;
+    }
 
-.m6-comment-list.warning{
-  color:#dc2626;
-}
+    .m6-comment-list.warning{
+      color:#dc2626;
+    }
 
     .summary-grid-sticky{
       margin-top:12px;
@@ -625,7 +633,7 @@
       buildM6ViewModel,
       sortAggregates,
       buildPositionDetails
-    } from "./js/m6/m6_engine.js?v=20260416b";
+    } from "./js/m6/m6_engine.js?v=20260416c";
 
     let vm = null;
     let selectedSymbol = "";
@@ -839,7 +847,7 @@
         { label:`成本 ${fmtNum(stock.cost)}`, value:Number(stock.cost), color:"#22c55e" },
         { label:`現價 ${fmtNum(stock.current)}`, value:Number(stock.current), color:"#ef4444" },
         { label:`1M代MA50 ${fmtNum(stock.line_1m)}`, value:Number(stock.line_1m), color:"#38bdf8" },
-        { label:`3M代MA200 ${fmtNum(stock.line_6m)}`, value:Number(stock.line_3m), color:"#7c3aed" },
+        { label:`3M代MA200 ${fmtNum(stock.line_3m ?? stock.line_6m)}`, value:Number(stock.line_3m), color:"#7c3aed" },
         { label:`年線 ${fmtNum(stock.line_12m)}`, value:Number(stock.line_12m), color:"#f59e0b" }
       ].filter(x => Number.isFinite(x.value));
 
@@ -1080,7 +1088,7 @@
           <div class="mini">
             <div class="label">技術 / 今日評估</div>
             <div class="kv"><div class="small">1W / 1M線</div><div>${fmtNum(stock.line_1w)} / ${fmtNum(stock.line_1m)}</div></div>
-            <div class="kv"><div class="small">6M線 / 年線</div><div>${fmtNum(stock.line_6m)} / ${fmtNum(stock.line_12m)}</div></div>
+            <div class="kv"><div class="small">3M線 / 年線</div><div>${fmtNum(stock.line_3m ?? stock.line_6m)} / ${fmtNum(stock.line_12m)}</div></div>
             <div class="kv"><div class="small">量比</div><div>${fmtNum(stock.volume_ratio)}</div></div>
             <div class="kv"><div class="small">today score</div><div>${stock.today_score ?? "-"}</div></div>
             <div class="kv"><div class="small">趨勢 / 結構 / 時機</div><div>${safeText(stock.trend_state || "-")} / ${safeText(stock.structure_state || "-")} / ${safeText(stock.timing_state || "-")}</div></div>
@@ -1151,11 +1159,8 @@
         <div class="mini" style="margin-bottom:14px;">
           <div class="section-title">估值 / 最終說明</div>
           <div class="strategy">
-          <div><b>估值說明：</b>${safeText(stock.valuation_note || "（尚未載入 M7）")}</div>
-
-<div style="margin-top:8px;">
-  <b>最終說明：</b>${safeText(stock.final_note || "（尚未載入 M7）")}
-</div>
+            <div><b>估值說明：</b>${safeText(stock.valuation_note || "-")}</div>
+            <div style="margin-top:8px;"><b>最終說明：</b>${safeText(stock.final_note || "-")}</div>
           </div>
         </div>
       `;
