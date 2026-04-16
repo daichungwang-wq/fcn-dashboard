@@ -1,7 +1,8 @@
 // ==========================================
-// M6 Engine v2
-// 振宇專用｜Positions + Market Runtime + M7 Today 聚合引擎
+// M6 Engine v3
+// 振宇專用｜Positions + Market Runtime + M7 Today + M3 Commentary 聚合引擎
 // 路徑：/js/m6/m6_engine.js
+// ==========================================
 // ==========================================
 // 振宇 FCN 系統
 // Proprietary System - All Rights Reserved
@@ -9,6 +10,7 @@
 // All rights reserved by Gaya.Wang
 // ==========================================
 // ==========================================
+
 
 function toNumber(value, fallback = 0) {
   const n = Number(value);
@@ -34,6 +36,14 @@ function clone(obj) {
   return JSON.parse(JSON.stringify(obj));
 }
 
+function uniqueArray(arr = []) {
+  return [...new Set((arr || []).filter(Boolean))];
+}
+
+function safeArray(v) {
+  return Array.isArray(v) ? v : [];
+}
+
 // ==========================================
 // 讀取 JSON
 // ==========================================
@@ -45,6 +55,10 @@ export async function loadJson(url) {
   }
   return await res.json();
 }
+
+// ==========================================
+// M7 Today 正規化
+// ==========================================
 
 function normalizeM7TodayMap(m7TodayRaw = []) {
   const arr = Array.isArray(m7TodayRaw) ? m7TodayRaw : [];
@@ -89,36 +103,94 @@ function normalizeM7TodayMap(m7TodayRaw = []) {
   return map;
 }
 
+// ==========================================
+// M3 正規化
+// 來源預設：./data/m3/m3_output.json
+// 目標：把 stockResults 內的 why / whyNot / market_comment 依 symbol 對成 map
+// ==========================================
+
+function buildM3CommentText(stock = {}) {
+  const why = safeArray(stock.why);
+  const whyNot = safeArray(stock.whyNot);
+
+  const yesText = why.length ? `✔ ${why.join(" ｜ ")}` : "✔ 無明顯優勢";
+  const noText = whyNot.length ? `⚠ ${whyNot.join(" ｜ ")}` : "⚠ 無明顯風險";
+
+  return `${yesText}； ${noText}`;
+}
+
+function normalizeM3Map(m3Raw = {}) {
+  const map = {};
+
+  if (!m3Raw || typeof m3Raw !== "object") return map;
+
+  const stockResults = Array.isArray(m3Raw.stockResults) ? m3Raw.stockResults : [];
+
+  for (const item of stockResults) {
+    const symbol = String(item.symbol || "").toUpperCase().trim();
+    if (!symbol) continue;
+
+    const why = safeArray(item.why);
+    const whyNot = safeArray(item.whyNot);
+
+    map[symbol] = {
+      symbol,
+      pure_stock_score: toNumber(item.pure_stock_score, null),
+      snapshot_score: toNumber(item.snapshot_score, null),
+      event_stock_score: toNumber(item.event_stock_score, null),
+      delta_stock_score: toNumber(item.delta_stock_score, null),
+      bucket: item.bucket || "",
+      suggestion: item.suggestion || "",
+      trend: item.trend || "",
+
+      why,
+      whyNot,
+      market_comment: item.market_comment || buildM3CommentText({ why, whyNot }),
+      display_comment: item.display_comment || item.market_comment || buildM3CommentText({ why, whyNot }),
+    };
+  }
+
+  return map;
+}
+
+// ==========================================
+// 讀取主資料
+// ==========================================
+
 export async function loadM6Data(options = {}) {
   const positionsUrl = options.positionsUrl || "./data/positions.json";
   const marketUrl = options.marketUrl || "./data/market_runtime.json";
   const m7TodayUrl = options.m7TodayUrl || "./data/m7/m7_new_stock_today.json";
+  const m3OutputUrl = options.m3OutputUrl || "./data/m3/m3_output.json";
 
-  const [positions, marketRuntime, m7TodayRaw] = await Promise.all([
+  const [positions, marketRuntime, m7TodayRaw, m3Raw] = await Promise.all([
     loadJson(positionsUrl),
     loadJson(marketUrl),
     loadJson(m7TodayUrl).catch(() => []),
+    loadJson(m3OutputUrl).catch(() => ({})),
   ]);
 
   return {
     positions: Array.isArray(positions) ? positions : [],
     marketRuntime: marketRuntime && typeof marketRuntime === "object" ? marketRuntime : {},
     m7TodayMap: normalizeM7TodayMap(m7TodayRaw),
+    m3Map: normalizeM3Map(m3Raw),
   };
 }
 
 // ==========================================
-// Runtime + M7 Today 對接
+// Runtime + M7 Today + M3 對接
 // 先用：
 // 1M -> 代 MA50
 // 6M -> 代 MA200
 // 12M -> 年線
 // ==========================================
 
-export function applyDataSources(positionLike, marketRuntime = {}, m7TodayMap = {}) {
+export function applyDataSources(positionLike, marketRuntime = {}, m7TodayMap = {}, m3Map = {}) {
   const symbol = String(positionLike.symbol || "").toUpperCase();
   const rt = marketRuntime[symbol] || {};
   const m7 = m7TodayMap[symbol] || {};
+  const m3 = m3Map[symbol] || {};
 
   const current = toNumber(
     rt.price_now,
@@ -160,6 +232,19 @@ export function applyDataSources(positionLike, marketRuntime = {}, m7TodayMap = 
     why_no: Array.isArray(m7.why_no) ? clone(m7.why_no) : [],
     valuation_note: m7.valuation_note || "",
     final_note: m7.final_note || "",
+
+    // M3 Commentary
+    pure_stock_score: m3.pure_stock_score,
+    snapshot_score: m3.snapshot_score,
+    event_stock_score: m3.event_stock_score,
+    delta_stock_score: m3.delta_stock_score,
+    m3_bucket: m3.bucket || "",
+    m3_suggestion: m3.suggestion || "",
+    m3_trend: m3.trend || "",
+    why: Array.isArray(m3.why) ? clone(m3.why) : [],
+    whyNot: Array.isArray(m3.whyNot) ? clone(m3.whyNot) : [],
+    market_comment: m3.market_comment || "",
+    display_comment: m3.display_comment || m3.market_comment || "",
 
     // Market runtime
     current,
@@ -301,8 +386,8 @@ export function calcHealthNote(item) {
 // 單筆部位 enrich
 // ==========================================
 
-export function enrichPosition(position, marketRuntime = {}, m7TodayMap = {}) {
-  const base = applyDataSources(position, marketRuntime, m7TodayMap);
+export function enrichPosition(position, marketRuntime = {}, m7TodayMap = {}, m3Map = {}) {
+  const base = applyDataSources(position, marketRuntime, m7TodayMap, m3Map);
   const pnl = calcPositionPnl(base);
 
   const merged = {
@@ -323,8 +408,8 @@ export function enrichPosition(position, marketRuntime = {}, m7TodayMap = {}) {
 // 左側總覽卡使用
 // ==========================================
 
-export function aggregatePositions(positions = [], marketRuntime = {}, m7TodayMap = {}) {
-  const enriched = positions.map((p) => enrichPosition(p, marketRuntime, m7TodayMap));
+export function aggregatePositions(positions = [], marketRuntime = {}, m7TodayMap = {}, m3Map = {}) {
+  const enriched = positions.map((p) => enrichPosition(p, marketRuntime, m7TodayMap, m3Map));
   const map = new Map();
 
   for (const p of enriched) {
@@ -358,6 +443,19 @@ export function aggregatePositions(positions = [], marketRuntime = {}, m7TodayMa
         why_no: clone(p.why_no || []),
         valuation_note: p.valuation_note || "",
         final_note: p.final_note || "",
+
+        // M3
+        pure_stock_score: p.pure_stock_score,
+        snapshot_score: p.snapshot_score,
+        event_stock_score: p.event_stock_score,
+        delta_stock_score: p.delta_stock_score,
+        why: clone(p.why || []),
+        whyNot: clone(p.whyNot || []),
+        market_comment: p.market_comment || "",
+        display_comment: p.display_comment || "",
+        m3_bucket: p.m3_bucket || "",
+        m3_suggestion: p.m3_suggestion || "",
+        m3_trend: p.m3_trend || "",
 
         quantity: 0,
         total_cost_amount: 0,
@@ -402,6 +500,19 @@ export function aggregatePositions(positions = [], marketRuntime = {}, m7TodayMa
     row.roles.add(p.role || "");
 
     row.details.push(p);
+
+    // 若前面沒有 M3，後面某筆有，補進去
+    if (!row.market_comment && p.market_comment) row.market_comment = p.market_comment;
+    if (!row.display_comment && p.display_comment) row.display_comment = p.display_comment;
+    if ((!row.why || !row.why.length) && Array.isArray(p.why) && p.why.length) row.why = clone(p.why);
+    if ((!row.whyNot || !row.whyNot.length) && Array.isArray(p.whyNot) && p.whyNot.length) row.whyNot = clone(p.whyNot);
+    if (!row.pure_stock_score && Number.isFinite(p.pure_stock_score)) row.pure_stock_score = p.pure_stock_score;
+    if (!row.snapshot_score && Number.isFinite(p.snapshot_score)) row.snapshot_score = p.snapshot_score;
+    if (!row.event_stock_score && Number.isFinite(p.event_stock_score)) row.event_stock_score = p.event_stock_score;
+    if (!row.delta_stock_score && Number.isFinite(p.delta_stock_score)) row.delta_stock_score = p.delta_stock_score;
+    if (!row.m3_bucket && p.m3_bucket) row.m3_bucket = p.m3_bucket;
+    if (!row.m3_suggestion && p.m3_suggestion) row.m3_suggestion = p.m3_suggestion;
+    if (!row.m3_trend && p.m3_trend) row.m3_trend = p.m3_trend;
   }
 
   const result = [];
@@ -441,6 +552,19 @@ export function aggregatePositions(positions = [], marketRuntime = {}, m7TodayMa
       why_no: row.why_no,
       valuation_note: row.valuation_note,
       final_note: row.final_note,
+
+      // M3
+      pure_stock_score: row.pure_stock_score,
+      snapshot_score: row.snapshot_score,
+      event_stock_score: row.event_stock_score,
+      delta_stock_score: row.delta_stock_score,
+      why: row.why,
+      whyNot: row.whyNot,
+      market_comment: row.market_comment,
+      display_comment: row.display_comment,
+      m3_bucket: row.m3_bucket,
+      m3_suggestion: row.m3_suggestion,
+      m3_trend: row.m3_trend,
 
       quantity,
       cost,
@@ -491,12 +615,12 @@ export function aggregatePositions(positions = [], marketRuntime = {}, m7TodayMa
 // 右側詳情卡：某股票所有原始部位
 // ==========================================
 
-export function buildPositionDetails(symbol, positions = [], marketRuntime = {}, m7TodayMap = {}) {
+export function buildPositionDetails(symbol, positions = [], marketRuntime = {}, m7TodayMap = {}, m3Map = {}) {
   const target = String(symbol || "").toUpperCase();
 
   return positions
     .filter((p) => String(p.symbol || "").toUpperCase() === target)
-    .map((p) => enrichPosition(p, marketRuntime, m7TodayMap))
+    .map((p) => enrichPosition(p, marketRuntime, m7TodayMap, m3Map))
     .sort((a, b) => {
       const aMain = a.role === "核心部位" ? 0 : 1;
       const bMain = b.role === "核心部位" ? 0 : 1;
@@ -621,14 +745,16 @@ export function buildM6ViewModel(raw = {}) {
   const positions = Array.isArray(raw.positions) ? raw.positions : [];
   const marketRuntime = raw.marketRuntime || {};
   const m7TodayMap = raw.m7TodayMap || {};
+  const m3Map = raw.m3Map || {};
 
-  const aggregateItems = aggregatePositions(positions, marketRuntime, m7TodayMap);
+  const aggregateItems = aggregatePositions(positions, marketRuntime, m7TodayMap, m3Map);
   const summary = buildSummary(aggregateItems);
 
   return {
     positions,
     marketRuntime,
     m7TodayMap,
+    m3Map,
     aggregates: aggregateItems,
     summary,
   };
