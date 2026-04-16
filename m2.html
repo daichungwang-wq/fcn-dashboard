@@ -548,6 +548,40 @@
       word-break: break-word;
     }
 
+
+    .advanced-filter-wrap {
+      padding-top: 10px;
+      margin-top: 10px;
+      border-top: 1px dashed #ddd;
+    }
+
+    .advanced-filter-wrap select,
+    .advanced-filter-wrap input {
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      background: #fff;
+      font-size: 14px;
+    }
+
+    .metric-tags {
+      margin-top: 8px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .metric-tag {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: #eef6ff;
+      border: 1px solid #cfe1ff;
+      font-size: 12px;
+      color: #1e3a8a;
+      font-weight: 700;
+    }
+
     @media (max-width: 1100px) {
       .manager-grid {
         grid-template-columns: 1fr;
@@ -650,8 +684,7 @@
           <h3>6.1 FCN 清單</h3>
           <div class="sub-toolbar">
             <button class="light" onclick="setManagerFilter('all')">全部</button>
-            <button class="light" onclick="setManagerFilter('active')">只看 Active</button>
-            <button class="light" onclick="setManagerFilter('closed')">只看 Closed</button>
+            <button class="light" onclick="setManagerFilter('active')">只看持倉中</button>
             <button class="light" onclick="setManagerFilter('deleted')">只看 Deleted</button>
 
             <div class="sub-toolbar">
@@ -662,6 +695,79 @@
               <input id="loadIdInput" placeholder="輸入 fcn_id"
                 style="padding:8px; border-radius:8px; border:1px solid #ccc; width:160px;">
               <button class="light" onclick="loadFCNById()">載入 FCN</button>
+            </div>
+
+            <div class="sub-toolbar advanced-filter-wrap">
+              <select id="cond1_field">
+                <option value="none">條件1</option>
+                <option value="avg">avg basket</option>
+                <option value="worst">worst basket</option>
+                <option value="dist_strike">distance to strike</option>
+                <option value="dist_ki">distance to ki</option>
+                <option value="days">days since entry</option>
+              </select>
+
+              <select id="cond1_op">
+                <option value="gte">>=</option>
+                <option value="gt">></option>
+                <option value="lte"><=</option>
+                <option value="lt"><</option>
+              </select>
+
+              <input id="cond1_val" type="number" step="0.1" placeholder="數值"
+                style="padding:8px; border-radius:8px; border:1px solid #ccc; width:90px;">
+
+              <select id="cond1_unit">
+                <option value="pct">%</option>
+                <option value="day">天</option>
+              </select>
+
+              <select id="cond_logic">
+                <option value="and">AND</option>
+                <option value="or">OR</option>
+              </select>
+
+              <select id="cond2_field">
+                <option value="none">條件2</option>
+                <option value="avg">avg basket</option>
+                <option value="worst">worst basket</option>
+                <option value="dist_strike">distance to strike</option>
+                <option value="dist_ki">distance to ki</option>
+                <option value="days">days since entry</option>
+              </select>
+
+              <select id="cond2_op">
+                <option value="gte">>=</option>
+                <option value="gt">></option>
+                <option value="lte"><=</option>
+                <option value="lt"><</option>
+              </select>
+
+              <input id="cond2_val" type="number" step="0.1" placeholder="數值"
+                style="padding:8px; border-radius:8px; border:1px solid #ccc; width:90px;">
+
+              <select id="cond2_unit">
+                <option value="pct">%</option>
+                <option value="day">天</option>
+              </select>
+
+              <select id="advancedSortBy">
+                <option value="avg_desc">排序：avg 高→低</option>
+                <option value="worst_desc">排序：worst 高→低</option>
+                <option value="strike_asc">排序：距 strike 近→遠</option>
+                <option value="ki_asc">排序：距 KI 近→遠</option>
+                <option value="days_desc">排序：持有天數多→少</option>
+              </select>
+
+              <button class="light" onclick="applyAdvancedFilter()">套用</button>
+              <button class="light" onclick="clearAdvancedFilter()">清除</button>
+            </div>
+
+            <div class="sub-toolbar">
+              <button class="light" onclick="applyQuickFilter('early_exit_candidate')">提早出場候選</button>
+              <button class="light" onclick="applyQuickFilter('near_exit')">接近成熟</button>
+              <button class="light" onclick="applyQuickFilter('near_strike')">接近 Strike</button>
+              <button class="light" onclick="applyQuickFilter('near_ki')">接近 KI</button>
             </div>
           </div>
 
@@ -907,6 +1013,8 @@
     let editableFCNPool = [];
     let currentEditingFCNId = null;
     let managerFilter = "all";
+    let advancedFilter = null;
+    let advancedSortBy = "avg_desc";
 
     function toNumber(v, fallback = 0) {
       const n = Number(v);
@@ -1241,6 +1349,278 @@
       renderFCNManager();
       alert(`FCN ${fcnId} 已標記為 deleted`);
     };
+
+
+    function calcDaysSince(dateStr) {
+      if (!dateStr) return null;
+      const t = new Date(dateStr).getTime();
+      if (!Number.isFinite(t)) return null;
+      return Math.floor((Date.now() - t) / 86400000);
+    }
+
+    function getStockEntryPrice(stock) {
+      return toNumber(stock?.entry_price ?? stock?.entry ?? stock?.price_entry, 0);
+    }
+
+    function getStockCurrentPrice(stock) {
+      return toNumber(stock?.price_now ?? stock?.price, 0);
+    }
+
+    function getStrikePrice(entryPrice, strikePct) {
+      if (!entryPrice || !strikePct) return 0;
+      return entryPrice * (toNumber(strikePct) / 100);
+    }
+
+    function getKIPrice(entryPrice, kiPct) {
+      if (!entryPrice || !kiPct) return 0;
+      return entryPrice * (toNumber(kiPct) / 100);
+    }
+
+    function buildFCNMetrics(fcn) {
+      const stocks = Array.isArray(fcn?.stocks) ? fcn.stocks : [];
+      const stockMetrics = stocks.map(stock => {
+        const entry = getStockEntryPrice(stock);
+        const now = getStockCurrentPrice(stock);
+        const rawRatio = entry ? now / entry : 0;
+        const cappedRatio = Math.min(Math.max(rawRatio, 0), 1);
+
+        const strikePrice = getStrikePrice(entry, fcn?.strike);
+        const kiPrice = getKIPrice(entry, fcn?.ki);
+
+        return {
+          symbol: stock?.symbol || "-",
+          entry,
+          now,
+          raw_ratio: rawRatio,
+          capped_ratio: cappedRatio,
+          pct_vs_entry: entry ? ((now - entry) / entry) * 100 : null,
+          strike_price: strikePrice,
+          ki_price: kiPrice,
+          dist_to_strike_pct: strikePrice ? ((now - strikePrice) / strikePrice) * 100 : null,
+          dist_to_ki_pct: kiPrice ? ((now - kiPrice) / kiPrice) * 100 : null
+        };
+      });
+
+      const cappedRatios = stockMetrics.map(x => x.capped_ratio).filter(v => Number.isFinite(v));
+      const avgBasketPct = cappedRatios.length
+        ? (cappedRatios.reduce((sum, v) => sum + v, 0) / cappedRatios.length) * 100
+        : 0;
+
+      const worstBasketPct = cappedRatios.length
+        ? Math.min(...cappedRatios) * 100
+        : 0;
+
+      const strikeDistances = stockMetrics.map(x => x.dist_to_strike_pct).filter(v => Number.isFinite(v));
+      const kiDistances = stockMetrics.map(x => x.dist_to_ki_pct).filter(v => Number.isFinite(v));
+
+      const minDistToStrikePct = strikeDistances.length ? Math.min(...strikeDistances) : null;
+      const minDistToKIPct = kiDistances.length ? Math.min(...kiDistances) : null;
+      const daysSinceEntry = calcDaysSince(fcn?.entry_time);
+
+      const allAboveEntry = stockMetrics.length
+        ? stockMetrics.every(x => x.entry > 0 && x.now >= x.entry)
+        : false;
+
+      const worstStock = stockMetrics.length
+        ? stockMetrics.reduce((worst, cur) => {
+            if (!worst) return cur;
+            return toNumber(cur.capped_ratio, 999) < toNumber(worst.capped_ratio, 999) ? cur : worst;
+          }, null)
+        : null;
+
+      return {
+        avg_basket_pct: avgBasketPct,
+        worst_basket_pct: worstBasketPct,
+        min_dist_to_strike_pct: minDistToStrikePct,
+        min_dist_to_ki_pct: minDistToKIPct,
+        days_since_entry: daysSinceEntry,
+        all_above_entry: allAboveEntry,
+        worst_of_calc: worstStock?.symbol || "-",
+        stock_metrics: stockMetrics
+      };
+    }
+
+    function getMetricValue(metrics, field) {
+      if (field === "avg") return metrics.avg_basket_pct;
+      if (field === "worst") return metrics.worst_basket_pct;
+      if (field === "dist_strike") return metrics.min_dist_to_strike_pct;
+      if (field === "dist_ki") return metrics.min_dist_to_ki_pct;
+      if (field === "days") return metrics.days_since_entry;
+      return null;
+    }
+
+    function compareMetric(value, operator, target) {
+      if (!Number.isFinite(Number(value)) || !Number.isFinite(Number(target))) return false;
+      const v = Number(value);
+      const t = Number(target);
+
+      if (operator === "gte") return v >= t;
+      if (operator === "gt") return v > t;
+      if (operator === "lte") return v <= t;
+      if (operator === "lt") return v < t;
+      if (operator === "eq") return v === t;
+      return true;
+    }
+
+    function evaluateCondition(metrics, condition) {
+      if (!condition || !condition.field || condition.field === "none") return true;
+      return compareMetric(
+        getMetricValue(metrics, condition.field),
+        condition.operator || "gte",
+        toNumber(condition.value, NaN)
+      );
+    }
+
+    function evaluateAdvancedFilter(metrics, filterObj) {
+      if (!filterObj) return true;
+
+      const c1 = evaluateCondition(metrics, {
+        field: filterObj.f1,
+        operator: filterObj.op1,
+        value: filterObj.v1
+      });
+
+      const c2 = evaluateCondition(metrics, {
+        field: filterObj.f2,
+        operator: filterObj.op2,
+        value: filterObj.v2
+      });
+
+      if ((filterObj.logic || "and") === "or") return c1 || c2;
+      return c1 && c2;
+    }
+
+    function getQuickFilterPreset(presetName) {
+      if (presetName === "early_exit_candidate") {
+        return {
+          f1: "avg", op1: "gte", v1: 100,
+          logic: "and",
+          f2: "days", op2: "gte", v2: 15
+        };
+      }
+
+      if (presetName === "near_exit") {
+        return {
+          f1: "avg", op1: "gte", v1: 95,
+          logic: "and",
+          f2: "days", op2: "gte", v2: 15
+        };
+      }
+
+      if (presetName === "near_strike") {
+        return {
+          f1: "dist_strike", op1: "lte", v1: 10,
+          logic: "and",
+          f2: "days", op2: "gte", v2: 0
+        };
+      }
+
+      if (presetName === "near_ki") {
+        return {
+          f1: "dist_ki", op1: "lte", v1: 10,
+          logic: "and",
+          f2: "days", op2: "gte", v2: 0
+        };
+      }
+
+      return null;
+    }
+
+    function sortFCNListByMetrics(list, sortBy) {
+      return [...list].sort((a, b) => {
+        const ma = buildFCNMetrics(a);
+        const mb = buildFCNMetrics(b);
+
+        if (sortBy === "avg_desc") {
+          if (mb.avg_basket_pct !== ma.avg_basket_pct) return mb.avg_basket_pct - ma.avg_basket_pct;
+          if (toNumber(mb.days_since_entry, -9999) !== toNumber(ma.days_since_entry, -9999)) {
+            return toNumber(mb.days_since_entry, -9999) - toNumber(ma.days_since_entry, -9999);
+          }
+          return toNumber(b.amt, 0) - toNumber(a.amt, 0);
+        }
+
+        if (sortBy === "worst_desc") {
+          if (mb.worst_basket_pct !== ma.worst_basket_pct) return mb.worst_basket_pct - ma.worst_basket_pct;
+          return toNumber(b.amt, 0) - toNumber(a.amt, 0);
+        }
+
+        if (sortBy === "strike_asc") {
+          if (toNumber(ma.min_dist_to_strike_pct, 999999) !== toNumber(mb.min_dist_to_strike_pct, 999999)) {
+            return toNumber(ma.min_dist_to_strike_pct, 999999) - toNumber(mb.min_dist_to_strike_pct, 999999);
+          }
+          return toNumber(b.amt, 0) - toNumber(a.amt, 0);
+        }
+
+        if (sortBy === "ki_asc") {
+          if (toNumber(ma.min_dist_to_ki_pct, 999999) !== toNumber(mb.min_dist_to_ki_pct, 999999)) {
+            return toNumber(ma.min_dist_to_ki_pct, 999999) - toNumber(mb.min_dist_to_ki_pct, 999999);
+          }
+          return toNumber(b.amt, 0) - toNumber(a.amt, 0);
+        }
+
+        if (sortBy === "days_desc") {
+          if (toNumber(mb.days_since_entry, -9999) !== toNumber(ma.days_since_entry, -9999)) {
+            return toNumber(mb.days_since_entry, -9999) - toNumber(ma.days_since_entry, -9999);
+          }
+          return toNumber(b.amt, 0) - toNumber(a.amt, 0);
+        }
+
+        return 0;
+      });
+    }
+
+    window.applyAdvancedFilter = function() {
+      advancedFilter = {
+        f1: document.getElementById("cond1_field").value,
+        op1: document.getElementById("cond1_op").value,
+        v1: Number(document.getElementById("cond1_val").value),
+        u1: document.getElementById("cond1_unit").value,
+        logic: document.getElementById("cond_logic").value,
+        f2: document.getElementById("cond2_field").value,
+        op2: document.getElementById("cond2_op").value,
+        v2: Number(document.getElementById("cond2_val").value),
+        u2: document.getElementById("cond2_unit").value
+      };
+      advancedSortBy = document.getElementById("advancedSortBy").value || "avg_desc";
+      renderFCNManager();
+    };
+
+    window.clearAdvancedFilter = function() {
+      advancedFilter = null;
+      advancedSortBy = "avg_desc";
+      ["cond1_field","cond2_field"].forEach(id => document.getElementById(id).value = "none");
+      ["cond1_op","cond2_op"].forEach(id => document.getElementById(id).value = "gte");
+      ["cond1_val","cond2_val"].forEach(id => document.getElementById(id).value = "");
+      ["cond1_unit","cond2_unit"].forEach(id => document.getElementById(id).value = "pct");
+      document.getElementById("cond_logic").value = "and";
+      document.getElementById("advancedSortBy").value = "avg_desc";
+      renderFCNManager();
+    };
+
+    window.applyQuickFilter = function(presetName) {
+      const preset = getQuickFilterPreset(presetName);
+      if (!preset) return;
+      advancedFilter = preset;
+      advancedSortBy = presetName === "near_strike" ? "strike_asc"
+                    : presetName === "near_ki" ? "ki_asc"
+                    : "avg_desc";
+
+      document.getElementById("cond1_field").value = preset.f1 || "none";
+      document.getElementById("cond1_op").value = preset.op1 || "gte";
+      document.getElementById("cond1_val").value = preset.v1 ?? "";
+      document.getElementById("cond1_unit").value = preset.f1 === "days" ? "day" : "pct";
+
+      document.getElementById("cond_logic").value = preset.logic || "and";
+
+      document.getElementById("cond2_field").value = preset.f2 || "none";
+      document.getElementById("cond2_op").value = preset.op2 || "gte";
+      document.getElementById("cond2_val").value = preset.v2 ?? "";
+      document.getElementById("cond2_unit").value = preset.f2 === "days" ? "day" : "pct";
+
+      document.getElementById("advancedSortBy").value = advancedSortBy;
+      renderFCNManager();
+    };
+
 
     function fmtTrend(v) {
       if (v == null || !Number.isFinite(Number(v))) return "-";
@@ -2295,6 +2675,15 @@
         });
       }
 
+      if (advancedFilter) {
+        list = list.filter(fcn => {
+          const metrics = buildFCNMetrics(fcn);
+          return evaluateAdvancedFilter(metrics, advancedFilter);
+        });
+      }
+
+      list = sortFCNListByMetrics(list, advancedSortBy);
+
       return list;
     }
 
@@ -2303,7 +2692,7 @@
       const managerList = document.getElementById("managerList");
       const managerListMeta = document.getElementById("managerListMeta");
 
-      managerListMeta.innerHTML = `目前共 <b>${editableFCNPool.length}</b> 筆，篩選後 <b>${list.length}</b> 筆`;
+      managerListMeta.innerHTML = `目前共 <b>${editableFCNPool.length}</b> 筆，篩選後 <b>${list.length}</b> 筆${advancedFilter ? " ｜ 已啟用透視篩選" : ""}`;
 
       if (!editableFCNPool.length) {
         managerList.innerHTML = `<div class="muted">尚未載入 FCN Pool，請按上方「載入 FCN Pool」或「執行 M2 Health Engine」</div>`;
@@ -2312,6 +2701,14 @@
 
       managerList.innerHTML = list.map(item => {
         const isActiveItem = currentEditingFCNId === item.fcn_id;
+        const metrics = buildFCNMetrics(item);
+
+        const avgClass = metrics.avg_basket_pct >= 100
+          ? "metric-tag"
+          : metrics.avg_basket_pct >= 90
+            ? "metric-tag"
+            : "metric-tag";
+
         return `
           <div class="manager-item ${isActiveItem ? "active-item" : ""}">
             <div class="manager-item-title">${item.fcn_id || "(未命名)"}</div>
@@ -2319,6 +2716,16 @@
             <div class="item-line">Amt：${item.currency || "USD"} ${fmt(item.amt, 0)}</div>
             <div class="item-line">Tenor：${item.tenor ?? "-"}M ｜ Rate：${item.rate ?? "-"}% ｜ KI：${item.ki ?? "-"}% ｜ Strike：${item.strike ?? "-"}%</div>
             <div class="item-line">Status：${getStatusPill(item.status)}</div>
+
+            <div class="metric-tags">
+              <span class="${avgClass}">Avg ${fmt(metrics.avg_basket_pct, 2)}%</span>
+              <span class="metric-tag">Worst ${fmt(metrics.worst_basket_pct, 2)}%</span>
+              <span class="metric-tag">距 Strike ${metrics.min_dist_to_strike_pct == null ? "-" : fmt(metrics.min_dist_to_strike_pct, 2) + "%"}</span>
+              <span class="metric-tag">距 KI ${metrics.min_dist_to_ki_pct == null ? "-" : fmt(metrics.min_dist_to_ki_pct, 2) + "%"}</span>
+              <span class="metric-tag">Days ${metrics.days_since_entry ?? "-"}</span>
+              <span class="metric-tag">Worst-of ${item.worst_of || metrics.worst_of_calc || "-"}</span>
+            </div>
+
             <div class="manager-actions">
               <button class="light" onclick="editFCN('${item.fcn_id}')">編輯</button>
               <button class="warn" onclick="softDeleteFCNById('${item.fcn_id}')">刪除</button>
@@ -2454,3 +2861,4 @@
   </script>
 </body>
 </html>
+
