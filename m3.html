@@ -40,12 +40,26 @@
       margin-bottom: 16px;
     }
 
+    .toolbar-wrap {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
     .toolbar {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
       align-items: center;
-      margin-bottom: 14px;
+    }
+
+    .toolbar-right {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-left: auto;
     }
 
     button {
@@ -56,6 +70,12 @@
       cursor: pointer;
       background: #111;
       color: #fff;
+      transition: transform .12s ease, opacity .12s ease;
+    }
+
+    button:hover {
+      opacity: .92;
+      transform: translateY(-1px);
     }
 
     button.secondary { background: #666; }
@@ -64,6 +84,12 @@
       background: #e9ecef;
       color: #111;
       border: 1px solid #d8dde6;
+    }
+
+    button.success {
+      background: #16a34a;
+      color: #fff;
+      box-shadow: 0 6px 18px rgba(22, 163, 74, .18);
     }
 
     .muted { color: #666; }
@@ -327,11 +353,28 @@
       .scenario-metrics { grid-template-columns: 1fr; }
     }
 
+    @media (max-width: 780px) {
+      .toolbar-wrap {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .toolbar, .toolbar-right {
+        width: 100%;
+      }
+
+      .toolbar-right {
+        margin-left: 0;
+        justify-content: stretch;
+      }
+    }
+
     @media (max-width: 680px) {
       h1 { font-size: 26px; }
       h2 { font-size: 20px; }
       .grid-4 { grid-template-columns: 1fr; }
       .toolbar { flex-direction: column; align-items: stretch; }
+      .toolbar-right { flex-direction: column; }
       button { width: 100%; }
     }
   </style>
@@ -344,13 +387,20 @@
     </div>
 
     <div class="card">
-      <div class="toolbar">
-        <button id="runBtn">執行 M3</button>
-        <button class="secondary" id="refreshBtn">刷新 M3</button>
-        <button class="light" id="toggleBlueprintBtn">展開 / 收合 M3 Blueprint</button>
-        <button class="light" id="expandAllBtn">一鍵展開</button>
-        <button class="light" id="collapseAllBtn">一鍵收合</button>
+      <div class="toolbar-wrap">
+        <div class="toolbar">
+          <button id="runBtn">執行 M3</button>
+          <button class="secondary" id="refreshBtn">刷新 M3</button>
+          <button class="light" id="toggleBlueprintBtn">展開 / 收合 M3 Blueprint</button>
+          <button class="light" id="expandAllBtn">一鍵展開</button>
+          <button class="light" id="collapseAllBtn">一鍵收合</button>
+        </div>
+
+        <div class="toolbar-right">
+          <button id="exportBtn" class="success">⬇️ 匯出 JSON</button>
+        </div>
       </div>
+
       <div id="runtimeMeta" class="muted">尚未找到 M3 cache，請先按「執行 M3」</div>
       <div class="note">
         M3 讀取：
@@ -361,19 +411,6 @@
       </div>
     </div>
 
-     <button onclick="exportM3()" style="
-  margin-left:8px;
-  padding:10px 14px;
-  border-radius:10px;
-  border:none;
-  background:#16a34a;
-  color:#fff;
-  font-weight:700;
-  cursor:pointer;
-">
-  ⬇️ 匯出 JSON
-</button>
-    
     <div class="card">
       <h2>1. M3 Blueprint</h2>
       <div id="blueprintBlock" class="detail-box"></div>
@@ -450,39 +487,6 @@
       simulationSection: false
     };
 
-     async function exportM3() {
-  try {
-    const result = await runM3();
-
-    if (!result) {
-      alert("❌ runM3 沒有回傳資料（需要補 return）");
-      return;
-    }
-
-    const json = JSON.stringify(result, null, 2);
-
-    const blob = new Blob([json], {
-      type: "application/json"
-    });
-
-    const url = URL.createObjectURL(blob);
-
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "m3_output.json";
-    a.click();
-
-    URL.revokeObjectURL(url);
-
-    console.log("M3 export:", result);
-    alert("✅ 已下載 m3_output.json");
-
-  } catch (err) {
-    console.error(err);
-    alert("❌ 匯出失敗");
-  }
-}
-     
     function toNumber(v, d = 0) {
       const n = Number(v);
       return Number.isFinite(n) ? n : d;
@@ -532,6 +536,31 @@
         localStorage.setItem(M3_CACHE_KEY, JSON.stringify(data));
       } catch (err) {
         console.warn("M3 cache 寫入失敗：", err);
+      }
+    }
+
+    async function exportM3() {
+      try {
+        const result = window.__M3_RUNTIME__ || await runM3();
+
+        if (!result) {
+          alert("❌ 匯出失敗：目前沒有可輸出的 M3 結果");
+          return;
+        }
+
+        const json = JSON.stringify(result, null, 2);
+        const blob = new Blob([json], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "m3_output.json";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      } catch (err) {
+        console.error(err);
+        alert(`❌ 匯出失敗：${err?.message || err}`);
       }
     }
 
@@ -823,203 +852,203 @@ M3 定位：
       }).join("");
     }
 
-   function buildAnalyticsBlock(cache) {
-  const list = cache.scenarioAnalytics || cache.m5_payload?.scenario_analytics || [];
-  if (!list.length) return `<div class="empty">尚無資料</div>`;
+    function buildAnalyticsBlock(cache) {
+      const list = cache.scenarioAnalytics || cache.m5_payload?.scenario_analytics || [];
+      if (!list.length) return `<div class="empty">尚無資料</div>`;
 
-  const fieldMap = {
-    mid_term_volatility: "中期波動",
-    snapshot_score: "Snapshot",
-    short_swing: "Swing Score",
-    event_score: "Event Score",
-    pure_stock_score: "Pure Score",
-    event_stock_score: "Event Stock Score",
-    trend_rate: "Trend Rate",
-    health_pct: "Health",
-    fair_gap: "Gap",
-    simulation_rate: "Simulation Rate",
-    fair_rate: "Fair Rate"
-  };
+      const fieldMap = {
+        mid_term_volatility: "中期波動",
+        snapshot_score: "Snapshot",
+        short_swing: "Swing Score",
+        event_score: "Event Score",
+        pure_stock_score: "Pure Score",
+        event_stock_score: "Event Stock Score",
+        trend_rate: "Trend Rate",
+        health_pct: "Health",
+        fair_gap: "Gap",
+        simulation_rate: "Simulation Rate",
+        fair_rate: "Fair Rate"
+      };
 
-  function renderFactorRows(stats, key) {
-    const rows = stats?.[key] || {};
-    return Object.keys(fieldMap).map(f => {
-      const item = rows[f] || {};
-      return `
-        <tr>
-          <td>${fieldMap[f]}</td>
-          <td>${item.mean != null ? fmt(item.mean, 3) : "-"}</td>
-          <td>${item.std != null ? fmt(item.std, 3) : "-"}</td>
-          <td>${item.count != null ? toNumber(item.count, 0) : "-"}</td>
-          <td>${item.min != null ? fmt(item.min, 3) : "-"}</td>
-          <td>${item.max != null ? fmt(item.max, 3) : "-"}</td>
-        </tr>
-      `;
-    }).join("");
-  }
+      function renderFactorRows(stats, key) {
+        const rows = stats?.[key] || {};
+        return Object.keys(fieldMap).map(f => {
+          const item = rows[f] || {};
+          return `
+            <tr>
+              <td>${fieldMap[f]}</td>
+              <td>${item.mean != null ? fmt(item.mean, 3) : "-"}</td>
+              <td>${item.std != null ? fmt(item.std, 3) : "-"}</td>
+              <td>${item.count != null ? toNumber(item.count, 0) : "-"}</td>
+              <td>${item.min != null ? fmt(item.min, 3) : "-"}</td>
+              <td>${item.max != null ? fmt(item.max, 3) : "-"}</td>
+            </tr>
+          `;
+        }).join("");
+      }
 
-  function renderDeltaRows(stats) {
-    const rows = stats?.delta || {};
-    return Object.keys(fieldMap).map(f => {
-      const v = rows[f];
-      return `
-        <tr>
-          <td>${fieldMap[f]}</td>
-          <td class="${deltaClass(v)}">${v != null ? fmt(v, 3) : "-"}</td>
-        </tr>
-      `;
-    }).join("");
-  }
+      function renderDeltaRows(stats) {
+        const rows = stats?.delta || {};
+        return Object.keys(fieldMap).map(f => {
+          const v = rows[f];
+          return `
+            <tr>
+              <td>${fieldMap[f]}</td>
+              <td class="${deltaClass(v)}">${v != null ? fmt(v, 3) : "-"}</td>
+            </tr>
+          `;
+        }).join("");
+      }
 
-  function renderStockList(title, rows) {
-    const list = rows || [];
-    return `
-      <div class="info-box">
-        <h3>${title}</h3>
-        ${
-          list.length
-            ? list.slice(0, 10).map(x => `
-              <div class="item-line">
-                ${safeText(x.symbol)}：${toNumber(x.count, 0)} 次
+      function renderStockList(title, rows) {
+        const list = rows || [];
+        return `
+          <div class="info-box">
+            <h3>${title}</h3>
+            ${
+              list.length
+                ? list.slice(0, 10).map(x => `
+                  <div class="item-line">
+                    ${safeText(x.symbol)}：${toNumber(x.count, 0)} 次
+                  </div>
+                `).join("")
+                : `<div class="empty">尚無資料</div>`
+            }
+          </div>
+        `;
+      }
+
+      return list.map(sc => {
+        const qualifiedStocks = ((sc.stock_stats?.qualified || []).slice(0, 3).map(x => x.symbol).join(" / ")) || "-";
+        const usedStocks = ((sc.stock_stats?.used || []).slice(0, 3).map(x => x.symbol).join(" / ")) || "-";
+        const worstOfStocks = ((sc.stock_stats?.worst_of || []).slice(0, 3).map(x => x.symbol).join(" / ")) || "-";
+        const successRate = Number(sc.counts?.success_rate || 0).toFixed(1);
+        const bestRate = sc.factor_stats?.qualified?.simulation_rate?.mean;
+        const bestRateText = Number.isFinite(bestRate) ? `${Number(bestRate).toFixed(0)}%` : "-";
+        const pattern = safeText(sc.m3_summary?.pattern || "", "-");
+        const conclusion = safeText(sc.m3_summary?.conclusion || "", "-");
+
+        const deltas = sc.factor_stats?.delta || {};
+        const sortedFactors = Object.entries(deltas)
+          .sort((a, b) => Math.abs((b[1] ?? 0)) - Math.abs((a[1] ?? 0)))
+          .slice(0, 3)
+          .map(([k]) => fieldMap[k] || k)
+          .join(" / ") || "-";
+
+        return `
+          <div class="scenario-card">
+            <div class="scenario-title-row">
+              <div>
+                <div class="item-title">${safeText(sc.scenario)}</div>
+                <div class="subtle">
+                  總數 ${toNumber(sc.counts?.total, 0)} ｜ 
+                  達標 ${toNumber(sc.counts?.qualified, 0)} ｜ 
+                  未達標 ${toNumber(sc.counts?.not_qualified, 0)}
+                </div>
               </div>
-            `).join("")
-            : `<div class="empty">尚無資料</div>`
-        }
-      </div>
-    `;
-  }
-
-  return list.map(sc => {
-    const qualifiedStocks = ((sc.stock_stats?.qualified || []).slice(0, 3).map(x => x.symbol).join(" / ")) || "-";
-    const usedStocks = ((sc.stock_stats?.used || []).slice(0, 3).map(x => x.symbol).join(" / ")) || "-";
-    const worstOfStocks = ((sc.stock_stats?.worst_of || []).slice(0, 3).map(x => x.symbol).join(" / ")) || "-";
-    const successRate = Number(sc.counts?.success_rate || 0).toFixed(1);
-    const bestRate = sc.factor_stats?.qualified?.simulation_rate?.mean;
-    const bestRateText = Number.isFinite(bestRate) ? `${Number(bestRate).toFixed(0)}%` : "-";
-    const pattern = safeText(sc.m3_summary?.pattern || "", "-");
-    const conclusion = safeText(sc.m3_summary?.conclusion || "", "-");
-
-    const deltas = sc.factor_stats?.delta || {};
-    const sortedFactors = Object.entries(deltas)
-      .sort((a, b) => Math.abs((b[1] ?? 0)) - Math.abs((a[1] ?? 0)))
-      .slice(0, 3)
-      .map(([k]) => fieldMap[k] || k)
-      .join(" / ") || "-";
-
-    return `
-      <div class="scenario-card">
-        <div class="scenario-title-row">
-          <div>
-            <div class="item-title">${safeText(sc.scenario)}</div>
-            <div class="subtle">
-              總數 ${toNumber(sc.counts?.total, 0)} ｜ 
-              達標 ${toNumber(sc.counts?.qualified, 0)} ｜ 
-              未達標 ${toNumber(sc.counts?.not_qualified, 0)}
+              <div>${passPill(toNumber(sc.counts?.qualified, 0) > 0, `達標率 ${successRate}%`)}</div>
             </div>
-          </div>
-          <div>${passPill(toNumber(sc.counts?.qualified, 0) > 0, `達標率 ${successRate}%`)}</div>
-        </div>
 
-        <div class="grid-4" style="margin-top:10px;">
-          <div class="metric-chip">
-            <div class="label">達標率</div>
-            <div class="value">${successRate}%</div>
-          </div>
-          <div class="metric-chip">
-            <div class="label">最佳 Target</div>
-            <div class="value">${bestRateText}</div>
-          </div>
-          <div class="metric-chip">
-            <div class="label">關鍵因子</div>
-            <div class="value" style="font-size:14px;">${sortedFactors}</div>
-          </div>
-          <div class="metric-chip">
-            <div class="label">代表股票</div>
-            <div class="value" style="font-size:14px;">${qualifiedStocks}</div>
-          </div>
-        </div>
-
-        <div class="item-card" style="margin-top:12px;">
-          <div class="item-line"><b>Used Stocks：</b>${usedStocks}</div>
-          <div class="item-line"><b>Qualified Stocks：</b>${qualifiedStocks}</div>
-          <div class="item-line"><b>Worst-of：</b>${worstOfStocks}</div>
-          <div class="item-line"><b>M3 結論：</b>${pattern} ｜ ${conclusion}</div>
-        </div>
-
-        <details style="margin-top:12px;">
-          <summary style="cursor:pointer; font-weight:700;">展開統計細節</summary>
-
-          <div class="grid-2" style="margin-top:12px;">
-            <div class="info-box">
-              <h3>Qualified 統計</h3>
-              <div class="table-wrap">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Factor</th>
-                      <th>Mean</th>
-                      <th>Std</th>
-                      <th>Count</th>
-                      <th>Min</th>
-                      <th>Max</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    ${renderFactorRows(sc.factor_stats, "qualified")}
-                  </tbody>
-                </table>
+            <div class="grid-4" style="margin-top:10px;">
+              <div class="metric-chip">
+                <div class="label">達標率</div>
+                <div class="value">${successRate}%</div>
+              </div>
+              <div class="metric-chip">
+                <div class="label">最佳 Target</div>
+                <div class="value">${bestRateText}</div>
+              </div>
+              <div class="metric-chip">
+                <div class="label">關鍵因子</div>
+                <div class="value" style="font-size:14px;">${sortedFactors}</div>
+              </div>
+              <div class="metric-chip">
+                <div class="label">代表股票</div>
+                <div class="value" style="font-size:14px;">${qualifiedStocks}</div>
               </div>
             </div>
 
-            <div class="info-box">
-              <h3>Not Qualified 統計</h3>
-              <div class="table-wrap">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Factor</th>
-                      <th>Mean</th>
-                      <th>Std</th>
-                      <th>Count</th>
-                      <th>Min</th>
-                      <th>Max</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    ${renderFactorRows(sc.factor_stats, "not_qualified")}
-                  </tbody>
-                </table>
+            <div class="item-card" style="margin-top:12px;">
+              <div class="item-line"><b>Used Stocks：</b>${usedStocks}</div>
+              <div class="item-line"><b>Qualified Stocks：</b>${qualifiedStocks}</div>
+              <div class="item-line"><b>Worst-of：</b>${worstOfStocks}</div>
+              <div class="item-line"><b>M3 結論：</b>${pattern} ｜ ${conclusion}</div>
+            </div>
+
+            <details style="margin-top:12px;">
+              <summary style="cursor:pointer; font-weight:700;">展開統計細節</summary>
+
+              <div class="grid-2" style="margin-top:12px;">
+                <div class="info-box">
+                  <h3>Qualified 統計</h3>
+                  <div class="table-wrap">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Factor</th>
+                          <th>Mean</th>
+                          <th>Std</th>
+                          <th>Count</th>
+                          <th>Min</th>
+                          <th>Max</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        ${renderFactorRows(sc.factor_stats, "qualified")}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <div class="info-box">
+                  <h3>Not Qualified 統計</h3>
+                  <div class="table-wrap">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Factor</th>
+                          <th>Mean</th>
+                          <th>Std</th>
+                          <th>Count</th>
+                          <th>Min</th>
+                          <th>Max</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        ${renderFactorRows(sc.factor_stats, "not_qualified")}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
 
-          <div class="info-box" style="margin-top:12px;">
-            <h3>Delta（Qualified - Not Qualified）</h3>
-            <div class="table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Factor</th>
-                    <th>Delta</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${renderDeltaRows(sc.factor_stats)}
-                </tbody>
-              </table>
-            </div>
-          </div>
+              <div class="info-box" style="margin-top:12px;">
+                <h3>Delta（Qualified - Not Qualified）</h3>
+                <div class="table-wrap">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Factor</th>
+                        <th>Delta</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${renderDeltaRows(sc.factor_stats)}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
 
-          <div class="grid-3" style="margin-top:12px;">
-            ${renderStockList("Used Stocks Top 10", sc.stock_stats?.used)}
-            ${renderStockList("Qualified Stocks Top 10", sc.stock_stats?.qualified)}
-            ${renderStockList("Worst-of Top 10", sc.stock_stats?.worst_of)}
+              <div class="grid-3" style="margin-top:12px;">
+                ${renderStockList("Used Stocks Top 10", sc.stock_stats?.used)}
+                ${renderStockList("Qualified Stocks Top 10", sc.stock_stats?.qualified)}
+                ${renderStockList("Worst-of Top 10", sc.stock_stats?.worst_of)}
+              </div>
+            </details>
           </div>
-        </details>
-      </div>
-    `;
-  }).join("");
-}
+        `;
+      }).join("");
+    }
 
     function buildQualifiedLayerBlock(cache) {
       const d = cache.dashboard || {};
@@ -1297,8 +1326,8 @@ M3 定位：
         window.__M3_RUNTIME__ = result;
         writeCache(result);
         renderM3(result);
-        return result;
         alert("M3 執行成功");
+        return result;
       } catch (err) {
         console.error("M3 run error", err);
         document.getElementById("summaryBlock").innerHTML = `
@@ -1306,11 +1335,13 @@ M3 定位：
             M3 執行失敗：${safeText(err.message)}
           </div>
         `;
+        return null;
       }
     }
 
     document.getElementById("runBtn").addEventListener("click", runM3);
     document.getElementById("refreshBtn").addEventListener("click", () => renderM3());
+    document.getElementById("exportBtn").addEventListener("click", exportM3);
 
     document.getElementById("toggleBlueprintBtn").addEventListener("click", () => {
       blueprintOpen = !blueprintOpen;
