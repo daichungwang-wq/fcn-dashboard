@@ -150,3 +150,13 @@ event_score =
 結論  
 
 News → SID → Mapping → impact_map → stock_event_map → M2/M3
+## License / 使用限制
+
+This project is proprietary and for personal use only.
+
+You may NOT:
+- Copy or redistribute this project
+- Use for commercial purposes
+- Reproduce the system logic
+
+All rights reserved by Gaya.Wang
