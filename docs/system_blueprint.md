@@ -14,3 +14,13 @@
 1. 先確保不會死，再去賺利息
 2. 你只會接到最爛的那一檔
 3. Gap 要合理，不是越大越好
+## License / 使用限制
+
+This project is proprietary and for personal use only.
+
+You may NOT:
+- Copy or redistribute this project
+- Use for commercial purposes
+- Reproduce the system logic
+
+All rights reserved by Gaya.Wang
