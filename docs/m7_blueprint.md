@@ -687,5 +687,14 @@ M7 = 將「股票價值」、「今日時機」、「FCN結構」三層整合為
 這會讓 M7 第一層直接跑起來 🔥
 📦 m7_pool_converter.js（完整版）
 
+## License / 使用限制
 
+This project is proprietary and for personal use only.
+
+You may NOT:
+- Copy or redistribute this project
+- Use for commercial purposes
+- Reproduce the system logic
+
+All rights reserved by Gaya.Wang
 
