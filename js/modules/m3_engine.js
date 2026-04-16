@@ -2,6 +2,7 @@
 // m3_engine.js
 // 振宇 FCN 系統｜M3 主觀偏好模擬引擎
 // 完整版：Scenario-driven Qualification + Analytics + M5 Payload
+// ＋ M6 市場評論整合版（why / whyNot / market_comment）
 // ==========================================
 
 import { runM8Case } from "../core/m8_batch_engine.js";
@@ -243,6 +244,99 @@ function getMarketLevel(gap) {
 }
 
 // ------------------------------------------
+// ⭐⭐⭐ M3 → M6 市場評論引擎
+// ------------------------------------------
+function buildMarketComment(row) {
+  const why = [];
+  const whyNot = [];
+
+  const pure = toNumber(row.pure_stock_score, 0);
+  const snapshot = toNumber(row.snapshot_score, 0);
+  const eventStock = toNumber(row.event_stock_score, 0);
+  const delta =
+    Number.isFinite(row.delta_stock_score)
+      ? toNumber(row.delta_stock_score, 0)
+      : round(eventStock - pure, 2);
+
+  const gap = Number.isFinite(row?.profit?.fair_gap)
+    ? toNumber(row.profit?.fair_gap, 0)
+    : null;
+
+  const health = toNumber(row?.safety?.health_score, 0);
+  const m3 = toNumber(row?.satisfy?.m3_score, 0);
+  const marketLevel = safeText(row?.profit?.market_level, "");
+  const fairFlag = safeText(row?.profit?.fair_flag, "");
+
+  // -------- 品質 / 時點
+  if (pure >= 7) why.push("標的品質高");
+  else if (pure >= 5) why.push("標的品質可接受");
+  else if (pure >= 4) whyNot.push("標的品質僅勉強合格");
+  else whyNot.push("標的品質偏弱");
+
+  if (eventStock >= 10) why.push("Event Stock 強，時點偏甜");
+  else if (eventStock >= 8) why.push("Event Stock 不錯，可評估承作");
+  else if (eventStock >= 6) why.push("Event Stock 合理");
+  else if (eventStock >= 4) whyNot.push("Event Stock 普通，吸引力不足");
+  else whyNot.push("Event Stock 偏弱，現在不適合");
+
+  if (snapshot > 0) why.push("短期位置偏甜");
+  else if (snapshot < 0) whyNot.push("短期位置偏熱");
+  else whyNot.push("短期沒有明顯甜度");
+
+  if (delta > 0) why.push("目前價格優於常態");
+  else if (delta === 0) whyNot.push("目前沒有額外甜度");
+  else whyNot.push("目前價格較平常偏貴");
+
+  // -------- 市場定價 / Gap
+  if (gap !== null) {
+    if (gap >= 1.5) why.push("市場明顯高估，報價偏甜");
+    else if (gap >= 0.5) why.push("市場有給溢價");
+    else if (gap >= -0.5) why.push("市場定價大致合理");
+    else if (gap >= -1.5) whyNot.push("市場定價偏保守");
+    else whyNot.push("市場明顯不買單");
+  }
+
+  if (marketLevel && marketLevel !== "-") {
+    if (["非常划算", "偏划算", "合理可做"].includes(marketLevel)) {
+      why.push(`市場評價：${marketLevel}`);
+    } else if (["略嫌不足", "不划算", "明顯不划算"].includes(marketLevel)) {
+      whyNot.push(`市場評價：${marketLevel}`);
+    }
+  }
+
+  if (fairFlag && fairFlag !== "-" && fairFlag !== "待接 M8") {
+    if (fairFlag.includes("甜") || fairFlag.includes("合理")) {
+      why.push(`M8 評價：${fairFlag}`);
+    } else {
+      whyNot.push(`M8 評價：${fairFlag}`);
+    }
+  }
+
+  // -------- 安全性 / 健康度
+  if (health >= 45) why.push("結構健康度佳");
+  else if (health >= 35) why.push("結構健康度尚可");
+  else if (health >= 30) whyNot.push("結構健康度普通");
+  else whyNot.push("結構安全性偏弱");
+
+  // -------- 整體吸引力
+  if (m3 >= 10) why.push("M3 綜合偏好高");
+  else if (m3 >= 8) why.push("M3 綜合偏好達標");
+  else whyNot.push("M3 綜合吸引力不足");
+
+  // 去重
+  const whyClean = uniqueArray(why);
+  const whyNotClean = uniqueArray(whyNot);
+
+  return {
+    why: whyClean,
+    whyNot: whyNotClean,
+    comment:
+      `${whyClean.length ? "✔ " + whyClean.join(" ｜ ") : "✔ 無明顯優勢"}` +
+      `； ${whyNotClean.length ? "⚠ " + whyNotClean.join(" ｜ ") : "⚠ 無明顯風險"}`
+  };
+}
+
+// ------------------------------------------
 // Scenario Qualification
 // 相容新格式 qualification 與舊格式 目標
 // ------------------------------------------
@@ -446,6 +540,12 @@ async function runSimulation(cleanPool, config) {
                   };
 
                   row.qualified = isQualified(row, scenario);
+
+                  // ⭐⭐⭐ 加入市場評論（給 M6 / Dashboard / FinalDecision 用）
+                  const mc = buildMarketComment(row);
+                  row.why = mc.why;
+                  row.whyNot = mc.whyNot;
+                  row.market_comment = mc.comment;
 
                   row.suggestion_rank =
                     eventFcn >= toNumber(rankingCfg.strong_buy_min_event_fcn, 12) ? "strong" :
@@ -931,7 +1031,11 @@ function buildFinalDecision(sims, topN = 5) {
 
       return scoreB - scoreA;
     })
-    .slice(0, topN);
+    .slice(0, topN)
+    .map(x => ({
+      ...x,
+      display_comment: x.market_comment
+    }));
 }
 
 function buildM5Payload(selection, sims, dashboard, finalDecision, scenarioAnalytics) {
