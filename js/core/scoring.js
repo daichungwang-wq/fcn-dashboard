@@ -1,3 +1,9 @@
+// ==========================================
+// 振宇 FCN 系統
+// Proprietary System - All Rights Reserved
+// Unauthorized copying or commercial use is prohibited
+// All rights reserved by Gaya.Wang
+// ==========================================
 function getCouponScore(couponPa) {
   if (couponPa < 10) return -999;
   if (couponPa < 12) return -4;
