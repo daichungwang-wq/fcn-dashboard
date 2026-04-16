@@ -1,0 +1,16 @@
+{
+  "stockResults": [
+    {
+      "symbol": "COIN",
+      "why": ["..."],
+      "whyNot": ["..."],
+      "market_comment": "..."
+    },
+    {
+      "symbol": "ORCL",
+      "why": ["..."],
+      "whyNot": ["..."],
+      "market_comment": "..."
+    }
+  ]
+}
