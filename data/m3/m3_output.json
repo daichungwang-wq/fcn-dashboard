@@ -2,15 +2,15 @@
   "stockResults": [
     {
       "symbol": "COIN",
-      "why": ["..."],
-      "whyNot": ["..."],
-      "market_comment": "..."
+      "why": ["波動大，反彈空間大", "短線有交易性機會"],
+      "whyNot": ["趨勢仍弱", "不適合重壓"],
+      "market_comment": "✔ 波動大，反彈空間大 ｜ 短線有交易性機會； ⚠ 趨勢仍弱 ｜ 不適合重壓"
     },
     {
       "symbol": "ORCL",
-      "why": ["..."],
-      "whyNot": ["..."],
-      "market_comment": "..."
+      "why": ["基本面較穩", "相對防守"],
+      "whyNot": ["短線不算便宜"],
+      "market_comment": "✔ 基本面較穩 ｜ 相對防守； ⚠ 短線不算便宜"
     }
   ]
 }
