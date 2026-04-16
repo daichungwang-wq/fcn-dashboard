@@ -1154,9 +1154,9 @@
           <div class="mini">
             <div class="section-title">Why No</div>
             <div class="chip-row">
-              ${(stock.why_no && stock.why_no.length)
-                ? stock.why_no.map(x => `<span class="badge red">${safeText(x)}</span>`).join("")
-                : `<span class="small">無</span>`
+             (stock.whyNot && stock.whyNot.length)
+  ? stock.whyNot.map(x => `<span class="badge red">${safeText(x)}</span>`).join("")
+  : `<span class="small">無</span>`
               }
             </div>
           </div>
