@@ -3,6 +3,12 @@
 // 振宇 FCN 系統｜M1 → Stock Engine
 // 功能：把總經 / 波動 / 新聞偏向 轉成股票評分調整值
 // ==========================================
+// 振宇 FCN 系統
+// Proprietary System - All Rights Reserved
+// Unauthorized copying or commercial use is prohibited
+// All rights reserved by Gaya.Wang
+// ==========================================
+// ==========================================
 
 // ------------------------------------------
 // 工具
