@@ -3,6 +3,12 @@
 // 振宇專用｜Positions + Market Runtime + M7 Today 聚合引擎
 // 路徑：/js/m6/m6_engine.js
 // ==========================================
+// 振宇 FCN 系統
+// Proprietary System - All Rights Reserved
+// Unauthorized copying or commercial use is prohibited
+// All rights reserved by Gaya.Wang
+// ==========================================
+// ==========================================
 
 function toNumber(value, fallback = 0) {
   const n = Number(value);
