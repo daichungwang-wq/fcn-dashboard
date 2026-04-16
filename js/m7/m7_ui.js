@@ -4,6 +4,12 @@
 // 調整：Score Ranking 之後改為 4 大池，取代原本三大池
 // 讀取：data/m7/m7_new_stock_today.json
 // ==========================================
+// 振宇 FCN 系統
+// Proprietary System - All Rights Reserved
+// Unauthorized copying or commercial use is prohibited
+// All rights reserved by Gaya.Wang
+// ==========================================
+// ==========================================
 
 async function loadM7() {
   try {
