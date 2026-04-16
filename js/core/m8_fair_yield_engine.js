@@ -1,3 +1,10 @@
+// ==========================================
+// 振宇 FCN 系統
+// Proprietary System - All Rights Reserved
+// Unauthorized copying or commercial use is prohibited
+// All rights reserved by Gaya.Wang
+// ==========================================
+
 async function loadM7(){
   const res = await fetch("data/m7/m7_new_stock_today.json");
   const json = await res.json();
