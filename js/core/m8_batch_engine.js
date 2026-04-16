@@ -6,6 +6,9 @@
 // 2. 再讀 data/m7/m7_new_stock_today.json 取得 M7 真正的 today_score
 // 3. 只有在 M7 today_score 找不到時，才 fallback 用現有欄位推估
 // 4. 新增 anchor-based yield proxy：自動找輸入 basket 中 today_score 最高者當 anchor
+// Proprietary System - All Rights Reserved
+// Unauthorized copying or commercial use is prohibited
+// All rights reserved by Gaya.Wang
 // ==========================================
 
 async function loadM7Fundamental() {
