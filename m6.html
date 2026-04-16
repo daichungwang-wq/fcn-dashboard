@@ -1151,8 +1151,11 @@
         <div class="mini" style="margin-bottom:14px;">
           <div class="section-title">估值 / 最終說明</div>
           <div class="strategy">
-           <div><b>估值說明：</b>${safeText(stock.valuation_note || stock.market_comment || "-")}</div>
-           <div style="margin-top:8px;"><b>最終說明：</b>${safeText(stock.final_note || stock.display_comment || "-")}</div>
+          <div><b>估值說明：</b>${safeText(stock.valuation_note || "（尚未載入 M7）")}</div>
+
+<div style="margin-top:8px;">
+  <b>最終說明：</b>${safeText(stock.final_note || "（尚未載入 M7）")}
+</div>
           </div>
         </div>
       `;
