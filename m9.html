@@ -177,14 +177,14 @@
           <section class="card analysis-card purple"><h4>現金流建議</h4><ul id="cashAdvice"><li>等待輸入資料後產生。</li></ul></section>
         </div>
 
-        <div class="card table-card" style="margin-top:16px;">
-          <h3>FCN 利息分析（來自 fcn_pool.json）</h3>
-          <div id="fcnSummaryBox">載入中...</div>
-          <table style="width:100%; margin-top:12px;">
-            <thead><tr><th>項次</th><th>FCN</th><th>銀行</th><th>本月</th><th>次月</th><th>次次月</th><th>狀態</th></tr></thead>
-            <tbody id="fcnTableBody"><tr><td colspan="7">載入中...</td></tr></tbody>
-          </table>
-        </div>
+        <div class="card">
+  <div style="display:flex;justify-content:space-between;align-items:center;">
+    <h3>FCN 利息分析（來自 fcn_pool.json）</h3>
+    <button class="btn secondary" onclick="toggleFcnPanel()">展開 / 收合</button>
+  </div>
+
+  <div id="fcnPanelBody">
+    <!-- 原本整塊內容全部包進來 -->
 
         <div class="card chart-card" style="margin-top:16px;">
           <h3>FCN 現金流圖（未來 12 個月）</h3>
