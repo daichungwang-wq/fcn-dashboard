@@ -303,7 +303,7 @@ function normalizeM3Map(m3Raw = {}) {
 // 讀取主資料
 // ==========================================
 export async function loadM6Data(options = {}) {
-  const positionsUrl = options.positionsUrl || "./data/positions.json";
+  const positionsUrl = options.positionsUrl || "./data/m6/positions.json";
   const marketUrl = options.marketUrl || "./data/market_runtime.json";
   const m7TodayUrl = options.m7TodayUrl || "./data/m7/m7_new_stock_today.json";
   const m3OutputUrl = options.m3OutputUrl || "./data/m3/m3_output.json";
