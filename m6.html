@@ -936,82 +936,137 @@
       };
     }
 
-    function renderTradingPanel(marketComment){
-      if (!marketComment) return "";
+  function renderTradingPanel(marketComment){
+  if (!marketComment) return "";
 
-      const title = marketComment.title || "市場評論 / 技術提醒";
-      const updated = marketComment.last_update || marketComment.updated_at || marketComment.date || "";
-      const summary = marketComment.summary || marketComment.comment || marketComment.text || "";
-      const bullets = Array.isArray(marketComment.bullets) ? marketComment.bullets : [];
-      const defense = Array.isArray(marketComment.defense) ? marketComment.defense : [];
-      const trim = Array.isArray(marketComment.trim) ? marketComment.trim : [];
-      const reminder = marketComment.reminder || "";
-      const tags = Array.isArray(marketComment.tags) ? marketComment.tags : [];
+  const title = marketComment.title || "市場評論 / 技術提醒";
+  const updated = marketComment.last_update || marketComment.updated_at || marketComment.date || "";
 
-      return `
-        <div class="trade-panel">
-          <div class="trade-panel-head">
-            <div>
-              <div class="trade-kicker">市場評論 / 技術提醒</div>
-              <div class="trade-title">${safeText(title)}</div>
-              ${updated ? `<div class="trade-updated">更新：${safeText(updated)}</div>` : ""}
-            </div>
-            <div class="trade-head-badge">TRADING PANEL</div>
+  // 新版 schema
+  const action = Array.isArray(marketComment.action) ? marketComment.action : [];
+  const summary = marketComment.summary || marketComment.comment || marketComment.text || "";
+  const reason = marketComment.reason || "";
+
+  // 舊版 schema 相容
+  const bullets = Array.isArray(marketComment.bullets) ? marketComment.bullets : [];
+  const defense = Array.isArray(marketComment.defense) ? marketComment.defense : [];
+  const trim = Array.isArray(marketComment.trim) ? marketComment.trim : [];
+
+  const reminder = marketComment.reminder || "";
+  const tags = Array.isArray(marketComment.tags) ? marketComment.tags : [];
+
+  const hasNewSchema = action.length || summary || reason;
+
+  if (hasNewSchema) {
+    return `
+      <div class="trade-panel">
+        <div class="trade-panel-head">
+          <div>
+            <div class="trade-kicker">市場評論 / 技術提醒</div>
+            <div class="trade-title">${safeText(title)}</div>
+            ${updated ? `<div class="trade-updated">更新：${safeText(updated)}</div>` : ""}
           </div>
+          <div class="trade-head-badge">TRADING PANEL</div>
+        </div>
 
-          ${summary ? `
-            <div class="trade-summary-card">
-              <div class="trade-block-title">核心判讀</div>
-              <div class="comment-box">${safeText(summary)}</div>
-            </div>
-          ` : ""}
+        ${action.length ? `
+          <div class="trade-card trade-action" style="margin-bottom:12px;">
+            <div class="trade-block-title">操作重點</div>
+            <ul class="m6-action-list">
+              ${action.map(x => `<li>${safeText(x)}</li>`).join("")}
+            </ul>
+          </div>
+        ` : ""}
 
-          ${(bullets.length || defense.length) ? `
-            <div class="trade-grid">
-              ${bullets.length ? `
-                <div class="trade-card">
-                  <div class="trade-block-title">技術結構</div>
-                  <div class="comment-box">
-                    ${bullets.map(x => `• ${safeText(x)}`).join("<br>")}
-                  </div>
-                </div>
-              ` : ""}
+        ${summary ? `
+          <div class="trade-summary-card">
+            <div class="trade-block-title">結論</div>
+            <div class="comment-box">${safeText(summary)}</div>
+          </div>
+        ` : ""}
 
-              ${defense.length ? `
-                <div class="trade-card trade-defense">
-                  <div class="trade-block-title">防守策略</div>
-                  <div class="comment-box">
-                    ${defense.map(x => `• ${safeText(x)}`).join("<br>")}
-                  </div>
-                </div>
-              ` : ""}
-            </div>
-          ` : ""}
+        ${reason ? `
+          <div class="trade-card">
+            <div class="trade-block-title">為什麼</div>
+            <div class="m6-reason-box">${safeText(reason)}</div>
+          </div>
+        ` : ""}
 
-          ${trim.length ? `
-            <div class="trade-card trade-action" style="margin-top:12px;">
-              <div class="trade-block-title">操作策略 / 減碼區</div>
+        ${reminder ? `
+          <div class="trade-reminder" style="margin-top:12px;">
+            <div class="trade-block-title">提醒</div>
+            <div class="comment-box">${safeText(reminder)}</div>
+          </div>
+        ` : ""}
+
+        ${tags.length ? `
+          <div class="chip-row" style="margin-top:12px;">
+            ${tags.map(tag => `<span class="badge">${safeText(tag)}</span>`).join("")}
+          </div>
+        ` : ""}
+      </div>
+    `;
+  }
+
+  // 舊版 fallback
+  return `
+    <div class="trade-panel">
+      <div class="trade-panel-head">
+        <div>
+          <div class="trade-kicker">市場評論 / 技術提醒</div>
+          <div class="trade-title">${safeText(title)}</div>
+          ${updated ? `<div class="trade-updated">更新：${safeText(updated)}</div>` : ""}
+        </div>
+        <div class="trade-head-badge">TRADING PANEL</div>
+      </div>
+
+      ${summary ? `
+        <div class="trade-summary-card">
+          <div class="trade-block-title">核心判讀</div>
+          <div class="comment-box">${safeText(summary)}</div>
+        </div>
+      ` : ""}
+
+      ${(bullets.length || defense.length) ? `
+        <div class="trade-grid">
+          ${bullets.length ? `
+            <div class="trade-card">
+              <div class="trade-block-title">技術結構</div>
               <div class="comment-box">
-                ${trim.map(x => `• ${safeText(x)}`).join("<br>")}
+                ${bullets.map(x => `• ${safeText(x)}`).join("<br>")}
               </div>
             </div>
           ` : ""}
 
-          ${reminder ? `
-            <div class="trade-reminder" style="margin-top:12px;">
-              <div class="trade-block-title">FCN → 股票思維切換提醒</div>
-              <div class="comment-box">${safeText(reminder)}</div>
-            </div>
-          ` : ""}
-
-          ${tags.length ? `
-            <div class="chip-row" style="margin-top:12px;">
-              ${tags.map(tag => `<span class="badge">${safeText(tag)}</span>`).join("")}
+          ${defense.length ? `
+            <div class="trade-card trade-defense">
+              <div class="trade-block-title">防守策略</div>
+              <div class="comment-box">
+                ${defense.map(x => `• ${safeText(x)}`).join("<br>")}
+              </div>
             </div>
           ` : ""}
         </div>
-      `;
-    }
+      ` : ""}
+
+      ${trim.length ? `
+        <div class="trade-card trade-action" style="margin-top:12px;">
+          <div class="trade-block-title">操作策略 / 減碼區</div>
+          <div class="comment-box">
+            ${trim.map(x => `• ${safeText(x)}`).join("<br>")}
+          </div>
+        </div>
+      ` : ""}
+
+      ${reminder ? `
+        <div class="trade-reminder" style="margin-top:12px;">
+          <div class="trade-block-title">提醒</div>
+          <div class="comment-box">${safeText(reminder)}</div>
+        </div>
+      ` : ""}
+    </div>
+  `;
+}
 
     function renderM3MarketCommentBlock(item) {
       const comment = item?.display_comment || item?.market_comment || "暫無市場評論";
