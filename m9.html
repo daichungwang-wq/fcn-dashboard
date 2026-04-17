@@ -1576,12 +1576,26 @@
       event.target.value = "";
     }
 
-    function clearAllData(){
-      if(!confirm("確定要清空所有 M9 資料嗎？")) return;
-      localStorage.removeItem(STORAGE_KEY);
-      initDefault(true);
-      document.getElementById("saveStatus").textContent = "已清空";
-    }
+   function clearAllData(){
+  if(!confirm("確定要清空所有 M9 資料嗎？")) return;
+
+  localStorage.removeItem(STORAGE_KEY);
+
+  clearContainer("fcnAssetRows");
+  clearContainer("stockAssetRows");
+  clearContainer("otherAssetRows");
+  clearContainer("liabilityRows");
+  clearContainer("expenseRows");
+  clearContainer("incomeRows");
+  clearContainer("depositRows");
+
+  document.getElementById("usdRate").value = 33;
+  document.getElementById("noteBox").value = "";
+
+  recalc();
+
+  document.getElementById("saveStatus").textContent = "已清空，請重新整理載入 JSON";
+}
 
     function initDefault(skipSave=false){
       clearContainer("fcnAssetRows");
