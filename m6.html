@@ -83,7 +83,7 @@
       gap:12px;
     }
 
-    .input,.select{
+    .input,.select,.btn{
       width:100%;
       border-radius:12px;
       border:1px solid var(--border);
@@ -92,6 +92,13 @@
       padding:12px 14px;
       font-size:14px;
       box-shadow:0 1px 2px rgba(15,23,42,.03);
+    }
+
+    .btn{
+      cursor:pointer;
+      font-weight:700;
+      width:auto;
+      padding:10px 14px;
     }
 
     .grid{
@@ -355,13 +362,6 @@
       background:linear-gradient(to right, rgba(255,255,255,.9), rgba(255,255,255,0));
     }
 
-    .strategy{
-      line-height:1.65;
-      font-size:14px;
-    }
-
-    .strategy b{color:#0f172a}
-
     .position-card{
       border:1px solid var(--border);
       border-radius:14px;
@@ -455,27 +455,12 @@
       margin-bottom:12px;
     }
 
-    .trade-grid{
-      display:grid;
-      grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:12px;
-    }
-
     .trade-card{
       background:#ffffff;
       border:1px solid var(--border);
       border-radius:16px;
       padding:14px;
-    }
-
-    .trade-defense{
-      background:linear-gradient(180deg,#fff7ed 0%, #ffffff 100%);
-      border-color:#fed7aa;
-    }
-
-    .trade-action{
-      background:linear-gradient(180deg,#eff6ff 0%, #ffffff 100%);
-      border-color:#bfdbfe;
+      margin-bottom:12px;
     }
 
     .trade-reminder{
@@ -483,6 +468,17 @@
       border:1px solid #bbf7d0;
       border-radius:16px;
       padding:14px;
+      margin-top:12px;
+    }
+
+    .trade-action{
+      background:linear-gradient(180deg,#eff6ff 0%, #ffffff 100%);
+      border-color:#bfdbfe;
+    }
+
+    .trade-cost{
+      background:linear-gradient(180deg,#fff1f2 0%, #ffffff 100%);
+      border-color:#fecdd3;
     }
 
     .trade-block-title{
@@ -493,37 +489,6 @@
       letter-spacing:.2px;
     }
 
-     .m6-action-list{
-  margin:0;
-  padding-left:18px;
-  line-height:1.85;
-  font-size:15px;
-  color:#0f172a;
-}
-
-.m6-reason-box{
-  white-space:pre-wrap;
-  line-height:1.85;
-  font-size:15px;
-  color:#1e293b;
-}
-
-.m6-mini-note{
-  margin-top:10px;
-  font-size:13px;
-  color:#64748b;
-}
-
-.m6-kv-grid{
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:12px;
-}
-
-@media (max-width: 980px){
-  .m6-kv-grid{grid-template-columns:1fr;}
-}
-    
     .m6-market-comment{
       margin-top:12px;
       margin-bottom:14px;
@@ -562,15 +527,106 @@
       margin-top:12px;
     }
 
+    .section-box{
+      border:1px solid var(--border);
+      border-radius:18px;
+      overflow:hidden;
+      margin-bottom:14px;
+      background:#fff;
+      box-shadow:var(--shadow);
+    }
+
+    .section-head{
+      padding:14px 16px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      cursor:pointer;
+      font-weight:800;
+      background:linear-gradient(180deg,#ffffff 0%, #f8fbff 100%);
+    }
+
+    .section-head:hover{
+      background:linear-gradient(180deg,#f8fbff 0%, #f2f8ff 100%);
+    }
+
+    .section-body{
+      padding:16px;
+      border-top:1px solid var(--border);
+    }
+
+    .section-body.is-collapsed{
+      display:none;
+    }
+
+    .section-tools{
+      display:flex;
+      gap:8px;
+      margin-bottom:12px;
+    }
+
+    .mini-btn{
+      border:1px solid var(--border);
+      background:#fff;
+      border-radius:10px;
+      padding:8px 12px;
+      font-size:13px;
+      font-weight:800;
+      cursor:pointer;
+    }
+
+    .mini-btn:hover{
+      background:#f8fbff;
+    }
+
+    .m6-action-list{
+      margin:0;
+      padding-left:18px;
+      line-height:1.85;
+      font-size:15px;
+      color:#0f172a;
+    }
+
+    .m6-reason-box{
+      white-space:pre-wrap;
+      line-height:1.85;
+      font-size:15px;
+      color:#1e293b;
+    }
+
+    .sell-summary-table{
+      width:100%;
+      border-collapse:collapse;
+      font-size:14px;
+    }
+
+    .sell-summary-table th,
+    .sell-summary-table td{
+      padding:10px 8px;
+      border-bottom:1px solid #eef2f7;
+      text-align:left;
+      vertical-align:top;
+    }
+
+    .sell-summary-table th{
+      background:#f8fbff;
+      color:#475569;
+      font-weight:800;
+    }
+
+    .sell-summary-empty{
+      color:#64748b;
+      font-size:14px;
+      padding:8px 0;
+    }
+
     @media (max-width: 980px){
       .toolbar{grid-template-columns:1fr}
       .summary-card,.list-panel,.detail-panel{grid-column:1/-1}
       .detail-grid{grid-template-columns:1fr}
       .detail-title{font-size:24px}
-      .trade-grid{grid-template-columns:1fr}
-      .trade-title{font-size:20px}
-      .trade-panel-head{flex-direction:column;align-items:flex-start;}
       html{scroll-padding-top:220px;}
+      .sell-summary-table{display:block; overflow:auto; white-space:nowrap;}
     }
   </style>
 </head>
@@ -643,11 +699,12 @@
       buildM6ViewModel,
       sortAggregates,
       buildPositionDetails
-    } from "./js/m6/m6_engine.js?v=20260416e";
+    } from "./js/m6/m6_engine.js?v=20260417z";
 
     let vm = null;
     let selectedSymbol = "";
-    let currentAggregates = [];
+    let sellRecordsRaw = [];
+    let sellSummary = [];
 
     async function loadJson(url){
       const res = await fetch(url, { cache: "no-store" });
@@ -876,213 +933,159 @@
     }
 
     function buildAutoComment(stock){
-      const bullets = [];
-      const defense = [];
-      const trim = [];
-      const tags = [];
-
       const status = stock?.status_eval || "";
-      const strength = stock?.strength || "";
       const todayScore = Number(stock?.today_score);
-      const delta1d = Number(stock?.delta_1d);
-      const pnlPct = Number(stock?.pnl_pct);
 
-      if (strength === "強") bullets.push("結構偏強，可續抱觀察是否延續。");
-      else if (strength === "中") bullets.push("結構中性，觀察是否站穩關鍵均線。");
-      else bullets.push("結構偏弱，反彈時不宜過度樂觀。");
+      const action = [];
+      const summary = stock?.health_note || stock?.final_note || "目前無外部市場評論，以下為系統自動整理。";
+      let reason = "";
+      let cost = "";
+      let reminder = "接股票與做 FCN 的思維不同。股票要更重視技術位置、風險控制、反彈減碼紀律，不可只用 FCN 收息邏輯看待。";
 
-      if (Number.isFinite(todayScore)) {
-        if (todayScore >= 8) bullets.push(`today score ${todayScore}，短線條件佳。`);
-        else if (todayScore >= 5) bullets.push(`today score ${todayScore}，屬中性可追蹤。`);
-        else defense.push(`today score ${todayScore} 偏低，宜保守。`);
-      }
-
-      if (Number.isFinite(delta1d)) {
-        if (delta1d >= 3) trim.push("單日漲幅偏大，可評估是否分批減碼。");
-        else if (delta1d <= -3) defense.push("單日回落較大，留意是否轉弱。");
-      }
+      if (Number.isFinite(todayScore) && todayScore >= 8) action.push("today score 偏高，短線條件佳，但不宜追價");
+      else if (Number.isFinite(todayScore)) action.push(`today score ${todayScore}，先看支撐與壓力區反應`);
 
       if (status === "危險") {
-        defense.push("目前屬危險區，優先處理風險控制。");
-        trim.push("若反彈接近壓力區，可考慮降低曝險。");
-        tags.push("危險");
+        action.push("優先處理風險，先想怎麼降曝險");
+        reason = "目前處於危險區，反彈可視為風險釋放，不宜過度戀戰。";
+        cost = "若不處理，下一段轉弱時，你會再次回到被動等待狀態。";
       } else if (status === "觀察") {
-        defense.push("目前在觀察區，避免情緒性加碼。");
-        tags.push("觀察");
-      } else if (status === "健康") {
-        bullets.push("目前仍屬健康區，可用紀律方式續抱。");
-        tags.push("健康");
-      }
-
-      if (Number.isFinite(pnlPct)) {
-        if (pnlPct >= 15) {
-          trim.push("累積獲利已明顯，可思考保留部分成果。");
-          tags.push("獲利保護");
-        } else if (pnlPct <= -12) {
-          defense.push("累積虧損偏大，需重新檢查持有理由。");
-          tags.push("風險控管");
-        }
+        action.push("先看是否站回關鍵均線，再決定是否續抱");
+        reason = "目前位於關鍵區，方向未完全明朗，適合觀察而不是情緒性加碼。";
+        cost = "若把觀察區誤判為安全區，後續轉弱時會失去較佳的處理位置。";
+      } else {
+        action.push("目前仍可續抱，但接近壓力區宜保留減碼彈性");
+        reason = "結構尚可，但持股管理仍要重視位置與節奏，不代表可以無條件長抱。";
+        cost = "若忽略壓力區與節奏管理，帳面優勢可能很快回吐。";
       }
 
       return {
-        title: `${stock?.symbol || "-"} 自動市場評論`,
-        updated_at: stock?.last_update || "",
-        summary: stock?.health_note || stock?.final_note || "目前無外部市場評論，以下為系統自動整理。",
-        bullets,
-        defense,
-        trim,
-        reminder: "接股票與做 FCN 的思維不同。股票要更重視技術位置、風險控制、反彈減碼紀律，不可只用 FCN 收息邏輯看待。",
-        tags
+        title: `${stock?.symbol || "-"} 技術提醒`,
+        last_update: stock?.last_update || "",
+        action,
+        summary,
+        reason,
+        cost,
+        reminder
       };
     }
 
-  function renderTradingPanel(marketComment){
-  if (!marketComment) return "";
+    function getSellSummaryForSymbol(symbol){
+      return sellSummary.filter(x => x.symbol === symbol);
+    }
 
-  const title = marketComment.title || "市場評論 / 技術提醒";
-  const updated = marketComment.last_update || marketComment.updated_at || marketComment.date || "";
+    function buildSellSummary(records = []) {
+      const map = {};
 
-  // 新版 schema
-  const action = Array.isArray(marketComment.action) ? marketComment.action : [];
-  const summary = marketComment.summary || marketComment.comment || marketComment.text || "";
-  const reason = marketComment.reason || "";
-  const cost = marketComment.cost || "";
+      for (const r of records) {
+        const key = `${r.symbol}__${r.from}`;
 
-    
-  // 舊版 schema 相容
-  const bullets = Array.isArray(marketComment.bullets) ? marketComment.bullets : [];
-  const defense = Array.isArray(marketComment.defense) ? marketComment.defense : [];
-  const trim = Array.isArray(marketComment.trim) ? marketComment.trim : [];
+        if (!map[key]) {
+          map[key] = {
+            symbol: r.symbol,
+            from: r.from,
+            cost: Number(r.cost) || 0,
+            total_qty: 0,
+            total_amount: 0,
+            total_pnl: 0
+          };
+        }
 
-  const reminder = marketComment.reminder || "";
-  const tags = Array.isArray(marketComment.tags) ? marketComment.tags : [];
+        const qty = Number(r.sell_qty) || 0;
+        const price = Number(r.sell_price) || 0;
+        const cost = Number(r.cost) || 0;
 
-  const hasNewSchema = action.length || summary || reason;
+        map[key].total_qty += qty;
+        map[key].total_amount += price * qty;
+        map[key].total_pnl += (price - cost) * qty;
+      }
 
-  if (hasNewSchema) {
-    return `
-      <div class="trade-panel">
-        <div class="trade-panel-head">
-          <div>
-            <div class="trade-kicker">市場評論 / 技術提醒</div>
-            <div class="trade-title">${safeText(title)}</div>
-            ${updated ? `<div class="trade-updated">更新：${safeText(updated)}</div>` : ""}
+      return Object.values(map).map(x => {
+        const avg_price = x.total_qty ? (x.total_amount / x.total_qty) : 0;
+        const pnl_pct = x.cost ? (((avg_price - x.cost) / x.cost) * 100) : 0;
+
+        return {
+          symbol: x.symbol,
+          from: x.from,
+          cost: x.cost,
+          sell_out_qty: x.total_qty,
+          avg_sell_price: avg_price,
+          net_realized_pnl: x.total_pnl,
+          net_realized_pnl_pct: pnl_pct
+        };
+      });
+    }
+
+    function renderTradingPanel(marketComment){
+      if (!marketComment) return "";
+
+      const title = marketComment.title || "市場評論 / 技術提醒";
+      const updated = marketComment.last_update || marketComment.updated_at || marketComment.date || "";
+      const action = Array.isArray(marketComment.action) ? marketComment.action : [];
+      const summary = Array.isArray(marketComment.summary)
+        ? marketComment.summary.join("\n")
+        : (marketComment.summary || marketComment.comment || marketComment.text || "");
+      const reason = marketComment.reason || "";
+      const cost = marketComment.cost || "";
+      const reminder = marketComment.reminder || "";
+
+      return `
+        <div class="trade-panel">
+          <div class="trade-panel-head">
+            <div>
+              <div class="trade-kicker">市場評論 / 技術提醒</div>
+              <div class="trade-title">${safeText(title)}</div>
+              ${updated ? `<div class="trade-updated">更新：${safeText(updated)}</div>` : ""}
+            </div>
+            <div class="trade-head-badge">TRADING PANEL</div>
           </div>
-          <div class="trade-head-badge">TRADING PANEL</div>
-        </div>
 
-        ${action.length ? `
-          <div class="trade-card trade-action" style="margin-bottom:12px;">
-            <div class="trade-block-title">操作重點</div>
-            <ul class="m6-action-list">
-              ${action.map(x => `<li>${safeText(x)}</li>`).join("")}
-            </ul>
-          </div>
-        ` : ""}
+          ${action.length ? `
+            <div class="trade-card trade-action">
+              <div class="trade-block-title">操作重點</div>
+              <ul class="m6-action-list">
+                ${action.map(x => `<li>${safeText(x)}</li>`).join("")}
+              </ul>
+            </div>
+          ` : ""}
 
-        ${summary ? `
-          <div class="trade-summary-card">
-            <div class="trade-block-title">結論</div>
-            <div class="comment-box">${safeText(summary)}</div>
-          </div>
-        ` : ""}
+          ${summary ? `
+            <div class="trade-summary-card">
+              <div class="trade-block-title">結論</div>
+              <div class="comment-box">${safeText(summary)}</div>
+            </div>
+          ` : ""}
 
-        ${reason ? `
-          <div class="trade-card">
-            <div class="trade-block-title">為什麼</div>
-            <div class="m6-reason-box">${safeText(reason)}</div>
-          </div>
-        ` : ""}
-
-         ${cost ? `
-  <div class="trade-card" style="margin-top:12px; background:linear-gradient(180deg,#fff1f2 0%, #ffffff 100%); border-color:#fecdd3;">
-    <div class="trade-block-title">不這樣做的代價</div>
-    <div class="m6-reason-box">${safeText(cost)}</div>
-  </div>
-` : ""}
-
-        ${reminder ? `
-          <div class="trade-reminder" style="margin-top:12px;">
-            <div class="trade-block-title">提醒</div>
-            <div class="comment-box">${safeText(reminder)}</div>
-          </div>
-        ` : ""}
-
-        ${tags.length ? `
-          <div class="chip-row" style="margin-top:12px;">
-            ${tags.map(tag => `<span class="badge">${safeText(tag)}</span>`).join("")}
-          </div>
-        ` : ""}
-      </div>
-    `;
-  }
-
-  // 舊版 fallback
-  return `
-    <div class="trade-panel">
-      <div class="trade-panel-head">
-        <div>
-          <div class="trade-kicker">市場評論 / 技術提醒</div>
-          <div class="trade-title">${safeText(title)}</div>
-          ${updated ? `<div class="trade-updated">更新：${safeText(updated)}</div>` : ""}
-        </div>
-        <div class="trade-head-badge">TRADING PANEL</div>
-      </div>
-
-      ${summary ? `
-        <div class="trade-summary-card">
-          <div class="trade-block-title">核心判讀</div>
-          <div class="comment-box">${safeText(summary)}</div>
-        </div>
-      ` : ""}
-
-      ${(bullets.length || defense.length) ? `
-        <div class="trade-grid">
-          ${bullets.length ? `
+          ${reason ? `
             <div class="trade-card">
-              <div class="trade-block-title">技術結構</div>
-              <div class="comment-box">
-                ${bullets.map(x => `• ${safeText(x)}`).join("<br>")}
-              </div>
+              <div class="trade-block-title">為什麼</div>
+              <div class="m6-reason-box">${safeText(reason)}</div>
             </div>
           ` : ""}
 
-          ${defense.length ? `
-            <div class="trade-card trade-defense">
-              <div class="trade-block-title">防守策略</div>
-              <div class="comment-box">
-                ${defense.map(x => `• ${safeText(x)}`).join("<br>")}
-              </div>
+          ${cost ? `
+            <div class="trade-card trade-cost">
+              <div class="trade-block-title">不這樣做的代價</div>
+              <div class="m6-reason-box">${safeText(cost)}</div>
+            </div>
+          ` : ""}
+
+          ${reminder ? `
+            <div class="trade-reminder">
+              <div class="trade-block-title">提醒</div>
+              <div class="comment-box">${safeText(reminder)}</div>
             </div>
           ` : ""}
         </div>
-      ` : ""}
-
-      ${trim.length ? `
-        <div class="trade-card trade-action" style="margin-top:12px;">
-          <div class="trade-block-title">操作策略 / 減碼區</div>
-          <div class="comment-box">
-            ${trim.map(x => `• ${safeText(x)}`).join("<br>")}
-          </div>
-        </div>
-      ` : ""}
-
-      ${reminder ? `
-        <div class="trade-reminder" style="margin-top:12px;">
-          <div class="trade-block-title">提醒</div>
-          <div class="comment-box">${safeText(reminder)}</div>
-        </div>
-      ` : ""}
-    </div>
-  `;
-}
+      `;
+    }
 
     function renderM3MarketCommentBlock(item) {
       const comment = item?.display_comment || item?.market_comment || "暫無市場評論";
 
       return `
         <div class="m6-market-comment">
-          <div class="m6-market-comment-title">Market Comment</div>
+          <div class="m6-market-comment-title">M3 Market Comment</div>
           <div class="m6-market-comment-text">${safeText(comment)}</div>
         </div>
       `;
@@ -1123,23 +1126,75 @@
       const v = stock?.valuation_data || {};
 
       return `
-        <div class="mini" style="margin-bottom:14px;">
+        <div class="mini">
           <div class="section-title">估值 / 最終說明</div>
-          <div class="strategy">
-            <div><b>估值類別：</b>${safeText(v.valuation_class || "-")}</div>
-            <div style="margin-top:6px;"><b>PEG：</b>${fmtNum(v.peg)}</div>
-            <div style="margin-top:6px;"><b>Forward PE：</b>${fmtNum(v.forward_pe)}</div>
-            <div style="margin-top:6px;"><b>Anchor PE：</b>${fmtNum(v.anchor_pe)}</div>
-            <div style="margin-top:6px;"><b>PE Ratio：</b>${fmtNum(v.pe_ratio)}</div>
-            <div style="margin-top:6px;"><b>EPS Growth：</b>${fmtNum(v.eps_growth)}%</div>
-            <div style="margin-top:6px;"><b>PE Score / Growth Score：</b>${fmtNum(v.pe_score)} / ${fmtNum(v.growth_score)}</div>
-            <div style="margin-top:6px;"><b>GrowthScoreAdj：</b>${fmtNum(v.growth_score_adj)}</div>
-            <div style="margin-top:6px;"><b>QualityMomentum：</b>${fmtNum(v.quality_momentum)}%</div>
-            <div style="margin-top:6px;"><b>QualityFactor：</b>${fmtNum(v.quality_factor)}</div>
-            <div style="margin-top:6px;"><b>ValuationRaw：</b>${fmtNum(v.valuation_raw)}</div>
+          <div class="comment-box">
+估值類別：${safeText(v.valuation_class || "-")}
+PEG：${fmtNum(v.peg)}
+Forward PE：${fmtNum(v.forward_pe)}
+Anchor PE：${fmtNum(v.anchor_pe)}
+PE Ratio：${fmtNum(v.pe_ratio)}
+EPS Growth：${fmtNum(v.eps_growth)}%
+PE Score / Growth Score：${fmtNum(v.pe_score)} / ${fmtNum(v.growth_score)}
+GrowthScoreAdj：${fmtNum(v.growth_score_adj)}
+QualityMomentum：${fmtNum(v.quality_momentum)}%
+QualityFactor：${fmtNum(v.quality_factor)}
+ValuationRaw：${fmtNum(v.valuation_raw)}
 
-            <div style="margin-top:10px;"><b>估值說明：</b>${safeText(stock.valuation_note || "-")}</div>
-            <div style="margin-top:10px;"><b>最終說明：</b>${safeText(stock.final_note || "-")}</div>
+估值說明：
+${safeText(stock.valuation_note || "-")}
+
+最終說明：
+${safeText(stock.final_note || "-")}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderSellSummaryTable(rows){
+      if (!rows.length) {
+        return `<div class="sell-summary-empty">無資料</div>`;
+      }
+
+      return `
+        <table class="sell-summary-table">
+          <thead>
+            <tr>
+              <th>Stock</th>
+              <th>From</th>
+              <th>Cost</th>
+              <th>Sell Qty</th>
+              <th>Avg Sell</th>
+              <th>Net</th>
+              <th>Net%</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows.map(x => `
+              <tr>
+                <td>${safeText(x.symbol)}</td>
+                <td>${safeText(x.from)}</td>
+                <td>${fmtNum(x.cost)}</td>
+                <td>${fmtInt(x.sell_out_qty)}</td>
+                <td>${fmtNum(x.avg_sell_price)}</td>
+                <td class="${moneyClass(x.net_realized_pnl)}">${Number(x.net_realized_pnl) >= 0 ? "+" : ""}${fmtInt(x.net_realized_pnl)}</td>
+                <td class="${moneyClass(x.net_realized_pnl_pct)}">${Number(x.net_realized_pnl_pct) >= 0 ? "+" : ""}${fmtNum(x.net_realized_pnl_pct)}%</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      `;
+    }
+
+    function renderSectionBox(id, title, innerHtml, collapsed = true){
+      return `
+        <div class="section-box">
+          <div class="section-head" onclick="window.toggleSection('${id}')">
+            <span>${safeText(title)}</span>
+            <span id="${id}_icon">${collapsed ? "▸" : "▾"}</span>
+          </div>
+          <div id="${id}" class="section-body ${collapsed ? "is-collapsed" : ""}">
+            ${innerHtml}
           </div>
         </div>
       `;
@@ -1165,23 +1220,9 @@
         window.marketComments?.[stock.symbol] ||
         buildAutoComment(stock);
 
-      panel.innerHTML = `
-        <div class="detail-head">
-          <div>
-            <h2 class="detail-title">${safeText(stock.symbol)} ｜ ${safeText(stock.name || "")}</h2>
-            <div class="detail-sub">
-              ${safeText(stock.source_type || "-")} ・ ${safeText(stock.category || "-")} ・ ${safeText(stock.sector || "-")} ・ FCN來源：${safeText(stock.source_id || "-")} ・ 更新：${safeText(stock.last_update || "-")}
-            </div>
-            <div class="detail-tags">
-              <div class="strength-badge ${strengthClass(stock.strength)}">強弱：${safeText(stock.strength || "-")}</div>
-              <div class="badge ${statusClass(stock.status_eval)}">${safeText(stock.status_eval || "-")}</div>
-              ${stock.action_today ? `<div class="badge">${safeText(stock.action_today)}</div>` : ""}
-              ${stock.ui_bucket ? `<div class="badge">${safeText(stock.ui_bucket)}</div>` : ""}
-            </div>
-          </div>
-          <div class="badge ${statusClass(stock.status_eval)}">${safeText(stock.status_eval || "-")}</div>
-        </div>
+      const sellSummaryRows = getSellSummaryForSymbol(stock.symbol);
 
+      const overviewHtml = `
         <div class="detail-grid">
           <div class="mini">
             <div class="label">合併持倉概況</div>
@@ -1204,17 +1245,18 @@
             <div class="kv"><div class="small">自動判讀</div><div>${safeText(stock.health_note || "-")}</div></div>
           </div>
         </div>
+      `;
 
-        ${renderTradingPanel(marketComment)}
-        ${renderM3MarketCommentBlock(stock)}
-
+      const chartHtml = `
         <div class="chart-box">
           <div class="section-title">價格區間圖</div>
           ${renderLineChart(stock)}
           <div class="small" style="margin-top:8px;">目前先接真價格與代理線：1M 代 MA50、3M 代 MA200、12M 作年線。真 K 線後面再補。</div>
         </div>
+      `;
 
-        <div class="mini" style="margin-bottom:14px;">
+      const detailPositionsHtml = `
+        <div class="mini">
           <div class="section-title">多部位展開</div>
           ${details.length ? details.map(d => `
             <div class="position-card">
@@ -1233,28 +1275,85 @@
             </div>
           `).join("") : `<div class="small">無部位明細</div>`}
         </div>
+      `;
 
-        ${(stock.exposure_alert && stock.exposure_alert.text) ? `
-          <div class="mini warn-card" style="margin-bottom:14px;">
-            <div class="section-title">曝險警示</div>
-            <div class="strategy">⚠️ ${safeText(stock.exposure_alert.text)}</div>
-          </div>
-        ` : ""}
+      const sellSummaryHtml = `
+        <div class="mini">
+          <div class="section-title">Sell Record Summary</div>
+          ${renderSellSummaryTable(sellSummaryRows)}
+        </div>
+      `;
 
+      const whyValuationHtml = `
         ${renderWhyBlock(stock)}
-        ${renderValuationBlock(stock)}
+        <div style="margin-top:14px;">${renderValuationBlock(stock)}</div>
+      `;
+
+      panel.innerHTML = `
+        <div class="detail-head">
+          <div>
+            <h2 class="detail-title">${safeText(stock.symbol)} ｜ ${safeText(stock.name || "")}</h2>
+            <div class="detail-sub">
+              ${safeText(stock.source_type || "-")} ・ ${safeText(stock.category || "-")} ・ ${safeText(stock.sector || "-")} ・ FCN來源：${safeText(stock.source_id || "-")} ・ 更新：${safeText(stock.last_update || "-")}
+            </div>
+            <div class="detail-tags">
+              <div class="strength-badge ${strengthClass(stock.strength)}">強弱：${safeText(stock.strength || "-")}</div>
+              <div class="badge ${statusClass(stock.status_eval)}">${safeText(stock.status_eval || "-")}</div>
+              ${stock.action_today ? `<div class="badge">${safeText(stock.action_today)}</div>` : ""}
+              ${stock.ui_bucket ? `<div class="badge">${safeText(stock.ui_bucket)}</div>` : ""}
+            </div>
+          </div>
+          <div class="badge ${statusClass(stock.status_eval)}">${safeText(stock.status_eval || "-")}</div>
+        </div>
+
+        <div class="section-tools">
+          <button class="mini-btn" onclick="window.toggleAllSections(true)">全部展開</button>
+          <button class="mini-btn" onclick="window.toggleAllSections(false)">全部收合</button>
+        </div>
+
+        ${renderSectionBox("sec_overview", "持倉概況 / 技術評估", overviewHtml, true)}
+        ${renderSectionBox("sec_trading", "市場評論 / 技術提醒", renderTradingPanel(marketComment), true)}
+        ${renderSectionBox("sec_m3", "M3 Market Comment", renderM3MarketCommentBlock(stock), true)}
+        ${renderSectionBox("sec_chart", "價格區間圖", chartHtml, true)}
+        ${renderSectionBox("sec_positions", "多部位展開", detailPositionsHtml, true)}
+        ${(stock.exposure_alert && stock.exposure_alert.text) ? renderSectionBox("sec_exposure", "曝險警示", `
+          <div class="mini warn-card">
+            <div class="comment-box">⚠️ ${safeText(stock.exposure_alert.text)}</div>
+          </div>
+        `, true) : ""}
+        ${renderSectionBox("sec_sellsummary", "Sell Record Summary", sellSummaryHtml, true)}
+        ${renderSectionBox("sec_valuation", "Why / Valuation / Final Note", whyValuationHtml, true)}
       `;
     }
 
     function rerender(){
       const filtered = getFilteredAggregates();
-      currentAggregates = filtered;
       renderSummary(filtered);
       renderList(filtered);
 
       const stock = filtered.find(x => x.symbol === selectedSymbol) || filtered[0];
       renderDetail(stock);
     }
+
+    window.toggleSection = function(id){
+      const body = document.getElementById(id);
+      const icon = document.getElementById(`${id}_icon`);
+      if (!body) return;
+      body.classList.toggle("is-collapsed");
+      if (icon) {
+        icon.textContent = body.classList.contains("is-collapsed") ? "▸" : "▾";
+      }
+    };
+
+    window.toggleAllSections = function(open){
+      document.querySelectorAll(".section-body").forEach(body => {
+        const id = body.id;
+        const icon = document.getElementById(`${id}_icon`);
+        if (open) body.classList.remove("is-collapsed");
+        else body.classList.add("is-collapsed");
+        if (icon) icon.textContent = open ? "▾" : "▸";
+      });
+    };
 
     async function init(){
       try {
@@ -1269,6 +1368,9 @@
 
         const marketComments = await loadJson("./data/m6/market_comments.json").catch(() => ({}));
         window.marketComments = marketComments;
+
+        sellRecordsRaw = await loadJson("./data/sell_records.json").catch(() => []);
+        sellSummary = buildSellSummary(Array.isArray(sellRecordsRaw) ? sellRecordsRaw : []);
 
         window.vm = vm;
         window.stocks = vm.aggregates;
@@ -1291,7 +1393,7 @@
         document.getElementById("detailPanel").innerHTML = `
           <div class="mini warn-card">
             <div class="section-title">初始化失敗</div>
-            <div class="strategy">${safeText(String(err))}</div>
+            <div class="comment-box">${safeText(String(err))}</div>
           </div>
         `;
       }
