@@ -1232,6 +1232,11 @@ ${safeText(stock.final_note || "-")}
             <div class="kv"><div class="small">損益</div><div class="${moneyClass(stock.pnl_amount)}">${Number(stock.pnl_amount) >= 0 ? "+" : ""}$${fmtInt(stock.pnl_amount)} / ${fmtNum(stock.pnl_pct)}%</div></div>
             <div class="kv"><div class="small">來源</div><div>${safeText(stock.source_id || "-")}</div></div>
           </div>
+          <div class="card">
+            <div class="section-title">Sell Record Summary</div>
+               <div id="sellSummaryPanel"></div>
+           </div>
+
 
           <div class="mini">
             <div class="label">技術 / 今日評估</div>
