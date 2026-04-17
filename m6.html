@@ -1369,7 +1369,7 @@ ${safeText(stock.final_note || "-")}
         const marketComments = await loadJson("./data/m6/market_comments.json").catch(() => ({}));
         window.marketComments = marketComments;
 
-        sellRecordsRaw = await loadJson("./data/sell_records.json").catch(() => []);
+        sellRecordsRaw = await loadJson("./data/m6/sell_records.json").catch(() => []);
         sellSummary = buildSellSummary(Array.isArray(sellRecordsRaw) ? sellRecordsRaw : []);
 
         window.vm = vm;
