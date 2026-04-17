@@ -1,0 +1,1270 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>M9｜資產管理系統</title>
+  <style>
+    :root{
+      --bg:#f4f7fb;
+      --card:#ffffff;
+      --line:#d8e0ea;
+      --text:#0f172a;
+      --sub:#5b6475;
+      --blue:#2563eb;
+      --green:#16a34a;
+      --red:#dc2626;
+      --orange:#f59e0b;
+      --purple:#7c3aed;
+      --soft-blue:#eef4ff;
+      --soft-green:#eefaf2;
+      --soft-red:#fff2f2;
+      --soft-orange:#fff8eb;
+      --soft-purple:#f5f0ff;
+      --shadow:0 6px 18px rgba(15,23,42,.06);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+      font-family:Arial,"Microsoft JhengHei",sans-serif;
+    }
+    .page{
+      max-width:1440px;
+      margin:0 auto;
+      padding:18px 14px 40px;
+    }
+    .topbar{
+      position:sticky;
+      top:0;
+      z-index:20;
+      background:rgba(244,247,251,.94);
+      backdrop-filter:blur(10px);
+      border-bottom:1px solid rgba(216,224,234,.9);
+      margin:-18px -14px 18px;
+      padding:14px;
+    }
+    .topbar-inner{
+      max-width:1440px;
+      margin:0 auto;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    .title-wrap h1{
+      margin:0;
+      font-size:38px;
+      line-height:1.15;
+    }
+    .title-wrap .sub{
+      margin-top:6px;
+      color:var(--sub);
+      font-size:15px;
+    }
+    .top-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .btn{
+      border:0;
+      border-radius:12px;
+      padding:10px 14px;
+      background:#111827;
+      color:#fff;
+      font-size:14px;
+      font-weight:700;
+      cursor:pointer;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      box-shadow:var(--shadow);
+    }
+    .btn.secondary{ background:#64748b; }
+    .btn.blue{ background:var(--blue); }
+    .btn.green{ background:var(--green); }
+    .btn.orange{ background:var(--orange); color:#111; }
+    .btn.purple{ background:var(--purple); }
+    .toolbar{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:16px;
+    }
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+    }
+    .banner{
+      padding:16px 18px;
+      margin-bottom:16px;
+    }
+    .banner-grid{
+      display:grid;
+      grid-template-columns:1.2fr 1fr;
+      gap:14px;
+    }
+    .banner-note{
+      background:linear-gradient(180deg,#f8fbff 0%,#eef4ff 100%);
+      border:1px solid #c9dafd;
+      border-radius:16px;
+      padding:16px;
+    }
+    .banner-note h3,
+    .banner-box h3{
+      margin:0 0 10px;
+      font-size:20px;
+    }
+    .banner-note ul,
+    .banner-box ul{
+      margin:0;
+      padding-left:18px;
+      line-height:1.75;
+      color:#243042;
+    }
+    .banner-box{
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:16px;
+      background:#fff;
+    }
+
+    .summary-grid{
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      gap:14px;
+      margin-bottom:16px;
+    }
+    .summary-card{
+      padding:18px;
+      min-height:138px;
+      position:relative;
+      overflow:hidden;
+    }
+    .summary-card.blue{ background:var(--soft-blue); border-color:#cbdcff; }
+    .summary-card.red{ background:var(--soft-red); border-color:#f5c7c7; }
+    .summary-card.green{ background:var(--soft-green); border-color:#cceccf; }
+    .summary-card.orange{ background:var(--soft-orange); border-color:#f4ddb0; }
+    .summary-card.purple{ background:var(--soft-purple); border-color:#dbcdfa; }
+    .summary-label{
+      color:#334155;
+      font-weight:700;
+      font-size:15px;
+      margin-bottom:10px;
+    }
+    .summary-value{
+      font-size:42px;
+      font-weight:800;
+      line-height:1.05;
+      margin-bottom:8px;
+    }
+    .summary-sub{
+      color:var(--sub);
+      font-size:14px;
+    }
+
+    .nav-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px;
+      margin-bottom:16px;
+    }
+    .nav-card{
+      padding:18px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:14px;
+    }
+    .nav-card.blue{ background:linear-gradient(180deg,#f8fbff 0%,#eef4ff 100%); }
+    .nav-card.green{ background:linear-gradient(180deg,#f7fff8 0%,#eefaf2 100%); }
+    .nav-left h3{
+      margin:0 0 8px;
+      font-size:28px;
+    }
+    .nav-left p{
+      margin:0 0 10px;
+      color:var(--sub);
+      line-height:1.7;
+    }
+    .nav-icon{
+      width:88px;
+      height:88px;
+      border-radius:24px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:42px;
+      background:#fff;
+      border:1px solid var(--line);
+      flex:0 0 auto;
+    }
+
+    .layout{
+      display:grid;
+      grid-template-columns:430px 1fr;
+      gap:16px;
+      align-items:start;
+    }
+
+    .panel{
+      padding:16px;
+      margin-bottom:16px;
+    }
+    .panel-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      cursor:pointer;
+      user-select:none;
+    }
+    .panel-title{
+      font-size:26px;
+      font-weight:800;
+      margin:0;
+    }
+    .panel-sub{
+      margin-top:4px;
+      color:var(--sub);
+      font-size:14px;
+    }
+    .panel-body{
+      margin-top:16px;
+    }
+    .collapsed .panel-body{
+      display:none;
+    }
+    .collapse-btn{
+      font-size:24px;
+      font-weight:800;
+      color:#475569;
+      min-width:28px;
+      text-align:center;
+    }
+
+    .form-grid{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:12px;
+    }
+    .input-card{
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:14px;
+      background:#fbfdff;
+    }
+    .input-card h4{
+      margin:0 0 10px;
+      font-size:18px;
+    }
+
+    .rows{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .row-item{
+      display:grid;
+      grid-template-columns:1.2fr .8fr .8fr .8fr .8fr auto;
+      gap:8px;
+      align-items:center;
+    }
+    .row-item.expense-row{
+      grid-template-columns:1.2fr .7fr .8fr 1fr auto;
+    }
+    .row-item.deposit-row{
+      grid-template-columns:1fr .7fr .9fr .9fr auto;
+    }
+    .row-item.asset-row{
+      grid-template-columns:1fr .8fr .8fr .8fr 1fr auto;
+    }
+    input, select, textarea{
+      width:100%;
+      border:1px solid #cfd8e3;
+      border-radius:10px;
+      padding:10px 12px;
+      font-size:14px;
+      background:#fff;
+      color:var(--text);
+    }
+    textarea{
+      min-height:72px;
+      resize:vertical;
+    }
+    .mini-btn{
+      border:0;
+      border-radius:10px;
+      padding:10px 12px;
+      cursor:pointer;
+      font-weight:700;
+      background:#e2e8f0;
+      color:#111827;
+    }
+    .mini-btn.add{ background:#dbeafe; color:#1d4ed8; }
+    .mini-btn.del{ background:#fee2e2; color:#b91c1c; }
+    .mini-btn.green{ background:#dcfce7; color:#166534; }
+    .hint{
+      margin-top:10px;
+      font-size:13px;
+      color:var(--sub);
+      line-height:1.6;
+    }
+
+    .dashboard-grid{
+      display:grid;
+      grid-template-columns:1.1fr .9fr;
+      gap:16px;
+      margin-bottom:16px;
+    }
+    .table-card{
+      padding:16px;
+    }
+    .table-card h3{
+      margin:0 0 14px;
+      font-size:24px;
+    }
+    table{
+      width:100%;
+      border-collapse:collapse;
+      font-size:14px;
+    }
+    th,td{
+      border:1px solid #d7e0ea;
+      padding:10px 8px;
+      text-align:left;
+      vertical-align:top;
+    }
+    th{
+      background:#edf3fa;
+      font-weight:700;
+    }
+    tfoot td{
+      background:#f8fbff;
+      font-weight:800;
+    }
+
+    .analysis-grid{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:14px;
+    }
+    .analysis-card{
+      padding:16px;
+      min-height:210px;
+    }
+    .analysis-card h4{
+      margin:0 0 10px;
+      font-size:22px;
+    }
+    .analysis-card ul{
+      margin:0;
+      padding-left:18px;
+      line-height:1.75;
+    }
+    .analysis-card.blue{ background:var(--soft-blue); border-color:#cbdcff; }
+    .analysis-card.green{ background:var(--soft-green); border-color:#cceccf; }
+    .analysis-card.orange{ background:var(--soft-orange); border-color:#f4ddb0; }
+    .analysis-card.purple{ background:var(--soft-purple); border-color:#dbcdfa; }
+
+    .big-number{
+      font-size:34px;
+      font-weight:800;
+      margin:4px 0 10px;
+    }
+    .badge{
+      display:inline-block;
+      padding:5px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:800;
+      background:#e2e8f0;
+      color:#334155;
+      margin-bottom:10px;
+    }
+    .good{ background:#dcfce7; color:#166534; }
+    .warn{ background:#fef3c7; color:#92400e; }
+    .risk{ background:#fee2e2; color:#991b1b; }
+
+    .footer-tip{
+      margin-top:16px;
+      background:#eff6ff;
+      border:1px solid #cfe0ff;
+      border-radius:14px;
+      padding:12px 14px;
+      color:#1e3a8a;
+      line-height:1.7;
+      font-size:14px;
+    }
+
+    @media (max-width:1200px){
+      .summary-grid{ grid-template-columns:repeat(2,1fr); }
+      .layout{ grid-template-columns:1fr; }
+      .dashboard-grid{ grid-template-columns:1fr; }
+      .analysis-grid{ grid-template-columns:1fr 1fr; }
+      .banner-grid{ grid-template-columns:1fr; }
+    }
+    @media (max-width:760px){
+      .summary-grid,
+      .nav-grid,
+      .analysis-grid{ grid-template-columns:1fr; }
+      .row-item,
+      .row-item.expense-row,
+      .row-item.deposit-row,
+      .row-item.asset-row{
+        grid-template-columns:1fr;
+      }
+      .title-wrap h1{ font-size:30px; }
+      .summary-value{ font-size:34px; }
+      .nav-left h3{ font-size:24px; }
+      .panel-title{ font-size:22px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="title-wrap">
+        <h1>M9｜資產管理系統</h1>
+        <div class="sub">專業資產負債表 / 現金流管理 / 資產配置建議 / 可擴充輸入區</div>
+      </div>
+      <div class="top-actions">
+        <button class="btn secondary" onclick="expandAll()">全部展開</button>
+        <button class="btn secondary" onclick="collapseAll()">全部收合</button>
+        <button class="btn blue" onclick="recalc()">重新計算</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="page">
+    <div class="banner card">
+      <div class="banner-grid">
+        <div class="banner-note">
+          <h3>本頁定位</h3>
+          <ul>
+            <li>把 FCN、股票、存款、負債、生活費、收入放在同一頁看全貌。</li>
+            <li>左側是輸入區，可新增 / 刪除 / 擴充欄位內容。</li>
+            <li>右側是 dashboard 與分析建議，會隨數字即時更新。</li>
+            <li>先求簡單清楚，再慢慢升級成完整財務管理中樞。</li>
+          </ul>
+        </div>
+        <div class="banner-box">
+          <h3>建議使用流程</h3>
+          <ul>
+            <li>先輸入 FCN、股票、存款、負債。</li>
+            <li>再補上主要日常支出與每月收入。</li>
+            <li>看淨資產、負債比率、每月淨現金流是否健康。</li>
+            <li>透過 M2 / M6 持續管理 FCN 與接股後部位。</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="summary-grid">
+      <div class="card summary-card blue">
+        <div class="summary-label">總資產 (TWD)</div>
+        <div class="summary-value" id="sumAssets">0</div>
+        <div class="summary-sub">FCN / 股票 / 存款 / 其他資產</div>
+      </div>
+      <div class="card summary-card red">
+        <div class="summary-label">總負債 (TWD)</div>
+        <div class="summary-value" id="sumLiabilities">0</div>
+        <div class="summary-sub">房貸 / 信貸 / 股票質押 / 其他負債</div>
+      </div>
+      <div class="card summary-card green">
+        <div class="summary-label">淨資產 (TWD)</div>
+        <div class="summary-value" id="sumNetWorth">0</div>
+        <div class="summary-sub">總資產 - 總負債</div>
+      </div>
+      <div class="card summary-card orange">
+        <div class="summary-label">負債比率</div>
+        <div class="summary-value" id="sumDebtRatio">0%</div>
+        <div class="summary-sub">總負債 / 總資產</div>
+      </div>
+      <div class="card summary-card purple">
+        <div class="summary-label">每月淨現金流</div>
+        <div class="summary-value" id="sumCashflow">0</div>
+        <div class="summary-sub">月收入 - 月支出 - 月債務支出</div>
+      </div>
+    </div>
+
+    <div class="nav-grid">
+      <div class="card nav-card blue">
+        <div class="nav-left">
+          <h3>FCN 資產分析與管理</h3>
+          <p>連到 M2 Dashboard，管理 FCN 持倉健康、提早出場、到期專區與風險追蹤。</p>
+          <a class="btn blue" href="./m2.html">前往 M2 Dashboard</a>
+        </div>
+        <div class="nav-icon">📘</div>
+      </div>
+      <div class="card nav-card green">
+        <div class="nav-left">
+          <h3>股票資產分析與管理</h3>
+          <p>連到 M6 Dashboard，管理接股後股票部位、技術評估、市場評論與操作提醒。</p>
+          <a class="btn green" href="./m6.html">前往 M6 Dashboard</a>
+        </div>
+        <div class="nav-icon">📗</div>
+      </div>
+    </div>
+
+    <div class="layout">
+      <div>
+        <section class="card panel" data-panel>
+          <div class="panel-header" onclick="togglePanel(this)">
+            <div>
+              <div class="panel-title">輸入區｜資產</div>
+              <div class="panel-sub">FCN / 股票 / 其他資產，可隨時擴充</div>
+            </div>
+            <div class="collapse-btn">−</div>
+          </div>
+          <div class="panel-body">
+            <div class="form-grid">
+              <div class="input-card">
+                <h4>FCN 資產</h4>
+                <div id="fcnAssetRows" class="rows"></div>
+                <button class="mini-btn add" onclick="addAssetRow('fcnAssetRows','FCN資產','','0','備註')">＋ 新增 FCN 資產</button>
+              </div>
+
+              <div class="input-card">
+                <h4>股票資產</h4>
+                <div id="stockAssetRows" class="rows"></div>
+                <button class="mini-btn add" onclick="addAssetRow('stockAssetRows','股票資產','','0','備註')">＋ 新增 股票資產</button>
+              </div>
+
+              <div class="input-card">
+                <h4>其他資產</h4>
+                <div id="otherAssetRows" class="rows"></div>
+                <button class="mini-btn add" onclick="addAssetRow('otherAssetRows','其他資產','','0','備註')">＋ 新增 其他資產</button>
+                <div class="hint">可用來加：保單現值、其他投資、應收款、黃金、基金等。</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card panel" data-panel>
+          <div class="panel-header" onclick="togglePanel(this)">
+            <div>
+              <div class="panel-title">輸入區｜負債</div>
+              <div class="panel-sub">房貸 / 信貸 / 股票質押 / 其他貸款</div>
+            </div>
+            <div class="collapse-btn">−</div>
+          </div>
+          <div class="panel-body">
+            <div class="input-card">
+              <h4>負債項目</h4>
+              <div id="liabilityRows" class="rows"></div>
+              <button class="mini-btn add" onclick="addLiabilityRow()">＋ 新增負債</button>
+              <div class="hint">每筆可填：剩餘本金、年利率、每月本金、每月利息。股票質押可只填每月利息。</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card panel" data-panel>
+          <div class="panel-header" onclick="togglePanel(this)">
+            <div>
+              <div class="panel-title">輸入區｜支出 / 收入 / 存款</div>
+              <div class="panel-sub">生活費可持續擴充，收入與存款分開管理</div>
+            </div>
+            <div class="collapse-btn">−</div>
+          </div>
+          <div class="panel-body">
+            <div class="form-grid">
+              <div class="input-card">
+                <h4>主要日常支出</h4>
+                <div id="expenseRows" class="rows"></div>
+                <button class="mini-btn add" onclick="addExpenseRow()">＋ 新增支出</button>
+              </div>
+
+              <div class="input-card">
+                <h4>收入</h4>
+                <div id="incomeRows" class="rows"></div>
+                <button class="mini-btn add" onclick="addIncomeRow()">＋ 新增收入</button>
+              </div>
+
+              <div class="input-card">
+                <h4>存款</h4>
+                <div id="depositRows" class="rows"></div>
+                <button class="mini-btn add" onclick="addDepositRow()">＋ 新增存款</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card panel" data-panel>
+          <div class="panel-header" onclick="togglePanel(this)">
+            <div>
+              <div class="panel-title">輸入區｜補充說明</div>
+              <div class="panel-sub">策略註記 / 家庭規劃 / 特殊支出 / 風險提醒</div>
+            </div>
+            <div class="collapse-btn">−</div>
+          </div>
+          <div class="panel-body">
+            <div class="input-card">
+              <h4>財務備註</h4>
+              <textarea id="noteBox" placeholder="例如：第10個月有工程款支出、第25個月需支付房屋尾款、需保留半年生活備用金..."></textarea>
+              <div class="hint">這區先保留給 M9 後續升級，例如：現金流壓力測試、重大支出提醒、到期追蹤。</div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div>
+        <div class="dashboard-grid">
+          <section class="card table-card">
+            <h3>資產負債總覽</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>分類</th>
+                  <th>金額 (TWD)</th>
+                  <th>占總資產比重</th>
+                  <th>說明</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>FCN 資產</td>
+                  <td id="tblFcnAsset">0</td>
+                  <td id="tblFcnAssetPct">0%</td>
+                  <td>FCN 部位總值</td>
+                </tr>
+                <tr>
+                  <td>股票資產</td>
+                  <td id="tblStockAsset">0</td>
+                  <td id="tblStockAssetPct">0%</td>
+                  <td>股票 / ETF / 接股部位</td>
+                </tr>
+                <tr>
+                  <td>存款</td>
+                  <td id="tblDeposits">0</td>
+                  <td id="tblDepositsPct">0%</td>
+                  <td>NTD / USD 存款</td>
+                </tr>
+                <tr>
+                  <td>其他資產</td>
+                  <td id="tblOtherAsset">0</td>
+                  <td id="tblOtherAssetPct">0%</td>
+                  <td>可擴充項目</td>
+                </tr>
+                <tr>
+                  <td>總負債</td>
+                  <td id="tblDebt">0</td>
+                  <td id="tblDebtPct">0%</td>
+                  <td>房貸 / 信貸 / 股票質押</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td>淨資產</td>
+                  <td id="tblNetWorth">0</td>
+                  <td colspan="2">資產扣除負債後淨值</td>
+                </tr>
+              </tfoot>
+            </table>
+          </section>
+
+          <section class="card table-card">
+            <h3>現金流總覽</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>項目</th>
+                  <th>每月金額 (TWD)</th>
+                  <th>備註</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>每月收入</td>
+                  <td id="tblMonthlyIncome">0</td>
+                  <td>固定 / 非固定收入換算月值</td>
+                </tr>
+                <tr>
+                  <td>每月生活支出</td>
+                  <td id="tblMonthlyExpense">0</td>
+                  <td>生活費 / 教育 / 管理費等</td>
+                </tr>
+                <tr>
+                  <td>每月債務支出</td>
+                  <td id="tblMonthlyDebtPay">0</td>
+                  <td>本金 + 利息</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td>每月淨現金流</td>
+                  <td id="tblMonthlyNet">0</td>
+                  <td id="tblMonthlyTag">待計算</td>
+                </tr>
+              </tfoot>
+            </table>
+          </section>
+        </div>
+
+        <div class="dashboard-grid">
+          <section class="card table-card">
+            <h3>負債總覽</h3>
+            <table id="liabilityTable">
+              <thead>
+                <tr>
+                  <th>項目</th>
+                  <th>剩餘本金</th>
+                  <th>年利率</th>
+                  <th>月本金</th>
+                  <th>月利息</th>
+                  <th>月支出</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </section>
+
+          <section class="card table-card">
+            <h3>存款總覽</h3>
+            <table id="depositTable">
+              <thead>
+                <tr>
+                  <th>幣別</th>
+                  <th>帳戶</th>
+                  <th>餘額</th>
+                  <th>TWD 換算</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </section>
+        </div>
+
+        <div class="dashboard-grid">
+          <section class="card table-card">
+            <h3>收入來源</h3>
+            <table id="incomeTable">
+              <thead>
+                <tr>
+                  <th>項目</th>
+                  <th>頻率</th>
+                  <th>金額</th>
+                  <th>月換算</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </section>
+
+          <section class="card table-card">
+            <h3>主要日常支出</h3>
+            <table id="expenseTable">
+              <thead>
+                <tr>
+                  <th>項目</th>
+                  <th>頻率</th>
+                  <th>金額</th>
+                  <th>月換算</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </section>
+        </div>
+
+        <div class="analysis-grid">
+          <section class="card analysis-card blue">
+            <div class="badge good" id="healthBadge">財務健康度：待計算</div>
+            <h4>財務健康</h4>
+            <div class="big-number" id="healthScore">--</div>
+            <div id="healthText" style="line-height:1.75;color:#334155;">
+              先輸入數字後自動生成。
+            </div>
+          </section>
+
+          <section class="card analysis-card green">
+            <h4>資產配置建議</h4>
+            <ul id="assetAdvice">
+              <li>等待輸入資料後產生。</li>
+            </ul>
+          </section>
+
+          <section class="card analysis-card orange">
+            <h4>負債提醒</h4>
+            <ul id="debtAdvice">
+              <li>等待輸入資料後產生。</li>
+            </ul>
+          </section>
+
+          <section class="card analysis-card purple">
+            <h4>現金流建議</h4>
+            <ul id="cashAdvice">
+              <li>等待輸入資料後產生。</li>
+            </ul>
+          </section>
+        </div>
+
+        <div class="footer-tip">
+          小提醒：這版是 M9 第一版骨架，已經可以輸入、增減項目、展開收合與自動彙總。
+          下一步可再加：<b>localStorage 儲存、每月趨勢圖、重大支出提醒、房貸攤還試算、美元匯率自動換算</b>。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const FX_USD_TO_TWD = 33;
+
+    function formatNum(v){
+      const n = Number(v) || 0;
+      return n.toLocaleString("zh-Hant-TW", { maximumFractionDigits: 0 });
+    }
+    function val(el){
+      return Number(el?.value || 0) || 0;
+    }
+    function monthlyValue(amount, freq){
+      const a = Number(amount) || 0;
+      if (freq === "monthly") return a;
+      if (freq === "quarterly") return a / 3;
+      if (freq === "yearly") return a / 12;
+      if (freq === "oneoff") return 0;
+      return a;
+    }
+
+    function panelList(){
+      return [...document.querySelectorAll("[data-panel]")];
+    }
+    function togglePanel(header){
+      const panel = header.closest("[data-panel]");
+      panel.classList.toggle("collapsed");
+      const btn = panel.querySelector(".collapse-btn");
+      btn.textContent = panel.classList.contains("collapsed") ? "+" : "−";
+    }
+    function expandAll(){
+      panelList().forEach(p=>{
+        p.classList.remove("collapsed");
+        const btn = p.querySelector(".collapse-btn");
+        if(btn) btn.textContent = "−";
+      });
+    }
+    function collapseAll(){
+      panelList().forEach(p=>{
+        p.classList.add("collapsed");
+        const btn = p.querySelector(".collapse-btn");
+        if(btn) btn.textContent = "+";
+      });
+    }
+
+    function createInput(type="text", value="", placeholder=""){
+      const input = document.createElement("input");
+      input.type = type;
+      input.value = value;
+      input.placeholder = placeholder;
+      input.oninput = recalc;
+      return input;
+    }
+    function createSelect(options, value){
+      const s = document.createElement("select");
+      options.forEach(([v,t])=>{
+        const o = document.createElement("option");
+        o.value = v;
+        o.textContent = t;
+        if(v === value) o.selected = true;
+        s.appendChild(o);
+      });
+      s.onchange = recalc;
+      return s;
+    }
+    function createDelButton(row){
+      const btn = document.createElement("button");
+      btn.className = "mini-btn del";
+      btn.textContent = "刪除";
+      btn.onclick = () => {
+        row.remove();
+        recalc();
+      };
+      return btn;
+    }
+
+    function addAssetRow(targetId, name="", category="", amount=0, note=""){
+      const wrap = document.getElementById(targetId);
+      const row = document.createElement("div");
+      row.className = "row-item asset-row";
+
+      const i1 = createInput("text", name, "項目名稱");
+      i1.dataset.role = "name";
+      const i2 = createInput("text", category, "分類/帳戶");
+      i2.dataset.role = "category";
+      const i3 = createInput("number", amount, "金額(TWD)");
+      i3.dataset.role = "amount";
+      const i4 = createInput("text", note, "備註");
+      i4.dataset.role = "note";
+
+      row.append(i1, i2, i3, i4, createDelButton(row));
+      wrap.appendChild(row);
+      recalc();
+    }
+
+    function addLiabilityRow(name="", principal=0, rate=0, monthlyPrincipal=0, monthlyInterest=0){
+      const wrap = document.getElementById("liabilityRows");
+      const row = document.createElement("div");
+      row.className = "row-item";
+
+      const i1 = createInput("text", name, "項目名稱");
+      i1.dataset.role = "name";
+      const i2 = createInput("number", principal, "剩餘本金");
+      i2.dataset.role = "principal";
+      const i3 = createInput("number", rate, "年利率%");
+      i3.dataset.role = "rate";
+      const i4 = createInput("number", monthlyPrincipal, "每月本金");
+      i4.dataset.role = "monthlyPrincipal";
+      const i5 = createInput("number", monthlyInterest, "每月利息");
+      i5.dataset.role = "monthlyInterest";
+
+      row.append(i1, i2, i3, i4, i5, createDelButton(row));
+      wrap.appendChild(row);
+      recalc();
+    }
+
+    function addExpenseRow(name="", freq="monthly", amount=0, note=""){
+      const wrap = document.getElementById("expenseRows");
+      const row = document.createElement("div");
+      row.className = "row-item expense-row";
+
+      const i1 = createInput("text", name, "支出名稱");
+      i1.dataset.role = "name";
+      const i2 = createSelect([
+        ["monthly","每月"],
+        ["quarterly","每3個月"],
+        ["yearly","每年"],
+        ["oneoff","一次性"]
+      ], freq);
+      i2.dataset.role = "freq";
+      const i3 = createInput("number", amount, "金額");
+      i3.dataset.role = "amount";
+      const i4 = createInput("text", note, "備註");
+      i4.dataset.role = "note";
+
+      row.append(i1, i2, i3, i4, createDelButton(row));
+      wrap.appendChild(row);
+      recalc();
+    }
+
+    function addIncomeRow(name="", freq="monthly", amount=0, note=""){
+      const wrap = document.getElementById("incomeRows");
+      const row = document.createElement("div");
+      row.className = "row-item expense-row";
+
+      const i1 = createInput("text", name, "收入名稱");
+      i1.dataset.role = "name";
+      const i2 = createSelect([
+        ["monthly","每月"],
+        ["quarterly","每3個月"],
+        ["yearly","每年"],
+        ["oneoff","一次性"]
+      ], freq);
+      i2.dataset.role = "freq";
+      const i3 = createInput("number", amount, "金額");
+      i3.dataset.role = "amount";
+      const i4 = createInput("text", note, "備註");
+      i4.dataset.role = "note";
+
+      row.append(i1, i2, i3, i4, createDelButton(row));
+      wrap.appendChild(row);
+      recalc();
+    }
+
+    function addDepositRow(currency="NTD", account="", balance=0){
+      const wrap = document.getElementById("depositRows");
+      const row = document.createElement("div");
+      row.className = "row-item deposit-row";
+
+      const i1 = createSelect([
+        ["NTD","NTD"],
+        ["USD","USD"]
+      ], currency);
+      i1.dataset.role = "currency";
+      const i2 = createInput("text", account, "帳戶名稱");
+      i2.dataset.role = "account";
+      const i3 = createInput("number", balance, "餘額");
+      i3.dataset.role = "balance";
+
+      row.append(i1, i2, i3, createDelButton(row));
+      wrap.appendChild(row);
+      recalc();
+    }
+
+    function readAssetRows(id){
+      return [...document.querySelectorAll(`#${id} .row-item`)].map(row => ({
+        name: row.querySelector('[data-role="name"]').value || "",
+        category: row.querySelector('[data-role="category"]').value || "",
+        amount: val(row.querySelector('[data-role="amount"]')),
+        note: row.querySelector('[data-role="note"]').value || ""
+      }));
+    }
+    function readLiabilityRows(){
+      return [...document.querySelectorAll(`#liabilityRows .row-item`)].map(row => ({
+        name: row.querySelector('[data-role="name"]').value || "",
+        principal: val(row.querySelector('[data-role="principal"]')),
+        rate: val(row.querySelector('[data-role="rate"]')),
+        monthlyPrincipal: val(row.querySelector('[data-role="monthlyPrincipal"]')),
+        monthlyInterest: val(row.querySelector('[data-role="monthlyInterest"]'))
+      }));
+    }
+    function readExpenseRows(){
+      return [...document.querySelectorAll(`#expenseRows .row-item`)].map(row => ({
+        name: row.querySelector('[data-role="name"]').value || "",
+        freq: row.querySelector('[data-role="freq"]').value,
+        amount: val(row.querySelector('[data-role="amount"]')),
+        note: row.querySelector('[data-role="note"]').value || ""
+      }));
+    }
+    function readIncomeRows(){
+      return [...document.querySelectorAll(`#incomeRows .row-item`)].map(row => ({
+        name: row.querySelector('[data-role="name"]').value || "",
+        freq: row.querySelector('[data-role="freq"]').value,
+        amount: val(row.querySelector('[data-role="amount"]')),
+        note: row.querySelector('[data-role="note"]').value || ""
+      }));
+    }
+    function readDepositRows(){
+      return [...document.querySelectorAll(`#depositRows .row-item`)].map(row => ({
+        currency: row.querySelector('[data-role="currency"]').value,
+        account: row.querySelector('[data-role="account"]').value || "",
+        balance: val(row.querySelector('[data-role="balance"]'))
+      }));
+    }
+
+    function fillTableBody(tableId, rows){
+      const tbody = document.querySelector(`#${tableId} tbody`);
+      tbody.innerHTML = "";
+      rows.forEach(cells => {
+        const tr = document.createElement("tr");
+        cells.forEach(cell => {
+          const td = document.createElement("td");
+          td.textContent = cell;
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
+      if (!rows.length) {
+        const tr = document.createElement("tr");
+        const td = document.createElement("td");
+        td.colSpan = document.querySelectorAll(`#${tableId} thead th`).length;
+        td.textContent = "尚未輸入資料";
+        tr.appendChild(td);
+        tbody.appendChild(tr);
+      }
+    }
+
+    function recalc(){
+      const fcnAssets = readAssetRows("fcnAssetRows");
+      const stockAssets = readAssetRows("stockAssetRows");
+      const otherAssets = readAssetRows("otherAssetRows");
+      const liabilities = readLiabilityRows();
+      const expenses = readExpenseRows();
+      const incomes = readIncomeRows();
+      const deposits = readDepositRows();
+
+      const fcnSum = fcnAssets.reduce((s,x)=>s+x.amount,0);
+      const stockSum = stockAssets.reduce((s,x)=>s+x.amount,0);
+      const otherAssetSum = otherAssets.reduce((s,x)=>s+x.amount,0);
+      const depositSum = deposits.reduce((s,x)=>s+(x.currency==="USD" ? x.balance * FX_USD_TO_TWD : x.balance),0);
+
+      const totalAssets = fcnSum + stockSum + otherAssetSum + depositSum;
+      const totalDebt = liabilities.reduce((s,x)=>s+x.principal,0);
+      const netWorth = totalAssets - totalDebt;
+      const debtRatio = totalAssets > 0 ? totalDebt / totalAssets : 0;
+
+      const monthlyDebtPay = liabilities.reduce((s,x)=>s+x.monthlyPrincipal+x.monthlyInterest,0);
+      const monthlyExpense = expenses.reduce((s,x)=>s+monthlyValue(x.amount,x.freq),0);
+      const monthlyIncome = incomes.reduce((s,x)=>s+monthlyValue(x.amount,x.freq),0);
+      const monthlyNet = monthlyIncome - monthlyExpense - monthlyDebtPay;
+
+      document.getElementById("sumAssets").textContent = formatNum(totalAssets);
+      document.getElementById("sumLiabilities").textContent = formatNum(totalDebt);
+      document.getElementById("sumNetWorth").textContent = formatNum(netWorth);
+      document.getElementById("sumDebtRatio").textContent = (debtRatio*100).toFixed(2) + "%";
+      document.getElementById("sumCashflow").textContent = formatNum(monthlyNet);
+
+      const pct = (v) => totalAssets > 0 ? ((v / totalAssets) * 100).toFixed(1) + "%" : "0%";
+      document.getElementById("tblFcnAsset").textContent = formatNum(fcnSum);
+      document.getElementById("tblFcnAssetPct").textContent = pct(fcnSum);
+      document.getElementById("tblStockAsset").textContent = formatNum(stockSum);
+      document.getElementById("tblStockAssetPct").textContent = pct(stockSum);
+      document.getElementById("tblDeposits").textContent = formatNum(depositSum);
+      document.getElementById("tblDepositsPct").textContent = pct(depositSum);
+      document.getElementById("tblOtherAsset").textContent = formatNum(otherAssetSum);
+      document.getElementById("tblOtherAssetPct").textContent = pct(otherAssetSum);
+      document.getElementById("tblDebt").textContent = formatNum(totalDebt);
+      document.getElementById("tblDebtPct").textContent = pct(totalDebt);
+      document.getElementById("tblNetWorth").textContent = formatNum(netWorth);
+
+      document.getElementById("tblMonthlyIncome").textContent = formatNum(monthlyIncome);
+      document.getElementById("tblMonthlyExpense").textContent = formatNum(monthlyExpense);
+      document.getElementById("tblMonthlyDebtPay").textContent = formatNum(monthlyDebtPay);
+      document.getElementById("tblMonthlyNet").textContent = formatNum(monthlyNet);
+      document.getElementById("tblMonthlyTag").textContent =
+        monthlyNet > 50000 ? "現金流健康" :
+        monthlyNet > 0 ? "現金流尚可" :
+        "現金流偏緊";
+
+      fillTableBody("liabilityTable", liabilities.map(x => [
+        x.name || "未命名",
+        formatNum(x.principal),
+        x.rate ? x.rate + "%" : "—",
+        formatNum(x.monthlyPrincipal),
+        formatNum(x.monthlyInterest),
+        formatNum(x.monthlyPrincipal + x.monthlyInterest)
+      ]));
+
+      fillTableBody("depositTable", deposits.map(x => [
+        x.currency,
+        x.account || "未命名",
+        x.currency === "USD" ? x.balance.toLocaleString("zh-Hant-TW", {maximumFractionDigits:0}) : formatNum(x.balance),
+        formatNum(x.currency === "USD" ? x.balance * FX_USD_TO_TWD : x.balance)
+      ]));
+
+      fillTableBody("incomeTable", incomes.map(x => [
+        x.name || "未命名",
+        freqText(x.freq),
+        formatNum(x.amount),
+        formatNum(monthlyValue(x.amount, x.freq))
+      ]));
+
+      fillTableBody("expenseTable", expenses.map(x => [
+        x.name || "未命名",
+        freqText(x.freq),
+        formatNum(x.amount),
+        formatNum(monthlyValue(x.amount, x.freq))
+      ]));
+
+      buildAdvice({
+        totalAssets,totalDebt,netWorth,debtRatio,
+        monthlyDebtPay,monthlyExpense,monthlyIncome,monthlyNet,
+        fcnSum,stockSum,depositSum,otherAssetSum
+      });
+    }
+
+    function freqText(v){
+      if(v === "monthly") return "每月";
+      if(v === "quarterly") return "每3個月";
+      if(v === "yearly") return "每年";
+      if(v === "oneoff") return "一次性";
+      return v;
+    }
+
+    function setList(id, items){
+      const el = document.getElementById(id);
+      el.innerHTML = "";
+      items.forEach(text => {
+        const li = document.createElement("li");
+        li.textContent = text;
+        el.appendChild(li);
+      });
+    }
+
+    function buildAdvice(data){
+      const {
+        totalAssets,totalDebt,netWorth,debtRatio,
+        monthlyDebtPay,monthlyExpense,monthlyIncome,monthlyNet,
+        fcnSum,stockSum,depositSum
+      } = data;
+
+      let health = 50;
+      if (debtRatio < 0.35) health += 18;
+      else if (debtRatio < 0.55) health += 10;
+      else if (debtRatio < 0.7) health += 2;
+      else health -= 12;
+
+      if (monthlyNet > 50000) health += 16;
+      else if (monthlyNet > 0) health += 8;
+      else health -= 15;
+
+      if (depositSum > (monthlyExpense + monthlyDebtPay) * 6) health += 12;
+      else if (depositSum > (monthlyExpense + monthlyDebtPay) * 3) health += 6;
+      else health -= 8;
+
+      if (netWorth > 0) health += 10;
+      if (fcnSum > totalAssets * 0.45) health -= 6;
+      if (stockSum > totalAssets * 0.45) health -= 4;
+
+      health = Math.max(1, Math.min(100, Math.round(health)));
+
+      let badgeText = "財務健康度：普通";
+      let badgeClass = "badge warn";
+      let healthText = "目前資產與負債尚可，但建議持續觀察現金流與集中風險。";
+
+      if (health >= 78){
+        badgeText = "財務健康度：良好";
+        badgeClass = "badge good";
+        healthText = "整體結構偏穩健，現金流與資產緩衝相對健康，可把重點放在優化配置效率。";
+      } else if (health < 55){
+        badgeText = "財務健康度：需留意";
+        badgeClass = "badge risk";
+        healthText = "目前結構已有壓力，建議優先檢查負債支出與高波動資產占比，避免現金流被壓縮。";
+      }
+
+      const hb = document.getElementById("healthBadge");
+      hb.className = badgeClass;
+      hb.textContent = badgeText;
+      document.getElementById("healthScore").textContent = `${health}/100`;
+      document.getElementById("healthText").textContent = healthText;
+
+      const assetAdvice = [];
+      if (fcnSum > totalAssets * 0.4) assetAdvice.push("FCN 比例偏高，可分散到較高流動性的資產，降低單一結構性商品比重。");
+      if (stockSum > totalAssets * 0.4) assetAdvice.push("股票部位偏高，建議搭配現金或低波動資產，避免股市波動放大總資產起伏。");
+      if (depositSum < (monthlyExpense + monthlyDebtPay) * 6) assetAdvice.push("存款緩衝偏少，建議逐步建立 6 個月以上生活與債務準備金。");
+      if (!assetAdvice.length) assetAdvice.push("資產配置目前相對平衡，可進一步追求收益效率與流動性管理。");
+
+      const debtAdvice = [];
+      if (debtRatio > 0.65) debtAdvice.push("總負債比率偏高，建議優先盤點高利率負債，避免槓桿過度集中。");
+      if (monthlyDebtPay > monthlyIncome * 0.45) debtAdvice.push("每月債務支出占收入比例偏高，需注意未來現金流壓力。");
+      if (debtRatio <= 0.65 && monthlyDebtPay <= monthlyIncome * 0.45) debtAdvice.push("目前債務支出尚在可控範圍，但仍應持續監測利率變動與到期結構。");
+
+      const cashAdvice = [];
+      if (monthlyNet > 50000) cashAdvice.push("每月淨現金流不錯，可考慮部分投入低波動配置或預留重大支出準備。");
+      else if (monthlyNet > 0) cashAdvice.push("每月仍有正現金流，建議優先補足緊急預備金與未來大額支出準備。");
+      else cashAdvice.push("每月現金流為負，應先調整支出或降低債務壓力，再考慮新增投資。");
+
+      if (monthlyExpense > monthlyIncome * 0.5) cashAdvice.push("日常支出占收入比偏高，可檢查固定支出與非必要支出。");
+      if (monthlyDebtPay > monthlyExpense) cashAdvice.push("債務支出已高於日常生活支出，需特別留意槓桿風險。");
+
+      setList("assetAdvice", assetAdvice);
+      setList("debtAdvice", debtAdvice);
+      setList("cashAdvice", cashAdvice);
+    }
+
+    function init(){
+      addAssetRow("fcnAssetRows","FCN 資產總值","FCN Pool",4000000,"可先填估值");
+      addAssetRow("stockAssetRows","股票資產總值","接股 / 股票",1500000,"");
+      addAssetRow("otherAssetRows","其他資產","保單 / 其他",0,"");
+
+      addLiabilityRow("房貸 1｜新竹竹北 哈洛德",8000000,2.5,16667,8333);
+      addLiabilityRow("房貸 2｜桃園青埔 帝璽",0,2.3,0,0);
+      addLiabilityRow("信貸 3｜Bank XX",2000000,2.6,66667,4333);
+      addLiabilityRow("股票質押｜券商 B",28000000,3.0,0,70000);
+
+      addExpenseRow("小孩補習費","monthly",15000,"");
+      addExpenseRow("生活食材","monthly",20000,"");
+      addExpenseRow("三節禮金","yearly",50000,"");
+      addExpenseRow("水電瓦斯電信","monthly",5000,"");
+      addExpenseRow("社區管理費","quarterly",18000,"");
+
+      addIncomeRow("收入 A","monthly",120000,"");
+      addIncomeRow("收入 B","monthly",30000,"");
+
+      addDepositRow("NTD","NTD A",800000);
+      addDepositRow("NTD","NTD B",360000);
+      addDepositRow("USD","USD A",25000);
+      addDepositRow("USD","USD B",10000);
+
+      recalc();
+    }
+
+    init();
+  </script>
+</body>
+</html>
