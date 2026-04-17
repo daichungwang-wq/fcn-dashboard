@@ -305,7 +305,7 @@
 
     .detail-grid{
       display:grid;
-      grid-template-columns:repeat(2,minmax(0,1fr));
+      grid-template-columns:1fr;
       gap:12px;
       margin-bottom:16px;
     }
@@ -1225,14 +1225,19 @@ ${safeText(stock.final_note || "-")}
       const overviewHtml = `
         <div class="detail-grid">
           <div class="mini">
-            <div class="label">合併持倉概況</div>
+            <div class="label">持倉概況</div>
             <div class="kv"><div class="small">數量</div><div>${fmtInt(stock.quantity)} 股</div></div>
             <div class="kv"><div class="small">成本</div><div>$${fmtNum(stock.cost)}</div></div>
             <div class="kv"><div class="small">現價</div><div>$${fmtNum(stock.current)}</div></div>
             <div class="kv"><div class="small">損益</div><div class="${moneyClass(stock.pnl_amount)}">${Number(stock.pnl_amount) >= 0 ? "+" : ""}$${fmtInt(stock.pnl_amount)} / ${fmtNum(stock.pnl_pct)}%</div></div>
             <div class="kv"><div class="small">來源</div><div>${safeText(stock.source_id || "-")}</div></div>
           </div>
-          
+
+          <div class="mini">
+            <div class="label">Sell Record Summary</div>
+            ${renderSellSummaryTable(sellSummaryRows)}
+          </div>
+
           <div class="mini">
             <div class="label">技術 / 今日評估</div>
             <div class="kv"><div class="small">today score</div><div>${stock.today_score ?? "-"}</div></div>
@@ -1321,8 +1326,7 @@ ${safeText(stock.final_note || "-")}
             <div class="comment-box">⚠️ ${safeText(stock.exposure_alert.text)}</div>
           </div>
         `, true) : ""}
-        ${renderSectionBox("sec_sellsummary", "Sell Record Summary", sellSummaryHtml, true)}
-        ${renderSectionBox("sec_valuation", "Why / Valuation / Final Note", whyValuationHtml, true)}
+                ${renderSectionBox("sec_valuation", "Why / Valuation / Final Note", whyValuationHtml, true)}
       `;
     }
 
