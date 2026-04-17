@@ -949,6 +949,27 @@
           </section>
         </div>
 
+
+        <section class="card table-card" style="margin-top:16px;">
+          <h3>FCN 利息分析（來自 fcn_pool.json）</h3>
+          <div id="fcnSummaryBox" style="line-height:1.8; color:#334155; margin-bottom:12px;">載入中...</div>
+          <table style="width:100%; margin-top:12px;">
+            <thead>
+              <tr>
+                <th>FCN</th>
+                <th>銀行</th>
+                <th>本月</th>
+                <th>次月</th>
+                <th>次次月</th>
+                <th>狀態</th>
+              </tr>
+            </thead>
+            <tbody id="fcnTableBody">
+              <tr><td colspan="6">載入中...</td></tr>
+            </tbody>
+          </table>
+        </section>
+
         <div class="footer-tip">
           本版已支援：<b>自動儲存、JSON 匯入匯出、圖表、可擴充輸入區、一鍵展開收合</b>。
           下個版本可以再升級：<b>房貸攤還試算、年度現金流預估、重大支出時間軸、資產歷史趨勢圖</b>。
@@ -957,10 +978,7 @@
     </div>
   </div>
 
-      <script type="module">
-import { loadFcnPool, buildFcnSummary, buildFcnTable } from "./js/m9/m9_fcn_engine.js";
-  
-  <script>
+      <script>
     const STORAGE_KEY = "m9_asset_management_v2";
     const PIE_COLORS = ["#2563eb","#16a34a","#f59e0b","#7c3aed"];
     let autoSaveTimer = null;
@@ -1297,6 +1315,79 @@ import { loadFcnPool, buildFcnSummary, buildFcnTable } from "./js/m9/m9_fcn_engi
       });
     }
 
+
+    let FCN_ENGINE = null;
+    let FCN_POOL = [];
+
+    function format(v){
+      return Number(v || 0).toLocaleString("zh-Hant-TW", { maximumFractionDigits: 0 });
+    }
+
+    function renderFcnSummary(s){
+      const el = document.getElementById("fcnSummaryBox");
+      if(!el) return;
+
+      if(!s || !s.total){
+        el.innerHTML = "FCN 利息資料尚未載入。";
+        return;
+      }
+
+      let html = `
+        <b>總利息：</b><br>
+        本月：${format(s.total.thisMonth)}<br>
+        次月：${format(s.total.nextMonth)}<br>
+        次次月：${format(s.total.thirdMonth)}<br><br>
+        <b>銀行分布：</b><br>
+      `;
+
+      const banks = s.byBank || {};
+      const bankNames = Object.keys(banks);
+      if (!bankNames.length) {
+        html += "目前沒有 active FCN。";
+      } else {
+        bankNames.forEach(bank => {
+          const b = banks[bank];
+          html += `${bank}：本月 ${format(b.thisMonth)} / 次月 ${format(b.nextMonth)} / 次次月 ${format(b.thirdMonth)}<br>`;
+        });
+      }
+
+      el.innerHTML = html;
+    }
+
+    function renderFcnTable(rows){
+      const tbody = document.getElementById("fcnTableBody");
+      if(!tbody) return;
+
+      tbody.innerHTML = "";
+
+      if(!rows || !rows.length){
+        tbody.innerHTML = '<tr><td colspan="6">目前沒有 active FCN。</td></tr>';
+        return;
+      }
+
+      rows.forEach(r => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${r.id || ""}</td>
+          <td>${r.bank || ""}</td>
+          <td>${format(r.thisMonth)}</td>
+          <td>${format(r.nextMonth)}</td>
+          <td>${format(r.thirdMonth)}</td>
+          <td>${r.earlyExit ? "🟢 即將出場" : "持有中"}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function refreshFcnIncomeSection(){
+      if(!FCN_ENGINE || !Array.isArray(FCN_POOL)) return;
+      const usdRate = Number(document.getElementById("usdRate")?.value || 33) || 33;
+      const fcnSummary = FCN_ENGINE.buildFcnSummary(FCN_POOL, usdRate);
+      const fcnTable = FCN_ENGINE.buildFcnTable(FCN_POOL, usdRate);
+      renderFcnSummary(fcnSummary);
+      renderFcnTable(fcnTable);
+    }
+
     function buildAdvice(data){
       const {
         totalAssets,totalDebt,netWorth,debtRatio,
@@ -1465,6 +1556,8 @@ import { loadFcnPool, buildFcnSummary, buildFcnTable } from "./js/m9/m9_fcn_engi
         {label:"負債", value:monthlyDebtPay, color:"#dc2626"},
         {label:"淨現金流", value:Math.max(monthlyNet,0), color:"#7c3aed"}
       ]);
+
+      refreshFcnIncomeSection();
 
       buildAdvice({
         totalAssets,totalDebt,netWorth,debtRatio,
@@ -1639,9 +1732,9 @@ import { loadFcnPool, buildFcnSummary, buildFcnTable } from "./js/m9/m9_fcn_engi
       if(!skipSave) saveData();
     }
 
-     async function init(){
+     
+async function init(){
 
-  // ===== 原本你的邏輯 =====
   const raw = localStorage.getItem(STORAGE_KEY);
 
   if(raw){
@@ -1663,17 +1756,18 @@ import { loadFcnPool, buildFcnSummary, buildFcnTable } from "./js/m9/m9_fcn_engi
     }
   }
 
-  // ===== 🔥 這段是你要新增的 =====
-  const pool = await loadFcnPool();
-
-  const fcnSummary = buildFcnSummary(pool, Number(document.getElementById("usdRate").value || 33));
-  const fcnTable = buildFcnTable(pool, Number(document.getElementById("usdRate").value || 33));
-
-  renderFcnSummary(fcnSummary);
-  renderFcnTable(fcnTable);
+  try{
+    FCN_ENGINE = await import("./js/m9/m9_fcn_engine.js");
+    FCN_POOL = await FCN_ENGINE.loadFcnPool();
+    refreshFcnIncomeSection();
+  }catch(err){
+    console.error("FCN engine 載入失敗", err);
+    renderFcnSummary(null);
+    renderFcnTable([]);
+  }
 }
 
-    init();
-  </script>
+init();
+</script>
 </body>
 </html>
