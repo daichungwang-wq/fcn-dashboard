@@ -1622,20 +1622,36 @@
       if(!skipSave) saveData();
     }
 
-    function init(){
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if(raw){
-        try{
-          const data = JSON.parse(raw);
-          loadFromData(data);
-          document.getElementById("saveStatus").textContent = "已讀取本機資料";
-          return;
-        }catch(err){
-          console.warn("M9 localStorage 讀取失敗，改用預設資料", err);
-        }
-      }
-      initDefault();
+      async function init(){
+
+  // 1️⃣ 先抓 localStorage（優先）
+  const raw = localStorage.getItem(STORAGE_KEY);
+
+  if(raw){
+    try{
+      const data = JSON.parse(raw);
+      loadFromData(data);
+      document.getElementById("saveStatus").textContent = "已讀取本機資料";
+      return;
+    }catch(e){
+      console.warn("localStorage 壞掉，改抓 JSON");
     }
+  }
+
+  // 2️⃣ 沒資料 → 抓 GitHub JSON
+  try{
+    const res = await fetch("./data/m9_asset_data.json");
+    const data = await res.json();
+
+    loadFromData(data);
+
+    document.getElementById("saveStatus").textContent = "已載入 GitHub JSON";
+
+  }catch(err){
+    console.warn("JSON 讀取失敗，使用預設資料", err);
+    initDefault();
+  }
+}
 
     init();
   </script>
