@@ -260,8 +260,22 @@ function renderFcnSummary(s){ const el=document.getElementById('fcnSummaryBox');
 function renderFcnTable(rows){ const tbody=document.getElementById('fcnTableBody'); tbody.innerHTML=''; if(!rows || !rows.length){ tbody.innerHTML='<tr><td colspan="7">尚無 FCN 資料</td></tr>'; return; } rows.forEach((r,idx)=>{ const tr=document.createElement('tr'); tr.innerHTML=`<td>${idx+1}</td><td>${r.id}</td><td>${r.bank}</td><td>${formatMoney2(r.thisMonth)}</td><td>${formatMoney2(r.nextMonth)}</td><td>${formatMoney2(r.thirdMonth)}</td><td>${r.earlyExit ? '🟢 即將出場' : '持有中'}</td>`; tbody.appendChild(tr);}); }
 function renderFcnCashflow12M(rows){ const box=document.getElementById('fcnCashflowChart'); box.innerHTML=''; if(!rows || !rows.length){ box.innerHTML='<div style="color:#64748b;">尚無 FCN 現金流資料</div>'; return; } const max=Math.max(...rows.map(r=>Number(r.value||0)),1); rows.forEach(r=>{ const row=document.createElement('div'); row.className='bar-row'; const width=Math.max(4,(Number(r.value||0)/max)*100); row.innerHTML=`<div>${r.label}</div><div class="bar-track"><div class="bar-fill" style="width:${width}%; background:#2563eb;"></div></div><div>${formatMoney2(r.value)}</div>`; box.appendChild(row);}); }
 
-async function refreshFcnSection(){ const usdRate=Number(document.getElementById('usdRate')?.value||33)||33; const engine=await loadFcnEngineModule(); if(!engine){ renderFcnSummary({totalCount:0,total:{thisMonth:0,nextMonth:0,thirdMonth:0},byBank:{}}); renderFcnTable([]); renderFcnCashflow12M([]); return; } const pool=await engine.loadFcnPool(); const fcnSummary=engine.buildFcnSummary(pool, usdRate); const fcnTable=engine.buildFcnTable(pool, usdRate); const cash12=engine.buildCashflow12M(pool, usdRate); renderFcnSummary(fcnSummary); renderFcnTable(fcnTable); renderFcnCashflow12M(cash12); }
 
+
+async function refreshFcnSection(){
+
+  const usd = Number(document.getElementById("usdRate")?.value || 33);
+
+  const pool = await window.M9_FCN.loadFcnPool();
+
+  const s = window.M9_FCN.buildFcnSummary(pool, usd);
+  const rows = window.M9_FCN.buildFcnTable(pool, usd);
+  const chart = window.M9_FCN.buildCashflow12M(pool, usd);
+
+  renderFcnSummary(s);
+  renderFcnTable(rows);
+  renderFcnChart(chart);
+}
 async function recalc(){ const usdRate=Number(document.getElementById('usdRate').value || 33) || 33; const fcnAssets=readAssetRows('fcnAssetRows'); const stockAssets=readAssetRows('stockAssetRows'); const otherAssets=readAssetRows('otherAssetRows'); const liabilities=readLiabilityRows(); const expenses=readExpenseRows(); const incomes=readIncomeRows(); const deposits=readDepositRows();
   const fcnSum=fcnAssets.reduce((s,x)=>s+x.amount,0), stockSum=stockAssets.reduce((s,x)=>s+x.amount,0), otherAssetSum=otherAssets.reduce((s,x)=>s+x.amount,0), depositSum=deposits.reduce((s,x)=>s+(x.currency==='USD'?x.balance*usdRate:x.balance),0);
   const totalAssets=fcnSum+stockSum+otherAssetSum+depositSum, totalDebt=liabilities.reduce((s,x)=>s+x.principal,0), netWorth=totalAssets-totalDebt, debtRatio=totalAssets>0?totalDebt/totalAssets:0;
