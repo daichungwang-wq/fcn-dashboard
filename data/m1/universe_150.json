@@ -99,6 +99,83 @@
   {"symbol":"BABA","category":"speculative","sector":"ECOMMERCE","style":["china"]},
   {"symbol":"PDD","category":"growth","sector":"ECOMMERCE","style":["growth"]},
 
+  [
+  {"symbol":"REGN","category":"core","sector":"HEALTHCARE","style":["quality"]},
+  {"symbol":"VRTX","category":"core","sector":"HEALTHCARE","style":["growth"]},
+  {"symbol":"ISRG","category":"core","sector":"HEALTHCARE","style":["moat"]},
+
+  {"symbol":"MDT","category":"income","sector":"HEALTHCARE","style":["cashflow"]},
+  {"symbol":"BMY","category":"income","sector":"HEALTHCARE","style":["cashflow"]},
+
+  {"symbol":"DUK","category":"defensive","sector":"UTILITY","style":["low_vol"]},
+  {"symbol":"NEE","category":"defensive","sector":"UTILITY","style":["low_vol"]},
+  {"symbol":"SO","category":"defensive","sector":"UTILITY","style":["low_vol"]},
+
+  {"symbol":"O","category":"income","sector":"REIT","style":["dividend"]},
+  {"symbol":"PLD","category":"core","sector":"REIT","style":["quality"]},
+  {"symbol":"AMT","category":"core","sector":"REIT","style":["infra"]},
+
+  {"symbol":"HD","category":"income","sector":"CONSUMER","style":["cashflow"]},
+  {"symbol":"LOW","category":"income","sector":"CONSUMER","style":["cashflow"]},
+
+  {"symbol":"SBUX","category":"growth","sector":"CONSUMER","style":["brand"]},
+  {"symbol":"MCD","category":"income","sector":"CONSUMER","style":["cashflow"]},
+
+  {"symbol":"BKNG","category":"growth","sector":"TRAVEL","style":["platform"]},
+  {"symbol":"ABNB","category":"growth","sector":"TRAVEL","style":["platform"]},
+
+  {"symbol":"FDX","category":"income","sector":"INDUSTRIAL","style":["cyclical"]},
+  {"symbol":"UPS","category":"income","sector":"INDUSTRIAL","style":["cashflow"]},
+
+  {"symbol":"ETN","category":"core","sector":"INDUSTRIAL","style":["quality"]},
+  {"symbol":"PH","category":"core","sector":"INDUSTRIAL","style":["quality"]},
+
+  {"symbol":"MMM","category":"income","sector":"INDUSTRIAL","style":["turnaround"]},
+
+  {"symbol":"SCHW","category":"growth","sector":"FINANCIAL","style":["cyclical"]},
+  {"symbol":"AXP","category":"core","sector":"FINANCIAL","style":["quality"]},
+
+  {"symbol":"V","category":"core","sector":"FINTECH","style":["moat"]},
+  {"symbol":"MA","category":"core","sector":"FINTECH","style":["moat"]},
+
+  {"symbol":"TTD","category":"growth","sector":"ADTECH","style":["growth"]},
+  {"symbol":"ROKU","category":"speculative","sector":"MEDIA","style":["high_beta"]},
+
+  {"symbol":"SNAP","category":"speculative","sector":"MEDIA","style":["high_beta"]},
+
+  {"symbol":"ZM","category":"growth","sector":"SOFTWARE","style":["post_growth"]},
+
+  {"symbol":"DOCU","category":"speculative","sector":"SOFTWARE","style":["high_beta"]},
+
+  {"symbol":"TWLO","category":"speculative","sector":"SOFTWARE","style":["high_beta"]},
+
+  {"symbol":"OKTA","category":"growth","sector":"CYBERSECURITY","style":["growth"]},
+
+  {"symbol":"DDOG","category":"growth","sector":"CLOUD","style":["growth"]},
+
+  {"symbol":"MDB","category":"growth","sector":"DATA","style":["growth"]},
+
+  {"symbol":"ZS","category":"growth","sector":"CYBERSECURITY","style":["growth"]},
+
+  {"symbol":"HCA","category":"income","sector":"HEALTHCARE","style":["cashflow"]},
+
+  {"symbol":"CI","category":"income","sector":"HEALTHCARE","style":["cashflow"]},
+
+  {"symbol":"ELV","category":"income","sector":"HEALTHCARE","style":["cashflow"]},
+
+  {"symbol":"TMO","category":"core","sector":"HEALTHCARE","style":["quality"]},
+
+  {"symbol":"DHR","category":"core","sector":"HEALTHCARE","style":["quality"]},
+
+  {"symbol":"APD","category":"core","sector":"CHEMICAL","style":["quality"]},
+
+  {"symbol":"LIN","category":"core","sector":"CHEMICAL","style":["quality"]},
+
+  {"symbol":"ECL","category":"core","sector":"CHEMICAL","style":["quality"]},
+    {
+ { "symbol": "LLY",  "category": "core",  "sector": "HEALTHCARE",  "style": ["high_growth", "moat", "pharma_leader"]},
+
+{  "symbol": "NVO",  "category": "core",  "sector": "HEALTHCARE",  "style": ["high_growth", "moat", "drug_leader"]},
   {"symbol":"SQ","category":"growth","sector":"FINTECH","style":["growth"]},
   {"symbol":"PYPL","category":"growth","sector":"FINTECH","style":["turnaround"]}
 ]
