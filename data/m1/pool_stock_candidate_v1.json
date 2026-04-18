@@ -1,0 +1,83 @@
+{
+  "symbol": "ANET",
+  "name": "Arista Networks",
+
+  "sector": "AI_SEMI",
+  "subsector": "NETWORKING",
+
+  "identity": {
+    "is_new_stock": true,
+    "already_in_pool30": false,
+    "source": "ai_suggested",
+    "priority": "high"
+  },
+
+  "system_recommendation": {
+    "bucket": "stock_pool_candidate",
+    "into_stock_pool": true,
+    "into_pool30": false,
+    "suggested_category": "growth"
+  },
+
+  "human_override": {
+    "into_stock_pool": true,
+    "into_pool30": false,
+    "final_category": "growth",
+    "note": ""
+  },
+
+  "engine_score": {
+    "baseline": 8.1,
+    "pure": 7.8,
+    "valuation": 8.4,
+    "trend": 8.9,
+    "structure": 6.3,
+    "timing": 5.8,
+    "quality": 7.2,
+    "raw": 80.3,
+    "std": 1.12
+  },
+
+  "system_reason": {
+    "why_yes": [
+      "純股分數高於 growth 平均",
+      "AI networking 補足 pool30 缺口",
+      "趨勢與估值同時成立"
+    ],
+    "why_no": [
+      "結構偏熱，不適合立即做 FCN"
+    ]
+  },
+
+  "ai_reason_short": [
+    "AI networking 核心受惠",
+    "補強 pool30 缺少網通代表",
+    "成長動能具延續性"
+  ],
+
+  "ai_reason_detail": {
+    "growth": "AI data center 流量成長帶動高階交換器需求。",
+    "industry": "位於 AI infra networking 核心環節。",
+    "competition": "在高階 switching 市場具競爭優勢。",
+    "valuation": "估值合理偏高。",
+    "risk": "短期漲幅偏大。"
+  },
+
+  "research": {
+    "status": "not_started",
+
+    "fundamental": "",
+    "industry": "",
+
+    "valuation_analysis": "",
+    "trading_plan": "",
+    "technical_analysis": "",
+
+    "pool30_fit": "",
+    "risk": "",
+
+    "final_conclusion": "",
+
+    "attachments": []
+  }
+}
