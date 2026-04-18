@@ -72,15 +72,21 @@ function capexScore(stock) {
 
 // ---------- M3（without baseline） ----------
 function m3Score(stock) {
-  const pure = n(stock.pure_stock_score);
-  const snapshot = n(stock.snapshot_score);
-  const event = n(stock.event_stock_score);
+  const pure = n(stock.pure_stock_score, null);
+  const snapshot = n(stock.snapshot_score, null);
+  const event = n(stock.event_stock_score, null);
 
-  return (
-    0.5 * pure +
-    0.3 * snapshot +
-    0.2 * event
-  );
+  const parts = [];
+  if (pure !== null) parts.push({ w: 0.5, v: pure });
+  if (snapshot !== null) parts.push({ w: 0.3, v: snapshot });
+  if (event !== null) parts.push({ w: 0.2, v: event });
+
+  if (!parts.length) return null;
+
+  const sumW = parts.reduce((s, x) => s + x.w, 0);
+  const sumV = parts.reduce((s, x) => s + x.w * x.v, 0);
+
+  return sumV / sumW;
 }
 
 // ---------- M7（精簡版） ----------
