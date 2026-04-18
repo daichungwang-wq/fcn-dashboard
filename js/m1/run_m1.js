@@ -1,5 +1,7 @@
 import { runM1Engine } from "./m1_engine.js";
 
+console.log("RUN_M1 VERSION 2026-04-18 v2");
+
 async function main() {
   try {
     const pool30Raw = await fetch("data/pool30.json").then(r => r.json());
@@ -28,21 +30,13 @@ async function main() {
   }
 }
 
-// ---------- pool30 normalize ----------
 function normalizePool30(raw) {
   let arr = [];
 
-  if (Array.isArray(raw)) {
-    arr = raw;
-  } else if (Array.isArray(raw?.stocks)) {
-    arr = raw.stocks;
-  } else if (Array.isArray(raw?.data)) {
-    arr = raw.data;
-  } else if (Array.isArray(raw?.items)) {
-    arr = raw.items;
-  } else {
-    arr = [];
-  }
+  if (Array.isArray(raw)) arr = raw;
+  else if (Array.isArray(raw?.stocks)) arr = raw.stocks;
+  else if (Array.isArray(raw?.data)) arr = raw.data;
+  else if (Array.isArray(raw?.items)) arr = raw.items;
 
   return arr.map((row) => {
     const symbol = getSymbol(row);
@@ -55,15 +49,9 @@ function normalizePool30(raw) {
   }).filter(x => x.symbol);
 }
 
-// ---------- m7 normalize ----------
-// 支援兩種結構：
-// A. object keyed by symbol
-// B. array (watch_pool / simulation_pool / reject_pool ...)
 function normalizeM7Stocks(raw) {
   const resultMap = new Map();
 
-  // case A: 直接是 object by symbol
-  // 但要避開 generated_at / pool_summary 這種 meta key
   for (const [key, value] of Object.entries(raw || {})) {
     if (!value || typeof value !== "object" || Array.isArray(value)) continue;
 
@@ -84,7 +72,6 @@ function normalizeM7Stocks(raw) {
     }
   }
 
-  // case B: 在 watch_pool / simulation_pool / reject_pool 等 array 內
   const candidateArrays = [
     raw?.watch_pool,
     raw?.simulation_pool,
@@ -114,7 +101,6 @@ function normalizeM7Stocks(raw) {
   return Array.from(resultMap.values());
 }
 
-// ---------- merge ----------
 function mergeM1Inputs(pool30, m7Stocks) {
   const m7Map = new Map(
     m7Stocks.map(row => [row.symbol, row])
@@ -127,73 +113,52 @@ function mergeM1Inputs(pool30, m7Stocks) {
     return {
       ...stock,
       symbol,
-      name:
-        stock.name ||
-        m7.name ||
-        m7["股名"] ||
-        "",
+      name: stock.name || m7.name || m7["股名"] || "",
 
-      // category：pool30 為主，m7 為輔
       category:
         stock.category ||
         m7.category ||
         m7["分類"] ||
         "",
 
-      // ---- M7 long-term only ----
-      valuation_score: pickNumber(m7, [
-        "valuation_score",
-        "估值分"
-      ]),
-      trend_score: pickNumber(m7, [
-        "trend_score",
-        "趨勢分"
-      ]),
-      quality_score: pickNumber(m7, [
-        "quality_score",
-        "品質分"
-      ]),
+      valuation_score: normalizeScore(
+        pickNumber(m7, ["valuation_score", "ValuationScore", "估值分"])
+      ),
 
-      // ---- 暫留 M3 / capex 接口 ----
-      snapshot: pickNumber(m7, [
-        "snapshot",
-        "Snapshot"
-      ]),
-      growth: pickNumber(m7, [
-        "growth",
-        "EPS成長率"
-      ]),
-      pure_stock_score: pickNumber(m7, [
-        "pure_stock_score",
-        "Pure平均"
-      ]),
-      snapshot_score: pickNumber(m7, [
-        "snapshot_score",
-        "snapshot",
-        "Snapshot"
-      ]),
-      event_stock_score: pickNumber(m7, [
-        "event_stock_score",
-        "Event平均"
-      ]),
+      trend_score: normalizeScore(
+        pickNumber(m7, ["trend_score", "TrendScore", "趨勢分"])
+      ),
 
-      capex: pickNumber(m7, [
-        "capex",
-        "Capex"
-      ]),
-      profit: pickNumber(m7, [
-        "profit",
-        "Profit",
-        "net_income",
-        "operating_profit"
-      ]),
+      quality_score: normalizeScore(
+        pickNumber(m7, ["quality_score", "QualityScore", "品質分"])
+      ),
+
+      snapshot: normalizeScore(
+        pickNumber(m7, ["snapshot", "Snapshot", "snapshot_score"])
+      ),
+
+      growth: pickNumber(m7, ["growth", "EPS成長率", "GrowthScoreAdj"]),
+
+      pure_stock_score: normalizeScore(
+        pickNumber(m7, ["pure_stock_score", "PureStockScore", "Pure平均"])
+      ),
+
+      snapshot_score: normalizeScore(
+        pickNumber(m7, ["snapshot_score", "snapshot", "Snapshot"])
+      ),
+
+      event_stock_score: normalizeScore(
+        pickNumber(m7, ["event_stock_score", "EventStockScore", "Event平均"])
+      ),
+
+      capex: pickNumber(m7, ["capex", "Capex"]),
+      profit: pickNumber(m7, ["profit", "Profit", "net_income", "operating_profit"]),
 
       _m7_raw: m7
     };
   });
 }
 
-// ---------- helper ----------
 function getSymbol(obj) {
   return String(
     obj?.symbol ??
@@ -215,7 +180,16 @@ function pickNumber(obj, keys) {
   return null;
 }
 
-// ---------- render ----------
+function normalizeScore(v) {
+  const x = Number(v);
+  if (!Number.isFinite(x)) return null;
+
+  if (x >= 0 && x <= 10) return x;
+  if (x > 10 && x <= 100) return x / 10;
+  if (x > 100) return 10;
+  return 0;
+}
+
 function renderM1(data, merged) {
   const el = document.getElementById("m1_output");
   if (!el) return;
