@@ -91,15 +91,21 @@ function m3Score(stock) {
 
 // ---------- M7（精簡版） ----------
 function m7Score(stock) {
-  const val = n(stock.valuation_score);
-  const trend = n(stock.trend_score);
-  const quality = n(stock.quality_score);
+  const val = n(stock.valuation_score, null);
+  const trend = n(stock.trend_score, null);
+  const quality = n(stock.quality_score, null);
 
-  return (
-    0.4 * val +
-    0.3 * trend +
-    0.3 * quality
-  );
+  const parts = [];
+  if (val !== null) parts.push({ w: 0.4, v: val });
+  if (trend !== null) parts.push({ w: 0.3, v: trend });
+  if (quality !== null) parts.push({ w: 0.3, v: quality });
+
+  if (!parts.length) return null;
+
+  const sumW = parts.reduce((s, x) => s + x.w, 0);
+  const sumV = parts.reduce((s, x) => s + x.w * x.v, 0);
+
+  return sumV / sumW;
 }
 
 // ---------- M1 Score ----------
