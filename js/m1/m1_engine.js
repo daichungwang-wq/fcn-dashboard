@@ -6,10 +6,10 @@
 
 // ---------- 工具 ----------
 function n(v, d = 0) {
+  if (v === null || v === undefined || v === "") return d;
   const x = Number(v);
   return Number.isFinite(x) ? x : d;
 }
-
 function avg(arr) {
   if (!arr.length) return 0;
   return arr.reduce((a, b) => a + b, 0) / arr.length;
