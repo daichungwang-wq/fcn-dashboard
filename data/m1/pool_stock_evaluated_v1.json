@@ -1,0 +1,24 @@
+{
+  "generated_at": "2026-04-18T08:40:42.365Z",
+  "source_files": {
+    "candidate": "data\\m1\\pool_stock_candidate_v1.json",
+    "runtime": "data\\market_runtime.json",
+    "fundamental": "data\\m1\\m1_fundamental_map.json"
+  },
+  "summary": {
+    "total_count": 0,
+    "pool30_candidate_count": 0,
+    "stock_pool_candidate_count": 0,
+    "watch_candidate_count": 0,
+    "reject_candidate_count": 0,
+    "new_stock_count": 0,
+    "existing_stock_count": 0,
+    "engine_into_stock_pool_count": 0,
+    "engine_into_pool30_count": 0
+  },
+  "pool30_candidate": [],
+  "stock_pool_candidate": [],
+  "watch_candidate": [],
+  "reject_candidate": [],
+  "all": []
+}
