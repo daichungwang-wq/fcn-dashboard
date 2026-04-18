@@ -1,15 +1,17 @@
 // ==========================================
-// M1 Engine V1
+// M1 Engine V2
 // 振宇 FCN 系統｜Pool30 體質選股引擎
-// Level 1 + Level 2（無主觀修正）
+// Level 1: scoring all stocks
+// Level 2: category stats
 // ==========================================
 
-// ---------- 工具 ----------
-function n(v, d = 0) {
+// ---------- 基本工具 ----------
+function toNum(v, d = null) {
   if (v === null || v === undefined || v === "") return d;
   const x = Number(v);
   return Number.isFinite(x) ? x : d;
 }
+
 function avg(arr) {
   if (!arr.length) return 0;
   return arr.reduce((a, b) => a + b, 0) / arr.length;
@@ -19,8 +21,7 @@ function std(arr) {
   if (arr.length <= 1) return 0;
   const m = avg(arr);
   const variance =
-    arr.reduce((sum, x) => sum + Math.pow(x - m, 2), 0) /
-    (arr.length - 1);
+    arr.reduce((sum, x) => sum + Math.pow(x - m, 2), 0) / (arr.length - 1);
   return Math.sqrt(variance);
 }
 
@@ -34,31 +35,52 @@ function percentile(arr, p) {
   return sorted[lower] + (sorted[upper] - sorted[lower]) * (idx - lower);
 }
 
-// ---------- ETF 排外 ----------
+function safeMin(arr) {
+  return arr.length ? Math.min(...arr) : 0;
+}
+
+function safeMax(arr) {
+  return arr.length ? Math.max(...arr) : 0;
+}
+
+function round2(v) {
+  return Math.round((Number(v) || 0) * 100) / 100;
+}
+
+// ---------- ETF 白名單 ----------
 const ETF_FORCE_DEFENSIVE = ["QQQ", "SMH", "SPY", "LQD"];
 
+// ---------- Category normalize ----------
 function normalizeCategory(stock) {
-  const symbol = String(stock.symbol || "").toUpperCase();
+  const symbol = String(stock.symbol || "").toUpperCase().trim();
   if (ETF_FORCE_DEFENSIVE.includes(symbol)) return "defensive";
 
-  const c = String(stock.category || "").toLowerCase();
+  const raw = String(stock.category || stock["分類"] || "")
+    .toLowerCase()
+    .trim();
 
-  if (c.includes("core")) return "core";
-  if (c.includes("growth")) return "growth";
-  if (c.includes("income")) return "income";
-  if (c.includes("defensive")) return "defensive";
+  if (raw.includes("core")) return "core";
+  if (raw.includes("growth")) return "growth";
+  if (raw.includes("income")) return "income";
+  if (raw.includes("defensive")) return "defensive";
+  if (raw.includes("speculative")) return "speculative";
+
+  // 常見實務補位
+  if (raw.includes("cyclical")) return "speculative";
+  if (raw.includes("high_beta")) return "speculative";
+  if (raw.includes("others")) return "speculative";
 
   return "speculative";
 }
 
 // ---------- Capex to Profit ----------
 function capexScore(stock) {
-  const capex = n(stock.capex);
-  const profit = n(stock.profit);
+  const capex = toNum(stock.capex);
+  const profit = toNum(stock.profit);
 
   if (!Number.isFinite(capex) || !Number.isFinite(profit) || profit <= 0) {
-  return null;
-} // 中性 fallback
+    return null;
+  }
 
   const ratio = capex / profit;
 
@@ -70,11 +92,12 @@ function capexScore(stock) {
   return 1;
 }
 
-// ---------- M3（without baseline） ----------
+// ---------- M3 (without baseline) ----------
+// 先保留接口：如果未來有 pure/snapshot/event 就能直接吃
 function m3Score(stock) {
-  const pure = n(stock.pure_stock_score, null);
-  const snapshot = n(stock.snapshot_score, null);
-  const event = n(stock.event_stock_score, null);
+  const pure = toNum(stock.pure_stock_score);
+  const snapshot = toNum(stock.snapshot_score ?? stock.snapshot);
+  const event = toNum(stock.event_stock_score);
 
   const parts = [];
   if (pure !== null) parts.push({ w: 0.5, v: pure });
@@ -85,15 +108,15 @@ function m3Score(stock) {
 
   const sumW = parts.reduce((s, x) => s + x.w, 0);
   const sumV = parts.reduce((s, x) => s + x.w * x.v, 0);
-
   return sumV / sumW;
 }
 
-// ---------- M7（精簡版） ----------
+// ---------- M7 long-term only ----------
+// 嚴格只借 valuation / trend / quality
 function m7Score(stock) {
-  const val = n(stock.valuation_score, null);
-  const trend = n(stock.trend_score, null);
-  const quality = n(stock.quality_score, null);
+  const val = toNum(stock.valuation_score);
+  const trend = toNum(stock.trend_score);
+  const quality = toNum(stock.quality_score);
 
   const parts = [];
   if (val !== null) parts.push({ w: 0.4, v: val });
@@ -104,11 +127,14 @@ function m7Score(stock) {
 
   const sumW = parts.reduce((s, x) => s + x.w, 0);
   const sumV = parts.reduce((s, x) => s + x.w * x.v, 0);
-
   return sumV / sumW;
 }
 
-// ---------- M1 Score ----------
+// ---------- M1 score ----------
+// 權重先照目前版本：
+// a = 0.5 capex_to_profit
+// b = 0.25 M3 without baseline
+// c = 0.25 M7 (valuation/trend/quality)
 function calcM1(stock) {
   const capex = capexScore(stock);
   const m3 = m3Score(stock);
@@ -121,12 +147,10 @@ function calcM1(stock) {
     weighted += 0.5 * capex;
     totalWeight += 0.5;
   }
-
   if (m3 !== null) {
     weighted += 0.25 * m3;
     totalWeight += 0.25;
   }
-
   if (m7 !== null) {
     weighted += 0.25 * m7;
     totalWeight += 0.25;
@@ -135,46 +159,16 @@ function calcM1(stock) {
   const score = totalWeight > 0 ? weighted / totalWeight : 0;
 
   return {
-    M1_score: score,
-    capex_score: capex,
-    m3_score: m3,
-    m7_score: m7
+    M1_score: round2(score),
+    capex_score: capex !== null ? round2(capex) : null,
+    m3_score: m3 !== null ? round2(m3) : null,
+    m7_score: m7 !== null ? round2(m7) : null,
+    score_source_weight: round2(totalWeight)
   };
 }
 
-// ==========================================
-// 主流程
-// ==========================================
-
-export function runM1Engine(stockList) {
-  const results = [];
-
-  // ---------- Level 1 ----------
-  for (const stock of stockList) {
-    const category = normalizeCategory(stock);
-
-    const {
-      M1_score,
-      capex_score,
-      m3_score,
-      m7_score
-    } = calcM1(stock);
-
-    results.push({
-      symbol: stock.symbol,
-      category,
-
-      M1_score,
-
-      breakdown: {
-        capex_score,
-        m3_score,
-        m7_score
-      }
-    });
-  }
-
-  // ---------- Level 2 ----------
+// ---------- Level 2 stats ----------
+function buildCategoryStats(results) {
   const groups = {
     core: [],
     growth: [],
@@ -183,30 +177,97 @@ export function runM1Engine(stockList) {
     speculative: []
   };
 
-  for (const r of results) {
-    groups[r.category].push(r.M1_score);
+  for (const row of results) {
+    if (!groups[row.category]) groups[row.category] = [];
+    if (Number.isFinite(row.M1_score)) {
+      groups[row.category].push(row.M1_score);
+    }
   }
 
   const stats = {};
 
   for (const key of Object.keys(groups)) {
     const arr = groups[key];
-
     stats[key] = {
       count: arr.length,
-      mean: avg(arr),
-      std: std(arr),
-      min: Math.min(...arr, 0),
-      max: Math.max(...arr, 0),
-      p25: percentile(arr, 25),
-      p50: percentile(arr, 50),
-      p75: percentile(arr, 75)
+      mean: round2(avg(arr)),
+      std: round2(std(arr)),
+      min: round2(safeMin(arr)),
+      max: round2(safeMax(arr)),
+      p25: round2(percentile(arr, 25)),
+      p50: round2(percentile(arr, 50)),
+      p75: round2(percentile(arr, 75))
     };
   }
 
+  return stats;
+}
+
+// ---------- Level 3 初步 bucket（先簡版） ----------
+function buildInitialBuckets(results, stats) {
+  return results.map((row) => {
+    const catStats = stats[row.category] || { mean: 0, std: 0 };
+    const mean = catStats.mean || 0;
+    const s = catStats.std || 0;
+
+    let bucket = "watch";
+
+    if (row.M1_score >= mean + 0.5 * s) bucket = "pool30";
+    else if (row.M1_score >= mean) bucket = "stock_pool";
+    else if (row.M1_score >= mean - 0.75 * s) bucket = "watch";
+    else bucket = "reject";
+
+    return {
+      ...row,
+      initial_bucket: bucket
+    };
+  });
+}
+
+// ---------- 主函式 ----------
+export function runM1Engine(stockList) {
+  const results = stockList.map((stock) => {
+    const category = normalizeCategory(stock);
+
+    const {
+      M1_score,
+      capex_score,
+      m3_score,
+      m7_score,
+      score_source_weight
+    } = calcM1(stock);
+
+    return {
+      symbol: String(stock.symbol || "").toUpperCase().trim(),
+      name: stock.name || stock["股名"] || "",
+      category,
+      raw_category: stock.category || stock["分類"] || "",
+      M1_score,
+      breakdown: {
+        capex_score,
+        m3_score,
+        m7_score
+      },
+      debug: {
+        score_source_weight,
+        valuation_score: toNum(stock.valuation_score),
+        trend_score: toNum(stock.trend_score),
+        quality_score: toNum(stock.quality_score),
+        snapshot: toNum(stock.snapshot),
+        growth: toNum(stock.growth),
+        capex: toNum(stock.capex),
+        profit: toNum(stock.profit)
+      }
+    };
+  });
+
+  const stats = buildCategoryStats(results);
+  const scored = buildInitialBuckets(results, stats);
+
   return {
     updated_at: new Date().toISOString(),
-    scores: results,
+    total_count: scored.length,
+    scores: scored.sort((a, b) => b.M1_score - a.M1_score),
     stats
   };
 }
