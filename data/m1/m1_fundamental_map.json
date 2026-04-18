@@ -1,0 +1,22 @@
+{
+  "NVDA": {
+    "capex_ratio_prev_y": 12,
+    "revenue_growth_q": 35,
+    "operating_income_growth_q": 50,
+    "operating_income_q": 12000
+  },
+
+  "TSM": {
+    "capex_ratio_prev_y": 18,
+    "revenue_growth_q": 20,
+    "operating_income_growth_q": 25,
+    "operating_income_q": 8000
+  },
+
+  "AAPL": {
+    "capex_ratio_prev_y": 5,
+    "revenue_growth_q": 5,
+    "operating_income_growth_q": 3,
+    "operating_income_q": 10000
+  }
+}
