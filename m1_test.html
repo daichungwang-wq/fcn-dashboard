@@ -29,7 +29,7 @@
       color:var(--text);
     }
     .wrap{
-      max-width:1700px;
+      max-width:1750px;
       margin:0 auto;
       padding:20px;
     }
@@ -50,10 +50,9 @@
       opacity:.95;
       line-height:1.6;
     }
-
     .toolbar{
       display:grid;
-      grid-template-columns:1.2fr 0.8fr 0.8fr auto auto;
+      grid-template-columns:1.2fr 0.8fr 0.9fr auto auto;
       gap:12px;
       margin-bottom:16px;
       align-items:center;
@@ -86,7 +85,6 @@
     button.secondary{
       background:#334155;
     }
-
     .summary{
       display:grid;
       grid-template-columns:repeat(6,1fr);
@@ -111,14 +109,15 @@
       margin-top:6px;
       line-height:1.5;
     }
-
     .main{
       display:grid;
-      grid-template-columns:1.35fr 0.95fr;
+      grid-template-columns:1.45fr 0.95fr;
       gap:16px;
       align-items:start;
     }
-    .table-panel{ overflow:hidden; }
+    .table-panel{
+      overflow:hidden;
+    }
     .panel-title{
       display:flex;
       justify-content:space-between;
@@ -140,7 +139,7 @@
     table{
       width:100%;
       border-collapse:collapse;
-      min-width:1450px;
+      min-width:1750px;
     }
     thead th{
       position:sticky;
@@ -164,7 +163,6 @@
       background:#f8fbff;
       cursor:pointer;
     }
-
     .chip{
       display:inline-block;
       padding:4px 8px;
@@ -179,11 +177,10 @@
       background:var(--chip2);
       color:#334155;
     }
-    .mono{ font-family:Consolas,Menlo,monospace; }
-    .ok{ color:var(--green); font-weight:700; }
-    .warn{ color:var(--amber); font-weight:700; }
-    .bad{ color:var(--red); font-weight:700; }
-
+    .mono{font-family:Consolas,Menlo,monospace;}
+    .ok{color:var(--green);font-weight:700;}
+    .warn{color:var(--amber);font-weight:700;}
+    .bad{color:var(--red);font-weight:700;}
     .right-col{
       display:grid;
       gap:16px;
@@ -200,7 +197,7 @@
       font-family:Consolas,Menlo,monospace;
     }
     .log{
-      max-height:240px;
+      max-height:220px;
       overflow:auto;
       background:#0f172a;
       color:#dbeafe;
@@ -210,7 +207,6 @@
       line-height:1.6;
       font-family:Consolas,Menlo,monospace;
     }
-
     .detail-section{
       margin-bottom:16px;
       border:1px solid var(--line);
@@ -254,7 +250,6 @@
       line-height:1.6;
       font-size:13px;
     }
-
     @media (max-width:1200px){
       .summary{grid-template-columns:repeat(3,1fr);}
       .main{grid-template-columns:1fr;}
@@ -272,8 +267,8 @@
     <div class="hero">
       <h1>M1 Test - Candidate 80</h1>
       <div class="sub">
-        主資料讀取 <b>data/m1/m1_candidate_80.json</b>，評論說明連結 <b>data/m1/pool_stock_evaluated_v1.json</b>。<br>
-        本頁先驗證 candidate80 結構、分數、style、category、評論是否對口。
+        主資料：<b>data/m1/m1_candidate_80.json</b> ｜ 評論：<b>data/m1/pool_stock_evaluated_v1.json</b> ｜ 基本面：<b>data/m1/m1_fundamental_map.json</b><br>
+        本版直接在頁面內計算 <b>capex_score / m3_score / m7_score / m1_score</b>，先驗證公式結果是否合理。
       </div>
     </div>
 
@@ -283,12 +278,10 @@
         <option value="ALL">全部類別</option>
       </select>
       <select id="sortFilter" class="control">
-        <option value="m7_desc">依 m7_lite_score：高 → 低</option>
+        <option value="m1_desc">依 m1_score：高 → 低</option>
+        <option value="m7_desc">依 m7_score：高 → 低</option>
+        <option value="capex_desc">依 capex_score：高 → 低</option>
         <option value="symbol_asc">依股號：A → Z</option>
-        <option value="trend_desc">依 trend_score：高 → 低</option>
-        <option value="snapshot_desc">依 snapshot_score：高 → 低</option>
-        <option value="quality_desc">依 quality_score：高 → 低</option>
-        <option value="vol_desc">依 volume_ratio：高 → 低</option>
       </select>
       <button id="reloadBtn">重新載入</button>
       <button id="showAllBtn" class="secondary">顯示全部</button>
@@ -306,14 +299,14 @@
         <div class="sub">搜尋 / 篩選後</div>
       </div>
       <div class="panel stat">
-        <div class="label">平均 m7_lite</div>
-        <div class="value" id="statAvg">-</div>
-        <div class="sub">candidate 主分數</div>
-      </div>
-      <div class="panel stat">
         <div class="label">評論比對成功</div>
         <div class="value" id="statMatch">-</div>
         <div class="sub">連到 pool_stock_evaluated_v1</div>
+      </div>
+      <div class="panel stat">
+        <div class="label">平均 M1</div>
+        <div class="value" id="statAvgM1">-</div>
+        <div class="sub">normalize 後</div>
       </div>
       <div class="panel stat">
         <div class="label">第一名</div>
@@ -330,7 +323,7 @@
     <div class="main">
       <div class="panel table-panel">
         <div class="panel-title">
-          <span>Candidate 80 主表</span>
+          <span>Candidate 80 主表 + M1 測試分數</span>
           <span class="small-note" id="tableNote">載入中...</span>
         </div>
         <div class="table-wrap">
@@ -338,10 +331,15 @@
             <thead>
               <tr>
                 <th>#</th>
+                <th>Rank</th>
                 <th>Symbol</th>
                 <th>Category</th>
                 <th>Sector</th>
                 <th>Style</th>
+                <th>Capex</th>
+                <th>M3</th>
+                <th>M7</th>
+                <th>M1</th>
                 <th>M7 Lite</th>
                 <th>Valuation</th>
                 <th>Trend</th>
@@ -364,7 +362,7 @@
 
       <div class="right-col">
         <div class="panel json-box">
-          <div class="panel-title" style="padding:0 0 12px 0;border-bottom:none;">股票詳情 / 評論</div>
+          <div class="panel-title" style="padding:0 0 12px 0;border-bottom:none;">股票詳情 / 評論 / 分數拆解</div>
           <div id="detailBox">請點左側任一股票列</div>
         </div>
 
@@ -379,10 +377,14 @@
   <script type="module">
     const state = {
       candidate: [],
+      candidateScored: [],
       evaluatedMap: new Map(),
+      fundamentalMap: {},
       filtered: [],
       selected: null
     };
+
+    const ETF_FORCE_DEFENSIVE = ["QQQ", "SMH", "SPY", "LQD"];
 
     const $ = (id) => document.getElementById(id);
 
@@ -411,6 +413,10 @@
       return Number.isFinite(x) ? x : d;
     }
 
+    function safe(v, d = "-") {
+      return v === undefined || v === null || v === "" ? d : v;
+    }
+
     function fmt(v, digits = 2) {
       const x = Number(v);
       return Number.isFinite(x) ? x.toFixed(digits) : "-";
@@ -421,15 +427,11 @@
       return Number.isFinite(x) ? (x * 100).toFixed(digits) + "%" : "-";
     }
 
-    function safe(v, d = "-") {
-      return v === undefined || v === null || v === "" ? d : v;
-    }
-
     function scoreClass(v) {
       const x = Number(v);
       if (!Number.isFinite(x)) return "";
       if (x >= 7) return "ok";
-      if (x >= 6) return "warn";
+      if (x >= 5) return "warn";
       return "bad";
     }
 
@@ -444,12 +446,7 @@
 
     function flattenEvaluated(json) {
       const all = [];
-      const keys = [
-        "pool30_candidate",
-        "stock_pool_candidate",
-        "watch_candidate",
-        "reject_candidate"
-      ];
+      const keys = ["pool30_candidate","stock_pool_candidate","watch_candidate","reject_candidate"];
       for (const key of keys) {
         const arr = json?.[key];
         if (Array.isArray(arr)) all.push(...arr);
@@ -467,9 +464,200 @@
       return map;
     }
 
+    function normalizeCategory(stock) {
+      const symbol = String(stock.symbol || "").toUpperCase().trim();
+      if (ETF_FORCE_DEFENSIVE.includes(symbol)) return "defensive";
+
+      const raw = String(stock.category || "").toLowerCase().trim();
+      if (raw.includes("core")) return "core";
+      if (raw.includes("growth")) return "growth";
+      if (raw.includes("income")) return "income";
+      if (raw.includes("defensive")) return "defensive";
+      if (raw.includes("speculative")) return "speculative";
+      return "speculative";
+    }
+
+    function categoryBias(category) {
+      if (category === "core") return 1.12;
+      if (category === "growth") return 1.06;
+      if (category === "income") return 1.00;
+      if (category === "defensive") return 0.93;
+      return 0.85;
+    }
+
+    function mapRangeScore(x, bands) {
+      if (!Number.isFinite(x)) return null;
+      for (const [min, score] of bands) {
+        if (x >= min) return score;
+      }
+      return bands[bands.length - 1][1];
+    }
+
+    function calcFundamentalScore(f) {
+      if (!f || typeof f !== "object") return null;
+
+      const capex = n(f.capex_ratio_prev_y);
+      const rev = n(f.revenue_growth_q);
+      const opg = n(f.operating_income_growth_q);
+      const opq = n(f.operating_income_q);
+
+      const capexScore = mapRangeScore(capex, [
+        [15, 10], [12, 8.5], [9, 7], [6, 5.5], [3, 4], [0, 2.5]
+      ]);
+
+      const revScore = mapRangeScore(rev, [
+        [30, 10], [20, 8.5], [10, 7], [5, 5.5], [0, 4], [-999, 2]
+      ]);
+
+      const opgScore = mapRangeScore(opg, [
+        [40, 10], [25, 8.5], [15, 7], [5, 5.5], [0, 4], [-999, 2]
+      ]);
+
+      const sizeScore = mapRangeScore(opq, [
+        [12000, 10], [8000, 8.5], [4000, 7], [1000, 5.5], [1, 4], [0, 2]
+      ]);
+
+      const parts = [];
+      if (capexScore !== null) parts.push({ w: 0.4, v: capexScore });
+      if (revScore !== null) parts.push({ w: 0.2, v: revScore });
+      if (opgScore !== null) parts.push({ w: 0.3, v: opgScore });
+      if (sizeScore !== null) parts.push({ w: 0.1, v: sizeScore });
+
+      if (!parts.length) return null;
+
+      const sumW = parts.reduce((s, x) => s + x.w, 0);
+      const sumV = parts.reduce((s, x) => s + x.w * x.v, 0);
+      return +(sumV / sumW).toFixed(2);
+    }
+
+    function calcM7Score(row) {
+      const val = n(row.valuation_score);
+      const trend = n(row.trend_score);
+      const quality = n(row.quality_score);
+
+      const parts = [];
+      if (val !== null) parts.push({ w: 0.4, v: val });
+      if (trend !== null) parts.push({ w: 0.3, v: trend });
+      if (quality !== null) parts.push({ w: 0.3, v: quality });
+
+      if (!parts.length) return null;
+      const sumW = parts.reduce((s, x) => s + x.w, 0);
+      const sumV = parts.reduce((s, x) => s + x.w * x.v, 0);
+      return +(sumV / sumW).toFixed(2);
+    }
+
+    function calcM3Proxy(row) {
+      const pureProxy = n(row.m7_lite_score);
+      const snapshot = n(row.snapshot_score);
+      const eventProxy = calcEventProxy(row);
+
+      const parts = [];
+      if (pureProxy !== null) parts.push({ w: 0.45, v: pureProxy });
+      if (snapshot !== null) parts.push({ w: 0.35, v: snapshot });
+      if (eventProxy !== null) parts.push({ w: 0.20, v: eventProxy });
+
+      if (!parts.length) return null;
+      const sumW = parts.reduce((s, x) => s + x.w, 0);
+      const sumV = parts.reduce((s, x) => s + x.w * x.v, 0);
+      return +(sumV / sumW).toFixed(2);
+    }
+
+    function calcEventProxy(row) {
+      const r1d = n(row.ret_1d, 0);
+      const r1w = n(row.ret_1w, 0);
+      const vr = n(row.volume_ratio, 1);
+
+      const eventRaw = 0.55 * r1d + 0.35 * r1w + 0.10 * (vr - 1);
+      if (eventRaw >= 0.18) return 10;
+      if (eventRaw >= 0.12) return 9;
+      if (eventRaw >= 0.08) return 8;
+      if (eventRaw >= 0.04) return 7;
+      if (eventRaw >= 0.00) return 6;
+      if (eventRaw >= -0.03) return 5;
+      if (eventRaw >= -0.06) return 4;
+      return 3;
+    }
+
+    function calcRawM1(row) {
+      const category = normalizeCategory(row);
+      const capex = row.capex_score;
+      const m3 = row.m3_score;
+      const m7 = row.m7_score;
+
+      let weighted = 0;
+      let totalWeight = 0;
+
+      if (capex !== null) {
+        weighted += 0.5 * capex;
+        totalWeight += 0.5;
+      }
+      if (m3 !== null) {
+        weighted += 0.25 * m3;
+        totalWeight += 0.25;
+      }
+      if (m7 !== null) {
+        weighted += 0.25 * m7;
+        totalWeight += 0.25;
+      }
+
+      const rawScore = totalWeight > 0 ? weighted / totalWeight : 0;
+      const bias = categoryBias(category);
+      const biasedScore = rawScore * bias;
+
+      return {
+        category_norm: category,
+        raw_m1_score: +(rawScore.toFixed(2)),
+        m1_biased_score: +(biasedScore.toFixed(2)),
+        category_bias: +bias.toFixed(2),
+        score_source_weight: +totalWeight.toFixed(2)
+      };
+    }
+
+    function scoreCandidates() {
+      const scored = state.candidate.map(row => {
+        const symbol = String(row.symbol || "").toUpperCase();
+        const f = state.fundamentalMap?.[symbol] || null;
+
+        const capexScore = calcFundamentalScore(f);
+        const m7Score = calcM7Score(row);
+        const m3Score = calcM3Proxy(row);
+
+        const base = {
+          ...row,
+          category_norm: normalizeCategory(row),
+          capex_score: capexScore,
+          m3_score: m3Score,
+          m7_score: m7Score,
+          _fundamental_raw: f
+        };
+
+        const m1 = calcRawM1(base);
+
+        return {
+          ...base,
+          raw_m1_score: m1.raw_m1_score,
+          m1_biased_score: m1.m1_biased_score,
+          category_bias: m1.category_bias,
+          score_source_weight: m1.score_source_weight
+        };
+      });
+
+      const maxScore = Math.max(...scored.map(x => n(x.m1_biased_score, 0)), 0);
+
+      const normalized = scored.map(x => ({
+        ...x,
+        m1_score: maxScore > 0 ? +((x.m1_biased_score / maxScore) * 10).toFixed(2) : 0
+      }));
+
+      normalized.sort((a, b) => n(b.m1_score, -999) - n(a.m1_score, -999));
+      normalized.forEach((x, idx) => x.rank = idx + 1);
+
+      state.candidateScored = normalized;
+    }
+
     function buildCategoryOptions() {
       const categories = Array.from(
-        new Set(state.candidate.map(x => String(x.category || "unknown").toLowerCase()))
+        new Set(state.candidateScored.map(x => String(x.category_norm || "unknown").toLowerCase()))
       ).sort();
 
       $("categoryFilter").innerHTML =
@@ -482,34 +670,30 @@
       const category = $("categoryFilter").value;
       const sortType = $("sortFilter").value;
 
-      let rows = [...state.candidate];
+      let rows = [...state.candidateScored];
 
       if (kw) {
         rows = rows.filter(x => {
           const symbol = String(x.symbol || "").toUpperCase();
           const sector = String(x.sector || "").toUpperCase();
-          const categoryRaw = String(x.category || "").toUpperCase();
+          const categoryRaw = String(x.category_norm || "").toUpperCase();
           const style = Array.isArray(x.style) ? x.style.join(",").toUpperCase() : String(x.style || "").toUpperCase();
           return symbol.includes(kw) || sector.includes(kw) || categoryRaw.includes(kw) || style.includes(kw);
         });
       }
 
       if (category !== "ALL") {
-        rows = rows.filter(x => String(x.category || "").toLowerCase() === category);
+        rows = rows.filter(x => String(x.category_norm || "").toLowerCase() === category);
       }
 
-      if (sortType === "m7_desc") {
-        rows.sort((a, b) => n(b.m7_lite_score, -999) - n(a.m7_lite_score, -999));
+      if (sortType === "m1_desc") {
+        rows.sort((a, b) => n(b.m1_score, -999) - n(a.m1_score, -999));
+      } else if (sortType === "m7_desc") {
+        rows.sort((a, b) => n(b.m7_score, -999) - n(a.m7_score, -999));
+      } else if (sortType === "capex_desc") {
+        rows.sort((a, b) => n(b.capex_score, -999) - n(a.capex_score, -999));
       } else if (sortType === "symbol_asc") {
         rows.sort((a, b) => String(a.symbol || "").localeCompare(String(b.symbol || "")));
-      } else if (sortType === "trend_desc") {
-        rows.sort((a, b) => n(b.trend_score, -999) - n(a.trend_score, -999));
-      } else if (sortType === "snapshot_desc") {
-        rows.sort((a, b) => n(b.snapshot_score, -999) - n(a.snapshot_score, -999));
-      } else if (sortType === "quality_desc") {
-        rows.sort((a, b) => n(b.quality_score, -999) - n(a.quality_score, -999));
-      } else if (sortType === "vol_desc") {
-        rows.sort((a, b) => n(b.volume_ratio, -999) - n(a.volume_ratio, -999));
       }
 
       state.filtered = rows;
@@ -517,21 +701,30 @@
       updateStats(rows);
     }
 
+    function renderStyleCell(style) {
+      if (!Array.isArray(style) || !style.length) return "-";
+      return style.map(s => `<span class="chip gray">${escapeHtml(s)}</span>`).join("");
+    }
+
     function renderTable(rows) {
       const tbody = $("tbody");
       tbody.innerHTML = rows.map((row, idx) => {
         const symbol = String(row.symbol || "").toUpperCase();
-        const commentHit = state.evaluatedMap.get(symbol);
-        const hasComment = !!commentHit;
+        const hasComment = state.evaluatedMap.has(symbol);
 
         return `
           <tr data-symbol="${escapeHtml(symbol)}">
             <td>${idx + 1}</td>
+            <td>${safe(row.rank)}</td>
             <td><span class="chip mono">${escapeHtml(symbol)}</span></td>
-            <td>${escapeHtml(safe(row.category))}</td>
+            <td>${escapeHtml(safe(row.category_norm))}</td>
             <td>${escapeHtml(safe(row.sector))}</td>
             <td>${renderStyleCell(row.style)}</td>
-            <td class="${scoreClass(row.m7_lite_score)}"><b>${fmt(row.m7_lite_score)}</b></td>
+            <td class="${scoreClass(row.capex_score)}"><b>${fmt(row.capex_score)}</b></td>
+            <td class="${scoreClass(row.m3_score)}"><b>${fmt(row.m3_score)}</b></td>
+            <td class="${scoreClass(row.m7_score)}"><b>${fmt(row.m7_score)}</b></td>
+            <td class="${scoreClass(row.m1_score)}"><b>${fmt(row.m1_score)}</b></td>
+            <td>${fmt(row.m7_lite_score)}</td>
             <td>${fmt(row.valuation_score)}</td>
             <td>${fmt(row.trend_score)}</td>
             <td>${fmt(row.quality_score)}</td>
@@ -567,13 +760,8 @@
       }
     }
 
-    function renderStyleCell(style) {
-      if (!Array.isArray(style) || !style.length) return "-";
-      return style.map(s => `<span class="chip gray">${escapeHtml(s)}</span>`).join("");
-    }
-
     function renderList(items) {
-      if (!Array.isArray(items) || !items.length) return "<div class='muted'>-</div>";
+      if (!Array.isArray(items) || !items.length) return "<div>-</div>";
       return `<ul class="list">${items.map(x => `<li>${escapeHtml(x)}</li>`).join("")}</ul>`;
     }
 
@@ -586,13 +774,29 @@
       const symbol = String(row.symbol || "").toUpperCase();
       const evalData = state.evaluatedMap.get(symbol);
 
-      const basicHtml = `
+      const scoreHtml = `
         <div class="detail-section">
-          <h3>${escapeHtml(symbol)} ｜ Candidate 資料</h3>
+          <h3>${escapeHtml(symbol)} ｜ M1 分數拆解</h3>
           <div class="detail-grid">
-            <div class="detail-card"><div class="k">Category</div><div class="v">${escapeHtml(safe(row.category))}</div></div>
+            <div class="detail-card"><div class="k">Capex Score</div><div class="v ${scoreClass(row.capex_score)}">${fmt(row.capex_score)}</div></div>
+            <div class="detail-card"><div class="k">M3 Score</div><div class="v ${scoreClass(row.m3_score)}">${fmt(row.m3_score)}</div></div>
+            <div class="detail-card"><div class="k">M7 Score</div><div class="v ${scoreClass(row.m7_score)}">${fmt(row.m7_score)}</div></div>
+            <div class="detail-card"><div class="k">M1 Score</div><div class="v ${scoreClass(row.m1_score)}">${fmt(row.m1_score)}</div></div>
+            <div class="detail-card"><div class="k">Raw M1</div><div class="v">${fmt(row.raw_m1_score)}</div></div>
+            <div class="detail-card"><div class="k">Biased M1</div><div class="v">${fmt(row.m1_biased_score)}</div></div>
+            <div class="detail-card"><div class="k">Category Bias</div><div class="v">${fmt(row.category_bias)}</div></div>
+            <div class="detail-card"><div class="k">Weight Used</div><div class="v">${fmt(row.score_source_weight)}</div></div>
+          </div>
+        </div>
+      `;
+
+      const candidateHtml = `
+        <div class="detail-section">
+          <h3>Candidate 資料</h3>
+          <div class="detail-grid">
+            <div class="detail-card"><div class="k">Category</div><div class="v">${escapeHtml(safe(row.category_norm))}</div></div>
             <div class="detail-card"><div class="k">Sector</div><div class="v">${escapeHtml(safe(row.sector))}</div></div>
-            <div class="detail-card"><div class="k">M7 Lite</div><div class="v ${scoreClass(row.m7_lite_score)}">${fmt(row.m7_lite_score)}</div></div>
+            <div class="detail-card"><div class="k">M7 Lite</div><div class="v">${fmt(row.m7_lite_score)}</div></div>
             <div class="detail-card"><div class="k">Volume Ratio</div><div class="v">${fmt(row.volume_ratio)}</div></div>
             <div class="detail-card"><div class="k">Valuation / Trend / Quality</div><div class="v">${fmt(row.valuation_score)} / ${fmt(row.trend_score)} / ${fmt(row.quality_score)}</div></div>
             <div class="detail-card"><div class="k">Snapshot</div><div class="v">${fmt(row.snapshot_score)}</div></div>
@@ -601,6 +805,13 @@
             <div class="k" style="font-size:12px;color:#6b7280;margin-bottom:6px;">Style</div>
             <div class="tag-row">${Array.isArray(row.style) && row.style.length ? row.style.map(s => `<span class="chip gray">${escapeHtml(s)}</span>`).join("") : "-"}</div>
           </div>
+        </div>
+      `;
+
+      const fundamentalHtml = `
+        <div class="detail-section">
+          <h3>Fundamental Map</h3>
+          <pre>${escapeHtml(JSON.stringify(row._fundamental_raw || null, null, 2))}</pre>
         </div>
       `;
 
@@ -630,108 +841,54 @@
           <div class="detail-section">
             <h3>評論 / 系統說明</h3>
             <div class="detail-grid">
-              <div class="detail-card">
-                <div class="k">Name</div>
-                <div class="v">${escapeHtml(safe(evalData.name))}</div>
-              </div>
-              <div class="detail-card">
-                <div class="k">Subsector</div>
-                <div class="v">${escapeHtml(safe(evalData.subsector))}</div>
-              </div>
-              <div class="detail-card">
-                <div class="k">Identity</div>
-                <div class="v">
-                  ${escapeHtml(safe(evalData.identity?.source))} /
-                  ${evalData.identity?.already_in_pool30 ? "已在Pool30" : "非Pool30"} /
-                  ${evalData.identity?.is_new_stock ? "新股" : "舊股"}
-                </div>
-              </div>
-              <div class="detail-card">
-                <div class="k">Human Override</div>
-                <div class="v">
-                  ${evalData.human_override?.final_category ? escapeHtml(evalData.human_override.final_category) : "-"}
-                </div>
-              </div>
-              <div class="detail-card">
-                <div class="k">System Bucket</div>
-                <div class="v">${escapeHtml(safe(evalData.system_recommendation?.bucket))}</div>
-              </div>
-              <div class="detail-card">
-                <div class="k">Engine Score</div>
-                <div class="v">
-                  raw ${fmt(evalData.engine_score?.raw)} /
-                  trend ${fmt(evalData.engine_score?.trend)} /
-                  valuation ${fmt(evalData.engine_score?.valuation)}
-                </div>
-              </div>
+              <div class="detail-card"><div class="k">Name</div><div class="v">${escapeHtml(safe(evalData.name))}</div></div>
+              <div class="detail-card"><div class="k">Subsector</div><div class="v">${escapeHtml(safe(evalData.subsector))}</div></div>
+              <div class="detail-card"><div class="k">Identity</div><div class="v">${escapeHtml(safe(evalData.identity?.source))} / ${evalData.identity?.already_in_pool30 ? "已在Pool30" : "非Pool30"} / ${evalData.identity?.is_new_stock ? "新股" : "舊股"}</div></div>
+              <div class="detail-card"><div class="k">System Bucket</div><div class="v">${escapeHtml(safe(evalData.system_recommendation?.bucket))}</div></div>
             </div>
-
             <div style="margin-top:14px;" class="detail-card">
               <div class="k">AI Reason Short</div>
               <div class="v">${Array.isArray(evalData.ai_reason_short) ? evalData.ai_reason_short.map(x => escapeHtml(x)).join(" ｜ ") : "-"}</div>
             </div>
-
-            <div style="margin-top:14px;">
-              <div class="detail-card" style="margin-bottom:10px;">
-                <div class="k">Why Yes</div>
-                ${renderList(evalData.system_reason?.why_yes)}
-              </div>
-              <div class="detail-card" style="margin-bottom:10px;">
-                <div class="k">Why No</div>
-                ${renderList(evalData.system_reason?.why_no)}
-              </div>
-              <div class="detail-card" style="margin-bottom:10px;">
-                <div class="k">Seed Why Yes</div>
-                ${renderList(evalData.system_reason?.seed_why_yes)}
-              </div>
-              <div class="detail-card">
-                <div class="k">Seed Why No</div>
-                ${renderList(evalData.system_reason?.seed_why_no)}
-              </div>
-            </div>
-
             <div style="margin-top:14px;" class="detail-card">
-              <div class="k">AI Reason Detail</div>
-              <pre>${escapeHtml(JSON.stringify(evalData.ai_reason_detail || {}, null, 2))}</pre>
+              <div class="k">Why Yes</div>
+              ${renderList(evalData.system_reason?.seed_why_yes || evalData.system_reason?.why_yes)}
+            </div>
+            <div style="margin-top:14px;" class="detail-card">
+              <div class="k">Why No</div>
+              ${renderList(evalData.system_reason?.seed_why_no || evalData.system_reason?.why_no)}
             </div>
           </div>
         `;
       }
 
-      const rawHtml = `
-        <div class="detail-section">
-          <h3>Raw JSON</h3>
-          <pre>${escapeHtml(JSON.stringify({ candidate: row, evaluated: evalData || null }, null, 2))}</pre>
-        </div>
-      `;
-
-      $("detailBox").innerHTML = basicHtml + returnHtml + commentHtml + rawHtml;
+      $("detailBox").innerHTML = scoreHtml + candidateHtml + fundamentalHtml + returnHtml + commentHtml;
     }
 
     function updateStats(rows) {
-      $("statTotal").textContent = state.candidate.length;
+      $("statTotal").textContent = state.candidateScored.length;
       $("statShown").textContent = rows.length;
-
-      const avg = rows.length
-        ? rows.reduce((sum, x) => sum + (n(x.m7_lite_score, 0)), 0) / rows.length
-        : null;
-      $("statAvg").textContent = avg !== null ? fmt(avg) : "-";
 
       const matchCount = rows.filter(x => state.evaluatedMap.has(String(x.symbol || "").toUpperCase())).length;
       $("statMatch").textContent = matchCount;
 
+      const avgM1 = rows.length
+        ? rows.reduce((sum, x) => sum + (n(x.m1_score, 0)), 0) / rows.length
+        : null;
+      $("statAvgM1").textContent = avgM1 !== null ? fmt(avgM1) : "-";
+
       const top = rows.length ? rows[0] : null;
-      $("statTop").textContent = top ? `${top.symbol} ${fmt(top.m7_lite_score)}` : "-";
+      $("statTop").textContent = top ? `${top.symbol} ${fmt(top.m1_score)}` : "-";
 
       const checks = ["COIN","SOFI","QQQ"].map(s =>
-        state.candidate.some(x => String(x.symbol || "").toUpperCase() === s) ? `${s}✓` : `${s}✗`
+        state.candidateScored.some(x => String(x.symbol || "").toUpperCase() === s) ? `${s}✓` : `${s}✗`
       );
       $("statCheck").textContent = checks.join(" ");
     }
 
     async function loadAll() {
       $("logBox").textContent = "";
-      log("start loading m1_test...");
+      log("start loading m1_test with scores...");
 
       const candidatePaths = [
         "./data/m1/m1_candidate_80.json",
@@ -741,15 +898,19 @@
         "./data/m1/pool_stock_evaluated_v1.json",
         "data/m1/pool_stock_evaluated_v1.json"
       ];
+      const fundamentalPaths = [
+        "./data/m1/m1_fundamental_map.json",
+        "data/m1/m1_fundamental_map.json"
+      ];
 
-      let candidate = null;
-      let candidatePath = null;
+      let candidate = null, evaluated = null, fundamental = null;
+
       for (const path of candidatePaths) {
         try {
           const json = await fetchJSON(path);
           if (Array.isArray(json) && json.length) {
             candidate = json;
-            candidatePath = path;
+            log("candidate loaded", { path, count: json.length });
             break;
           }
         } catch (e) {
@@ -757,57 +918,57 @@
         }
       }
 
-      if (!candidate) {
-        $("detailBox").innerHTML = `<pre>找不到 m1_candidate_80.json</pre>`;
-        log("candidate80 not found");
-        return;
-      }
-
-      let evaluated = null;
-      let evaluatedPath = null;
       for (const path of evaluatedPaths) {
         try {
           const json = await fetchJSON(path);
           evaluated = json;
-          evaluatedPath = path;
+          log("evaluated loaded", { path });
           break;
         } catch (e) {
           log("evaluated try failed", { path, error: String(e) });
         }
       }
 
+      for (const path of fundamentalPaths) {
+        try {
+          const json = await fetchJSON(path);
+          fundamental = json;
+          log("fundamental loaded", { path, count: Object.keys(json || {}).length });
+          break;
+        } catch (e) {
+          log("fundamental try failed", { path, error: String(e) });
+        }
+      }
+
+      if (!candidate) {
+        $("detailBox").innerHTML = `<pre>找不到 m1_candidate_80.json</pre>`;
+        return;
+      }
+
       state.candidate = candidate;
       state.evaluatedMap = buildEvaluatedMap(flattenEvaluated(evaluated || {}));
+      state.fundamentalMap = fundamental || {};
 
-      log("candidate loaded", {
-        path: candidatePath,
-        count: candidate.length,
-        sample: candidate.slice(0, 5).map(x => x.symbol)
-      });
-
-      log("evaluated loaded", {
-        path: evaluatedPath,
-        count: state.evaluatedMap.size
-      });
-
-      console.log("candidate80 =", candidate);
-      console.log("evaluated map size =", state.evaluatedMap.size);
-      console.log("COIN candidate =", candidate.find(x => x.symbol === "COIN"));
-      console.log("COIN evaluated =", state.evaluatedMap.get("COIN"));
-
+      scoreCandidates();
       buildCategoryOptions();
       applyFilters();
 
-      window.m1Candidate80 = candidate;
-      window.m1EvaluatedMap = state.evaluatedMap;
+      console.log("candidateScored =", state.candidateScored);
+      console.log("COIN =", state.candidateScored.find(x => x.symbol === "COIN"));
+      console.log("SOFI =", state.candidateScored.find(x => x.symbol === "SOFI"));
+      console.log("QQQ =", state.candidateScored.find(x => x.symbol === "QQQ"));
+
       window.debugM1 = {
-        candidate,
+        candidateRaw: state.candidate,
+        candidateScored: state.candidateScored,
         evaluatedMap: state.evaluatedMap,
+        fundamentalMap: state.fundamentalMap,
         find: (s) => {
           const symbol = String(s || "").toUpperCase();
           return {
-            candidate: candidate.find(x => String(x.symbol || "").toUpperCase() === symbol) || null,
-            evaluated: state.evaluatedMap.get(symbol) || null
+            scored: state.candidateScored.find(x => String(x.symbol || "").toUpperCase() === symbol) || null,
+            evaluated: state.evaluatedMap.get(symbol) || null,
+            fundamental: state.fundamentalMap[symbol] || null
           };
         }
       };
@@ -822,7 +983,7 @@
     $("showAllBtn").addEventListener("click", () => {
       $("searchInput").value = "";
       $("categoryFilter").value = "ALL";
-      $("sortFilter").value = "m7_desc";
+      $("sortFilter").value = "m1_desc";
       applyFilters();
     });
 
