@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>M1 Engine Test</title>
+  <title>M1 Test - Candidate 80</title>
   <style>
     :root{
       --bg:#f5f7fb;
@@ -17,6 +17,7 @@
       --red:#dc2626;
       --amber:#d97706;
       --chip:#eef2ff;
+      --chip2:#f1f5f9;
       --shadow:0 10px 30px rgba(15,23,42,0.08);
       --radius:16px;
     }
@@ -28,7 +29,7 @@
       color:var(--text);
     }
     .wrap{
-      max-width:1600px;
+      max-width:1700px;
       margin:0 auto;
       padding:20px;
     }
@@ -52,7 +53,7 @@
 
     .toolbar{
       display:grid;
-      grid-template-columns: 1.2fr 0.7fr 0.7fr auto auto;
+      grid-template-columns:1.2fr 0.8fr 0.8fr auto auto;
       gap:12px;
       margin-bottom:16px;
       align-items:center;
@@ -85,15 +86,10 @@
     button.secondary{
       background:#334155;
     }
-    button.ghost{
-      background:#fff;
-      color:var(--text);
-      border:1px solid var(--line);
-    }
 
     .summary{
       display:grid;
-      grid-template-columns: repeat(6,1fr);
+      grid-template-columns:repeat(6,1fr);
       gap:12px;
       margin-bottom:16px;
     }
@@ -118,13 +114,11 @@
 
     .main{
       display:grid;
-      grid-template-columns: 1.4fr 0.9fr;
+      grid-template-columns:1.35fr 0.95fr;
       gap:16px;
       align-items:start;
     }
-    .table-panel{
-      overflow:hidden;
-    }
+    .table-panel{ overflow:hidden; }
     .panel-title{
       display:flex;
       justify-content:space-between;
@@ -146,7 +140,7 @@
     table{
       width:100%;
       border-collapse:collapse;
-      min-width:1320px;
+      min-width:1450px;
     }
     thead th{
       position:sticky;
@@ -179,13 +173,16 @@
       border-radius:999px;
       font-size:12px;
       font-weight:700;
+      margin:2px 4px 2px 0;
     }
-    .mono{
-      font-family:Consolas,Menlo,monospace;
+    .chip.gray{
+      background:var(--chip2);
+      color:#334155;
     }
-    .ok{color:var(--green);font-weight:700}
-    .bad{color:var(--red);font-weight:700}
-    .warn{color:var(--amber);font-weight:700}
+    .mono{ font-family:Consolas,Menlo,monospace; }
+    .ok{ color:var(--green); font-weight:700; }
+    .warn{ color:var(--amber); font-weight:700; }
+    .bad{ color:var(--red); font-weight:700; }
 
     .right-col{
       display:grid;
@@ -203,7 +200,7 @@
       font-family:Consolas,Menlo,monospace;
     }
     .log{
-      max-height:280px;
+      max-height:240px;
       overflow:auto;
       background:#0f172a;
       color:#dbeafe;
@@ -213,45 +210,85 @@
       line-height:1.6;
       font-family:Consolas,Menlo,monospace;
     }
-    .footer-note{
-      margin-top:14px;
+
+    .detail-section{
+      margin-bottom:16px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:14px;
+      background:#fff;
+    }
+    .detail-section h3{
+      margin:0 0 10px;
+      font-size:15px;
+    }
+    .detail-grid{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0,1fr));
+      gap:10px;
+    }
+    .detail-card{
+      border:1px solid #e8edf5;
+      border-radius:12px;
+      padding:10px 12px;
+      background:#fafcff;
+    }
+    .detail-card .k{
       font-size:12px;
       color:var(--muted);
+      margin-bottom:4px;
+    }
+    .detail-card .v{
+      font-size:14px;
+      font-weight:700;
+      line-height:1.5;
+    }
+    .tag-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+    }
+    .list{
+      margin:0;
+      padding-left:18px;
       line-height:1.6;
+      font-size:13px;
     }
 
-    @media (max-width: 1200px){
-      .summary{grid-template-columns: repeat(3,1fr);}
+    @media (max-width:1200px){
+      .summary{grid-template-columns:repeat(3,1fr);}
       .main{grid-template-columns:1fr;}
       .toolbar{grid-template-columns:1fr 1fr;}
     }
-    @media (max-width: 700px){
-      .summary{grid-template-columns: repeat(2,1fr);}
+    @media (max-width:700px){
+      .summary{grid-template-columns:repeat(2,1fr);}
       .toolbar{grid-template-columns:1fr;}
+      .detail-grid{grid-template-columns:1fr;}
     }
   </style>
 </head>
 <body>
   <div class="wrap">
     <div class="hero">
-      <h1>M1 Engine Test</h1>
+      <h1>M1 Test - Candidate 80</h1>
       <div class="sub">
-        Level 1 驗證頁｜本版直接讀取 <b>data/m1/m1_candidate_80.json</b>，不再依賴 m7 / fundamental。先確認候選股、分數、搜尋與排序是否正確。
+        主資料讀取 <b>data/m1/m1_candidate_80.json</b>，評論說明連結 <b>data/m1/pool_stock_evaluated_v1.json</b>。<br>
+        本頁先驗證 candidate80 結構、分數、style、category、評論是否對口。
       </div>
     </div>
 
     <div class="toolbar">
-      <input id="searchInput" class="control" placeholder="搜尋股號 / 名稱，例如 COIN、SOFI、QQQ" />
+      <input id="searchInput" class="control" placeholder="搜尋股號 / sector / style，例如 COIN、SOFI、AI_SEMI、high_beta" />
       <select id="categoryFilter" class="control">
         <option value="ALL">全部類別</option>
       </select>
       <select id="sortFilter" class="control">
-        <option value="score_desc">依 M7 Lite 分數：高 → 低</option>
-        <option value="score_asc">依 M7 Lite 分數：低 → 高</option>
+        <option value="m7_desc">依 m7_lite_score：高 → 低</option>
         <option value="symbol_asc">依股號：A → Z</option>
-        <option value="symbol_desc">依股號：Z → A</option>
-        <option value="snapshot_desc">依 Snapshot：高 → 低</option>
-        <option value="trend_desc">依 Trend：高 → 低</option>
+        <option value="trend_desc">依 trend_score：高 → 低</option>
+        <option value="snapshot_desc">依 snapshot_score：高 → 低</option>
+        <option value="quality_desc">依 quality_score：高 → 低</option>
+        <option value="vol_desc">依 volume_ratio：高 → 低</option>
       </select>
       <button id="reloadBtn">重新載入</button>
       <button id="showAllBtn" class="secondary">顯示全部</button>
@@ -259,29 +296,29 @@
 
     <div class="summary">
       <div class="panel stat">
-        <div class="label">總筆數</div>
+        <div class="label">Candidate 總筆數</div>
         <div class="value" id="statTotal">-</div>
-        <div class="sub">candidate80 載入總數</div>
+        <div class="sub">m1_candidate_80.json</div>
       </div>
       <div class="panel stat">
         <div class="label">目前顯示</div>
         <div class="value" id="statShown">-</div>
-        <div class="sub">搜尋 / 篩選後筆數</div>
+        <div class="sub">搜尋 / 篩選後</div>
       </div>
       <div class="panel stat">
-        <div class="label">平均分數</div>
+        <div class="label">平均 m7_lite</div>
         <div class="value" id="statAvg">-</div>
-        <div class="sub">m7_lite_score 平均</div>
+        <div class="sub">candidate 主分數</div>
       </div>
       <div class="panel stat">
-        <div class="label">最高分</div>
+        <div class="label">評論比對成功</div>
+        <div class="value" id="statMatch">-</div>
+        <div class="sub">連到 pool_stock_evaluated_v1</div>
+      </div>
+      <div class="panel stat">
+        <div class="label">第一名</div>
         <div class="value" id="statTop">-</div>
-        <div class="sub">目前清單第一名</div>
-      </div>
-      <div class="panel stat">
-        <div class="label">資料來源</div>
-        <div class="value" id="statSource" style="font-size:18px;">-</div>
-        <div class="sub">主檔案路徑</div>
+        <div class="sub">目前排序第一名</div>
       </div>
       <div class="panel stat">
         <div class="label">COIN / SOFI / QQQ</div>
@@ -293,7 +330,7 @@
     <div class="main">
       <div class="panel table-panel">
         <div class="panel-title">
-          <span>Level 1 候選股清單</span>
+          <span>Candidate 80 主表</span>
           <span class="small-note" id="tableNote">載入中...</span>
         </div>
         <div class="table-wrap">
@@ -317,6 +354,7 @@
                 <th>6M</th>
                 <th>12M</th>
                 <th>Vol Ratio</th>
+                <th>評論</th>
               </tr>
             </thead>
             <tbody id="tbody"></tbody>
@@ -326,26 +364,22 @@
 
       <div class="right-col">
         <div class="panel json-box">
-          <div class="panel-title" style="padding:0 0 12px 0;border-bottom:none;">選取股票詳細資料</div>
-          <pre id="detailBox">請點左側任一股票列</pre>
+          <div class="panel-title" style="padding:0 0 12px 0;border-bottom:none;">股票詳情 / 評論</div>
+          <div id="detailBox">請點左側任一股票列</div>
         </div>
 
         <div class="panel json-box">
           <div class="panel-title" style="padding:0 0 12px 0;border-bottom:none;">載入紀錄</div>
           <div id="logBox" class="log"></div>
-          <div class="footer-note">
-            本版只驗證 candidate80 主檔是否正確接入。  
-            若分數正常顯示，表示 M1 Level 1 主資料來源已打通。
-          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <script>
+  <script type="module">
     const state = {
-      sourcePath: "./data/m1/m1_candidate_80.json",
-      raw: [],
+      candidate: [],
+      evaluatedMap: new Map(),
       filtered: [],
       selected: null
     };
@@ -366,20 +400,15 @@
     }
 
     async function fetchJSON(path) {
-      const res = await fetch(path + "?v=" + Date.now(), { cache: "no-store" });
-      if (!res.ok) {
-        throw new Error(`${path} 讀取失敗：${res.status}`);
-      }
+      const url = path + (path.includes("?") ? "&" : "?") + "v=" + Date.now();
+      const res = await fetch(url, { cache: "no-store" });
+      if (!res.ok) throw new Error(`${path} 讀取失敗：${res.status}`);
       return await res.json();
     }
 
     function n(v, d = null) {
       const x = Number(v);
       return Number.isFinite(x) ? x : d;
-    }
-
-    function safe(v, d = "-") {
-      return v === undefined || v === null || v === "" ? d : v;
     }
 
     function fmt(v, digits = 2) {
@@ -390,6 +419,10 @@
     function fmtPct(v, digits = 2) {
       const x = Number(v);
       return Number.isFinite(x) ? (x * 100).toFixed(digits) + "%" : "-";
+    }
+
+    function safe(v, d = "-") {
+      return v === undefined || v === null || v === "" ? d : v;
     }
 
     function scoreClass(v) {
@@ -409,8 +442,36 @@
         .replaceAll("'", "&#039;");
     }
 
+    function flattenEvaluated(json) {
+      const all = [];
+      const keys = [
+        "pool30_candidate",
+        "stock_pool_candidate",
+        "watch_candidate",
+        "reject_candidate"
+      ];
+      for (const key of keys) {
+        const arr = json?.[key];
+        if (Array.isArray(arr)) all.push(...arr);
+      }
+      return all;
+    }
+
+    function buildEvaluatedMap(list) {
+      const map = new Map();
+      for (const row of list) {
+        const symbol = String(row?.symbol || "").toUpperCase().trim();
+        if (!symbol) continue;
+        map.set(symbol, row);
+      }
+      return map;
+    }
+
     function buildCategoryOptions() {
-      const categories = Array.from(new Set(state.raw.map(x => String(x.category || "unknown").toLowerCase()))).sort();
+      const categories = Array.from(
+        new Set(state.candidate.map(x => String(x.category || "unknown").toLowerCase()))
+      ).sort();
+
       $("categoryFilter").innerHTML =
         '<option value="ALL">全部類別</option>' +
         categories.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("");
@@ -421,32 +482,34 @@
       const category = $("categoryFilter").value;
       const sortType = $("sortFilter").value;
 
-      let rows = [...state.raw];
+      let rows = [...state.candidate];
 
       if (kw) {
-        rows = rows.filter(x =>
-          String(x.symbol || "").toUpperCase().includes(kw) ||
-          String(x.sector || "").toUpperCase().includes(kw) ||
-          String(x.category || "").toUpperCase().includes(kw)
-        );
+        rows = rows.filter(x => {
+          const symbol = String(x.symbol || "").toUpperCase();
+          const sector = String(x.sector || "").toUpperCase();
+          const categoryRaw = String(x.category || "").toUpperCase();
+          const style = Array.isArray(x.style) ? x.style.join(",").toUpperCase() : String(x.style || "").toUpperCase();
+          return symbol.includes(kw) || sector.includes(kw) || categoryRaw.includes(kw) || style.includes(kw);
+        });
       }
 
       if (category !== "ALL") {
         rows = rows.filter(x => String(x.category || "").toLowerCase() === category);
       }
 
-      if (sortType === "score_desc") {
+      if (sortType === "m7_desc") {
         rows.sort((a, b) => n(b.m7_lite_score, -999) - n(a.m7_lite_score, -999));
-      } else if (sortType === "score_asc") {
-        rows.sort((a, b) => n(a.m7_lite_score, 999) - n(b.m7_lite_score, 999));
       } else if (sortType === "symbol_asc") {
         rows.sort((a, b) => String(a.symbol || "").localeCompare(String(b.symbol || "")));
-      } else if (sortType === "symbol_desc") {
-        rows.sort((a, b) => String(b.symbol || "").localeCompare(String(a.symbol || "")));
-      } else if (sortType === "snapshot_desc") {
-        rows.sort((a, b) => n(b.snapshot_score, -999) - n(a.snapshot_score, -999));
       } else if (sortType === "trend_desc") {
         rows.sort((a, b) => n(b.trend_score, -999) - n(a.trend_score, -999));
+      } else if (sortType === "snapshot_desc") {
+        rows.sort((a, b) => n(b.snapshot_score, -999) - n(a.snapshot_score, -999));
+      } else if (sortType === "quality_desc") {
+        rows.sort((a, b) => n(b.quality_score, -999) - n(a.quality_score, -999));
+      } else if (sortType === "vol_desc") {
+        rows.sort((a, b) => n(b.volume_ratio, -999) - n(a.volume_ratio, -999));
       }
 
       state.filtered = rows;
@@ -456,49 +519,197 @@
 
     function renderTable(rows) {
       const tbody = $("tbody");
-      tbody.innerHTML = rows.map((row, idx) => `
-        <tr data-symbol="${escapeHtml(row.symbol)}">
-          <td>${idx + 1}</td>
-          <td><span class="chip mono">${escapeHtml(safe(row.symbol))}</span></td>
-          <td>${escapeHtml(safe(row.category))}</td>
-          <td>${escapeHtml(safe(row.sector))}</td>
-          <td>${escapeHtml(Array.isArray(row.style) ? row.style.join(", ") : safe(row.style))}</td>
-          <td class="${scoreClass(row.m7_lite_score)}"><b>${fmt(row.m7_lite_score)}</b></td>
-          <td>${fmt(row.valuation_score)}</td>
-          <td>${fmt(row.trend_score)}</td>
-          <td>${fmt(row.quality_score)}</td>
-          <td>${fmt(row.snapshot_score)}</td>
-          <td>${fmtPct(row.ret_1d)}</td>
-          <td>${fmtPct(row.ret_1w)}</td>
-          <td>${fmtPct(row.ret_1m)}</td>
-          <td>${fmtPct(row.ret_3m)}</td>
-          <td>${fmtPct(row.ret_6m)}</td>
-          <td>${fmtPct(row.ret_12m)}</td>
-          <td>${fmt(row.volume_ratio)}</td>
-        </tr>
-      `).join("");
+      tbody.innerHTML = rows.map((row, idx) => {
+        const symbol = String(row.symbol || "").toUpperCase();
+        const commentHit = state.evaluatedMap.get(symbol);
+        const hasComment = !!commentHit;
+
+        return `
+          <tr data-symbol="${escapeHtml(symbol)}">
+            <td>${idx + 1}</td>
+            <td><span class="chip mono">${escapeHtml(symbol)}</span></td>
+            <td>${escapeHtml(safe(row.category))}</td>
+            <td>${escapeHtml(safe(row.sector))}</td>
+            <td>${renderStyleCell(row.style)}</td>
+            <td class="${scoreClass(row.m7_lite_score)}"><b>${fmt(row.m7_lite_score)}</b></td>
+            <td>${fmt(row.valuation_score)}</td>
+            <td>${fmt(row.trend_score)}</td>
+            <td>${fmt(row.quality_score)}</td>
+            <td>${fmt(row.snapshot_score)}</td>
+            <td>${fmtPct(row.ret_1d)}</td>
+            <td>${fmtPct(row.ret_1w)}</td>
+            <td>${fmtPct(row.ret_1m)}</td>
+            <td>${fmtPct(row.ret_3m)}</td>
+            <td>${fmtPct(row.ret_6m)}</td>
+            <td>${fmtPct(row.ret_12m)}</td>
+            <td>${fmt(row.volume_ratio)}</td>
+            <td>${hasComment ? '<span class="ok">有</span>' : '<span class="bad">無</span>'}</td>
+          </tr>
+        `;
+      }).join("");
 
       $("tableNote").textContent = `共 ${rows.length} 筆`;
 
       Array.from(tbody.querySelectorAll("tr")).forEach(tr => {
         tr.addEventListener("click", () => {
           const symbol = tr.getAttribute("data-symbol");
-          const hit = state.filtered.find(x => String(x.symbol) === symbol);
+          const hit = state.filtered.find(x => String(x.symbol || "").toUpperCase() === symbol);
           state.selected = hit;
-          $("detailBox").textContent = JSON.stringify(hit, null, 2);
+          renderDetail(hit);
         });
       });
 
-      if (rows.length > 0) {
+      if (rows.length) {
         state.selected = rows[0];
-        $("detailBox").textContent = JSON.stringify(rows[0], null, 2);
+        renderDetail(rows[0]);
       } else {
-        $("detailBox").textContent = "目前無符合條件資料";
+        $("detailBox").innerHTML = "目前無符合條件資料";
       }
     }
 
+    function renderStyleCell(style) {
+      if (!Array.isArray(style) || !style.length) return "-";
+      return style.map(s => `<span class="chip gray">${escapeHtml(s)}</span>`).join("");
+    }
+
+    function renderList(items) {
+      if (!Array.isArray(items) || !items.length) return "<div class='muted'>-</div>";
+      return `<ul class="list">${items.map(x => `<li>${escapeHtml(x)}</li>`).join("")}</ul>`;
+    }
+
+    function renderDetail(row) {
+      if (!row) {
+        $("detailBox").innerHTML = "無資料";
+        return;
+      }
+
+      const symbol = String(row.symbol || "").toUpperCase();
+      const evalData = state.evaluatedMap.get(symbol);
+
+      const basicHtml = `
+        <div class="detail-section">
+          <h3>${escapeHtml(symbol)} ｜ Candidate 資料</h3>
+          <div class="detail-grid">
+            <div class="detail-card"><div class="k">Category</div><div class="v">${escapeHtml(safe(row.category))}</div></div>
+            <div class="detail-card"><div class="k">Sector</div><div class="v">${escapeHtml(safe(row.sector))}</div></div>
+            <div class="detail-card"><div class="k">M7 Lite</div><div class="v ${scoreClass(row.m7_lite_score)}">${fmt(row.m7_lite_score)}</div></div>
+            <div class="detail-card"><div class="k">Volume Ratio</div><div class="v">${fmt(row.volume_ratio)}</div></div>
+            <div class="detail-card"><div class="k">Valuation / Trend / Quality</div><div class="v">${fmt(row.valuation_score)} / ${fmt(row.trend_score)} / ${fmt(row.quality_score)}</div></div>
+            <div class="detail-card"><div class="k">Snapshot</div><div class="v">${fmt(row.snapshot_score)}</div></div>
+          </div>
+          <div style="margin-top:12px;">
+            <div class="k" style="font-size:12px;color:#6b7280;margin-bottom:6px;">Style</div>
+            <div class="tag-row">${Array.isArray(row.style) && row.style.length ? row.style.map(s => `<span class="chip gray">${escapeHtml(s)}</span>`).join("") : "-"}</div>
+          </div>
+        </div>
+      `;
+
+      const returnHtml = `
+        <div class="detail-section">
+          <h3>價格 / 報酬</h3>
+          <div class="detail-grid">
+            <div class="detail-card"><div class="k">1D</div><div class="v">${fmtPct(row.ret_1d)}</div></div>
+            <div class="detail-card"><div class="k">1W</div><div class="v">${fmtPct(row.ret_1w)}</div></div>
+            <div class="detail-card"><div class="k">1M</div><div class="v">${fmtPct(row.ret_1m)}</div></div>
+            <div class="detail-card"><div class="k">3M</div><div class="v">${fmtPct(row.ret_3m)}</div></div>
+            <div class="detail-card"><div class="k">6M</div><div class="v">${fmtPct(row.ret_6m)}</div></div>
+            <div class="detail-card"><div class="k">12M</div><div class="v">${fmtPct(row.ret_12m)}</div></div>
+          </div>
+        </div>
+      `;
+
+      let commentHtml = `
+        <div class="detail-section">
+          <h3>評論 / 系統說明</h3>
+          <div class="detail-card"><div class="v bad">pool_stock_evaluated_v1.json 找不到 ${escapeHtml(symbol)} 的對應評論</div></div>
+        </div>
+      `;
+
+      if (evalData) {
+        commentHtml = `
+          <div class="detail-section">
+            <h3>評論 / 系統說明</h3>
+            <div class="detail-grid">
+              <div class="detail-card">
+                <div class="k">Name</div>
+                <div class="v">${escapeHtml(safe(evalData.name))}</div>
+              </div>
+              <div class="detail-card">
+                <div class="k">Subsector</div>
+                <div class="v">${escapeHtml(safe(evalData.subsector))}</div>
+              </div>
+              <div class="detail-card">
+                <div class="k">Identity</div>
+                <div class="v">
+                  ${escapeHtml(safe(evalData.identity?.source))} /
+                  ${evalData.identity?.already_in_pool30 ? "已在Pool30" : "非Pool30"} /
+                  ${evalData.identity?.is_new_stock ? "新股" : "舊股"}
+                </div>
+              </div>
+              <div class="detail-card">
+                <div class="k">Human Override</div>
+                <div class="v">
+                  ${evalData.human_override?.final_category ? escapeHtml(evalData.human_override.final_category) : "-"}
+                </div>
+              </div>
+              <div class="detail-card">
+                <div class="k">System Bucket</div>
+                <div class="v">${escapeHtml(safe(evalData.system_recommendation?.bucket))}</div>
+              </div>
+              <div class="detail-card">
+                <div class="k">Engine Score</div>
+                <div class="v">
+                  raw ${fmt(evalData.engine_score?.raw)} /
+                  trend ${fmt(evalData.engine_score?.trend)} /
+                  valuation ${fmt(evalData.engine_score?.valuation)}
+                </div>
+              </div>
+            </div>
+
+            <div style="margin-top:14px;" class="detail-card">
+              <div class="k">AI Reason Short</div>
+              <div class="v">${Array.isArray(evalData.ai_reason_short) ? evalData.ai_reason_short.map(x => escapeHtml(x)).join(" ｜ ") : "-"}</div>
+            </div>
+
+            <div style="margin-top:14px;">
+              <div class="detail-card" style="margin-bottom:10px;">
+                <div class="k">Why Yes</div>
+                ${renderList(evalData.system_reason?.why_yes)}
+              </div>
+              <div class="detail-card" style="margin-bottom:10px;">
+                <div class="k">Why No</div>
+                ${renderList(evalData.system_reason?.why_no)}
+              </div>
+              <div class="detail-card" style="margin-bottom:10px;">
+                <div class="k">Seed Why Yes</div>
+                ${renderList(evalData.system_reason?.seed_why_yes)}
+              </div>
+              <div class="detail-card">
+                <div class="k">Seed Why No</div>
+                ${renderList(evalData.system_reason?.seed_why_no)}
+              </div>
+            </div>
+
+            <div style="margin-top:14px;" class="detail-card">
+              <div class="k">AI Reason Detail</div>
+              <pre>${escapeHtml(JSON.stringify(evalData.ai_reason_detail || {}, null, 2))}</pre>
+            </div>
+          </div>
+        `;
+      }
+
+      const rawHtml = `
+        <div class="detail-section">
+          <h3>Raw JSON</h3>
+          <pre>${escapeHtml(JSON.stringify({ candidate: row, evaluated: evalData || null }, null, 2))}</pre>
+        </div>
+      `;
+
+      $("detailBox").innerHTML = basicHtml + returnHtml + commentHtml + rawHtml;
+    }
+
     function updateStats(rows) {
-      $("statTotal").textContent = state.raw.length;
+      $("statTotal").textContent = state.candidate.length;
       $("statShown").textContent = rows.length;
 
       const avg = rows.length
@@ -506,79 +717,99 @@
         : null;
       $("statAvg").textContent = avg !== null ? fmt(avg) : "-";
 
+      const matchCount = rows.filter(x => state.evaluatedMap.has(String(x.symbol || "").toUpperCase())).length;
+      $("statMatch").textContent = matchCount;
+
       const top = rows.length ? rows[0] : null;
       $("statTop").textContent = top ? `${top.symbol} ${fmt(top.m7_lite_score)}` : "-";
 
-      $("statSource").textContent = "candidate80";
-
-      const checks = ["COIN", "SOFI", "QQQ"].map(s =>
-        state.raw.some(x => String(x.symbol || "").toUpperCase() === s) ? `${s}✓` : `${s}✗`
+      const checks = ["COIN","SOFI","QQQ"].map(s =>
+        state.candidate.some(x => String(x.symbol || "").toUpperCase() === s) ? `${s}✓` : `${s}✗`
       );
       $("statCheck").textContent = checks.join(" ");
-
-      console.log("candidate count =", state.raw.length);
-      console.log("candidate symbols =", state.raw.map(x => x.symbol));
-      console.log("COIN =", state.raw.find(x => x.symbol === "COIN"));
-      console.log("SOFI =", state.raw.find(x => x.symbol === "SOFI"));
-      console.log("QQQ =", state.raw.find(x => x.symbol === "QQQ"));
     }
 
     async function loadAll() {
       $("logBox").textContent = "";
-      log("start loading candidate80...");
+      log("start loading m1_test...");
 
       const candidatePaths = [
         "./data/m1/m1_candidate_80.json",
         "data/m1/m1_candidate_80.json"
       ];
+      const evaluatedPaths = [
+        "./data/m1/pool_stock_evaluated_v1.json",
+        "data/m1/pool_stock_evaluated_v1.json"
+      ];
 
-      let loaded = null;
-      let usedPath = null;
-
+      let candidate = null;
+      let candidatePath = null;
       for (const path of candidatePaths) {
         try {
           const json = await fetchJSON(path);
           if (Array.isArray(json) && json.length) {
-            loaded = json;
-            usedPath = path;
+            candidate = json;
+            candidatePath = path;
             break;
           }
-          log("candidate loaded but empty", { path });
         } catch (e) {
           log("candidate try failed", { path, error: String(e) });
         }
       }
 
-      if (!loaded) {
-        $("statSource").textContent = "載入失敗";
-        $("tableNote").textContent = "找不到 m1_candidate_80.json";
-        $("detailBox").textContent = "找不到 m1_candidate_80.json，請確認路徑為 data/m1/m1_candidate_80.json";
-        log("candidate80 not found anywhere");
-        state.raw = [];
-        state.filtered = [];
-        renderTable([]);
-        updateStats([]);
+      if (!candidate) {
+        $("detailBox").innerHTML = `<pre>找不到 m1_candidate_80.json</pre>`;
+        log("candidate80 not found");
         return;
       }
 
-      state.raw = loaded;
-      state.sourcePath = usedPath;
+      let evaluated = null;
+      let evaluatedPath = null;
+      for (const path of evaluatedPaths) {
+        try {
+          const json = await fetchJSON(path);
+          evaluated = json;
+          evaluatedPath = path;
+          break;
+        } catch (e) {
+          log("evaluated try failed", { path, error: String(e) });
+        }
+      }
 
-      log("candidate80 loaded", {
-        path: usedPath,
-        count: loaded.length,
-        symbols: loaded.map(x => x.symbol)
+      state.candidate = candidate;
+      state.evaluatedMap = buildEvaluatedMap(flattenEvaluated(evaluated || {}));
+
+      log("candidate loaded", {
+        path: candidatePath,
+        count: candidate.length,
+        sample: candidate.slice(0, 5).map(x => x.symbol)
       });
+
+      log("evaluated loaded", {
+        path: evaluatedPath,
+        count: state.evaluatedMap.size
+      });
+
+      console.log("candidate80 =", candidate);
+      console.log("evaluated map size =", state.evaluatedMap.size);
+      console.log("COIN candidate =", candidate.find(x => x.symbol === "COIN"));
+      console.log("COIN evaluated =", state.evaluatedMap.get("COIN"));
 
       buildCategoryOptions();
       applyFilters();
 
-      $("statSource").textContent = usedPath.replace("./", "");
-      window.m1Candidate80 = loaded;
+      window.m1Candidate80 = candidate;
+      window.m1EvaluatedMap = state.evaluatedMap;
       window.debugM1 = {
-        raw: loaded,
-        find: (s) => loaded.find(x => String(x.symbol || "").toUpperCase() === String(s).toUpperCase()),
-        symbols: () => loaded.map(x => x.symbol)
+        candidate,
+        evaluatedMap: state.evaluatedMap,
+        find: (s) => {
+          const symbol = String(s || "").toUpperCase();
+          return {
+            candidate: candidate.find(x => String(x.symbol || "").toUpperCase() === symbol) || null,
+            evaluated: state.evaluatedMap.get(symbol) || null
+          };
+        }
       };
     }
 
@@ -591,7 +822,7 @@
     $("showAllBtn").addEventListener("click", () => {
       $("searchInput").value = "";
       $("categoryFilter").value = "ALL";
-      $("sortFilter").value = "score_desc";
+      $("sortFilter").value = "m7_desc";
       applyFilters();
     });
 
