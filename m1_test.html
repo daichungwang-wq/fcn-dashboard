@@ -50,7 +50,7 @@
     }
     .toolbar{
       display:grid;
-      grid-template-columns: 1.3fr 0.8fr 0.8fr auto auto auto;
+      grid-template-columns:1.3fr 0.8fr 0.8fr auto auto auto;
       gap:12px;
       margin-bottom:16px;
       align-items:center;
@@ -80,9 +80,7 @@
       font-size:14px;
       font-weight:700;
     }
-    button.secondary{
-      background:#334155;
-    }
+    button.secondary{background:#334155;}
     button.ghost{
       background:#fff;
       color:var(--text);
@@ -90,13 +88,11 @@
     }
     .summary{
       display:grid;
-      grid-template-columns: repeat(6,1fr);
+      grid-template-columns:repeat(6,1fr);
       gap:12px;
       margin-bottom:16px;
     }
-    .stat{
-      padding:16px;
-    }
+    .stat{padding:16px;}
     .stat .label{
       color:var(--muted);
       font-size:13px;
@@ -110,16 +106,15 @@
       font-size:12px;
       color:var(--muted);
       margin-top:6px;
+      line-height:1.5;
     }
     .main{
       display:grid;
-      grid-template-columns: 1.35fr 0.95fr;
+      grid-template-columns:1.35fr 0.95fr;
       gap:16px;
       align-items:start;
     }
-    .table-panel{
-      overflow:hidden;
-    }
+    .table-panel{overflow:hidden;}
     .panel-title{
       display:flex;
       justify-content:space-between;
@@ -141,7 +136,7 @@
     table{
       width:100%;
       border-collapse:collapse;
-      min-width:1100px;
+      min-width:1200px;
     }
     thead th{
       position:sticky;
@@ -163,6 +158,7 @@
     }
     tbody tr:hover{
       background:#f8fbff;
+      cursor:pointer;
     }
     .chip{
       display:inline-block;
@@ -176,16 +172,9 @@
     .ok{color:var(--green);font-weight:700}
     .bad{color:var(--red);font-weight:700}
     .warn{color:var(--amber);font-weight:700}
-    .mono{
-      font-family:Consolas,Menlo,monospace;
-    }
-    .right-col{
-      display:grid;
-      gap:16px;
-    }
-    .json-box{
-      padding:16px;
-    }
+    .mono{font-family:Consolas,Menlo,monospace;}
+    .right-col{display:grid;gap:16px;}
+    .json-box{padding:16px;}
     pre{
       margin:0;
       white-space:pre-wrap;
@@ -195,7 +184,7 @@
       font-family:Consolas,Menlo,monospace;
     }
     .log{
-      max-height:250px;
+      max-height:260px;
       overflow:auto;
       background:#0f172a;
       color:#dbeafe;
@@ -209,14 +198,15 @@
       margin-top:14px;
       font-size:12px;
       color:var(--muted);
+      line-height:1.6;
     }
-    @media (max-width: 1200px){
-      .summary{grid-template-columns: repeat(3,1fr);}
+    @media (max-width:1200px){
+      .summary{grid-template-columns:repeat(3,1fr);}
       .main{grid-template-columns:1fr;}
       .toolbar{grid-template-columns:1fr 1fr;}
     }
-    @media (max-width: 700px){
-      .summary{grid-template-columns: repeat(2,1fr);}
+    @media (max-width:700px){
+      .summary{grid-template-columns:repeat(2,1fr);}
       .toolbar{grid-template-columns:1fr;}
     }
   </style>
@@ -226,7 +216,7 @@
     <div class="hero">
       <h1>M1 Engine Test</h1>
       <div class="sub">
-        Level 1 驗證頁｜目的：確認 <b>全部股票都有進來</b>、<b>COIN / SOFI / QQQ 可查到</b>、<b>不是只顯示 20 筆</b>。
+        Level 1 驗證頁｜先確認：<b>全部股票有進來</b>、<b>COIN / SOFI / QQQ 可查到</b>、<b>M7 / Fundamental 有成功載入</b>。
       </div>
     </div>
 
@@ -247,7 +237,7 @@
       <div class="panel stat">
         <div class="label">總筆數</div>
         <div class="value" id="statTotal">-</div>
-        <div class="sub">合併後實際顯示資料母體</div>
+        <div class="sub">合併後實際母體</div>
       </div>
       <div class="panel stat">
         <div class="label">目前顯示</div>
@@ -257,17 +247,17 @@
       <div class="panel stat">
         <div class="label">M7 筆數</div>
         <div class="value" id="statM7">-</div>
-        <div class="sub">data/m7/m7_new_stock_today.json</div>
+        <div class="sub" id="statM7Src">來源待確認</div>
       </div>
       <div class="panel stat">
         <div class="label">Fundamental 筆數</div>
         <div class="value" id="statFund">-</div>
-        <div class="sub">fundamental data / fallback</div>
+        <div class="sub" id="statFundSrc">來源待確認</div>
       </div>
       <div class="panel stat">
         <div class="label">Pool 筆數</div>
         <div class="value" id="statPool">-</div>
-        <div class="sub">data/pool30.json</div>
+        <div class="sub" id="statPoolSrc">來源待確認</div>
       </div>
       <div class="panel stat">
         <div class="label">COIN / SOFI / QQQ</div>
@@ -319,7 +309,8 @@
           <div class="panel-title" style="padding:0 0 12px 0;border-bottom:none;">載入紀錄</div>
           <div id="logBox" class="log"></div>
           <div class="footer-note">
-            這版刻意 <b>不做 20 筆 slice</b>，也不先用 pool30 filter 卡住，先把資料完整顯示。
+            這版重點是：<b>先抓 JSON</b>，抓不到就改抓<b>全域變數</b>。  
+            所以若你的舊 engine 已經把 `m7stocks` / `fundamental` 放到 `window`，這版也能接上。
           </div>
         </div>
       </div>
@@ -332,6 +323,11 @@
         pool: [],
         m7: [],
         fundamental: {}
+      },
+      meta: {
+        poolSource: "-",
+        m7Source: "-",
+        fundSource: "-"
       },
       merged: [],
       filtered: [],
@@ -346,10 +342,10 @@
       let line = `[${time}] ${msg}`;
       if (obj !== null) {
         try {
-          line += "\\n" + JSON.stringify(obj, null, 2);
+          line += "\n" + JSON.stringify(obj, null, 2);
         } catch (e) {}
       }
-      box.textContent = line + "\\n\\n" + box.textContent;
+      box.textContent = line + "\n\n" + box.textContent;
       console.log(msg, obj ?? "");
     }
 
@@ -357,59 +353,6 @@
       const res = await fetch(path + (path.includes("?") ? "&" : "?") + "v=" + Date.now(), { cache: "no-store" });
       if (!res.ok) throw new Error(`${path} 讀取失敗：${res.status}`);
       return await res.json();
-    }
-
-    function normalizeM7Data(json) {
-      if (Array.isArray(json)) return json;
-      if (Array.isArray(json?.stocks)) return json.stocks;
-      if (Array.isArray(json?.data)) return json.data;
-      if (Array.isArray(json?.results)) return json.results;
-      if (Array.isArray(json?.items)) return json.items;
-      return [];
-    }
-
-    function normalizePoolData(json) {
-      if (Array.isArray(json)) return json;
-      if (Array.isArray(json?.stocks)) return json.stocks;
-      if (Array.isArray(json?.data)) return json.data;
-      return [];
-    }
-
-    function normalizeFundamentalData(json) {
-      if (json && typeof json === "object" && !Array.isArray(json)) return json;
-      return {};
-    }
-
-    function pickSymbol(o = {}) {
-      return String(
-        o.symbol ||
-        o.Symbol ||
-        o.ticker ||
-        o.stock_id ||
-        o["股號"] ||
-        ""
-      ).trim().toUpperCase();
-    }
-
-    function pickName(o = {}) {
-      return String(
-        o.name ||
-        o.Name ||
-        o.company ||
-        o["名稱"] ||
-        o["股名"] ||
-        ""
-      ).trim();
-    }
-
-    function pickCategory(o = {}) {
-      return String(
-        o.category ||
-        o.Category ||
-        o.raw_category ||
-        o["類別"] ||
-        "unknown"
-      ).trim();
     }
 
     function n(v, d = null) {
@@ -434,11 +377,132 @@
       return "bad";
     }
 
+    function escapeHtml(str) {
+      return String(str ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function pickSymbol(o = {}) {
+      return String(
+        o.symbol ||
+        o.Symbol ||
+        o.ticker ||
+        o.stock_id ||
+        o.code ||
+        o["股號"] ||
+        ""
+      ).trim().toUpperCase();
+    }
+
+    function pickName(o = {}) {
+      return String(
+        o.name ||
+        o.Name ||
+        o.company ||
+        o.company_name ||
+        o["名稱"] ||
+        o["股名"] ||
+        ""
+      ).trim();
+    }
+
+    function pickCategory(o = {}) {
+      return String(
+        o.category ||
+        o.Category ||
+        o.raw_category ||
+        o.type ||
+        o["類別"] ||
+        "unknown"
+      ).trim().toLowerCase();
+    }
+
+    function normalizeM7Data(json) {
+      if (Array.isArray(json)) return json;
+      if (Array.isArray(json?.stocks)) return json.stocks;
+      if (Array.isArray(json?.data)) return json.data;
+      if (Array.isArray(json?.results)) return json.results;
+      if (Array.isArray(json?.items)) return json.items;
+      if (Array.isArray(json?.m7stocks)) return json.m7stocks;
+      return [];
+    }
+
+    function normalizePoolData(json) {
+      if (Array.isArray(json)) return json;
+      if (Array.isArray(json?.stocks)) return json.stocks;
+      if (Array.isArray(json?.data)) return json.data;
+      if (Array.isArray(json?.results)) return json.results;
+      return [];
+    }
+
+    function normalizeFundamentalData(json) {
+      if (!json) return {};
+      if (Array.isArray(json)) {
+        const obj = {};
+        json.forEach(item => {
+          const symbol = pickSymbol(item);
+          if (symbol) obj[symbol] = item;
+        });
+        return obj;
+      }
+      if (json && typeof json === "object") {
+        if (json.stocks && !Array.isArray(json.stocks) && typeof json.stocks === "object") return json.stocks;
+        if (json.data && !Array.isArray(json.data) && typeof json.data === "object") return json.data;
+        return json;
+      }
+      return {};
+    }
+
+    function getGlobalCandidates() {
+      return {
+        m7: [
+          window.m7stocks,
+          window.m7Stocks,
+          window.__M7__,
+          window.__M7_STOCKS__,
+          window.stockToday,
+          window.todayStocks,
+          window.m7_new_stock_today
+        ],
+        fundamental: [
+          window.fundamental,
+          window.fundamentalData,
+          window.__FUNDAMENTAL__,
+          window.__FUNDAMENTAL_DATA__,
+          window.m1Results,
+          window.m1results,
+          window.m1_output,
+          window.rawM1Results
+        ]
+      };
+    }
+
+    function getFirstValidM7FromGlobals() {
+      const candidates = getGlobalCandidates().m7;
+      for (const item of candidates) {
+        const arr = normalizeM7Data(item);
+        if (arr.length) return arr;
+      }
+      return [];
+    }
+
+    function getFirstValidFundFromGlobals() {
+      const candidates = getGlobalCandidates().fundamental;
+      for (const item of candidates) {
+        const obj = normalizeFundamentalData(item);
+        if (Object.keys(obj).length) return obj;
+      }
+      return {};
+    }
+
     function buildMergedData() {
       const pool = state.raw.pool || [];
       const m7 = state.raw.m7 || [];
       const fundamental = state.raw.fundamental || {};
-
       const map = new Map();
 
       pool.forEach(item => {
@@ -446,10 +510,10 @@
         if (!symbol) return;
         map.set(symbol, {
           symbol,
-          name: pickName(item),
+          name: pickName(item) || symbol,
           category: pickCategory(item),
           raw_category: pickCategory(item),
-          initial_bucket: "pool30",
+          initial_bucket: item.initial_bucket || "pool30",
           source_pool: item
         });
       });
@@ -459,10 +523,11 @@
         if (!symbol) return;
 
         const prev = map.get(symbol) || { symbol };
+
         map.set(symbol, {
           ...prev,
           symbol,
-          name: prev.name || pickName(item),
+          name: prev.name || pickName(item) || symbol,
           category: prev.category || pickCategory(item),
           raw_category: prev.raw_category || pickCategory(item),
           m7_score:
@@ -501,20 +566,25 @@
         const capexScore =
           n(f.capex_score) ??
           n(f["capex_score"]) ??
+          n(f.breakdown?.capex_score) ??
           n(f.capexRatioScore);
 
         const m3Score =
           n(f.m3_score) ??
           n(f["m3_score"]) ??
+          n(f.breakdown?.m3_score) ??
           n(f.pure_stock_score) ??
           n(f.stock_score);
 
         const m7Score =
-          n(prev.m7_score) ??
-          n(f.m7_score);
+          n(f.m7_score) ??
+          n(f["m7_score"]) ??
+          n(f.breakdown?.m7_score) ??
+          n(prev.m7_score);
 
         const rawM1 =
           n(f.raw_m1_score) ??
+          n(f["raw_m1_score"]) ??
           (
             (capexScore ?? 0) * 0.5 +
             (m3Score ?? 0) * 0.25 +
@@ -531,8 +601,8 @@
           ...prev,
           symbol,
           name: prev.name || pickName(f) || symbol,
-          category: prev.category || pickCategory(f) || "unknown",
-          raw_category: prev.raw_category || pickCategory(f) || "unknown",
+          category: prev.category || pickCategory(f),
+          raw_category: prev.raw_category || pickCategory(f),
           raw_m1_score: rawM1,
           m1_score: finalM1,
           breakdown: {
@@ -541,17 +611,17 @@
             m7_score: m7Score
           },
           debug: {
-            score_source_weight: safe(f.score_source_weight),
-            category_bias: safe(f.category_bias),
-            valuation_score: safe(prev.valuation_score ?? f.valuation_score),
-            trend_score: safe(prev.trend_score ?? f.trend_score),
-            quality_score: safe(prev.quality_score ?? f.quality_score),
-            snapshot: safe(prev.snapshot ?? f.snapshot),
-            growth: safe(prev.growth ?? f.growth),
-            capex_ratio_prev_y: safe(f.capex_ratio_prev_y),
-            revenue_growth_q: safe(f.revenue_growth_q),
-            operating_income_growth_q: safe(f.operating_income_growth_q),
-            operating_income_q: safe(f.operating_income_q)
+            score_source_weight: safe(f.debug?.score_source_weight ?? f.score_source_weight),
+            category_bias: safe(f.debug?.category_bias ?? f.category_bias),
+            valuation_score: safe(f.debug?.valuation_score ?? prev.valuation_score ?? f.valuation_score),
+            trend_score: safe(f.debug?.trend_score ?? prev.trend_score ?? f.trend_score),
+            quality_score: safe(f.debug?.quality_score ?? prev.quality_score ?? f.quality_score),
+            snapshot: safe(f.debug?.snapshot ?? prev.snapshot ?? f.snapshot),
+            growth: safe(f.debug?.growth ?? prev.growth ?? f.growth),
+            capex_ratio_prev_y: safe(f.debug?.capex_ratio_prev_y ?? f.capex_ratio_prev_y),
+            revenue_growth_q: safe(f.debug?.revenue_growth_q ?? f.revenue_growth_q),
+            operating_income_growth_q: safe(f.debug?.operating_income_growth_q ?? f.operating_income_growth_q),
+            operating_income_q: safe(f.debug?.operating_income_q ?? f.operating_income_q)
           },
           initial_bucket: f.initial_bucket || prev.initial_bucket || "unknown",
           rank: n(f.rank),
@@ -588,38 +658,13 @@
       const categories = Array.from(new Set(state.merged.map(x => x.category || "unknown"))).sort();
       const buckets = Array.from(new Set(state.merged.map(x => x.initial_bucket || "unknown"))).sort();
 
-      $("categoryFilter").innerHTML = '<option value="ALL">全部類別</option>' +
+      $("categoryFilter").innerHTML =
+        '<option value="ALL">全部類別</option>' +
         categories.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("");
 
-      $("bucketFilter").innerHTML = '<option value="ALL">全部 Bucket</option>' +
+      $("bucketFilter").innerHTML =
+        '<option value="ALL">全部 Bucket</option>' +
         buckets.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("");
-    }
-
-    function applyFilters() {
-      const kw = $("searchInput").value.trim().toUpperCase();
-      const category = $("categoryFilter").value;
-      const bucket = $("bucketFilter").value;
-
-      let rows = [...state.merged];
-
-      if (kw) {
-        rows = rows.filter(x =>
-          String(x.symbol || "").toUpperCase().includes(kw) ||
-          String(x.name || "").toUpperCase().includes(kw)
-        );
-      }
-
-      if (category !== "ALL") {
-        rows = rows.filter(x => String(x.category) === category);
-      }
-
-      if (bucket !== "ALL") {
-        rows = rows.filter(x => String(x.initial_bucket) === bucket);
-      }
-
-      state.filtered = rows;
-      renderTable(rows);
-      updateStats();
     }
 
     function renderTable(rows) {
@@ -656,10 +701,40 @@
         });
       });
 
-      if (rows.length && !state.selected) {
-        state.selected = rows[0];
-        $("detailBox").textContent = JSON.stringify(rows[0], null, 2);
+      if (rows.length) {
+        const first = rows[0];
+        state.selected = first;
+        $("detailBox").textContent = JSON.stringify(first, null, 2);
+      } else {
+        $("detailBox").textContent = "目前無符合資料";
       }
+    }
+
+    function applyFilters() {
+      const kw = $("searchInput").value.trim().toUpperCase();
+      const category = $("categoryFilter").value;
+      const bucket = $("bucketFilter").value;
+
+      let rows = [...state.merged];
+
+      if (kw) {
+        rows = rows.filter(x =>
+          String(x.symbol || "").toUpperCase().includes(kw) ||
+          String(x.name || "").toUpperCase().includes(kw)
+        );
+      }
+
+      if (category !== "ALL") {
+        rows = rows.filter(x => String(x.category) === category);
+      }
+
+      if (bucket !== "ALL") {
+        rows = rows.filter(x => String(x.initial_bucket) === bucket);
+      }
+
+      state.filtered = rows;
+      renderTable(rows);
+      updateStats();
     }
 
     function updateStats() {
@@ -669,88 +744,149 @@
       $("statFund").textContent = Object.keys(state.raw.fundamental || {}).length;
       $("statPool").textContent = state.raw.pool.length;
 
+      $("statM7Src").textContent = state.meta.m7Source || "-";
+      $("statFundSrc").textContent = state.meta.fundSource || "-";
+      $("statPoolSrc").textContent = state.meta.poolSource || "-";
+
       const checks = ["COIN","SOFI","QQQ"].map(s =>
         state.merged.some(x => x.symbol === s) ? `${s}✓` : `${s}✗`
       );
       $("statCheck").textContent = checks.join(" ");
     }
 
-    function escapeHtml(str) {
-      return String(str ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
-
-    async function loadAll() {
-      $("logBox").textContent = "";
-      log("start loading...");
-
-      let pool = [];
-      let m7 = [];
-      let fundamental = {};
-
-      try {
-        pool = normalizePoolData(await fetchJSON("./data/pool30.json"));
-        log("pool30 loaded", { count: pool.length, symbols: pool.map(x => pickSymbol(x)) });
-      } catch (e) {
-        log("pool30 failed", { error: String(e) });
-      }
-
-      try {
-        const m7json = await fetchJSON("./data/m7/m7_new_stock_today.json");
-        m7 = normalizeM7Data(m7json);
-        log("m7 loaded", { count: m7.length, symbols: m7.map(x => pickSymbol(x)) });
-      } catch (e) {
-        log("m7 failed", { error: String(e) });
-      }
-
-      const fundamentalCandidates = [
-        "./data/m1/fundamental_data.json",
-        "./data/fundamental_data.json",
-        "./data/m1/m1_fundamental.json",
-        "./data/m1/m1_output.json",
-        "./data/m1/fundamental.json"
+    async function loadPool() {
+      const candidates = [
+        "./data/pool30.json",
+        "data/pool30.json",
+        "./pool30.json"
       ];
-
-      let fundLoaded = false;
-      for (const path of fundamentalCandidates) {
+      for (const path of candidates) {
         try {
           const json = await fetchJSON(path);
-          fundamental = normalizeFundamentalData(json);
-          const count = Object.keys(fundamental).length;
-          if (count > 0) {
-            log("fundamental loaded", { path, count, symbols: Object.keys(fundamental) });
-            fundLoaded = true;
-            break;
+          const arr = normalizePoolData(json);
+          if (arr.length) {
+            state.raw.pool = arr;
+            state.meta.poolSource = `JSON: ${path}`;
+            log("pool loaded", { path, count: arr.length, symbols: arr.map(x => pickSymbol(x)) });
+            return;
+          }
+        } catch (e) {
+          log("pool try failed", { path, error: String(e) });
+        }
+      }
+      state.raw.pool = [];
+      state.meta.poolSource = "找不到 pool";
+    }
+
+    async function loadM7() {
+      const candidates = [
+        "./data/m7/m7_new_stock_today.json",
+        "data/m7/m7_new_stock_today.json",
+        "./data/m7_new_stock_today.json",
+        "data/m7_new_stock_today.json",
+        "./data/m7/m7stocks.json",
+        "data/m7/m7stocks.json",
+        "./data/m7/stocks.json",
+        "data/m7/stocks.json"
+      ];
+
+      for (const path of candidates) {
+        try {
+          const json = await fetchJSON(path);
+          const arr = normalizeM7Data(json);
+          if (arr.length) {
+            state.raw.m7 = arr;
+            state.meta.m7Source = `JSON: ${path}`;
+            log("m7 loaded", { path, count: arr.length, symbols: arr.map(x => pickSymbol(x)) });
+            return;
+          } else {
+            log("m7 json loaded but empty", { path, keys: Object.keys(json || {}) });
+          }
+        } catch (e) {
+          log("m7 try failed", { path, error: String(e) });
+        }
+      }
+
+      const globalM7 = getFirstValidM7FromGlobals();
+      if (globalM7.length) {
+        state.raw.m7 = globalM7;
+        state.meta.m7Source = "GLOBAL: window.*";
+        log("m7 loaded from global", { count: globalM7.length, symbols: globalM7.map(x => pickSymbol(x)) });
+        return;
+      }
+
+      state.raw.m7 = [];
+      state.meta.m7Source = "找不到 M7";
+      log("m7 not found anywhere");
+    }
+
+    async function loadFundamental() {
+      const candidates = [
+        "./data/m1/fundamental_data.json",
+        "data/m1/fundamental_data.json",
+        "./data/fundamental_data.json",
+        "data/fundamental_data.json",
+        "./data/m1/fundamental.json",
+        "data/m1/fundamental.json",
+        "./data/m1/m1_output.json",
+        "data/m1/m1_output.json",
+        "./data/m1/results.json",
+        "data/m1/results.json"
+      ];
+
+      for (const path of candidates) {
+        try {
+          const json = await fetchJSON(path);
+          const obj = normalizeFundamentalData(json);
+          const count = Object.keys(obj).length;
+          if (count) {
+            state.raw.fundamental = obj;
+            state.meta.fundSource = `JSON: ${path}`;
+            log("fundamental loaded", { path, count, symbols: Object.keys(obj) });
+            return;
+          } else {
+            log("fundamental json loaded but empty", { path, keys: Object.keys(json || {}) });
           }
         } catch (e) {
           log("fundamental try failed", { path, error: String(e) });
         }
       }
 
-      if (!fundLoaded) {
-        log("fundamental not found, fallback to pool + m7 only");
+      const globalFund = getFirstValidFundFromGlobals();
+      const count = Object.keys(globalFund).length;
+      if (count) {
+        state.raw.fundamental = globalFund;
+        state.meta.fundSource = "GLOBAL: window.*";
+        log("fundamental loaded from global", { count, symbols: Object.keys(globalFund) });
+        return;
       }
 
-      state.raw.pool = pool;
-      state.raw.m7 = m7;
-      state.raw.fundamental = fundamental;
+      state.raw.fundamental = {};
+      state.meta.fundSource = "找不到 Fundamental";
+      log("fundamental not found anywhere");
+    }
+
+    async function loadAll() {
+      $("logBox").textContent = "";
+      log("start loading...");
+
+      await loadPool();
+      await loadM7();
+      await loadFundamental();
 
       buildMergedData();
       updateFilterOptions();
       applyFilters();
 
-      const finalSymbols = state.merged.map(x => x.symbol);
-      log("final symbols", finalSymbols);
-
+      console.log("pool =", state.raw.pool);
       console.log("m7stocks =", state.raw.m7);
-      console.log("fundamental count =", Object.keys(state.raw.fundamental).length);
-      console.log("fundamental keys =", Object.keys(state.raw.fundamental));
+      console.log("fundamental =", state.raw.fundamental);
       console.log("allStocks =", state.merged);
-      console.log("allStocks symbols =", finalSymbols);
+      console.log("allStocks.length =", state.merged.length);
+      console.log("symbols =", state.merged.map(x => x.symbol));
+      console.log("COIN =", state.merged.find(x => x.symbol === "COIN"));
+      console.log("SOFI =", state.merged.find(x => x.symbol === "SOFI"));
+      console.log("QQQ =", state.merged.find(x => x.symbol === "QQQ"));
 
       window.debugM1 = {
         state,
@@ -763,22 +899,35 @@
     $("searchInput").addEventListener("input", applyFilters);
     $("categoryFilter").addEventListener("change", applyFilters);
     $("bucketFilter").addEventListener("change", applyFilters);
+
     $("reloadBtn").addEventListener("click", loadAll);
+
     $("showAllBtn").addEventListener("click", () => {
       $("searchInput").value = "";
       $("categoryFilter").value = "ALL";
       $("bucketFilter").value = "ALL";
       applyFilters();
     });
+
     $("debugBtn").addEventListener("click", () => {
       console.log("=== M1 DEBUG START ===");
-      console.log("allStocks.length =", window.allStocks?.length);
-      console.log("allStocks symbols =", window.allStocks?.map(x => x.symbol));
-      console.log("COIN =", window.allStocks?.find(x => x.symbol === "COIN"));
-      console.log("SOFI =", window.allStocks?.find(x => x.symbol === "SOFI"));
-      console.log("QQQ =", window.allStocks?.find(x => x.symbol === "QQQ"));
+      console.log("pool source =", state.meta.poolSource);
+      console.log("m7 source =", state.meta.m7Source);
+      console.log("fund source =", state.meta.fundSource);
+      console.log("pool length =", state.raw.pool.length);
+      console.log("m7 length =", state.raw.m7.length);
+      console.log("fundamental length =", Object.keys(state.raw.fundamental).length);
+      console.log("allStocks.length =", state.merged.length);
+      console.log("allStocks symbols =", state.merged.map(x => x.symbol));
+      console.log("COIN =", state.merged.find(x => x.symbol === "COIN"));
+      console.log("SOFI =", state.merged.find(x => x.symbol === "SOFI"));
+      console.log("QQQ =", state.merged.find(x => x.symbol === "QQQ"));
+      console.log("window.m7stocks =", window.m7stocks);
+      console.log("window.fundamental =", window.fundamental);
+      console.log("window.fundamentalData =", window.fundamentalData);
+      console.log("window.m1Results =", window.m1Results);
       console.log("=== M1 DEBUG END ===");
-      alert("已輸出 debug 到 console");
+      alert("debug 已輸出到 console");
     });
 
     loadAll();
