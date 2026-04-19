@@ -1,12 +1,23 @@
 import { runM1Engine } from "./m1_engine.js";
 
-console.log("RUN_M1 VERSION 2026-04-19 step1-fundamental");
+console.log("RUN_M1 VERSION 2026-04-19 step1-fundamental-cachefix");
+
+async function fetchJsonNoCache(url) {
+  const finalUrl = `${url}?v=${Date.now()}`;
+  const res = await fetch(finalUrl, { cache: "no-store" });
+
+  if (!res.ok) {
+    throw new Error(`Fetch failed: ${url} (${res.status})`);
+  }
+
+  return res.json();
+}
 
 async function main() {
   try {
-    const pool30Raw = await fetch("data/pool30.json").then(r => r.json());
-    const m7Raw = await fetch("data/m7/m7_new_stock_today.json").then(r => r.json());
-    const fundamentalRaw = await fetch("data/m1/m1_fundamental_map.json?v=" + Date.now());
+    const pool30Raw = await fetchJsonNoCache("data/pool30.json");
+    const m7Raw = await fetchJsonNoCache("data/m7/m7_new_stock_today.json");
+    const fundamentalRaw = await fetchJsonNoCache("data/m1/m1_fundamental_map.json");
 
     const pool30 = normalizePool30(pool30Raw);
     const m7Stocks = normalizeM7Stocks(m7Raw);
@@ -15,7 +26,8 @@ async function main() {
 
     console.log("pool30 =", pool30);
     console.log("m7Stocks =", m7Stocks);
-    console.log("fundamental keys =", Object.keys(fundamentalRaw || {}).slice(0, 10));
+    console.log("fundamental count =", Object.keys(fundamentalRaw || {}).length);
+    console.log("fundamental keys =", Object.keys(fundamentalRaw || {}));
     console.log("merged first 10 =", merged.slice(0, 10));
 
     const result = runM1Engine(merged);
@@ -131,7 +143,6 @@ function mergeM1Inputs(pool30, m7Stocks, fundamentalMap) {
         m7["分類"] ||
         "",
 
-      // ---- M7 ----
       valuation_score: normalizeScore(
         pickNumber(m7, ["valuation_score", "ValuationScore", "估值分"])
       ),
@@ -162,7 +173,6 @@ function mergeM1Inputs(pool30, m7Stocks, fundamentalMap) {
         pickNumber(m7, ["event_stock_score", "EventStockScore", "Event平均"])
       ),
 
-      // ---- Fundamental proxy ----
       capex_ratio_prev_y: pickNumber(f, ["capex_ratio_prev_y"]),
       revenue_growth_q: pickNumber(f, ["revenue_growth_q"]),
       operating_income_growth_q: pickNumber(f, ["operating_income_growth_q"]),
@@ -170,7 +180,6 @@ function mergeM1Inputs(pool30, m7Stocks, fundamentalMap) {
 
       capex_score: capexScore,
 
-      // 保留欄位，但不再強依賴真實 capex/profit
       capex: null,
       profit: null,
 
