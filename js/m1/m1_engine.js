@@ -1,7 +1,10 @@
 // ==========================================
-// M1 Engine V4
+// M1 Engine V5 FINAL
 // 振宇 FCN 系統｜Pool30 體質選股引擎
-// Step 3：正式輸出 pool30 / stock_pool / watch / reject
+// 已完成：
+// 1. Fundamental + M3 + M7
+// 2. pool30 / stock_pool / watch / reject
+// 3. M1_score normalize to max = 10
 // ==========================================
 
 function toNum(v, d = null) {
@@ -112,13 +115,13 @@ function m7Score(stock) {
 function categoryBias(category) {
   if (category === "core") return 1.12;
   if (category === "growth") return 1.06;
-  if (category === "income") return 1.00;
+  if (category === "income") return 1.0;
   if (category === "defensive") return 0.93;
   return 0.85;
 }
 
-// ---------- Final M1 ----------
-function calcM1(stock, category) {
+// ---------- Raw M1 ----------
+function calcRawM1(stock, category) {
   const capex = capexScore(stock);
   const m3 = m3Score(stock);
   const m7 = m7Score(stock);
@@ -143,17 +146,32 @@ function calcM1(stock, category) {
 
   const rawScore = totalWeight > 0 ? weighted / totalWeight : 0;
   const bias = categoryBias(category);
-  const finalScore = rawScore * bias;
+  const biasedScore = rawScore * bias;
 
   return {
     raw_m1_score: round2(rawScore),
-    M1_score: round2(finalScore),
+    biased_m1_score: round2(biasedScore),
     capex_score: capex !== null ? round2(capex) : null,
     m3_score: m3 !== null ? round2(m3) : null,
     m7_score: m7 !== null ? round2(m7) : null,
     score_source_weight: round2(totalWeight),
     category_bias: round2(bias)
   };
+}
+
+// ---------- Normalize all M1 scores so max = 10 ----------
+function normalizeScores(results) {
+  const maxScore = Math.max(...results.map(r => toNum(r.M1_score, 0)), 0);
+
+  if (maxScore <= 0) return results;
+
+  return results.map((row) => {
+    const normalized = (row.M1_score / maxScore) * 10;
+    return {
+      ...row,
+      M1_score: round2(normalized)
+    };
+  });
 }
 
 // ---------- Level 2 stats ----------
@@ -202,7 +220,28 @@ function assignBucket(row, catStats) {
   return "reject";
 }
 
-// ---------- Final output builder ----------
+// ---------- Category summary ----------
+function buildCategorySummary(rows) {
+  const out = {
+    core: { total: 0, pool30: 0, stock_pool: 0, watch: 0, reject: 0 },
+    growth: { total: 0, pool30: 0, stock_pool: 0, watch: 0, reject: 0 },
+    income: { total: 0, pool30: 0, stock_pool: 0, watch: 0, reject: 0 },
+    defensive: { total: 0, pool30: 0, stock_pool: 0, watch: 0, reject: 0 },
+    speculative: { total: 0, pool30: 0, stock_pool: 0, watch: 0, reject: 0 }
+  };
+
+  for (const row of rows) {
+    const c = row.category;
+    const b = row.initial_bucket;
+    if (!out[c]) continue;
+    out[c].total += 1;
+    if (out[c][b] !== undefined) out[c][b] += 1;
+  }
+
+  return out;
+}
+
+// ---------- Final output ----------
 function buildFinalResults(results, stats) {
   const enriched = results.map((row) => {
     const catStats = stats[row.category];
@@ -237,40 +276,21 @@ function buildFinalResults(results, stats) {
   };
 }
 
-function buildCategorySummary(rows) {
-  const out = {
-    core: { total: 0, pool30: 0, stock_pool: 0, watch: 0, reject: 0 },
-    growth: { total: 0, pool30: 0, stock_pool: 0, watch: 0, reject: 0 },
-    income: { total: 0, pool30: 0, stock_pool: 0, watch: 0, reject: 0 },
-    defensive: { total: 0, pool30: 0, stock_pool: 0, watch: 0, reject: 0 },
-    speculative: { total: 0, pool30: 0, stock_pool: 0, watch: 0, reject: 0 }
-  };
-
-  for (const row of rows) {
-    const c = row.category;
-    const b = row.initial_bucket;
-    if (!out[c]) continue;
-    out[c].total += 1;
-    if (out[c][b] !== undefined) out[c][b] += 1;
-  }
-
-  return out;
-}
-
 // ---------- Main ----------
 export function runM1Engine(stockList) {
+  // Step 1: raw build
   const baseResults = stockList.map((stock) => {
     const category = normalizeCategory(stock);
 
     const {
       raw_m1_score,
-      M1_score,
+      biased_m1_score,
       capex_score,
       m3_score,
       m7_score,
       score_source_weight,
       category_bias
-    } = calcM1(stock, category);
+    } = calcRawM1(stock, category);
 
     return {
       symbol: String(stock.symbol || "").toUpperCase().trim(),
@@ -278,7 +298,7 @@ export function runM1Engine(stockList) {
       category,
       raw_category: stock.category || stock["分類"] || "",
       raw_m1_score,
-      M1_score,
+      M1_score: biased_m1_score,
       breakdown: {
         capex_score,
         m3_score,
@@ -300,8 +320,14 @@ export function runM1Engine(stockList) {
     };
   });
 
-  const stats = buildCategoryStats(baseResults);
-  const finalOutput = buildFinalResults(baseResults, stats);
+  // Step 2: normalize max = 10
+  const normalizedResults = normalizeScores(baseResults);
+
+  // Step 3: stats on normalized results
+  const stats = buildCategoryStats(normalizedResults);
+
+  // Step 4: final structured output
+  const finalOutput = buildFinalResults(normalizedResults, stats);
 
   return {
     updated_at: new Date().toISOString(),
