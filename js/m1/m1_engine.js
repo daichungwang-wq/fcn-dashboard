@@ -1,7 +1,7 @@
 // ==========================================
-// M1 Engine V3
+// M1 Engine V4
 // 振宇 FCN 系統｜Pool30 體質選股引擎
-// Step 2：正式吃 fundamental + M3 + M7
+// Step 3：正式輸出 pool30 / stock_pool / watch / reject
 // ==========================================
 
 function toNum(v, d = null) {
@@ -71,15 +71,13 @@ function capexScore(stock) {
   return v;
 }
 
-// ---------- M3 (without baseline) ----------
-// 若無 pure/event，就讓 snapshot 比重稍高一點，先當 proxy
+// ---------- M3 proxy ----------
 function m3Score(stock) {
   const pure = toNum(stock.pure_stock_score, null);
   const snapshot = toNum(stock.snapshot_score ?? stock.snapshot, null);
   const event = toNum(stock.event_stock_score, null);
 
   const parts = [];
-
   if (pure !== null) parts.push({ w: 0.45, v: pure });
   if (snapshot !== null) parts.push({ w: 0.35, v: snapshot });
   if (event !== null) parts.push({ w: 0.20, v: event });
@@ -116,7 +114,7 @@ function categoryBias(category) {
   if (category === "growth") return 1.06;
   if (category === "income") return 1.00;
   if (category === "defensive") return 0.93;
-  return 0.85; // speculative
+  return 0.85;
 }
 
 // ---------- Final M1 ----------
@@ -128,7 +126,6 @@ function calcM1(stock, category) {
   let weighted = 0;
   let totalWeight = 0;
 
-  // 你原本的核心權重
   if (capex !== null) {
     weighted += 0.5 * capex;
     totalWeight += 0.5;
@@ -195,29 +192,74 @@ function buildCategoryStats(results) {
   return stats;
 }
 
-// ---------- Level 3 bucket ----------
-function buildInitialBuckets(results, stats) {
-  return results.map((row) => {
-    const catStats = stats[row.category] || { mean: 0, std: 0, p75: 0, p50: 0, p25: 0 };
+// ---------- Bucket ----------
+function assignBucket(row, catStats) {
+  if (!catStats) return "watch";
 
-    let bucket = "watch";
+  if (row.M1_score >= catStats.p75) return "pool30";
+  if (row.M1_score >= catStats.p50) return "stock_pool";
+  if (row.M1_score >= catStats.p25) return "watch";
+  return "reject";
+}
 
-    // 優先用 percentile，比固定門檻更穩
-    if (row.M1_score >= catStats.p75) bucket = "pool30";
-    else if (row.M1_score >= catStats.p50) bucket = "stock_pool";
-    else if (row.M1_score >= catStats.p25) bucket = "watch";
-    else bucket = "reject";
+// ---------- Final output builder ----------
+function buildFinalResults(results, stats) {
+  const enriched = results.map((row) => {
+    const catStats = stats[row.category];
+    const bucket = assignBucket(row, catStats);
 
     return {
       ...row,
       initial_bucket: bucket
     };
   });
+
+  enriched.sort((a, b) => b.M1_score - a.M1_score);
+
+  enriched.forEach((row, idx) => {
+    row.rank = idx + 1;
+  });
+
+  const pool30 = enriched.filter(x => x.initial_bucket === "pool30");
+  const stock_pool = enriched.filter(x => x.initial_bucket === "stock_pool");
+  const watch = enriched.filter(x => x.initial_bucket === "watch");
+  const reject = enriched.filter(x => x.initial_bucket === "reject");
+
+  const categorySummary = buildCategorySummary(enriched);
+
+  return {
+    scores: enriched,
+    pool30,
+    stock_pool,
+    watch,
+    reject,
+    categorySummary
+  };
+}
+
+function buildCategorySummary(rows) {
+  const out = {
+    core: { total: 0, pool30: 0, stock_pool: 0, watch: 0, reject: 0 },
+    growth: { total: 0, pool30: 0, stock_pool: 0, watch: 0, reject: 0 },
+    income: { total: 0, pool30: 0, stock_pool: 0, watch: 0, reject: 0 },
+    defensive: { total: 0, pool30: 0, stock_pool: 0, watch: 0, reject: 0 },
+    speculative: { total: 0, pool30: 0, stock_pool: 0, watch: 0, reject: 0 }
+  };
+
+  for (const row of rows) {
+    const c = row.category;
+    const b = row.initial_bucket;
+    if (!out[c]) continue;
+    out[c].total += 1;
+    if (out[c][b] !== undefined) out[c][b] += 1;
+  }
+
+  return out;
 }
 
 // ---------- Main ----------
 export function runM1Engine(stockList) {
-  const results = stockList.map((stock) => {
+  const baseResults = stockList.map((stock) => {
     const category = normalizeCategory(stock);
 
     const {
@@ -258,13 +300,18 @@ export function runM1Engine(stockList) {
     };
   });
 
-  const stats = buildCategoryStats(results);
-  const scored = buildInitialBuckets(results, stats);
+  const stats = buildCategoryStats(baseResults);
+  const finalOutput = buildFinalResults(baseResults, stats);
 
   return {
     updated_at: new Date().toISOString(),
-    total_count: scored.length,
-    scores: scored.sort((a, b) => b.M1_score - a.M1_score),
-    stats
+    total_count: finalOutput.scores.length,
+    stats,
+    categorySummary: finalOutput.categorySummary,
+    pool30: finalOutput.pool30,
+    stock_pool: finalOutput.stock_pool,
+    watch: finalOutput.watch,
+    reject: finalOutput.reject,
+    scores: finalOutput.scores
   };
 }
