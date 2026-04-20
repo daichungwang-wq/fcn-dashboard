@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>M1 Review Console</title>
+  <title>M1 Review Console v2</title>
   <style>
     :root{
       --bg:#f4f7fb;
@@ -61,7 +61,7 @@
       font-size:14px;
       opacity:.96;
       line-height:1.75;
-      max-width:900px;
+      max-width:980px;
     }
 
     .hero-actions{
@@ -95,10 +95,19 @@
     }
     .btn.secondary{ background:var(--slate); }
     .btn.green{ background:var(--green); }
+    .btn.amber{ background:var(--amber); }
+    .btn.red{ background:var(--red); }
+    .btn.purple{ background:var(--purple); }
     .btn.ghost{
       background:#fff;
       color:var(--slate);
       border:1px solid var(--line);
+    }
+    .btn.small{
+      min-height:34px;
+      padding:7px 10px;
+      font-size:12px;
+      border-radius:10px;
     }
 
     .toolbar{
@@ -118,44 +127,19 @@
       color:var(--text);
     }
 
-    .summary{
+    .dashboard-grid{
       display:grid;
-      grid-template-columns:repeat(7,1fr);
-      gap:12px;
+      grid-template-columns:1.1fr 1fr;
+      gap:16px;
       margin-bottom:16px;
+      align-items:start;
     }
+
     .panel{
       background:var(--panel);
       border:1px solid var(--line);
       border-radius:var(--radius);
       box-shadow:var(--shadow);
-    }
-    .stat{
-      padding:16px;
-      min-height:104px;
-    }
-    .stat .label{
-      color:var(--muted);
-      font-size:12px;
-      margin-bottom:8px;
-    }
-    .stat .value{
-      font-size:28px;
-      font-weight:800;
-      line-height:1.1;
-    }
-    .stat .sub{
-      font-size:12px;
-      color:var(--muted);
-      margin-top:8px;
-      line-height:1.5;
-    }
-
-    .main{
-      display:grid;
-      grid-template-columns:1.05fr 0.95fr;
-      gap:16px;
-      align-items:start;
     }
 
     .panel-title{
@@ -173,66 +157,145 @@
       font-weight:600;
     }
 
-    .review-list{
-      padding:12px;
-      max-height:76vh;
-      overflow:auto;
+    .summary-wrap{
+      padding:16px;
     }
 
-    .stock-card{
-      border:1px solid #e7edf5;
-      border-radius:16px;
-      background:#fff;
-      margin-bottom:12px;
-      padding:14px;
-      transition:.16s ease;
-      cursor:pointer;
-    }
-    .stock-card:hover{
-      background:#fbfdff;
-      border-color:#cdd9ea;
-      transform:translateY(-1px);
-    }
-    .stock-card.active{
-      border:2px solid var(--blue);
-      background:#f8fbff;
-    }
-
-    .card-row-1{
+    .summary-grid{
       display:grid;
-      grid-template-columns:72px 150px 92px 120px 1.25fr 1fr 150px;
-      gap:10px;
-      align-items:start;
+      grid-template-columns:repeat(3,1fr);
+      gap:12px;
       margin-bottom:12px;
     }
-
-    .rank-box .rank{
-      font-size:28px;
-      font-weight:900;
-      line-height:1;
+    .stat{
+      border:1px solid #e7edf5;
+      border-radius:14px;
+      background:#fff;
+      padding:14px;
+      min-height:100px;
     }
-    .rank-box .txt{
-      font-size:11px;
+    .stat .label{
       color:var(--muted);
-      margin-top:6px;
+      font-size:12px;
+      margin-bottom:8px;
     }
-
-    .symbol-box .symbol{
-      font-size:20px;
+    .stat .value{
+      font-size:26px;
       font-weight:900;
-      line-height:1;
-      margin-bottom:6px;
+      line-height:1.1;
     }
-    .symbol-box .name{
+    .stat .sub{
       font-size:12px;
       color:var(--muted);
-      line-height:1.5;
+      margin-top:8px;
+      line-height:1.55;
     }
 
-    .label-sm{
-      font-size:11px;
+    .category-summary-grid{
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      gap:10px;
+      margin-top:10px;
+    }
+
+    .mini-card{
+      border:1px solid #e7edf5;
+      border-radius:14px;
+      background:#fafcff;
+      padding:12px;
+    }
+    .mini-card .t{
+      font-size:13px;
+      color:var(--muted);
+      margin-bottom:8px;
+      font-weight:700;
+    }
+    .mini-card .v{
+      font-size:18px;
+      font-weight:900;
+      line-height:1.35;
+    }
+    .mini-card .s{
+      margin-top:6px;
+      font-size:12px;
+      color:#475569;
+      line-height:1.55;
+    }
+
+    .rule-wrap{
+      padding:16px;
+    }
+
+    .formula-box{
+      border:1px dashed #cdd9ea;
+      background:#fafcff;
+      border-radius:14px;
+      padding:14px;
+      margin-bottom:12px;
+      line-height:1.7;
+      font-size:13px;
+    }
+
+    .rule-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:10px;
+    }
+
+    .rule-card{
+      border:1px solid #e7edf5;
+      border-radius:12px;
+      background:#fff;
+      padding:12px;
+    }
+    .rule-card .k{
+      font-size:12px;
       color:var(--muted);
       margin-bottom:6px;
+    }
+    .rule-card .v{
+      font-size:14px;
+      font-weight:800;
+      line-height:1.6;
+    }
+
+    .main{
+      display:grid;
+      grid-template-columns:1.18fr 0.82fr;
+      gap:16px;
+      align-items:start;
+    }
+
+    .left-stack{
+      display:grid;
+      gap:16px;
+    }
+
+    .category-panel{
+      overflow:hidden;
+    }
+
+    .category-header{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:center;
+      padding:16px 18px;
+      border-bottom:1px solid var(--line);
+      flex-wrap:wrap;
+    }
+
+    .category-header-left{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .category-name{
+      font-size:22px;
+      font-weight:900;
+      line-height:1;
     }
 
     .chip{
@@ -270,43 +333,113 @@
       color:#1d4ed8;
     }
 
-    .result-strong{ color:var(--green); font-weight:900; }
-    .result-pass{ color:var(--blue); font-weight:900; }
-    .result-watch{ color:var(--amber); font-weight:900; }
-    .result-drop{ color:var(--red); font-weight:900; }
-    .result-spec{ color:var(--purple); font-weight:900; }
+    .category-actions{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+
+    .category-body{
+      padding:12px;
+      display:grid;
+      gap:10px;
+    }
+
+    .stock-row{
+      border:1px solid #e7edf5;
+      border-radius:14px;
+      background:#fff;
+      padding:12px;
+      transition:.16s ease;
+      cursor:pointer;
+    }
+    .stock-row:hover{
+      background:#fbfdff;
+      border-color:#cdd9ea;
+      transform:translateY(-1px);
+    }
+    .stock-row.active{
+      border:2px solid var(--blue);
+      background:#f8fbff;
+    }
+
+    .row-line-1{
+      display:grid;
+      grid-template-columns:58px 120px 112px 120px 1.2fr;
+      gap:10px;
+      align-items:start;
+      margin-bottom:10px;
+    }
+
+    .row-line-2{
+      display:grid;
+      grid-template-columns:1.55fr 240px 110px 92px 92px;
+      gap:10px;
+      align-items:center;
+    }
+
+    .rank-box .n{
+      font-size:26px;
+      font-weight:900;
+      line-height:1;
+    }
+    .rank-box .s{
+      color:var(--muted);
+      font-size:11px;
+      margin-top:6px;
+    }
+
+    .symbol-box .sym{
+      font-size:20px;
+      font-weight:900;
+      line-height:1;
+      margin-bottom:6px;
+    }
+    .symbol-box .name{
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.5;
+    }
+
+    .label-sm{
+      font-size:11px;
+      color:var(--muted);
+      margin-bottom:6px;
+      font-weight:700;
+    }
 
     .reason-line{
       font-size:14px;
       line-height:1.6;
-      font-weight:700;
+      font-weight:800;
       color:#1e293b;
     }
 
-    .metrics-line{
+    .factor-line{
       display:flex;
       flex-wrap:wrap;
       gap:8px;
-      margin-top:4px;
     }
+
     .metric-pill{
       background:#f8fafc;
       border:1px solid #e2e8f0;
       border-radius:999px;
       padding:5px 10px;
       font-size:12px;
-      font-weight:800;
+      font-weight:900;
       color:#0f172a;
     }
 
-    .card-row-2{
-      display:grid;
-      grid-template-columns:1fr 180px 170px 120px;
-      gap:10px;
+    .judge-area{
+      display:flex;
       align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
     }
 
-    .action-select, .status-select{
+    .judge-select{
       width:100%;
       padding:9px 10px;
       border:1px solid var(--line);
@@ -314,15 +447,28 @@
       background:#fff;
       font-size:13px;
       color:var(--text);
-      font-weight:700;
+      font-weight:800;
     }
 
-    .quick-tags{
-      display:flex;
-      gap:6px;
-      flex-wrap:wrap;
-      justify-content:flex-end;
+    .status-light{
+      width:14px;
+      height:14px;
+      border-radius:50%;
+      border:1px solid #cbd5e1;
+      background:#fff;
+      box-shadow:0 0 0 2px rgba(255,255,255,0.9) inset;
+      flex:0 0 auto;
     }
+    .light-pool30{ background:#16a34a; border-color:#15803d; }
+    .light-watch{ background:#d97706; border-color:#b45309; }
+    .light-drop{ background:#dc2626; border-color:#b91c1c; }
+    .light-thinking{ background:#ffffff; border-color:#94a3b8; }
+
+    .result-strong{ color:var(--green); font-weight:900; }
+    .result-pass{ color:var(--blue); font-weight:900; }
+    .result-watch{ color:var(--amber); font-weight:900; }
+    .result-drop{ color:var(--red); font-weight:900; }
+    .result-spec{ color:var(--purple); font-weight:900; }
 
     .side{
       display:grid;
@@ -358,6 +504,7 @@
       display:flex;
       gap:8px;
       flex-wrap:wrap;
+      align-items:center;
     }
 
     .layer{
@@ -443,37 +590,43 @@
       line-height:1.7;
     }
 
-    .footer-rule{
-      font-size:12px;
-      color:var(--muted);
-      line-height:1.65;
-    }
-
-    @media (max-width: 1500px){
+    @media (max-width: 1550px){
       .toolbar{
         grid-template-columns:1fr 1fr 1fr 1fr;
       }
-      .summary{
-        grid-template-columns:repeat(4,1fr);
-      }
+      .dashboard-grid,
       .main{
         grid-template-columns:1fr;
       }
       .side{
         position:static;
       }
-    }
-
-    @media (max-width: 980px){
-      .summary{
+      .summary-grid{
         grid-template-columns:repeat(2,1fr);
       }
+      .category-summary-grid{
+        grid-template-columns:repeat(3,1fr);
+      }
+    }
+
+    @media (max-width: 1050px){
+      .row-line-1,
+      .row-line-2,
+      .rule-grid,
+      .detail-grid{
+        grid-template-columns:1fr;
+      }
+      .category-summary-grid{
+        grid-template-columns:repeat(2,1fr);
+      }
+    }
+
+    @media (max-width: 760px){
       .toolbar{
         grid-template-columns:1fr;
       }
-      .card-row-1,
-      .card-row-2,
-      .detail-grid{
+      .summary-grid,
+      .category-summary-grid{
         grid-template-columns:1fr;
       }
       .hero-top{
@@ -487,18 +640,21 @@
     <div class="hero">
       <div class="hero-top">
         <div>
-          <h1>M1 Review Console</h1>
+          <h1>M1 Review Console v2</h1>
           <div class="sub">
-            <b>L1：</b>精簡明白，先看進入原因 + 關鍵數據，做人工初篩。<br>
-            <b>L2 / L3 / L4：</b>逐層展開，確認 engine 判斷、看市場補充、留下人工 review 結論。<br>
+            <b>L1：</b>五大分類卡片，只先看 AI 推薦重點與關鍵數據，方便人工初篩。<br>
+            <b>L2 / L3 / L4：</b>右側逐層展開，看 rule、看市場、做人為覆核與備註。<br>
             <b>L5：</b>專股研究 / PDF 按需要啟動，不塞進主畫面。
           </div>
         </div>
+
         <div class="hero-actions">
           <a class="nav-btn" href="https://daichungwang-wq.github.io/fcn-dashboard/milestone3_index.html">回 Milestone3</a>
           <a class="nav-btn" href="https://daichungwang-wq.github.io/fcn-dashboard/m1_test.html">篩選邏輯調整</a>
           <button id="reloadBtn" class="btn">重新載入</button>
           <button id="resetFilterBtn" class="btn secondary">顯示全部</button>
+          <button id="saveAllBtn" class="btn green">全部存檔</button>
+          <button id="exportPool30Btn" class="btn purple">匯出 Pool30</button>
         </div>
       </div>
     </div>
@@ -509,101 +665,95 @@
         <option value="ALL">全部類別</option>
       </select>
       <select id="engineResultFilter" class="control">
-        <option value="ALL">全部 Engine 結果</option>
+        <option value="ALL">全部 AI 結果</option>
         <option value="STRONG">STRONG</option>
         <option value="PASS">PASS</option>
         <option value="WATCH">WATCH</option>
         <option value="DROP">DROP</option>
         <option value="SPEC_POOL">SPEC_POOL</option>
       </select>
-      <select id="humanDecisionFilter" class="control">
-        <option value="ALL">全部人工決策</option>
-        <option value="KEEP">KEEP</option>
-        <option value="WATCH">WATCH</option>
-        <option value="DROP">DROP</option>
-        <option value="POOL30">POOL30</option>
-        <option value="UNSET">未決定</option>
+      <select id="reviewDecisionFilter" class="control">
+        <option value="ALL">全部覆核判定</option>
+        <option value="pool30">pool30</option>
+        <option value="watch">watch</option>
+        <option value="drop">drop</option>
+        <option value="thinking">thinking</option>
       </select>
-      <select id="reviewStatusFilter" class="control">
-        <option value="ALL">全部 Review 狀態</option>
-        <option value="UNREVIEWED">未看</option>
-        <option value="REVIEWING">檢視中</option>
-        <option value="DONE">已決定</option>
+      <select id="strongOnlyFilter" class="control">
+        <option value="ON">預設只看 STRONG</option>
+        <option value="OFF">顯示全部結果</option>
       </select>
       <select id="sortFilter" class="control">
-        <option value="m1_desc">依 M1：高 → 低</option>
         <option value="rank_asc">依 Rank：小 → 大</option>
-        <option value="result_then_m1">依 Result → M1</option>
+        <option value="m1_desc">依 M1：高 → 低</option>
         <option value="symbol_asc">依股號：A → Z</option>
       </select>
-      <button id="onlyPendingBtn" class="btn ghost">只看未處理</button>
-      <button id="clearReviewBtn" class="btn ghost">清除 Review 記錄</button>
+      <button id="onlyPendingBtn" class="btn ghost">只看 thinking</button>
+      <button id="clearReviewBtn" class="btn ghost">清除覆核記錄</button>
     </div>
 
-    <div class="summary">
-      <div class="panel stat">
-        <div class="label">Candidate 總筆數</div>
-        <div class="value" id="statTotal">-</div>
-        <div class="sub">目前讀取的正式版候選池</div>
+    <div class="dashboard-grid">
+      <div class="panel">
+        <div class="panel-title">
+          <span>1. Dashboard</span>
+          <span class="small-note">顯示統計 / AI 推薦 / 分類分布</span>
+        </div>
+        <div class="summary-wrap">
+          <div class="summary-grid">
+            <div class="stat">
+              <div class="label">1.1 目前顯示</div>
+              <div class="value" id="statDisplay">-</div>
+              <div class="sub" id="statDisplaySub">-</div>
+            </div>
+
+            <div class="stat">
+              <div class="label">1.2 AI 推薦</div>
+              <div class="value" id="statAiRecommend">-</div>
+              <div class="sub" id="statAiRecommendSub">-</div>
+            </div>
+
+            <div class="stat">
+              <div class="label">平均 M1 / Top1</div>
+              <div class="value" id="statAvgM1">-</div>
+              <div class="sub" id="statTop1">-</div>
+            </div>
+          </div>
+
+          <div class="category-summary-grid" id="categorySummaryGrid"></div>
+        </div>
       </div>
-      <div class="panel stat">
-        <div class="label">目前顯示</div>
-        <div class="value" id="statShown">-</div>
-        <div class="sub">搜尋 / 篩選後</div>
-      </div>
-      <div class="panel stat">
-        <div class="label">STRONG / PASS</div>
-        <div class="value" id="statEngine">-</div>
-        <div class="sub">Engine 結果概況</div>
-      </div>
-      <div class="panel stat">
-        <div class="label">人工已決定</div>
-        <div class="value" id="statReviewed">-</div>
-        <div class="sub">DONE / 全部</div>
-      </div>
-      <div class="panel stat">
-        <div class="label">Top 1</div>
-        <div class="value" id="statTop">-</div>
-        <div class="sub">目前排序第一名</div>
-      </div>
-      <div class="panel stat">
-        <div class="label">平均 M1</div>
-        <div class="value" id="statAvgM1">-</div>
-        <div class="sub">normalize 後</div>
-      </div>
-      <div class="panel stat">
-        <div class="label">關鍵股快照</div>
-        <div class="value" id="statCheck" style="font-size:23px;">-</div>
-        <div class="sub">COIN / SOFI / QQQ</div>
+
+      <div class="panel">
+        <div class="panel-title">
+          <span>2. Filter Rule</span>
+          <span class="small-note">公式簡介 / 正式版規則摘要</span>
+        </div>
+        <div class="rule-wrap">
+          <div class="formula-box">
+            <b>2.1 M1 公式簡介</b><br>
+            M1_raw = 0.5 × Capex + 0.25 × M3 + 0.25 × M7<br>
+            M1_biased = M1_raw × category bias<br>
+            M1_score = normalize to max 10<br>
+            AI 推薦 = STRONG + PASS
+          </div>
+
+          <div class="rule-grid" id="ruleGrid"></div>
+        </div>
       </div>
     </div>
 
     <div class="main">
-      <div class="panel">
-        <div class="panel-title">
-          <span>L1｜人工初篩主表</span>
-          <span class="small-note" id="tableNote">載入中...</span>
-        </div>
-        <div class="review-list" id="reviewList"></div>
-      </div>
+      <div class="left-stack" id="categoryCards"></div>
 
       <div class="side">
         <div class="panel">
           <div class="panel-title">
-            <span>L2 / L3 / L4｜Review Panel</span>
+            <span>L2 / L3 / L4 Review Panel</span>
             <span class="small-note">點左側任一股票</span>
           </div>
           <div class="detail-wrap" id="detailBox">
             <div class="empty-box">請先從左側點選一檔股票，開始 review。</div>
           </div>
-        </div>
-
-        <div class="panel">
-          <div class="panel-title">
-            <span>目前正式版規則摘要</span>
-            <span class="small-note">Rule 來自 pool30 baseline</span>
-          </div>
-          <div class="detail-wrap" id="ruleBox"></div>
         </div>
       </div>
     </div>
@@ -614,8 +764,9 @@
     import { buildPool30Rules, buildOverallStats } from "./js/m1/m1_stats_engine.js";
     import { buildDefaultFilterConfig, applyFilter } from "./js/m1/m1_filter_engine.js";
 
-    const REVIEW_STORAGE_KEY = "m1_review_console_v1";
+    const REVIEW_STORAGE_KEY = "m1_review_console_v2";
     const ETF_FORCE_DEFENSIVE = ["QQQ","SMH","SPY","LQD","XLU","VPU","XLF","XLV","XLE","XLP","VOLT","ZAP"];
+    const CATEGORY_ORDER = ["core","growth","income","defensive","speculative"];
 
     const state = {
       candidateRaw: [],
@@ -629,7 +780,14 @@
       filterConfig: {},
       filteredRows: [],
       selected: null,
-      reviewMap: {}
+      reviewMap: {},
+      showStrongOnlyByCategory: {
+        core: true,
+        growth: true,
+        income: true,
+        defensive: true,
+        speculative: true
+      }
     };
 
     const $ = (id) => document.getElementById(id);
@@ -750,6 +908,8 @@
           ...row,
           symbol,
           category: normalizeCategory(row),
+          name: row.name || row.symbol || "",
+          subsector: row.subsector || "",
           capex_score: capexScore,
           pure_stock_score: pure,
           snapshot_score: snapshot,
@@ -797,22 +957,75 @@
       localStorage.setItem(REVIEW_STORAGE_KEY, JSON.stringify(state.reviewMap));
     }
 
+    function aiDecisionFromResult(row) {
+      const r = row.filter_result;
+      if (r === "STRONG" || r === "PASS") return "pool30";
+      if (r === "WATCH") return "watch";
+      if (r === "DROP") return "drop";
+      if (r === "SPEC_POOL") return "thinking";
+      return "thinking";
+    }
+
     function getReview(symbol) {
-      return state.reviewMap[symbol] || {
-        decision: "",
-        status: "UNREVIEWED",
-        note: ""
+      const row = state.candidateScored.find(x => x.symbol === symbol);
+      const aiDecision = row ? aiDecisionFromResult(row) : "thinking";
+      const saved = state.reviewMap[symbol] || null;
+
+      if (saved) {
+        return {
+          decision: saved.decision || aiDecision,
+          note: saved.note || "",
+          saved: true
+        };
+      }
+
+      return {
+        decision: aiDecision,
+        note: "",
+        saved: false
       };
     }
 
-    function setReview(symbol, patch) {
+    function setReview(symbol, patch, autoSave = true) {
       const cur = getReview(symbol);
       state.reviewMap[symbol] = {
-        ...cur,
-        ...patch
+        decision: patch.decision !== undefined ? patch.decision : cur.decision,
+        note: patch.note !== undefined ? patch.note : cur.note,
+        saved: true
+      };
+      if (autoSave) saveReviewMap();
+    }
+
+    function saveSingleReview(symbol) {
+      const cur = getReview(symbol);
+      state.reviewMap[symbol] = {
+        decision: cur.decision,
+        note: cur.note || "",
+        saved: true
       };
       saveReviewMap();
       refreshView(false);
+    }
+
+    function saveCategoryReviews(category) {
+      const rows = state.filteredRows.filter(x => x.category === category);
+      rows.forEach(row => {
+        const cur = getReview(row.symbol);
+        state.reviewMap[row.symbol] = {
+          decision: cur.decision,
+          note: cur.note || "",
+          saved: true
+        };
+      });
+      saveReviewMap();
+      refreshView(false);
+    }
+
+    function decisionLightClass(decision) {
+      if (decision === "pool30") return "light-pool30";
+      if (decision === "watch") return "light-watch";
+      if (decision === "drop") return "light-drop";
+      return "light-thinking";
     }
 
     function resultClass(result) {
@@ -835,14 +1048,13 @@
     function buildShortReason(row) {
       const reasons = Array.isArray(row.filter_reason) ? row.filter_reason : [];
       const result = row.filter_result || "-";
-
       const first = reasons[0] || "";
       const second = reasons[1] || "";
 
-      if (result === "STRONG") return first ? `通過強門檻｜${first}` : "通過強門檻";
+      if (result === "STRONG") return first ? `高信心通過｜${first}` : "高信心通過";
       if (result === "PASS") return first ? `達到可用門檻｜${first}` : "達到可用門檻";
       if (result === "WATCH") return second ? `接近門檻，需再看｜${second}` : "接近門檻，需再看";
-      if (result === "SPEC_POOL") return first ? `投機類達標｜${first}` : "投機類達標";
+      if (result === "SPEC_POOL") return first ? `投機類先保留思考｜${first}` : "投機類先保留思考";
       if (result === "DROP") return first ? `低於門檻｜${first}` : "低於門檻";
       return "-";
     }
@@ -851,19 +1063,22 @@
       const diffP50 = Number.isFinite(row.M1_score) && Number.isFinite(catRule?.pass)
         ? row.M1_score - catRule.pass
         : null;
+      const diffP75 = Number.isFinite(row.M1_score) && Number.isFinite(catRule?.strong)
+        ? row.M1_score - catRule.strong
+        : null;
+      const ratioP75 = Number.isFinite(row.M1_score) && Number.isFinite(catRule?.strong) && catRule.strong !== 0
+        ? ((row.M1_score / catRule.strong) - 1) * 100
+        : null;
 
-      const items = [
+      return [
         `M1 ${fmt(row.M1_score)}`,
         `Capex ${fmt(row.breakdown?.capex_score)}`,
         `M3 ${fmt(row.breakdown?.m3_score)}`,
-        `M7 ${fmt(row.breakdown?.m7_score)}`
+        `M7 ${fmt(row.breakdown?.m7_score)}`,
+        `vs p50 ${diffP50 !== null ? (diffP50 >= 0 ? "+" : "") + fmt(diffP50) : "-"}`,
+        `p75 ${fmt(catRule?.strong)}`,
+        `${ratioP75 !== null ? (ratioP75 >= 0 ? "+" : "") + fmt(ratioP75) + "%" : "-"}`
       ];
-
-      if (diffP50 !== null) {
-        items.push(`vs P50 ${diffP50 >= 0 ? "+" : ""}${fmt(diffP50)}`);
-      }
-
-      return items;
     }
 
     function buildCategoryOptions(rows) {
@@ -878,8 +1093,8 @@
       const keyword = $("searchInput").value.trim().toLowerCase();
       const category = $("categoryFilter").value;
       const engineResult = $("engineResultFilter").value;
-      const humanDecision = $("humanDecisionFilter").value;
-      const reviewStatus = $("reviewStatusFilter").value;
+      const reviewDecision = $("reviewDecisionFilter").value;
+      const strongOnlyGlobal = $("strongOnlyFilter").value;
       const sort = $("sortFilter").value;
 
       let rows = [...state.candidateScored];
@@ -891,13 +1106,14 @@
             row.symbol,
             row.name,
             row.sector,
+            row.subsector,
             row.category,
             ...(Array.isArray(row.style) ? row.style : []),
             buildShortReason(row),
             ...(Array.isArray(row.filter_reason) ? row.filter_reason : []),
-            review.note || ""
+            review.note || "",
+            review.decision || ""
           ].join(" ").toLowerCase();
-
           return text.includes(keyword);
         });
       }
@@ -910,206 +1126,296 @@
         rows = rows.filter(row => row.filter_result === engineResult);
       }
 
-      if (humanDecision !== "ALL") {
-        rows = rows.filter(row => {
-          const d = getReview(row.symbol).decision || "UNSET";
-          return d === humanDecision;
-        });
+      if (reviewDecision !== "ALL") {
+        rows = rows.filter(row => getReview(row.symbol).decision === reviewDecision);
       }
 
-      if (reviewStatus !== "ALL") {
-        rows = rows.filter(row => getReview(row.symbol).status === reviewStatus);
+      if (strongOnlyGlobal === "ON") {
+        rows = rows.filter(row => row.filter_result === "STRONG");
       }
 
-      if (sort === "m1_desc") {
-        rows.sort((a,b) => n(b.M1_score,-999) - n(a.M1_score,-999));
-      } else if (sort === "rank_asc") {
+      if (sort === "rank_asc") {
         rows.sort((a,b) => n(a.rank,9999) - n(b.rank,9999));
+      } else if (sort === "m1_desc") {
+        rows.sort((a,b) => n(b.M1_score,-999) - n(a.M1_score,-999));
       } else if (sort === "symbol_asc") {
         rows.sort((a,b) => String(a.symbol).localeCompare(String(b.symbol)));
-      } else if (sort === "result_then_m1") {
-        const order = { STRONG:1, PASS:2, WATCH:3, SPEC_POOL:4, DROP:5 };
-        rows.sort((a,b) => {
-          const oa = order[a.filter_result] || 9;
-          const ob = order[b.filter_result] || 9;
-          if (oa !== ob) return oa - ob;
-          return n(b.M1_score,-999) - n(a.M1_score,-999);
-        });
       }
 
       state.filteredRows = rows;
     }
 
-    function renderSummary() {
-      const overall = buildOverallStats(state.candidateScored);
+    function computeDashboardStats() {
       const total = state.candidateScored.length;
       const shown = state.filteredRows.length;
-      const strong = state.candidateScored.filter(x => x.filter_result === "STRONG").length;
-      const pass = state.candidateScored.filter(x => x.filter_result === "PASS").length;
-      const done = state.candidateScored.filter(x => getReview(x.symbol).status === "DONE").length;
-      const top = state.filteredRows[0]?.symbol || state.candidateScored[0]?.symbol || "-";
+      const shownPct = total ? (shown / total) * 100 : 0;
 
-      const keys = ["COIN","SOFI","QQQ"].map(sym => {
-        const row = state.candidateScored.find(x => x.symbol === sym);
-        return row ? `${sym}:${row.filter_result}` : `${sym}:NA`;
-      }).join(" | ");
+      const aiRecommendRows = state.candidateScored.filter(x => x.filter_result === "STRONG" || x.filter_result === "PASS");
+      const aiRecommendCount = aiRecommendRows.length;
+      const aiRecommendPct = total ? (aiRecommendCount / total) * 100 : 0;
 
-      $("statTotal").textContent = total;
-      $("statShown").textContent = shown;
-      $("statEngine").textContent = `${strong} / ${pass}`;
-      $("statReviewed").textContent = `${done} / ${total}`;
-      $("statTop").textContent = top;
-      $("statAvgM1").textContent = fmt(overall.mean);
-      $("statCheck").textContent = keys;
-      $("tableNote").textContent = `顯示 ${shown} / ${total} 筆`;
+      const categoryMap = {};
+      CATEGORY_ORDER.forEach(cat => {
+        const all = state.candidateScored.filter(x => x.category === cat);
+        const ai = all.filter(x => x.filter_result === "STRONG" || x.filter_result === "PASS");
+        categoryMap[cat] = {
+          total: all.length,
+          aiCount: ai.length,
+          totalPct: total ? (all.length / total) * 100 : 0,
+          aiPctInCat: all.length ? (ai.length / all.length) * 100 : 0
+        };
+      });
+
+      return {
+        total,
+        shown,
+        shownPct,
+        aiRecommendCount,
+        aiRecommendPct,
+        categoryMap
+      };
     }
 
-    function renderReviewList() {
-      const html = state.filteredRows.map(row => {
-        const review = getReview(row.symbol);
-        const catRule = state.pool30Rules[row.category] || {};
-        const shortReason = buildShortReason(row);
-        const metricItems = buildKeyMetrics(row, catRule);
-        const active = state.selected?.symbol === row.symbol ? "active" : "";
+    function renderDashboard() {
+      const overall = buildOverallStats(state.candidateScored);
+      const stats = computeDashboardStats();
+      const top1 = state.filteredRows[0]?.symbol || state.candidateScored[0]?.symbol || "-";
+
+      $("statDisplay").textContent = `${stats.shown} / ${stats.total}`;
+      $("statDisplaySub").textContent = `顯示比例 ${fmt(stats.shownPct)}%`;
+
+      $("statAiRecommend").textContent = `${stats.aiRecommendCount}`;
+      $("statAiRecommendSub").textContent = `推薦比例 ${fmt(stats.aiRecommendPct)}%`;
+
+      $("statAvgM1").textContent = fmt(overall.mean);
+      $("statTop1").textContent = `Top1：${top1}`;
+
+      $("categorySummaryGrid").innerHTML = CATEGORY_ORDER.map(cat => {
+        const s = stats.categoryMap[cat] || { total:0, aiCount:0, totalPct:0, aiPctInCat:0 };
+        return `
+          <div class="mini-card">
+            <div class="t">${escapeHtml(cat.toUpperCase())}</div>
+            <div class="v">總數 ${s.total} ｜ AI推薦 ${s.aiCount}</div>
+            <div class="s">
+              總比 ${fmt(s.totalPct)}%<br>
+              AI推薦比 ${fmt(s.aiPctInCat)}%
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderRuleGrid() {
+      $("ruleGrid").innerHTML = CATEGORY_ORDER.map(cat => {
+        const cfg = state.filterConfig[cat] || {};
+        const rule = state.pool30Rules[cat] || {};
+        return `
+          <div class="rule-card">
+            <div class="k">${escapeHtml(cat.toUpperCase())}</div>
+            <div class="v">
+              Strong ≥ ${fmt(cfg.strong)} ｜ Pass ≥ ${fmt(cfg.pass)} ｜ Watch ≥ ${fmt(cfg.watch)}
+            </div>
+            <div style="margin-top:6px;font-size:12px;color:#64748b;line-height:1.6;">
+              strictness：${escapeHtml(rule.strictness || "-")} ｜ p75 ${fmt(rule.strong)} / p50 ${fmt(rule.pass)}
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function groupByCategory(rows) {
+      const out = {
+        core: [],
+        growth: [],
+        income: [],
+        defensive: [],
+        speculative: []
+      };
+      rows.forEach(row => {
+        if (!out[row.category]) out[row.category] = [];
+        out[row.category].push(row);
+      });
+      return out;
+    }
+
+    function renderCategoryCards() {
+      const groups = groupByCategory(state.filteredRows);
+
+      $("categoryCards").innerHTML = CATEGORY_ORDER.map(cat => {
+        const allRows = groups[cat] || [];
+        const strongRows = allRows.filter(x => x.filter_result === "STRONG");
+        const showStrongOnly = state.showStrongOnlyByCategory[cat];
+        const displayRows = showStrongOnly ? strongRows : allRows;
 
         return `
-          <div class="stock-card ${active}" data-symbol="${escapeHtml(row.symbol)}">
-            <div class="card-row-1">
-              <div class="rank-box">
-                <div class="label-sm">Rank</div>
-                <div class="rank">${row.rank ?? "-"}</div>
-                <div class="txt">M1 ${fmt(row.M1_score)}</div>
+          <div class="panel category-panel">
+            <div class="category-header">
+              <div class="category-header-left">
+                <div class="category-name">${escapeHtml(cat.toUpperCase())}</div>
+                <span class="chip gray">總數 ${allRows.length}</span>
+                <span class="chip green">STRONG ${strongRows.length}</span>
               </div>
 
-              <div class="symbol-box">
-                <div class="label-sm">股票</div>
-                <div class="symbol">${escapeHtml(row.symbol)}</div>
-                <div class="name">${escapeHtml(row.name || "-")}</div>
-              </div>
-
-              <div>
-                <div class="label-sm">Category</div>
-                <div><span class="chip gray">${escapeHtml(row.category)}</span></div>
-              </div>
-
-              <div>
-                <div class="label-sm">Engine Result</div>
-                <div class="${resultClass(row.filter_result)}" style="font-size:20px;">${escapeHtml(row.filter_result || "-")}</div>
-              </div>
-
-              <div>
-                <div class="label-sm">進入原因</div>
-                <div class="reason-line">${escapeHtml(shortReason)}</div>
-              </div>
-
-              <div>
-                <div class="label-sm">關鍵數據</div>
-                <div class="metrics-line">
-                  ${metricItems.map(x => `<span class="metric-pill">${escapeHtml(x)}</span>`).join("")}
-                </div>
-              </div>
-
-              <div>
-                <div class="label-sm">快速標記</div>
-                <div class="quick-tags">
-                  ${review.status === "DONE" ? `<span class="chip green">已決定</span>` : review.status === "REVIEWING" ? `<span class="chip orange">檢視中</span>` : `<span class="chip blue">未看</span>`}
-                  ${review.decision ? `<span class="chip purple">${escapeHtml(review.decision)}</span>` : `<span class="chip gray">未決定</span>`}
-                </div>
+              <div class="category-actions">
+                <button class="btn ghost small" data-toggle-cat="${escapeHtml(cat)}">${showStrongOnly ? "只看 STRONG" : "顯示全部"}</button>
+                <button class="btn green small" data-save-cat="${escapeHtml(cat)}">儲存本類</button>
               </div>
             </div>
 
-            <div class="card-row-2">
-              <div class="helper">
-                Sector：${escapeHtml(row.sector || "-")} ｜ Style：${escapeHtml((row.style || []).join(", ") || "-")}
-              </div>
-
-              <div>
-                <select class="action-select" data-action-symbol="${escapeHtml(row.symbol)}">
-                  <option value="">人工決策</option>
-                  <option value="KEEP" ${review.decision === "KEEP" ? "selected" : ""}>KEEP</option>
-                  <option value="WATCH" ${review.decision === "WATCH" ? "selected" : ""}>WATCH</option>
-                  <option value="DROP" ${review.decision === "DROP" ? "selected" : ""}>DROP</option>
-                  <option value="POOL30" ${review.decision === "POOL30" ? "selected" : ""}>POOL30</option>
-                </select>
-              </div>
-
-              <div>
-                <select class="status-select" data-status-symbol="${escapeHtml(row.symbol)}">
-                  <option value="UNREVIEWED" ${review.status === "UNREVIEWED" ? "selected" : ""}>未看</option>
-                  <option value="REVIEWING" ${review.status === "REVIEWING" ? "selected" : ""}>檢視中</option>
-                  <option value="DONE" ${review.status === "DONE" ? "selected" : ""}>已決定</option>
-                </select>
-              </div>
-
-              <div style="text-align:right;">
-                <button class="btn ghost" data-open-symbol="${escapeHtml(row.symbol)}">展開 Review</button>
-              </div>
+            <div class="category-body">
+              ${
+                displayRows.length
+                  ? displayRows.map(row => renderStockRow(row)).join("")
+                  : `<div class="empty-box">本類目前沒有符合條件的股票。</div>`
+              }
             </div>
           </div>
         `;
       }).join("");
 
-      $("reviewList").innerHTML = html || `<div class="empty-box">目前沒有符合篩選條件的股票。</div>`;
+      bindCategoryEvents();
+    }
 
-      [...document.querySelectorAll(".stock-card")].forEach(el => {
-        el.addEventListener("click", (e) => {
+    function renderStockRow(row) {
+      const review = getReview(row.symbol);
+      const catRule = state.pool30Rules[row.category] || {};
+      const shortReason = buildShortReason(row);
+      const keyMetrics = buildKeyMetrics(row, catRule);
+      const active = state.selected?.symbol === row.symbol ? "active" : "";
+
+      return `
+        <div class="stock-row ${active}" data-symbol="${escapeHtml(row.symbol)}">
+          <div class="row-line-1">
+            <div class="rank-box">
+              <div class="label-sm">RANK</div>
+              <div class="n">${row.rank ?? "-"}</div>
+              <div class="s">M1 ${fmt(row.M1_score)}</div>
+            </div>
+
+            <div class="symbol-box">
+              <div class="label-sm">NAME</div>
+              <div class="sym">${escapeHtml(row.symbol)}</div>
+              <div class="name">${escapeHtml(row.name || "-")}</div>
+            </div>
+
+            <div>
+              <div class="label-sm">AI RESULT</div>
+              <div class="${resultClass(row.filter_result)}" style="font-size:18px;">${escapeHtml(row.filter_result || "-")}</div>
+            </div>
+
+            <div>
+              <div class="label-sm">AI JUDGE</div>
+              <div class="judge-area">
+                <span class="status-light ${decisionLightClass(review.decision)}"></span>
+                <select class="judge-select" data-judge-symbol="${escapeHtml(row.symbol)}">
+                  <option value="pool30" ${review.decision === "pool30" ? "selected" : ""}>pool30</option>
+                  <option value="watch" ${review.decision === "watch" ? "selected" : ""}>watch</option>
+                  <option value="drop" ${review.decision === "drop" ? "selected" : ""}>drop</option>
+                  <option value="thinking" ${review.decision === "thinking" ? "selected" : ""}>thinking</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <div class="label-sm">REASON</div>
+              <div class="reason-line">${escapeHtml(shortReason)}</div>
+            </div>
+          </div>
+
+          <div class="row-line-2">
+            <div>
+              <div class="label-sm">KEY FACTORS</div>
+              <div class="factor-line">
+                ${keyMetrics.map(x => `<span class="metric-pill">${escapeHtml(x)}</span>`).join("")}
+              </div>
+            </div>
+
+            <div>
+              <div class="label-sm">STYLE / SECTOR</div>
+              <div style="font-size:12px;line-height:1.6;color:#475569;">
+                ${escapeHtml(row.sector || "-")}<br>
+                ${escapeHtml((row.style || []).join(", ") || "-")}
+              </div>
+            </div>
+
+            <div>
+              <div class="label-sm">STATUS</div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span class="status-light ${decisionLightClass(review.decision)}"></span>
+                <div style="font-size:13px;font-weight:800;">${escapeHtml(review.decision)}</div>
+              </div>
+            </div>
+
+            <div>
+              <div class="label-sm">SAVE</div>
+              <button class="btn small" data-save-symbol="${escapeHtml(row.symbol)}">存檔</button>
+            </div>
+
+            <div style="text-align:right;">
+              <div class="label-sm">DETAIL</div>
+              <button class="btn ghost small" data-open-symbol="${escapeHtml(row.symbol)}">展開</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function bindCategoryEvents() {
+      [...document.querySelectorAll("[data-toggle-cat]")].forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const cat = btn.getAttribute("data-toggle-cat");
+          state.showStrongOnlyByCategory[cat] = !state.showStrongOnlyByCategory[cat];
+          renderCategoryCards();
+        });
+      });
+
+      [...document.querySelectorAll("[data-save-cat]")].forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const cat = btn.getAttribute("data-save-cat");
+          saveCategoryReviews(cat);
+        });
+      });
+
+      [...document.querySelectorAll(".stock-row")].forEach(rowEl => {
+        rowEl.addEventListener("click", (e) => {
           if (e.target.closest("select") || e.target.closest("button")) return;
-          openReview(el.getAttribute("data-symbol"));
+          openDetail(rowEl.getAttribute("data-symbol"));
         });
       });
 
       [...document.querySelectorAll("[data-open-symbol]")].forEach(btn => {
         btn.addEventListener("click", (e) => {
           e.stopPropagation();
-          openReview(btn.getAttribute("data-open-symbol"));
+          openDetail(btn.getAttribute("data-open-symbol"));
         });
       });
 
-      [...document.querySelectorAll("[data-action-symbol]")].forEach(sel => {
+      [...document.querySelectorAll("[data-judge-symbol]")].forEach(sel => {
         sel.addEventListener("change", (e) => {
           e.stopPropagation();
-          const symbol = sel.getAttribute("data-action-symbol");
-          setReview(symbol, { decision: sel.value || "", status: sel.value ? "DONE" : getReview(symbol).status });
+          const symbol = sel.getAttribute("data-judge-symbol");
+          setReview(symbol, { decision: sel.value }, false);
+          refreshView(false);
         });
       });
 
-      [...document.querySelectorAll("[data-status-symbol]")].forEach(sel => {
-        sel.addEventListener("change", (e) => {
+      [...document.querySelectorAll("[data-save-symbol]")].forEach(btn => {
+        btn.addEventListener("click", (e) => {
           e.stopPropagation();
-          const symbol = sel.getAttribute("data-status-symbol");
-          setReview(symbol, { status: sel.value });
+          const symbol = btn.getAttribute("data-save-symbol");
+          saveSingleReview(symbol);
         });
       });
     }
 
-    function renderRuleBox() {
-      const html = Object.entries(state.filterConfig).map(([cat, cfg]) => {
-        const rule = state.pool30Rules[cat] || {};
-        return `
-          <div class="detail-card" style="margin-bottom:10px;">
-            <div class="k">${escapeHtml(cat)}</div>
-            <div class="v">${escapeHtml(cfg.preset || "-")} ｜ strong ${fmt(cfg.strong)} / pass ${fmt(cfg.pass)} / watch ${fmt(cfg.watch)}</div>
-            <div class="footer-rule" style="margin-top:6px;">
-              pool30：strictness ${escapeHtml(rule.strictness || "-")} ｜ p75 ${fmt(rule.strong)} / p50 ${fmt(rule.pass)} / p25 ${fmt(rule.watch)}
-            </div>
-          </div>
-        `;
-      }).join("");
-
-      $("ruleBox").innerHTML = html || `<div class="empty-box">無規則資料</div>`;
-    }
-
-    function openReview(symbol) {
+    function openDetail(symbol) {
       const row = state.candidateScored.find(x => x.symbol === symbol);
       if (!row) return;
       state.selected = row;
-
-      const review = getReview(symbol);
-      if (review.status === "UNREVIEWED") {
-        setReview(symbol, { status: "REVIEWING" });
-      } else {
-        refreshView(false);
-      }
+      renderCategoryCards();
+      renderDetail();
     }
 
     function renderDetail() {
@@ -1134,16 +1440,17 @@
             <div style="margin-top:8px;">
               <span class="chip gray">${escapeHtml(row.category)}</span>
               <span class="chip ${row.filter_result === "STRONG" ? "green" : row.filter_result === "PASS" ? "blue" : row.filter_result === "WATCH" ? "orange" : row.filter_result === "SPEC_POOL" ? "purple" : "red"}">${escapeHtml(row.filter_result || "-")}</span>
-              ${review.decision ? `<span class="chip purple">人工：${escapeHtml(review.decision)}</span>` : `<span class="chip gray">人工：未決定</span>`}
-              ${review.status === "DONE" ? `<span class="chip green">已決定</span>` : review.status === "REVIEWING" ? `<span class="chip orange">檢視中</span>` : `<span class="chip blue">未看</span>`}
+              <span class="chip ${review.decision === "pool30" ? "green" : review.decision === "watch" ? "orange" : review.decision === "drop" ? "red" : "gray"}">覆核：${escapeHtml(review.decision)}</span>
             </div>
           </div>
 
           <div class="detail-actions">
-            <button id="markKeepBtn" class="btn green">Keep</button>
-            <button id="markWatchBtn" class="btn">Watch</button>
-            <button id="markDropBtn" class="btn secondary">Drop</button>
-            <button id="markPool30Btn" class="btn" style="background:#7c3aed;">Pool30</button>
+            <span class="status-light ${decisionLightClass(review.decision)}"></span>
+            <button id="setPool30Btn" class="btn green">pool30</button>
+            <button id="setWatchBtn" class="btn amber">watch</button>
+            <button id="setDropBtn" class="btn red">drop</button>
+            <button id="setThinkingBtn" class="btn ghost">thinking</button>
+            <button id="saveDetailBtn" class="btn">存檔</button>
             <button id="researchBtn" class="btn ghost">L5 研究 / PDF</button>
           </div>
         </div>
@@ -1161,8 +1468,8 @@
               <div class="detail-card"><div class="k">M3</div><div class="v" style="${scoreColor(row.breakdown?.m3_score)}">${fmt(row.breakdown?.m3_score)}</div></div>
               <div class="detail-card"><div class="k">M7</div><div class="v" style="${scoreColor(row.breakdown?.m7_score)}">${fmt(row.breakdown?.m7_score)}</div></div>
               <div class="detail-card"><div class="k">Rule 位置</div><div class="v">strong ${fmt(catRule.strong)} ｜ pass ${fmt(catRule.pass)} ｜ watch ${fmt(catRule.watch)}</div></div>
-              <div class="detail-card"><div class="k">Pool30 strictness</div><div class="v">${escapeHtml(catRule.strictness || "-")}</div></div>
-              <div class="detail-card"><div class="k">vs Pool30 P50</div><div class="v">${Number.isFinite(row.M1_score) && Number.isFinite(catRule.pass) ? `${row.M1_score - catRule.pass >= 0 ? "+" : ""}${fmt(row.M1_score - catRule.pass)}` : "-"}</div></div>
+              <div class="detail-card"><div class="k">vs p50</div><div class="v">${Number.isFinite(row.M1_score) && Number.isFinite(catRule.pass) ? `${row.M1_score - catRule.pass >= 0 ? "+" : ""}${fmt(row.M1_score - catRule.pass)}` : "-"}</div></div>
+              <div class="detail-card"><div class="k">p75 對比</div><div class="v">${Number.isFinite(row.M1_score) && Number.isFinite(catRule.strong) && catRule.strong !== 0 ? `${(((row.M1_score / catRule.strong) - 1) * 100 >= 0 ? "+" : "") + fmt((((row.M1_score / catRule.strong) - 1) * 100))}%` : "-"}</div></div>
             </div>
 
             <div style="margin-top:12px;">
@@ -1188,7 +1495,7 @@
               <div class="detail-card"><div class="k">Volume Ratio</div><div class="v">${fmt(row.volume_ratio)}</div></div>
               <div class="detail-card"><div class="k">Snapshot</div><div class="v">${fmt(row.snapshot_score)}</div></div>
               <div class="detail-card"><div class="k">Style</div><div class="v">${escapeHtml((row.style || []).join(", ") || "-")}</div></div>
-              <div class="detail-card"><div class="k">Sector</div><div class="v">${escapeHtml(row.sector || "-")}</div></div>
+              <div class="detail-card"><div class="k">Sector / Subsector</div><div class="v">${escapeHtml(row.sector || "-")} ${row.subsector ? " / " + escapeHtml(row.subsector) : ""}</div></div>
               <div class="detail-card"><div class="k">Capex Ratio Prev Y</div><div class="v">${fmt(row.capex_ratio_prev_y)}</div></div>
               <div class="detail-card"><div class="k">Revenue / OI Growth</div><div class="v">${fmt(row.revenue_growth_q)} / ${fmt(row.operating_income_growth_q)}</div></div>
             </div>
@@ -1197,77 +1504,131 @@
 
         <details class="layer" open>
           <summary>
-            <span>L4｜人工 Review</span>
-            <span>${review.decision || "未決定"} ｜ ${review.status}</span>
+            <span>L4｜人工覆核</span>
+            <span>${escapeHtml(review.decision)} ｜ ${review.saved ? "已存檔" : "未存檔"}</span>
           </summary>
           <div class="layer-body">
             <div class="detail-grid" style="margin-bottom:12px;">
               <div>
-                <div class="label-sm">人工決策</div>
-                <select id="detailDecision" class="action-select">
-                  <option value="">未決定</option>
-                  <option value="KEEP" ${review.decision === "KEEP" ? "selected" : ""}>KEEP</option>
-                  <option value="WATCH" ${review.decision === "WATCH" ? "selected" : ""}>WATCH</option>
-                  <option value="DROP" ${review.decision === "DROP" ? "selected" : ""}>DROP</option>
-                  <option value="POOL30" ${review.decision === "POOL30" ? "selected" : ""}>POOL30</option>
-                </select>
+                <div class="label-sm">覆核判定</div>
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <span class="status-light ${decisionLightClass(review.decision)}"></span>
+                  <select id="detailDecision" class="judge-select">
+                    <option value="pool30" ${review.decision === "pool30" ? "selected" : ""}>pool30</option>
+                    <option value="watch" ${review.decision === "watch" ? "selected" : ""}>watch</option>
+                    <option value="drop" ${review.decision === "drop" ? "selected" : ""}>drop</option>
+                    <option value="thinking" ${review.decision === "thinking" ? "selected" : ""}>thinking</option>
+                  </select>
+                </div>
               </div>
 
               <div>
-                <div class="label-sm">Review 狀態</div>
-                <select id="detailStatus" class="status-select">
-                  <option value="UNREVIEWED" ${review.status === "UNREVIEWED" ? "selected" : ""}>未看</option>
-                  <option value="REVIEWING" ${review.status === "REVIEWING" ? "selected" : ""}>檢視中</option>
-                  <option value="DONE" ${review.status === "DONE" ? "selected" : ""}>已決定</option>
-                </select>
+                <div class="label-sm">存檔狀態</div>
+                <div style="font-size:14px;font-weight:800;line-height:1.8;">
+                  ${review.saved ? "已存檔" : "尚未存檔"}<br>
+                  AI default：${escapeHtml(aiDecisionFromResult(row))}
+                </div>
               </div>
             </div>
 
             <div class="label-sm">人工備註</div>
-            <textarea id="detailNote" class="note-box" placeholder="例如：雖然進入 growth，但 6M 過熱；先列 WATCH。">${escapeHtml(review.note || "")}</textarea>
+            <textarea id="detailNote" class="note-box" placeholder="例如：雖然 AI 是 PASS，但屬公用事業，先列 watch。">${escapeHtml(review.note || "")}</textarea>
+
             <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;">
-              <button id="saveNoteBtn" class="btn">儲存備註</button>
+              <button id="saveReviewBtn" class="btn">存檔</button>
               <button id="clearNoteBtn" class="btn ghost">清除備註</button>
             </div>
+
             <div class="helper">
-              建議：L1 先決定 Keep / Watch / Drop；只有有爭議的股票再看 L2 / L3；L5 專股研究按需要啟動。
+              覆核燈號：pool30 綠燈 / watch 黃燈 / drop 紅燈 / thinking 白燈。<br>
+              若未存檔，畫面先帶 AI 預設判定；按存檔後才寫入 review 機制。
             </div>
           </div>
         </details>
       `;
 
-      $("markKeepBtn").onclick = () => setReview(row.symbol, { decision: "KEEP", status: "DONE" });
-      $("markWatchBtn").onclick = () => setReview(row.symbol, { decision: "WATCH", status: "DONE" });
-      $("markDropBtn").onclick = () => setReview(row.symbol, { decision: "DROP", status: "DONE" });
-      $("markPool30Btn").onclick = () => setReview(row.symbol, { decision: "POOL30", status: "DONE" });
+      $("setPool30Btn").onclick = () => {
+        setReview(row.symbol, { decision: "pool30" }, false);
+        renderDetail();
+        renderCategoryCards();
+      };
+      $("setWatchBtn").onclick = () => {
+        setReview(row.symbol, { decision: "watch" }, false);
+        renderDetail();
+        renderCategoryCards();
+      };
+      $("setDropBtn").onclick = () => {
+        setReview(row.symbol, { decision: "drop" }, false);
+        renderDetail();
+        renderCategoryCards();
+      };
+      $("setThinkingBtn").onclick = () => {
+        setReview(row.symbol, { decision: "thinking" }, false);
+        renderDetail();
+        renderCategoryCards();
+      };
+
+      $("saveDetailBtn").onclick = () => {
+        const decision = $("detailDecision").value;
+        const note = $("detailNote").value;
+        setReview(row.symbol, { decision, note }, true);
+        renderDetail();
+        renderCategoryCards();
+      };
 
       $("researchBtn").onclick = () => {
         alert(`${row.symbol}：L5 專股研究 / PDF 入口已預留，下一階段再接研究頁或 PDF 生成。`);
       };
 
-      $("detailDecision").onchange = (e) => {
-        setReview(row.symbol, { decision: e.target.value || "" });
+      $("detailDecision").onchange = () => {
+        setReview(row.symbol, { decision: $("detailDecision").value }, false);
+        renderDetail();
+        renderCategoryCards();
       };
 
-      $("detailStatus").onchange = (e) => {
-        setReview(row.symbol, { status: e.target.value });
-      };
-
-      $("saveNoteBtn").onclick = () => {
-        setReview(row.symbol, { note: $("detailNote").value });
+      $("saveReviewBtn").onclick = () => {
+        setReview(row.symbol, {
+          decision: $("detailDecision").value,
+          note: $("detailNote").value
+        }, true);
+        renderDetail();
+        renderCategoryCards();
       };
 
       $("clearNoteBtn").onclick = () => {
         $("detailNote").value = "";
-        setReview(row.symbol, { note: "" });
+        setReview(row.symbol, { note: "" }, false);
       };
+    }
+
+    function exportPool30() {
+      const exported = state.candidateScored
+        .filter(row => getReview(row.symbol).decision === "pool30")
+        .sort((a,b) => n(a.rank,9999) - n(b.rank,9999))
+        .map(row => ({
+          symbol: row.symbol,
+          name: row.name || row.symbol,
+          sector: row.sector || "",
+          subsector: row.subsector || "",
+          category: row.category || ""
+        }));
+
+      const blob = new Blob([JSON.stringify(exported, null, 2)], { type: "application/json;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "pool30_review_export.json";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
     }
 
     function refreshView(keepSelection = true) {
       applyViewFilter();
-      renderSummary();
-      renderReviewList();
-      renderRuleBox();
+      renderDashboard();
+      renderRuleGrid();
+      renderCategoryCards();
 
       if (!keepSelection) {
         if (state.selected) {
@@ -1285,7 +1646,6 @@
 
     async function loadAll() {
       try {
-        $("tableNote").textContent = "載入中...";
         state.reviewMap = loadReviewMap();
 
         const [candidateRaw, pool30Raw, fundamentalMap] = await Promise.all([
@@ -1318,18 +1678,16 @@
         refreshView(false);
       } catch (err) {
         console.error(err);
-        $("reviewList").innerHTML = `<div class="empty-box" style="color:#dc2626;">載入失敗：${escapeHtml(String(err.message || err))}</div>`;
+        $("categoryCards").innerHTML = `<div class="panel"><div class="empty-box" style="color:#dc2626;">載入失敗：${escapeHtml(String(err.message || err))}</div></div>`;
         $("detailBox").innerHTML = `<div class="empty-box" style="color:#dc2626;">載入失敗：${escapeHtml(String(err.message || err))}</div>`;
-        $("ruleBox").innerHTML = `<div class="empty-box" style="color:#dc2626;">規則載入失敗</div>`;
-        $("tableNote").textContent = "載入失敗";
       }
     }
 
     $("searchInput").addEventListener("input", () => refreshView(false));
     $("categoryFilter").addEventListener("change", () => refreshView(false));
     $("engineResultFilter").addEventListener("change", () => refreshView(false));
-    $("humanDecisionFilter").addEventListener("change", () => refreshView(false));
-    $("reviewStatusFilter").addEventListener("change", () => refreshView(false));
+    $("reviewDecisionFilter").addEventListener("change", () => refreshView(false));
+    $("strongOnlyFilter").addEventListener("change", () => refreshView(false));
     $("sortFilter").addEventListener("change", () => refreshView(false));
 
     $("reloadBtn").addEventListener("click", loadAll);
@@ -1338,23 +1696,43 @@
       $("searchInput").value = "";
       $("categoryFilter").value = "ALL";
       $("engineResultFilter").value = "ALL";
-      $("humanDecisionFilter").value = "ALL";
-      $("reviewStatusFilter").value = "ALL";
-      $("sortFilter").value = "m1_desc";
+      $("reviewDecisionFilter").value = "ALL";
+      $("strongOnlyFilter").value = "ON";
+      $("sortFilter").value = "rank_asc";
+
+      CATEGORY_ORDER.forEach(cat => {
+        state.showStrongOnlyByCategory[cat] = true;
+      });
+
       refreshView(false);
     });
 
     $("onlyPendingBtn").addEventListener("click", () => {
-      $("reviewStatusFilter").value = "UNREVIEWED";
+      $("reviewDecisionFilter").value = "thinking";
       refreshView(false);
     });
 
     $("clearReviewBtn").addEventListener("click", () => {
-      if (!confirm("確定要清除目前 M1 Review 記錄嗎？")) return;
+      if (!confirm("確定要清除目前 M1 覆核記錄嗎？")) return;
       localStorage.removeItem(REVIEW_STORAGE_KEY);
       state.reviewMap = {};
       refreshView(false);
     });
+
+    $("saveAllBtn").addEventListener("click", () => {
+      state.candidateScored.forEach(row => {
+        const cur = getReview(row.symbol);
+        state.reviewMap[row.symbol] = {
+          decision: cur.decision,
+          note: cur.note || "",
+          saved: true
+        };
+      });
+      saveReviewMap();
+      refreshView(false);
+    });
+
+    $("exportPool30Btn").addEventListener("click", exportPool30);
 
     loadAll();
   </script>
