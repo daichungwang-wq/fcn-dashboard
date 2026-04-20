@@ -478,5 +478,13 @@
     "revenue_growth_q": 3,
     "operating_income_growth_q": 6,
     "operating_income_q": 6000
-  }
+  },
+    "COIN": { "capex_ratio_prev_y": 5, "revenue_growth_q": 22, "operating_income_growth_q": 24, "operating_income_q": 300 },
+  "CEG":  { "capex_ratio_prev_y": 8, "revenue_growth_q": 18, "operating_income_growth_q": 20, "operating_income_q": 4200 },
+  "VST":  { "capex_ratio_prev_y": 7, "revenue_growth_q": 16, "operating_income_growth_q": 18, "operating_income_q": 3600 },
+  "XLU":  { "capex_ratio_prev_y": 0, "revenue_growth_q": 0, "operating_income_growth_q": 0, "operating_income_q": 1001 },
+  "VPU":  { "capex_ratio_prev_y": 0, "revenue_growth_q": 0, "operating_income_growth_q": 0, "operating_income_q": 1001 },
+  "ZAP":  { "capex_ratio_prev_y": 2, "revenue_growth_q": 8, "operating_income_growth_q": 10, "operating_income_q": 1200 },
+  "AIPO": { "capex_ratio_prev_y": 5, "revenue_growth_q": 20, "operating_income_growth_q": 22, "operating_income_q": 500 },
+  "VOLT": { "capex_ratio_prev_y": 2, "revenue_growth_q": 8, "operating_income_growth_q": 10, "operating_income_q": 1200 }
 }
