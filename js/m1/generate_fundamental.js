@@ -1,5 +1,5 @@
 import fs from "fs";
-import { generateFundamentalMap } from "./js/m1/generate_fundamental_map.js";
+import { generateFundamentalMap } from "./generate_fundamental_map.js";
 
 const candidate = JSON.parse(
   fs.readFileSync("./data/m1/m1_candidate_80.json", "utf-8")
