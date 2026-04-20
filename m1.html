@@ -696,7 +696,7 @@
       <div class="panel">
         <div class="panel-title">
           <span>1. Dashboard</span>
-          <span class="small-note">原始池 / Candidate / AI 推薦 / 目前顯示</span>
+          <span class="small-note">原始池 / Candidate / AI 推薦 / 目前正式規則來源</span>
         </div>
         <div class="summary-wrap">
           <div class="summary-grid">
@@ -719,9 +719,9 @@
             </div>
 
             <div class="stat">
-              <div class="label">目前顯示</div>
-              <div class="value" id="statDisplay">-</div>
-              <div class="sub" id="statDisplaySub">-</div>
+              <div class="label">正式規則來源</div>
+              <div class="value" id="statRuleSource">-</div>
+              <div class="sub" id="statRuleVersion">-</div>
             </div>
           </div>
 
@@ -741,6 +741,10 @@
             M1_biased = M1_raw × category bias<br>
             M1_score = normalize to max 10<br>
             AI 推薦 = STRONG + PASS
+          </div>
+
+          <div class="formula-box" id="ruleSourceBox">
+            載入中...
           </div>
 
           <div class="rule-grid" id="ruleGrid"></div>
@@ -785,7 +789,6 @@
       pool30Scored: [],
       pool30Rules: {},
       filterConfig: {},
-      filteredRows: [],
       selected: null,
       reviewMap: {},
       expandedCategory: {
@@ -801,6 +804,12 @@
         income: true,
         defensive: true,
         speculative: true
+      },
+      ruleMeta: {
+        source: "default",
+        version: "fallback_default",
+        updated_at: "",
+        loaded: false
       }
     };
 
@@ -811,6 +820,17 @@
       const res = await fetch(url, { cache: "no-store" });
       if (!res.ok) throw new Error(`${path} 讀取失敗：${res.status}`);
       return await res.json();
+    }
+
+    async function fetchJSONOptional(path) {
+      const url = path + (path.includes("?") ? "&" : "?") + "v=" + Date.now();
+      const res = await fetch(url, { cache: "no-store" });
+      if (!res.ok) return null;
+      try {
+        return await res.json();
+      } catch {
+        return null;
+      }
     }
 
     function n(v, d = null) {
@@ -952,8 +972,7 @@
             capex_score: row.capex_score ?? null,
             m3_score: null,
             m7_score: null
-          },
-          debug: e.debug || {}
+          }
         };
       });
     }
@@ -1073,12 +1092,12 @@
       return "-";
     }
 
-    function buildKeyMetrics(row, catRule) {
-      const diffP50 = Number.isFinite(row.M1_score) && Number.isFinite(catRule?.pass)
-        ? row.M1_score - catRule.pass
+    function buildKeyMetrics(row, cfg) {
+      const diffP50 = Number.isFinite(row.M1_score) && Number.isFinite(cfg?.pass)
+        ? row.M1_score - cfg.pass
         : null;
-      const ratioP75 = Number.isFinite(row.M1_score) && Number.isFinite(catRule?.strong) && catRule.strong !== 0
-        ? ((row.M1_score / catRule.strong) - 1) * 100
+      const ratioP75 = Number.isFinite(row.M1_score) && Number.isFinite(cfg?.strong) && cfg.strong !== 0
+        ? ((row.M1_score / cfg.strong) - 1) * 100
         : null;
 
       return [
@@ -1087,7 +1106,7 @@
         `M3 ${fmt(row.breakdown?.m3_score)}`,
         `M7 ${fmt(row.breakdown?.m7_score)}`,
         `vs p50 ${diffP50 !== null ? (diffP50 >= 0 ? "+" : "") + fmt(diffP50) : "-"}`,
-        `p75 ${fmt(catRule?.strong)}`,
+        `p75 ${fmt(cfg?.strong)}`,
         `${ratioP75 !== null ? (ratioP75 >= 0 ? "+" : "") + fmt(ratioP75) + "%" : "-"}`
       ];
     }
@@ -1098,6 +1117,10 @@
         <option value="ALL">全部類別</option>
         ${[...set].sort().map(c => `<option value="${c}">${c}</option>`).join("")}
       `;
+    }
+
+    function countAiRecommend(rows) {
+      return rows.filter(x => x.filter_result === "STRONG" || x.filter_result === "PASS").length;
     }
 
     function applyViewFilter() {
@@ -1153,17 +1176,16 @@
         rows.sort((a,b) => String(a.symbol).localeCompare(String(b.symbol)));
       }
 
-      state.filteredRows = rows;
+      return rows;
     }
 
-    function renderDashboard() {
+    function renderDashboard(filteredRows) {
       const universeCount = state.universeRaw.length || 150;
       const candidateCount = state.candidateScored.length;
       const aiRecommendRows = state.candidateScored.filter(
         x => x.filter_result === "STRONG" || x.filter_result === "PASS"
       );
       const aiRecommendCount = aiRecommendRows.length;
-      const shownCount = state.filteredRows.length;
 
       $("statUniverse").textContent = universeCount;
       $("statCandidate").textContent = `${candidateCount} / ${universeCount}`;
@@ -1172,8 +1194,10 @@
       $("statAiRecommend").textContent = `${aiRecommendCount} / ${candidateCount}`;
       $("statAiRecommendSub").textContent = `${candidateCount ? fmt((aiRecommendCount / candidateCount) * 100) : "0.00"}%`;
 
-      $("statDisplay").textContent = `${shownCount} / ${candidateCount}`;
-      $("statDisplaySub").textContent = `${candidateCount ? fmt((shownCount / candidateCount) * 100) : "0.00"}%`;
+      $("statRuleSource").textContent =
+        state.ruleMeta.source === "m1_test.html" ? "正式規則檔" : "系統預設";
+      $("statRuleVersion").textContent =
+        `version: ${state.ruleMeta.version || "-"}${state.ruleMeta.updated_at ? ` ｜ ${state.ruleMeta.updated_at}` : ""}`;
 
       $("categorySummaryGrid").innerHTML = CATEGORY_ORDER.map(cat => {
         const all = state.candidateScored.filter(x => x.category === cat);
@@ -1187,7 +1211,7 @@
               AI推薦：${ai.length} / ${all.length || 0}
             </div>
             <div class="s">
-              總比 ${candidateCount ? fmt((all.length / candidateCount) * 100) : "0.00"}%<br>
+              Candidate 比 ${candidateCount ? fmt((all.length / candidateCount) * 100) : "0.00"}%<br>
               AI推薦比 ${all.length ? fmt((ai.length / all.length) * 100) : "0.00"}%
             </div>
           </div>
@@ -1196,6 +1220,14 @@
     }
 
     function renderRuleGrid() {
+      $("ruleSourceBox").innerHTML = `
+        <b>2.2 正式版規則摘要</b><br>
+        目前來源：${escapeHtml(state.ruleMeta.source === "m1_test.html" ? "data/m1/m1_filter_rules.json" : "系統預設 buildDefaultFilterConfig")}<br>
+        版本：${escapeHtml(state.ruleMeta.version || "-")}<br>
+        ${state.ruleMeta.updated_at ? `更新時間：${escapeHtml(state.ruleMeta.updated_at)}<br>` : ""}
+        規則來源欄位：${escapeHtml(state.ruleMeta.source || "-")}
+      `;
+
       $("ruleGrid").innerHTML = CATEGORY_ORDER.map(cat => {
         const cfg = state.filterConfig[cat] || {};
         const rule = state.pool30Rules[cat] || {};
@@ -1206,7 +1238,8 @@
               Strong ≥ ${fmt(cfg.strong)} ｜ Pass ≥ ${fmt(cfg.pass)} ｜ Watch ≥ ${fmt(cfg.watch)}
             </div>
             <div style="margin-top:6px;font-size:12px;color:#64748b;line-height:1.6;">
-              strictness：${escapeHtml(rule.strictness || "-")} ｜ p75 ${fmt(rule.strong)} / p50 ${fmt(rule.pass)}
+              preset：${escapeHtml(cfg.preset || "-")} ｜ strictness：${escapeHtml(rule.strictness || "-")}<br>
+              pool30 p75 ${fmt(rule.strong)} / p50 ${fmt(rule.pass)}
             </div>
           </div>
         `;
@@ -1228,8 +1261,8 @@
       return out;
     }
 
-    function renderCategoryCards() {
-      const groups = groupByCategory(state.filteredRows);
+    function renderCategoryCards(filteredRows) {
+      const groups = groupByCategory(filteredRows);
 
       $("categoryCards").innerHTML = CATEGORY_ORDER.map(cat => {
         const candidateRows = state.candidateScored.filter(x => x.category === cat);
@@ -1272,14 +1305,14 @@
         `;
       }).join("");
 
-      bindCategoryEvents();
+      bindCategoryEvents(filteredRows);
     }
 
     function renderStockRow(row) {
       const review = getReview(row.symbol);
-      const catRule = state.pool30Rules[row.category] || {};
+      const cfg = state.filterConfig[row.category] || {};
       const shortReason = buildShortReason(row);
-      const keyMetrics = buildKeyMetrics(row, catRule);
+      const keyMetrics = buildKeyMetrics(row, cfg);
       const active = state.selected?.symbol === row.symbol ? "active" : "";
 
       return `
@@ -1359,13 +1392,14 @@
       `;
     }
 
-    function bindCategoryEvents() {
+    function bindCategoryEvents(filteredRows) {
       [...document.querySelectorAll("[data-expand-cat]")].forEach(btn => {
         btn.addEventListener("click", (e) => {
           e.stopPropagation();
           const cat = btn.getAttribute("data-expand-cat");
           state.expandedCategory[cat] = !state.expandedCategory[cat];
-          renderCategoryCards();
+          const rows = applyViewFilter();
+          renderCategoryCards(rows);
         });
       });
 
@@ -1374,7 +1408,8 @@
           e.stopPropagation();
           const cat = btn.getAttribute("data-toggle-strong-cat");
           state.showStrongOnlyByCategory[cat] = !state.showStrongOnlyByCategory[cat];
-          renderCategoryCards();
+          const rows = applyViewFilter();
+          renderCategoryCards(rows);
         });
       });
 
@@ -1422,8 +1457,7 @@
       const row = state.candidateScored.find(x => x.symbol === symbol);
       if (!row) return;
       state.selected = row;
-      renderCategoryCards();
-      renderDetail();
+      refreshView(true);
     }
 
     function renderDetail() {
@@ -1434,7 +1468,7 @@
       }
 
       const review = getReview(row.symbol);
-      const catRule = state.pool30Rules[row.category] || {};
+      const cfg = state.filterConfig[row.category] || {};
       const reasons = Array.isArray(row.filter_reason) ? row.filter_reason : [];
       const shortReason = buildShortReason(row);
 
@@ -1465,7 +1499,7 @@
 
         <details class="layer" open>
           <summary>
-            <span>L2｜Engine 判斷與 Pool30 對標</span>
+            <span>L2｜Engine 判斷與正式規則對標</span>
             <span>${escapeHtml(shortReason)}</span>
           </summary>
           <div class="layer-body">
@@ -1475,9 +1509,9 @@
               <div class="detail-card"><div class="k">Capex</div><div class="v" style="${scoreColor(row.breakdown?.capex_score)}">${fmt(row.breakdown?.capex_score)}</div></div>
               <div class="detail-card"><div class="k">M3</div><div class="v" style="${scoreColor(row.breakdown?.m3_score)}">${fmt(row.breakdown?.m3_score)}</div></div>
               <div class="detail-card"><div class="k">M7</div><div class="v" style="${scoreColor(row.breakdown?.m7_score)}">${fmt(row.breakdown?.m7_score)}</div></div>
-              <div class="detail-card"><div class="k">Rule 位置</div><div class="v">strong ${fmt(catRule.strong)} ｜ pass ${fmt(catRule.pass)} ｜ watch ${fmt(catRule.watch)}</div></div>
-              <div class="detail-card"><div class="k">vs p50</div><div class="v">${Number.isFinite(row.M1_score) && Number.isFinite(catRule.pass) ? `${row.M1_score - catRule.pass >= 0 ? "+" : ""}${fmt(row.M1_score - catRule.pass)}` : "-"}</div></div>
-              <div class="detail-card"><div class="k">p75 對比</div><div class="v">${Number.isFinite(row.M1_score) && Number.isFinite(catRule.strong) && catRule.strong !== 0 ? `${((((row.M1_score / catRule.strong) - 1) * 100) >= 0 ? "+" : "") + fmt((((row.M1_score / catRule.strong) - 1) * 100))}%` : "-"}</div></div>
+              <div class="detail-card"><div class="k">正式規則</div><div class="v">strong ${fmt(cfg.strong)} ｜ pass ${fmt(cfg.pass)} ｜ watch ${fmt(cfg.watch)}</div></div>
+              <div class="detail-card"><div class="k">vs p50</div><div class="v">${Number.isFinite(row.M1_score) && Number.isFinite(cfg.pass) ? `${row.M1_score - cfg.pass >= 0 ? "+" : ""}${fmt(row.M1_score - cfg.pass)}` : "-"}</div></div>
+              <div class="detail-card"><div class="k">p75 對比</div><div class="v">${Number.isFinite(row.M1_score) && Number.isFinite(cfg.strong) && cfg.strong !== 0 ? `${((((row.M1_score / cfg.strong) - 1) * 100) >= 0 ? "+" : "") + fmt((((row.M1_score / cfg.strong) - 1) * 100))}%` : "-"}</div></div>
             </div>
 
             <div style="margin-top:12px;">
@@ -1548,8 +1582,7 @@
             </div>
 
             <div class="helper">
-              覆核燈號：pool30 綠燈 / watch 黃燈 / drop 紅燈 / thinking 白燈。<br>
-              若未存檔，畫面先帶 AI 預設判定；按存檔後才寫入 review 機制。
+              目前 AI 篩選已優先套用正式規則檔；若找不到正式規則檔，則退回系統預設規則。
             </div>
           </div>
         </details>
@@ -1558,30 +1591,25 @@
       $("setPool30Btn").onclick = () => {
         setReview(row.symbol, { decision: "pool30" }, false);
         renderDetail();
-        renderCategoryCards();
       };
       $("setWatchBtn").onclick = () => {
         setReview(row.symbol, { decision: "watch" }, false);
         renderDetail();
-        renderCategoryCards();
       };
       $("setDropBtn").onclick = () => {
         setReview(row.symbol, { decision: "drop" }, false);
         renderDetail();
-        renderCategoryCards();
       };
       $("setThinkingBtn").onclick = () => {
         setReview(row.symbol, { decision: "thinking" }, false);
         renderDetail();
-        renderCategoryCards();
       };
 
       $("saveDetailBtn").onclick = () => {
         const decision = $("detailDecision").value;
         const note = $("detailNote").value;
         setReview(row.symbol, { decision, note }, true);
-        renderDetail();
-        renderCategoryCards();
+        refreshView(true);
       };
 
       $("researchBtn").onclick = () => {
@@ -1591,7 +1619,6 @@
       $("detailDecision").onchange = () => {
         setReview(row.symbol, { decision: $("detailDecision").value }, false);
         renderDetail();
-        renderCategoryCards();
       };
 
       $("saveReviewBtn").onclick = () => {
@@ -1599,8 +1626,7 @@
           decision: $("detailDecision").value,
           note: $("detailNote").value
         }, true);
-        renderDetail();
-        renderCategoryCards();
+        refreshView(true);
       };
 
       $("clearNoteBtn").onclick = () => {
@@ -1632,21 +1658,82 @@
       URL.revokeObjectURL(url);
     }
 
+    function normalizeFormalRules(raw) {
+      if (!raw || typeof raw !== "object" || !raw.rules || typeof raw.rules !== "object") return null;
+
+      const rules = {};
+      for (const cat of CATEGORY_ORDER) {
+        const r = raw.rules[cat];
+        if (!r) return null;
+
+        const strong = Number(r.strong);
+        const pass = Number(r.pass);
+        const watch = Number(r.watch);
+
+        if (![strong, pass, watch].every(Number.isFinite)) return null;
+
+        let s = strong;
+        let p = pass;
+        let w = watch;
+        if (p > s) p = s;
+        if (w > p) w = p;
+
+        rules[cat] = {
+          preset: r.preset || "custom",
+          strong: +s.toFixed(2),
+          pass: +p.toFixed(2),
+          watch: +w.toFixed(2)
+        };
+      }
+
+      return {
+        rules,
+        meta: {
+          source: raw.source || "m1_test.html",
+          version: raw.version || "m1_filter_rules_v1",
+          updated_at: raw.updated_at || ""
+        }
+      };
+    }
+
+    async function loadFormalRulesOrDefault() {
+      const raw = await fetchJSONOptional("data/m1/m1_filter_rules.json");
+
+      const normalized = normalizeFormalRules(raw);
+      if (normalized?.rules) {
+        state.ruleMeta = {
+          source: normalized.meta.source || "m1_test.html",
+          version: normalized.meta.version || "m1_filter_rules_v1",
+          updated_at: normalized.meta.updated_at || "",
+          loaded: true
+        };
+        return normalized.rules;
+      }
+
+      state.ruleMeta = {
+        source: "default",
+        version: "fallback_default",
+        updated_at: "",
+        loaded: false
+      };
+      return buildDefaultFilterConfig(state.pool30Rules);
+    }
+
     function refreshView(keepSelection = true) {
-      applyViewFilter();
-      renderDashboard();
+      const filteredRows = applyViewFilter();
+      renderDashboard(filteredRows);
       renderRuleGrid();
-      renderCategoryCards();
+      renderCategoryCards(filteredRows);
 
       if (!keepSelection) {
         if (state.selected) {
           const found = state.candidateScored.find(x => x.symbol === state.selected.symbol);
-          state.selected = found || state.filteredRows[0] || null;
+          state.selected = found || filteredRows[0] || null;
         } else {
-          state.selected = state.filteredRows[0] || null;
+          state.selected = filteredRows[0] || null;
         }
-      } else if (!state.selected && state.filteredRows.length) {
-        state.selected = state.filteredRows[0];
+      } else if (!state.selected && filteredRows.length) {
+        state.selected = filteredRows[0];
       }
 
       renderDetail();
@@ -1680,7 +1767,8 @@
         state.pool30Scored = mergeEngineOutput(state.pool30Prepared, pool30Engine);
 
         state.pool30Rules = buildPool30Rules(state.pool30Scored);
-        state.filterConfig = buildDefaultFilterConfig(state.pool30Rules);
+        state.filterConfig = await loadFormalRulesOrDefault();
+
         state.candidateScored = applyFilter(state.candidateScored, state.filterConfig, state.pool30Rules);
 
         buildCategoryOptions(state.candidateScored);
