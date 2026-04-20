@@ -1484,7 +1484,7 @@
   "has_ki_breach": false,
   "first_ki_breach_time": "",
   "early_exit_record": {
-    "NVDA": {
+    "SMH": {
       "hit": false,
       "first_hit_time": ""
     },
@@ -1492,7 +1492,11 @@
       "hit": false,
       "first_hit_time": ""
     },
-    "MU": {
+      "QQQ": {
+      "hit": false,
+      "first_hit_time": ""
+    },
+    "LQD": {
       "hit": false,
       "first_hit_time": ""
     }
@@ -1535,11 +1539,15 @@
   "has_ki_breach": false,
   "first_ki_breach_time": "",
   "early_exit_record": {
-    "NVDA": {
+    "INTC": {
       "hit": false,
       "first_hit_time": ""
     },
-    "TSM": {
+    "TSLA": {
+      "hit": false,
+      "first_hit_time": ""
+    },
+     "ARM": {
       "hit": false,
       "first_hit_time": ""
     },
@@ -1586,15 +1594,19 @@
   "has_ki_breach": false,
   "first_ki_breach_time": "",
   "early_exit_record": {
-    "NVDA": {
-      "hit": false,
-      "first_hit_time": ""
-    },
-    "TSM": {
+    "MRVL": {
       "hit": false,
       "first_hit_time": ""
     },
     "MU": {
+      "hit": false,
+      "first_hit_time": ""
+    },
+    "SMH": {
+      "hit": false,
+      "first_hit_time": ""
+    },
+    "NVDA": {
       "hit": false,
       "first_hit_time": ""
     }
