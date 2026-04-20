@@ -3,23 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>M1 | Stock Pool Review Console</title>
+  <title>M1 Dashboard</title>
   <style>
     :root{
-      --bg:#f4f7fb;
-      --card:#ffffff;
+      --bg:#f5f7fb;
+      --panel:#ffffff;
+      --line:#d9e0ea;
       --text:#0f172a;
       --muted:#64748b;
-      --line:#dbe3ee;
       --blue:#2563eb;
       --green:#16a34a;
-      --orange:#d97706;
+      --amber:#d97706;
       --red:#dc2626;
-      --purple:#7c3aed;
-      --shadow:0 8px 24px rgba(15,23,42,0.06);
+      --chip:#eef2ff;
+      --chip2:#f1f5f9;
+      --shadow:0 10px 30px rgba(15,23,42,0.08);
       --radius:16px;
     }
-
     *{box-sizing:border-box}
     body{
       margin:0;
@@ -27,886 +27,408 @@
       background:var(--bg);
       color:var(--text);
     }
-
-    .page{
-      max-width:1400px;
+    .wrap{
+      max-width:1800px;
       margin:0 auto;
-      padding:28px 18px 48px;
+      padding:20px;
     }
-
     .hero{
-      background:linear-gradient(135deg,#ffffff 0%,#eef4ff 100%);
-      border:1px solid var(--line);
-      border-radius:24px;
+      background:linear-gradient(135deg,#0f172a,#1e3a8a);
+      color:#fff;
+      border-radius:20px;
+      padding:22px 24px;
       box-shadow:var(--shadow);
-      padding:22px 22px 16px;
-      margin-bottom:18px;
+      margin-bottom:16px;
     }
-
-    .hero-top{
-      display:flex;
-      justify-content:space-between;
-      align-items:flex-start;
-      gap:16px;
-      flex-wrap:wrap;
-    }
-
-    .title-wrap h1{
-      margin:0;
+    .hero h1{
+      margin:0 0 8px;
       font-size:28px;
-      line-height:1.2;
-      font-weight:800;
-      letter-spacing:0.2px;
     }
-
-    .title-wrap .sub{
-      margin-top:8px;
-      color:var(--muted);
+    .hero .sub{
       font-size:14px;
+      opacity:.95;
+      line-height:1.7;
     }
 
     .toolbar{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
+      display:grid;
+      grid-template-columns:1.2fr 0.85fr 0.85fr 0.9fr auto auto;
+      gap:12px;
+      margin-bottom:16px;
       align-items:center;
+    }
+
+    .control{
+      width:100%;
+      padding:12px 14px;
+      border:1px solid var(--line);
+      border-radius:12px;
+      background:#fff;
+      font-size:14px;
+      color:var(--text);
     }
 
     button{
       border:none;
+      background:var(--blue);
+      color:#fff;
+      padding:12px 16px;
       border-radius:12px;
-      padding:10px 14px;
-      font-size:14px;
       cursor:pointer;
-      background:#e5edf8;
-      color:var(--text);
-      transition:all .15s ease;
+      font-size:14px;
+      font-weight:700;
     }
-    button:hover{transform:translateY(-1px)}
-    .btn-primary{background:var(--blue); color:#fff}
-    .btn-green{background:var(--green); color:#fff}
-    .btn-purple{background:var(--purple); color:#fff}
-    .btn-red{background:var(--red); color:#fff}
+    button.secondary{
+      background:#334155;
+    }
 
-    .summary-grid{
-      margin-top:16px;
+    .summary{
       display:grid;
-      grid-template-columns:repeat(7,minmax(120px,1fr));
+      grid-template-columns:repeat(6,1fr);
       gap:12px;
-    }
-
-    .metric{
-      background:rgba(255,255,255,.78);
-      border:1px solid var(--line);
-      border-radius:16px;
-      padding:12px 14px;
-      min-height:82px;
-    }
-
-    .metric .label{
-      font-size:12px;
-      color:var(--muted);
-      margin-bottom:8px;
-    }
-    .metric .value{
-      font-size:24px;
-      font-weight:800;
-      line-height:1;
-    }
-
-    .panel{
-      background:var(--card);
-      border:1px solid var(--line);
-      border-radius:20px;
-      box-shadow:var(--shadow);
-      padding:16px;
       margin-bottom:16px;
     }
-
-    .filters{
-      display:grid;
-      grid-template-columns:repeat(5,minmax(0,1fr));
-      gap:12px;
-      align-items:end;
-    }
-
-    .field label{
-      display:block;
-      font-size:12px;
-      color:var(--muted);
-      margin-bottom:6px;
-    }
-
-    select,input[type="text"]{
-      width:100%;
+    .panel{
+      background:var(--panel);
       border:1px solid var(--line);
-      border-radius:12px;
-      padding:10px 12px;
-      font-size:14px;
-      background:#fff;
-      color:var(--text);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
     }
-
-    .bucket{
-      margin-bottom:18px;
+    .stat{
+      padding:16px;
     }
-
-    .bucket-header{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      margin-bottom:10px;
-      padding:0 4px;
+    .stat .label{
+      color:var(--muted);
+      font-size:13px;
+      margin-bottom:8px;
     }
-
-    .bucket-title{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      font-size:20px;
+    .stat .value{
+      font-size:28px;
       font-weight:800;
     }
-
-    .badge{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      border-radius:999px;
-      padding:4px 10px;
+    .stat .sub{
       font-size:12px;
-      font-weight:700;
-      color:#fff;
-      min-width:72px;
-    }
-
-    .b-pool30{background:var(--green)}
-    .b-stock{background:var(--blue)}
-    .b-watch{background:var(--orange)}
-    .b-reject{background:var(--red)}
-    .b-core{background:var(--green)}
-    .b-growth{background:var(--blue)}
-    .b-defensive{background:var(--orange)}
-    .b-income{background:var(--purple)}
-    .b-speculative{background:var(--red)}
-
-    .bucket-count{
       color:var(--muted);
-      font-size:14px;
-      font-weight:600;
+      margin-top:6px;
+      line-height:1.5;
     }
 
-    .table-head{
+    .main{
       display:grid;
-      grid-template-columns:210px 110px 70px minmax(260px,1fr) 150px 130px;
-      gap:10px;
-      padding:10px 14px;
-      color:var(--muted);
-      font-size:12px;
-      font-weight:700;
+      grid-template-columns:1.55fr 0.9fr;
+      gap:16px;
+      align-items:start;
+    }
+
+    .panel-title{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:16px 18px;
       border-bottom:1px solid var(--line);
-      margin-bottom:10px;
+      font-size:18px;
+      font-weight:800;
+    }
+    .small-note{
+      font-size:12px;
+      color:var(--muted);
+      font-weight:500;
     }
 
-    .card{
-      background:#fff;
-      border:1px solid var(--line);
-      border-radius:18px;
-      margin-bottom:10px;
-      overflow:hidden;
+    .table-wrap{
+      overflow:auto;
+      max-height:74vh;
     }
-
-    .card-top{
-      display:grid;
-      grid-template-columns:210px 110px 70px minmax(260px,1fr) 150px 130px;
-      gap:10px;
-      align-items:center;
-      padding:14px;
+    table{
+      width:100%;
+      border-collapse:collapse;
+      min-width:1700px;
     }
-
-    .op-wrap{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-
-    .checks{
-      display:flex;
-      align-items:center;
-      gap:10px;
-    }
-
-    .checks label{
-      display:flex;
-      align-items:center;
-      gap:6px;
-      font-size:13px;
-      color:var(--text);
+    thead th{
+      position:sticky;
+      top:0;
+      background:#f8fafc;
+      z-index:2;
+      font-size:12px;
+      color:#475569;
+      padding:12px 10px;
+      border-bottom:1px solid var(--line);
+      text-align:left;
       white-space:nowrap;
     }
-
-    .card select{
-      min-width:120px;
-    }
-
-    .expand-btn{
-      width:38px;
-      height:38px;
-      border-radius:10px;
-      padding:0;
-      background:#edf3fb;
-      color:var(--text);
-      font-size:16px;
-      font-weight:800;
-    }
-
-    .symbol-block .main{
-      font-size:15px;
-      font-weight:800;
-      margin-bottom:4px;
-    }
-
-    .symbol-block .sub{
+    tbody td{
+      padding:10px;
+      border-bottom:1px solid #eef2f7;
       font-size:13px;
-      color:var(--muted);
+      vertical-align:top;
+    }
+    tbody tr:hover{
+      background:#f8fbff;
+      cursor:pointer;
     }
 
-    .score-block{
-      font-size:13px;
-      line-height:1.55;
+    .chip{
+      display:inline-block;
+      padding:4px 8px;
+      background:var(--chip);
+      color:#3730a3;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:700;
+      margin:2px 4px 2px 0;
+    }
+    .chip.gray{
+      background:var(--chip2);
+      color:#334155;
     }
 
-    .score-block .main{
-      font-weight:800;
-      font-size:15px;
-    }
+    .mono{font-family:Consolas,Menlo,monospace}
+    .ok{color:var(--green);font-weight:800}
+    .warn{color:var(--amber);font-weight:800}
+    .bad{color:var(--red);font-weight:800}
+    .muted{color:var(--muted)}
+    .info{color:var(--blue);font-weight:800}
 
-    .system-line{
-      font-size:13px;
-      line-height:1.55;
-    }
-
-    .system-line .main{
-      font-weight:800;
-      margin-bottom:4px;
-    }
-
-    .status-tags{
-      display:flex;
-      flex-wrap:wrap;
-      gap:6px;
-      justify-content:flex-end;
-    }
-
-    .detail{
-      display:none;
-      border-top:1px solid var(--line);
-      background:#fafcff;
-      padding:16px 16px 18px;
-    }
-
-    .detail.open{display:block}
-
-    .detail-grid{
+    .right-col{
       display:grid;
-      grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:12px;
+      gap:16px;
+    }
+    .json-box{
+      padding:16px;
+    }
+    pre{
+      margin:0;
+      white-space:pre-wrap;
+      word-break:break-word;
+      font-size:12px;
+      line-height:1.55;
+      font-family:Consolas,Menlo,monospace;
     }
 
-    .detail-card{
-      background:#fff;
+    .detail-section{
+      margin-bottom:14px;
       border:1px solid var(--line);
-      border-radius:16px;
+      border-radius:14px;
       padding:14px;
+      background:#fff;
     }
-
-    .detail-card h4{
+    .detail-section h3{
       margin:0 0 10px;
       font-size:15px;
     }
 
-    .detail-card p{
-      margin:0 0 8px;
+    .detail-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:10px;
+    }
+    .detail-card{
+      border:1px solid #e8edf5;
+      border-radius:12px;
+      padding:10px 12px;
+      background:#fafcff;
+    }
+    .detail-card .k{
+      font-size:12px;
+      color:var(--muted);
+      margin-bottom:4px;
+    }
+    .detail-card .v{
+      font-size:14px;
+      font-weight:700;
+      line-height:1.6;
+    }
+    .list{
+      margin:0;
+      padding-left:18px;
       line-height:1.6;
       font-size:13px;
     }
 
-    .detail-card ul{
-      margin:0;
-      padding-left:18px;
-    }
-
-    .detail-card li{
-      margin-bottom:6px;
-      font-size:13px;
-      line-height:1.5;
-    }
-
-    .kv{
-      display:grid;
-      grid-template-columns:120px 1fr;
+    .legend{
+      display:flex;
+      flex-wrap:wrap;
       gap:8px;
-      font-size:13px;
-      margin-bottom:6px;
+      margin-top:8px;
     }
 
-    .kv .k{color:var(--muted)}
-    .empty{
-      text-align:center;
-      color:var(--muted);
-      padding:24px 10px;
-      border:1px dashed var(--line);
-      border-radius:16px;
-      background:#fff;
-    }
+    .tag-strong{color:var(--green);font-weight:800}
+    .tag-pass{color:var(--blue);font-weight:800}
+    .tag-watch{color:var(--amber);font-weight:800}
+    .tag-drop{color:var(--red);font-weight:800}
+    .tag-spec{color:#7c3aed;font-weight:800}
 
-    .footer-note{
-      color:var(--muted);
-      font-size:12px;
-      text-align:right;
-      margin-top:10px;
+    @media (max-width:1400px){
+      .summary{grid-template-columns:repeat(3,1fr);}
+      .main{grid-template-columns:1fr;}
+      .toolbar{grid-template-columns:1fr 1fr 1fr;}
     }
-
-    @media (max-width: 1100px){
-      .summary-grid{grid-template-columns:repeat(4,minmax(120px,1fr))}
-      .filters{grid-template-columns:repeat(2,minmax(0,1fr))}
-      .table-head,.card-top{
-        grid-template-columns:1fr;
-      }
-      .table-head{display:none}
-      .card-top{gap:12px}
-      .status-tags{justify-content:flex-start}
-      .detail-grid{grid-template-columns:1fr}
-    }
-
-    @media (max-width: 700px){
-      .summary-grid{grid-template-columns:repeat(2,minmax(120px,1fr))}
-      .filters{grid-template-columns:1fr}
-      .hero-top{flex-direction:column}
+    @media (max-width:840px){
+      .summary{grid-template-columns:repeat(2,1fr);}
+      .toolbar{grid-template-columns:1fr;}
+      .detail-grid{grid-template-columns:1fr;}
     }
   </style>
 </head>
 <body>
-  <div class="page">
-    <section class="hero">
-      <div class="hero-top">
-        <div class="title-wrap">
-          <h1>M1｜Stock Pool Review Console</h1>
-          <div class="sub">讀取 engine 正式輸出，先分區，再由人工在第一層直接確認與修正。</div>
+  <div class="wrap">
+    <div class="hero">
+      <h1>M1 Dashboard</h1>
+      <div class="sub">
+        正式版：顯示 Candidate 80 主表、Filter 結果、Pool30 對標、Why / Detail。<br>
+        調參 / 分布 / strict-medium-loose 驗證請留在 <b>m1_test.html</b>。
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <input id="searchInput" class="control" placeholder="搜尋股號 / sector / style，例如 COIN、SOFI、AI_SEMI、high_beta" />
+      <select id="categoryFilter" class="control">
+        <option value="ALL">全部類別</option>
+      </select>
+      <select id="resultFilter" class="control">
+        <option value="ALL">全部結果</option>
+        <option value="STRONG">STRONG</option>
+        <option value="PASS">PASS</option>
+        <option value="WATCH">WATCH</option>
+        <option value="DROP">DROP</option>
+        <option value="SPEC_POOL">SPEC_POOL</option>
+      </select>
+      <select id="sortFilter" class="control">
+        <option value="m1_desc">依 M1：高 → 低</option>
+        <option value="m7_desc">依 M7：高 → 低</option>
+        <option value="capex_desc">依 Capex：高 → 低</option>
+        <option value="symbol_asc">依股號：A → Z</option>
+      </select>
+      <button id="reloadBtn">重新載入</button>
+      <button id="showAllBtn" class="secondary">顯示全部</button>
+    </div>
+
+    <div class="summary">
+      <div class="panel stat">
+        <div class="label">Candidate 總筆數</div>
+        <div class="value" id="statTotal">-</div>
+        <div class="sub">m1_candidate_80.json</div>
+      </div>
+      <div class="panel stat">
+        <div class="label">目前顯示</div>
+        <div class="value" id="statShown">-</div>
+        <div class="sub">搜尋 / 篩選後</div>
+      </div>
+      <div class="panel stat">
+        <div class="label">平均 M1</div>
+        <div class="value" id="statAvgM1">-</div>
+        <div class="sub">normalize 後</div>
+      </div>
+      <div class="panel stat">
+        <div class="label">Top 1</div>
+        <div class="value" id="statTop">-</div>
+        <div class="sub">目前排序第一名</div>
+      </div>
+      <div class="panel stat">
+        <div class="label">STRONG / PASS</div>
+        <div class="value" id="statPass">-</div>
+        <div class="sub">正式版篩選結果</div>
+      </div>
+      <div class="panel stat">
+        <div class="label">COIN / SOFI / QQQ</div>
+        <div class="value" id="statCheck" style="font-size:24px;">-</div>
+        <div class="sub">關鍵股快速驗證</div>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="panel">
+        <div class="panel-title">
+          <span>Candidate 80 主表 + Filter 結果</span>
+          <span class="small-note" id="tableNote">載入中...</span>
         </div>
-        <div class="toolbar">
-          <button onclick="applySystemDefaults()">套用系統預設</button>
-          <button onclick="clearAll()" class="btn-red">全部清除</button>
-          <button onclick="exportPoolStock()" class="btn-primary">匯出 Pool Stock</button>
-          <button onclick="exportPool30()" class="btn-green">匯出 Pool30</button>
-          <button onclick="exportReviewLog()" class="btn-purple">匯出 Review Log</button>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Rank</th>
+                <th>Symbol</th>
+                <th>Category</th>
+                <th>Sector</th>
+                <th>Style</th>
+                <th>Capex</th>
+                <th>M3</th>
+                <th>M7</th>
+                <th>M1</th>
+                <th>Result</th>
+                <th>Why</th>
+                <th>1D</th>
+                <th>1W</th>
+                <th>1M</th>
+                <th>3M</th>
+                <th>6M</th>
+                <th>12M</th>
+                <th>Vol Ratio</th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
         </div>
       </div>
 
-      <div class="summary-grid" id="summaryGrid"></div>
-    </section>
-
-    <section class="panel">
-      <div class="filters">
-        <div class="field">
-          <label>分區</label>
-          <select id="filterBucket" onchange="renderAll()">
-            <option value="all">All</option>
-            <option value="pool30_candidate">建議納入 Pool30</option>
-            <option value="stock_pool_candidate">建議納入大池</option>
-            <option value="watch_candidate">建議觀察</option>
-            <option value="reject_candidate">建議排除</option>
-          </select>
+      <div class="right-col">
+        <div class="panel json-box">
+          <div class="panel-title" style="padding:0 0 12px 0;border-bottom:none;">股票詳情 / Why / Pool30 對標</div>
+          <div id="detailBox">請點左側任一股票列</div>
         </div>
 
-        <div class="field">
-          <label>身分</label>
-          <select id="filterIdentity" onchange="renderAll()">
-            <option value="all">全部</option>
-            <option value="new">新股</option>
-            <option value="existing">舊股</option>
-            <option value="already_pool30">已在 Pool30</option>
-            <option value="not_in_pool30">不在 Pool30</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label>分類</label>
-          <select id="filterCategory" onchange="renderAll()">
-            <option value="all">全部</option>
-            <option value="core">core</option>
-            <option value="growth">growth</option>
-            <option value="defensive">defensive</option>
-            <option value="income">income</option>
-            <option value="speculative">speculative</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label>狀態</label>
-          <select id="filterStatus" onchange="renderAll()">
-            <option value="all">全部</option>
-            <option value="engine_pool30_true">engine 建議進 Pool30</option>
-            <option value="engine_pool30_false">engine 不進 Pool30</option>
-            <option value="engine_stock_true">engine 建議進 Stock Pool</option>
-            <option value="research_not_started">research 未開始</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label>搜尋</label>
-          <input type="text" id="filterSearch" placeholder="輸入 symbol / name / sector" oninput="renderAll()" />
+        <div class="panel json-box">
+          <div class="panel-title" style="padding:0 0 12px 0;border-bottom:none;">目前正式版 Rule</div>
+          <div id="ruleBox"></div>
         </div>
       </div>
-    </section>
-
-    <div id="bucketContainer"></div>
-    <div class="footer-note">M1 真資料版｜資料來源：data/m1/pool_stock_evaluated_v1.json</div>
+    </div>
   </div>
 
-  <script>
-    const CATEGORY_OPTIONS = ["core","growth","defensive","income","speculative"];
-    const BUCKET_META = {
-      pool30_candidate: { title: "建議納入 Pool30", className: "b-pool30" },
-      stock_pool_candidate: { title: "建議納入大池", className: "b-stock" },
-      watch_candidate: { title: "建議持續觀察", className: "b-watch" },
-      reject_candidate: { title: "建議排除", className: "b-reject" }
+  <script type="module">
+    import { runM1Engine } from "./js/m1/m1_engine.js";
+    import { buildCategoryStats, buildPool30Rules, buildOverallStats } from "./js/m1/m1_stats_engine.js";
+    import { buildDefaultFilterConfig, applyFilter } from "./js/m1/m1_filter_engine.js";
+
+    const ETF_FORCE_DEFENSIVE = ["QQQ","SMH","SPY","LQD"];
+
+    const state = {
+      candidateRaw: [],
+      pool30Raw: [],
+      fundamentalMap: {},
+      candidatePrepared: [],
+      pool30Prepared: [],
+      candidateScored: [],
+      pool30Scored: [],
+      pool30Rules: {},
+      filterConfig: {},
+      filteredRows: [],
+      selected: null
     };
 
-    let rawData = null;
-    let rows = [];
+    const $ = (id) => document.getElementById(id);
 
-    async function init() {
-      try {
-        const res = await fetch("data/m1/pool_stock_evaluated_v1.json?_=" + Date.now());
-        if (!res.ok) throw new Error("無法讀取 pool_stock_evaluated_v1.json");
-        rawData = await res.json();
-
-        rows = (rawData.all || []).map((row, idx) => ({
-          ...row,
-          _id: `${row.symbol || "row"}_${idx}`
-        }));
-
-        renderAll();
-      } catch (err) {
-        document.getElementById("bucketContainer").innerHTML =
-          `<div class="panel"><div class="empty">載入資料失敗：${err.message}</div></div>`;
-      }
+    async function fetchJSON(path) {
+      const url = path + (path.includes("?") ? "&" : "?") + "v=" + Date.now();
+      const res = await fetch(url, { cache: "no-store" });
+      if (!res.ok) throw new Error(`${path} 讀取失敗：${res.status}`);
+      return await res.json();
     }
 
-    function applySystemDefaults() {
-      rows = rows.map(row => ({
-        ...row,
-        human_override: {
-          into_stock_pool: row.system_recommendation?.into_stock_pool ?? false,
-          into_pool30: row.system_recommendation?.into_pool30 ?? false,
-          final_category: row.system_recommendation?.suggested_category || "growth",
-          note: row.human_override?.note || ""
-        }
-      }));
-      renderAll();
+    function n(v, d = null) {
+      const x = Number(v);
+      return Number.isFinite(x) ? x : d;
     }
 
-    function clearAll() {
-      rows = rows.map(row => ({
-        ...row,
-        human_override: {
-          into_stock_pool: false,
-          into_pool30: false,
-          final_category: row.human_override?.final_category || row.system_recommendation?.suggested_category || "growth",
-          note: row.human_override?.note || ""
-        }
-      }));
-      renderAll();
+    function fmt(v, digits = 2) {
+      const x = Number(v);
+      return Number.isFinite(x) ? x.toFixed(digits) : "-";
     }
 
-    function getFinal(row) {
-      return {
-        into_stock_pool: row?.human_override?.into_stock_pool ?? row?.system_recommendation?.into_stock_pool ?? false,
-        into_pool30: row?.human_override?.into_pool30 ?? row?.system_recommendation?.into_pool30 ?? false,
-        final_category: row?.human_override?.final_category || row?.system_recommendation?.suggested_category || "growth",
-        note: row?.human_override?.note || ""
-      };
-    }
-
-    function updateRow(rowId, key, value) {
-      rows = rows.map(row => {
-        if (row._id !== rowId) return row;
-        const final = getFinal(row);
-        return {
-          ...row,
-          human_override: {
-            ...final,
-            [key]: value
-          }
-        };
-      });
-      renderAll();
-    }
-
-    function toggleDetail(rowId) {
-      const el = document.getElementById(`detail-${rowId}`);
-      const btn = document.getElementById(`toggle-${rowId}`);
-      const isOpen = el.classList.contains("open");
-      if (isOpen) {
-        el.classList.remove("open");
-        btn.textContent = "▶";
-      } else {
-        el.classList.add("open");
-        btn.textContent = "▼";
-      }
-    }
-
-    function renderSummary() {
-      const s = rawData?.summary || {};
-      const metrics = [
-        ["Candidate", s.total_count ?? rows.length],
-        ["Pool30 建議", s.pool30_candidate_count ?? 0],
-        ["大池建議", s.stock_pool_candidate_count ?? 0],
-        ["Watch", s.watch_candidate_count ?? 0],
-        ["Reject", s.reject_candidate_count ?? 0],
-        ["新股", s.new_stock_count ?? 0],
-        ["舊股", s.existing_stock_count ?? 0]
-      ];
-
-      document.getElementById("summaryGrid").innerHTML = metrics.map(([label, value]) => `
-        <div class="metric">
-          <div class="label">${label}</div>
-          <div class="value">${value}</div>
-        </div>
-      `).join("");
-    }
-
-    function matchesFilters(row) {
-      const bucket = document.getElementById("filterBucket").value;
-      const identity = document.getElementById("filterIdentity").value;
-      const category = document.getElementById("filterCategory").value;
-      const status = document.getElementById("filterStatus").value;
-      const search = document.getElementById("filterSearch").value.trim().toLowerCase();
-
-      const final = getFinal(row);
-
-      if (bucket !== "all" && row.system_recommendation?.bucket !== bucket) return false;
-
-      if (identity === "new" && !row.identity?.is_new_stock) return false;
-      if (identity === "existing" && row.identity?.is_new_stock) return false;
-      if (identity === "already_pool30" && !row.identity?.already_in_pool30) return false;
-      if (identity === "not_in_pool30" && row.identity?.already_in_pool30) return false;
-
-      if (category !== "all" && final.final_category !== category) return false;
-
-      if (status === "engine_pool30_true" && !row.system_recommendation?.into_pool30) return false;
-      if (status === "engine_pool30_false" && row.system_recommendation?.into_pool30) return false;
-      if (status === "engine_stock_true" && !row.system_recommendation?.into_stock_pool) return false;
-      if (status === "research_not_started" && row.research?.status !== "not_started") return false;
-
-      if (search) {
-        const text = [
-          row.symbol, row.name, row.sector, row.subsector,
-          row.system_recommendation?.bucket, final.final_category
-        ].join(" ").toLowerCase();
-        if (!text.includes(search)) return false;
-      }
-
-      return true;
-    }
-
-    function categoryBadgeClass(category) {
-      const map = {
-        core: "b-core",
-        growth: "b-growth",
-        defensive: "b-defensive",
-        income: "b-income",
-        speculative: "b-speculative"
-      };
-      return map[category] || "b-growth";
-    }
-
-    function renderCard(row) {
-      const final = getFinal(row);
-      const bucket = row.system_recommendation?.bucket || "watch_candidate";
-      const bucketMeta = BUCKET_META[bucket] || BUCKET_META.watch_candidate;
-
-      const whyYes = row.system_reason?.why_yes || [];
-      const whyNo = row.system_reason?.why_no || [];
-      const aiShort = row.ai_reason_short || [];
-      const aiDetail = row.ai_reason_detail || {};
-      const score = row.engine_score || {};
-      const note = final.note || "";
-      const showOriginalCategory =
-        final.final_category !== (row.system_recommendation?.suggested_category || "");
-
-      return `
-        <div class="card">
-          <div class="card-top">
-            <div class="op-wrap">
-              <div class="checks">
-                <label>
-                  <input type="checkbox" ${final.into_stock_pool ? "checked" : ""} onchange="updateRow('${row._id}','into_stock_pool',this.checked)">
-                  Stock Pool
-                </label>
-                <label>
-                  <input type="checkbox" ${final.into_pool30 ? "checked" : ""} onchange="updateRow('${row._id}','into_pool30',this.checked)">
-                  Pool30
-                </label>
-              </div>
-            </div>
-
-            <div>
-              <select onchange="updateRow('${row._id}','final_category',this.value)">
-                ${CATEGORY_OPTIONS.map(opt =>
-                  `<option value="${opt}" ${opt === final.final_category ? "selected" : ""}>${opt}</option>`
-                ).join("")}
-              </select>
-              ${showOriginalCategory ? `<div style="margin-top:6px;font-size:12px;color:#64748b">原建議：${row.system_recommendation?.suggested_category || "-"}</div>` : ""}
-            </div>
-
-            <div>
-              <button class="expand-btn" id="toggle-${row._id}" onclick="toggleDetail('${row._id}')">▶</button>
-            </div>
-
-            <div class="symbol-block">
-              <div class="main">${row.symbol || "-"} ｜ ${row.name || "-"}</div>
-              <div class="sub">${row.sector || "-"} / ${row.subsector || "-"}</div>
-              <div class="sub" style="margin-top:4px">
-                ${row.identity?.is_new_stock ? "新股" : "舊股"} ｜ 
-                ${row.identity?.already_in_pool30 ? "已在 Pool30" : "未在 Pool30"}
-              </div>
-            </div>
-
-            <div class="score-block">
-              <div class="main">Pure ${fmt(score.pure)} ｜ Std ${fmt(score.std)}</div>
-              <div>Baseline ${fmt(score.baseline)} ｜ Valuation ${fmt(score.valuation)}</div>
-              <div>Trend ${fmt(score.trend)} ｜ Raw ${fmt(score.raw)}</div>
-            </div>
-
-            <div>
-              <div class="status-tags">
-                <span class="badge ${bucketMeta.className}">${bucketLabel(bucket)}</span>
-                <span class="badge ${categoryBadgeClass(final.final_category)}">${final.final_category}</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="detail" id="detail-${row._id}">
-            <div class="detail-grid">
-              <div class="detail-card">
-                <h4>Level 2｜System Recommendation</h4>
-                <div class="kv"><div class="k">Bucket</div><div>${bucketLabel(bucket)}</div></div>
-                <div class="kv"><div class="k">Engine 建議</div><div>${row.system_recommendation?.into_stock_pool ? "納入 Stock Pool" : "不納入 Stock Pool"} ｜ ${row.system_recommendation?.into_pool30 ? "納入 Pool30" : "不納入 Pool30"}</div></div>
-                <div class="kv"><div class="k">Research</div><div>${row.research?.status || "not_started"}</div></div>
-                <div class="kv"><div class="k">人工備註</div><div>${escapeHtml(note || "-")}</div></div>
-
-                <p><b>Why Yes</b></p>
-                ${whyYes.length ? `<ul>${whyYes.map(x => `<li>${escapeHtml(x)}</li>`).join("")}</ul>` : `<p>-</p>`}
-
-                <p style="margin-top:10px"><b>Why No</b></p>
-                ${whyNo.length ? `<ul>${whyNo.map(x => `<li>${escapeHtml(x)}</li>`).join("")}</ul>` : `<p>-</p>`}
-              </div>
-
-              <div class="detail-card">
-                <h4>Level 3｜Engine Score</h4>
-                ${kvBlock("baseline", score.baseline)}
-                ${kvBlock("vol_score", score.vol_score)}
-                ${kvBlock("pure", score.pure)}
-                ${kvBlock("valuation", score.valuation)}
-                ${kvBlock("trend", score.trend)}
-                ${kvBlock("raw", score.raw)}
-                ${kvBlock("std", score.std)}
-              </div>
-
-              <div class="detail-card">
-                <h4>Level 4｜AI Reason Short</h4>
-                ${aiShort.length ? `<ul>${aiShort.map(x => `<li>${escapeHtml(x)}</li>`).join("")}</ul>` : `<p>-</p>`}
-              </div>
-
-              <div class="detail-card">
-                <h4>Level 5｜AI Reason Detail</h4>
-                <p><b>Growth：</b>${escapeHtml(aiDetail.growth || "-")}</p>
-                <p><b>Industry：</b>${escapeHtml(aiDetail.industry || "-")}</p>
-                <p><b>Competition：</b>${escapeHtml(aiDetail.competition || "-")}</p>
-                <p><b>Valuation：</b>${escapeHtml(aiDetail.valuation || "-")}</p>
-                <p><b>Risk：</b>${escapeHtml(aiDetail.risk || "-")}</p>
-              </div>
-
-              <div class="detail-card">
-                <h4>Level 6｜Research</h4>
-                <div class="kv"><div class="k">status</div><div>${row.research?.status || "not_started"}</div></div>
-                <div class="kv"><div class="k">fundamental</div><div>${escapeHtml(row.research?.fundamental || "-")}</div></div>
-                <div class="kv"><div class="k">industry</div><div>${escapeHtml(row.research?.industry || "-")}</div></div>
-                <div class="kv"><div class="k">valuation</div><div>${escapeHtml(row.research?.valuation_analysis || "-")}</div></div>
-                <div class="kv"><div class="k">trading_plan</div><div>${escapeHtml(row.research?.trading_plan || "-")}</div></div>
-                <div class="kv"><div class="k">technical</div><div>${escapeHtml(row.research?.technical_analysis || "-")}</div></div>
-                <div class="kv"><div class="k">pool30_fit</div><div>${escapeHtml(row.research?.pool30_fit || "-")}</div></div>
-                <div class="kv"><div class="k">risk</div><div>${escapeHtml(row.research?.risk || "-")}</div></div>
-                <div class="kv"><div class="k">final</div><div>${escapeHtml(row.research?.final_conclusion || "-")}</div></div>
-              </div>
-
-              <div class="detail-card">
-                <h4>人工備註</h4>
-                <textarea style="width:100%;min-height:110px;border:1px solid #dbe3ee;border-radius:12px;padding:10px;font-size:13px" oninput="updateRow('${row._id}','note',this.value)">${escapeHtml(note)}</textarea>
-              </div>
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
-    function renderBucket(bucketKey, items) {
-      const meta = BUCKET_META[bucketKey];
-      if (!meta) return "";
-
-      if (!items.length) {
-        return `
-          <section class="bucket panel">
-            <div class="bucket-header">
-              <div class="bucket-title">
-                <span class="badge ${meta.className}">${meta.title}</span>
-              </div>
-              <div class="bucket-count">0 檔</div>
-            </div>
-            <div class="empty">此分區目前沒有符合條件的股票。</div>
-          </section>
-        `;
-      }
-
-      return `
-        <section class="bucket panel">
-          <div class="bucket-header">
-            <div class="bucket-title">
-              <span class="badge ${meta.className}">${meta.title}</span>
-            </div>
-            <div class="bucket-count">${items.length} 檔</div>
-          </div>
-
-          <div class="table-head">
-            <div>操作</div>
-            <div>分類</div>
-            <div>明細</div>
-            <div>股票 / 產業</div>
-            <div>分數</div>
-            <div>系統分區</div>
-          </div>
-
-          ${items.map(renderCard).join("")}
-        </section>
-      `;
-    }
-
-    function renderAll() {
-      if (!rawData) return;
-      renderSummary();
-
-      const filtered = rows.filter(matchesFilters);
-
-      const grouped = {
-        pool30_candidate: filtered.filter(x => x.system_recommendation?.bucket === "pool30_candidate"),
-        stock_pool_candidate: filtered.filter(x => x.system_recommendation?.bucket === "stock_pool_candidate"),
-        watch_candidate: filtered.filter(x => x.system_recommendation?.bucket === "watch_candidate"),
-        reject_candidate: filtered.filter(x => x.system_recommendation?.bucket === "reject_candidate")
-      };
-
-      const html = [
-        renderBucket("pool30_candidate", grouped.pool30_candidate),
-        renderBucket("stock_pool_candidate", grouped.stock_pool_candidate),
-        renderBucket("watch_candidate", grouped.watch_candidate),
-        renderBucket("reject_candidate", grouped.reject_candidate)
-      ].join("");
-
-      document.getElementById("bucketContainer").innerHTML = html;
-    }
-
-    function exportPoolStock() {
-      const out = rows
-        .map(row => {
-          const final = getFinal(row);
-          if (!final.into_stock_pool) return null;
-          return {
-            symbol: row.symbol || "",
-            name: row.name || "",
-            sector: row.sector || "",
-            subsector: row.subsector || "",
-            category: final.final_category || "",
-            in_pool30: !!final.into_pool30,
-            source: row.identity?.source || "",
-            note: final.note || ""
-          };
-        })
-        .filter(Boolean);
-
-      downloadJson(out, "pool_stock_final.json");
-    }
-
-    function exportPool30() {
-      const out = rows
-        .map(row => {
-          const final = getFinal(row);
-          if (!final.into_pool30) return null;
-          return {
-            symbol: row.symbol || "",
-            name: row.name || "",
-            sector: row.sector || "",
-            subsector: row.subsector || "",
-            category: final.final_category || ""
-          };
-        })
-        .filter(Boolean);
-
-      downloadJson(out, "pool30_final.json");
-    }
-
-    function exportReviewLog() {
-      const out = rows.map(row => {
-        const final = getFinal(row);
-        return {
-          symbol: row.symbol || "",
-          system: {
-            bucket: row.system_recommendation?.bucket || "",
-            into_stock_pool: row.system_recommendation?.into_stock_pool ?? false,
-            into_pool30: row.system_recommendation?.into_pool30 ?? false,
-            category: row.system_recommendation?.suggested_category || ""
-          },
-          final: {
-            into_stock_pool: final.into_stock_pool,
-            into_pool30: final.into_pool30,
-            category: final.final_category,
-            note: final.note || ""
-          }
-        };
-      });
-
-      downloadJson(out, "pool_review_log.json");
-    }
-
-    function downloadJson(obj, filename) {
-      const blob = new Blob([JSON.stringify(obj, null, 2)], { type: "application/json;charset=utf-8" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = filename;
-      a.click();
-      URL.revokeObjectURL(url);
-    }
-
-    function fmt(v) {
-      if (v === null || v === undefined || v === "") return "-";
-      const n = Number(v);
-      return Number.isFinite(n) ? n.toFixed(2).replace(/\.00$/,"") : String(v);
-    }
-
-    function bucketLabel(bucket) {
-      const map = {
-        pool30_candidate: "Pool30",
-        stock_pool_candidate: "Stock Pool",
-        watch_candidate: "Watch",
-        reject_candidate: "Reject"
-      };
-      return map[bucket] || bucket;
-    }
-
-    function kvBlock(label, value) {
-      return `<div class="kv"><div class="k">${label}</div><div>${fmt(value)}</div></div>`;
+    function fmtPct(v, digits = 2) {
+      const x = Number(v);
+      return Number.isFinite(x) ? (x * 100).toFixed(digits) + "%" : "-";
     }
 
     function escapeHtml(str) {
@@ -915,10 +437,439 @@
         .replaceAll("<","&lt;")
         .replaceAll(">","&gt;")
         .replaceAll('"',"&quot;")
-        .replaceAll("'","&#39;");
+        .replaceAll("'","&#039;");
     }
 
-    init();
+    function normalizeCategory(row) {
+      const symbol = String(row.symbol || "").toUpperCase().trim();
+      if (ETF_FORCE_DEFENSIVE.includes(symbol)) return "defensive";
+
+      const raw = String(row.category || "").toLowerCase().trim();
+      if (raw.includes("core")) return "core";
+      if (raw.includes("growth")) return "growth";
+      if (raw.includes("income")) return "income";
+      if (raw.includes("defensive")) return "defensive";
+      if (raw.includes("speculative")) return "speculative";
+      return "speculative";
+    }
+
+    function mapRangeScore(x, bands) {
+      if (!Number.isFinite(x)) return null;
+      for (const [min, score] of bands) {
+        if (x >= min) return score;
+      }
+      return bands[bands.length - 1][1];
+    }
+
+    function calcFundamentalScore(f) {
+      if (!f || typeof f !== "object") return null;
+
+      const capex = n(f.capex_ratio_prev_y);
+      const rev = n(f.revenue_growth_q);
+      const opg = n(f.operating_income_growth_q);
+      const opq = n(f.operating_income_q);
+
+      const capexScore = mapRangeScore(capex, [
+        [15, 10], [12, 8.5], [9, 7], [6, 5.5], [3, 4], [0, 2.5]
+      ]);
+      const revScore = mapRangeScore(rev, [
+        [30, 10], [20, 8.5], [10, 7], [5, 5.5], [0, 4], [-999, 2]
+      ]);
+      const opgScore = mapRangeScore(opg, [
+        [40, 10], [25, 8.5], [15, 7], [5, 5.5], [0, 4], [-999, 2]
+      ]);
+      const sizeScore = mapRangeScore(opq, [
+        [12000, 10], [8000, 8.5], [4000, 7], [1000, 5.5], [1, 4], [0, 2]
+      ]);
+
+      const parts = [];
+      if (capexScore !== null) parts.push({ w: 0.4, v: capexScore });
+      if (revScore !== null) parts.push({ w: 0.2, v: revScore });
+      if (opgScore !== null) parts.push({ w: 0.3, v: opgScore });
+      if (sizeScore !== null) parts.push({ w: 0.1, v: sizeScore });
+
+      if (!parts.length) return null;
+
+      const sumW = parts.reduce((s, x) => s + x.w, 0);
+      const sumV = parts.reduce((s, x) => s + x.w * x.v, 0);
+      return +(sumV / sumW).toFixed(2);
+    }
+
+    function calcEventProxy(row) {
+      const r1d = n(row.ret_1d, 0);
+      const r1w = n(row.ret_1w, 0);
+      const vr = n(row.volume_ratio, 1);
+
+      const eventRaw = 0.55 * r1d + 0.35 * r1w + 0.10 * (vr - 1);
+
+      if (eventRaw >= 0.18) return 10;
+      if (eventRaw >= 0.12) return 9;
+      if (eventRaw >= 0.08) return 8;
+      if (eventRaw >= 0.04) return 7;
+      if (eventRaw >= 0.00) return 6;
+      if (eventRaw >= -0.03) return 5;
+      if (eventRaw >= -0.06) return 4;
+      return 3;
+    }
+
+    function prepareRows(rows, fundamentalMap) {
+      return rows.map(row => {
+        const symbol = String(row.symbol || "").toUpperCase().trim();
+        const f = fundamentalMap?.[symbol] || {};
+
+        const capexScore = calcFundamentalScore(f);
+        const snapshot = n(row.snapshot_score ?? row.snapshot, null);
+        const pure = n(row.m7_lite_score, null);
+        const event = calcEventProxy(row);
+
+        return {
+          ...row,
+          symbol,
+          category: normalizeCategory(row),
+
+          // 給 m1_engine.js 用
+          capex_score: capexScore,
+          pure_stock_score: pure,
+          snapshot_score: snapshot,
+          event_stock_score: event,
+          valuation_score: n(row.valuation_score, null),
+          trend_score: n(row.trend_score, null),
+          quality_score: n(row.quality_score, null),
+
+          // 保留 raw fundamental
+          capex_ratio_prev_y: n(f.capex_ratio_prev_y, null),
+          revenue_growth_q: n(f.revenue_growth_q, null),
+          operating_income_growth_q: n(f.operating_income_growth_q, null),
+          operating_income_q: n(f.operating_income_q, null)
+        };
+      });
+    }
+
+    function mergeEngineOutput(preparedRows, engineResult) {
+      const map = new Map(
+        (engineResult?.scores || []).map(x => [String(x.symbol || "").toUpperCase(), x])
+      );
+
+      return preparedRows.map(row => {
+        const e = map.get(row.symbol) || {};
+        return {
+          ...row,
+          rank: e.rank ?? null,
+          M1_score: e.M1_score ?? null,
+          raw_m1_score: e.raw_m1_score ?? null,
+          breakdown: e.breakdown || {
+            capex_score: row.capex_score ?? null,
+            m3_score: null,
+            m7_score: null
+          },
+          debug: e.debug || {}
+        };
+      });
+    }
+
+    function decorateWhy(row) {
+      const reasons = Array.isArray(row.filter_reason) ? row.filter_reason : [];
+      return reasons.join(" / ") || "-";
+    }
+
+    function resultClass(result) {
+      if (result === "STRONG") return "tag-strong";
+      if (result === "PASS") return "tag-pass";
+      if (result === "WATCH") return "tag-watch";
+      if (result === "DROP") return "tag-drop";
+      if (result === "SPEC_POOL") return "tag-spec";
+      return "muted";
+    }
+
+    function scoreClass(v) {
+      const x = Number(v);
+      if (!Number.isFinite(x)) return "";
+      if (x >= 7) return "ok";
+      if (x >= 5) return "warn";
+      return "bad";
+    }
+
+    function buildCategoryOptions(rows) {
+      const set = new Set(rows.map(x => x.category).filter(Boolean));
+      $("categoryFilter").innerHTML = `
+        <option value="ALL">全部類別</option>
+        ${[...set].sort().map(c => `<option value="${c}">${c}</option>`).join("")}
+      `;
+    }
+
+    function applyViewFilter() {
+      const keyword = $("searchInput").value.trim().toLowerCase();
+      const cat = $("categoryFilter").value;
+      const result = $("resultFilter").value;
+      const sort = $("sortFilter").value;
+
+      let rows = [...state.candidateScored];
+
+      if (keyword) {
+        rows = rows.filter(row => {
+          const text = [
+            row.symbol,
+            row.name,
+            row.sector,
+            ...(Array.isArray(row.style) ? row.style : []),
+            row.category
+          ].join(" ").toLowerCase();
+          return text.includes(keyword);
+        });
+      }
+
+      if (cat !== "ALL") {
+        rows = rows.filter(row => row.category === cat);
+      }
+
+      if (result !== "ALL") {
+        rows = rows.filter(row => row.filter_result === result);
+      }
+
+      if (sort === "m1_desc") rows.sort((a,b) => n(b.M1_score,-999) - n(a.M1_score,-999));
+      if (sort === "m7_desc") rows.sort((a,b) => n(b.breakdown?.m7_score,-999) - n(a.breakdown?.m7_score,-999));
+      if (sort === "capex_desc") rows.sort((a,b) => n(b.breakdown?.capex_score,-999) - n(a.breakdown?.capex_score,-999));
+      if (sort === "symbol_asc") rows.sort((a,b) => String(a.symbol).localeCompare(String(b.symbol)));
+
+      state.filteredRows = rows;
+    }
+
+    function renderSummary() {
+      const overall = buildOverallStats(state.candidateScored);
+      const shown = state.filteredRows.length;
+      const total = state.candidateScored.length;
+      const top = state.filteredRows[0]?.symbol || state.candidateScored[0]?.symbol || "-";
+
+      const strongCount = state.candidateScored.filter(x => x.filter_result === "STRONG").length;
+      const passCount = state.candidateScored.filter(x => x.filter_result === "PASS").length;
+
+      const keyCheck = ["COIN","SOFI","QQQ"].map(sym => {
+        const row = state.candidateScored.find(x => x.symbol === sym);
+        return row ? `${sym}:${row.filter_result}` : `${sym}:NA`;
+      }).join(" | ");
+
+      $("statTotal").textContent = total;
+      $("statShown").textContent = shown;
+      $("statAvgM1").textContent = fmt(overall.mean);
+      $("statTop").textContent = top;
+      $("statPass").textContent = `${strongCount} / ${passCount}`;
+      $("statCheck").textContent = keyCheck;
+      $("tableNote").textContent = `顯示 ${shown} / ${total} 筆`;
+    }
+
+    function renderTable() {
+      const tbody = $("tbody");
+
+      tbody.innerHTML = state.filteredRows.map((row, idx) => `
+        <tr data-symbol="${escapeHtml(row.symbol)}">
+          <td>${idx + 1}</td>
+          <td>${row.rank ?? "-"}</td>
+          <td><span class="mono info">${escapeHtml(row.symbol)}</span><br><span class="muted">${escapeHtml(row.name || "")}</span></td>
+          <td><span class="chip gray">${escapeHtml(row.category)}</span></td>
+          <td>${escapeHtml(row.sector || "-")}</td>
+          <td>${(Array.isArray(row.style) ? row.style : []).map(s => `<span class="chip">${escapeHtml(s)}</span>`).join("")}</td>
+          <td class="${scoreClass(row.breakdown?.capex_score)}">${fmt(row.breakdown?.capex_score)}</td>
+          <td class="${scoreClass(row.breakdown?.m3_score)}">${fmt(row.breakdown?.m3_score)}</td>
+          <td class="${scoreClass(row.breakdown?.m7_score)}">${fmt(row.breakdown?.m7_score)}</td>
+          <td class="${scoreClass(row.M1_score)}"><b>${fmt(row.M1_score)}</b></td>
+          <td class="${resultClass(row.filter_result)}">${escapeHtml(row.filter_result || "-")}</td>
+          <td>${escapeHtml(decorateWhy(row))}</td>
+          <td>${fmtPct(row.ret_1d)}</td>
+          <td>${fmtPct(row.ret_1w)}</td>
+          <td>${fmtPct(row.ret_1m)}</td>
+          <td>${fmtPct(row.ret_3m)}</td>
+          <td>${fmtPct(row.ret_6m)}</td>
+          <td>${fmtPct(row.ret_12m)}</td>
+          <td>${fmt(row.volume_ratio)}</td>
+        </tr>
+      `).join("");
+
+      [...tbody.querySelectorAll("tr")].forEach(tr => {
+        tr.addEventListener("click", () => {
+          const symbol = tr.getAttribute("data-symbol");
+          const row = state.candidateScored.find(x => x.symbol === symbol);
+          if (row) {
+            state.selected = row;
+            renderDetail();
+          }
+        });
+      });
+    }
+
+    function renderRuleBox() {
+      const html = Object.entries(state.filterConfig).map(([cat, cfg]) => {
+        const rule = state.pool30Rules[cat] || {};
+        return `
+          <div class="detail-section">
+            <h3>${escapeHtml(cat)}</h3>
+            <div class="detail-grid">
+              <div class="detail-card">
+                <div class="k">Preset</div>
+                <div class="v">${escapeHtml(cfg.preset || "-")}</div>
+              </div>
+              <div class="detail-card">
+                <div class="k">Pool30 strictness</div>
+                <div class="v">${escapeHtml(rule.strictness || "-")}</div>
+              </div>
+              <div class="detail-card">
+                <div class="k">Strong / Pass / Watch</div>
+                <div class="v">${fmt(cfg.strong)} / ${fmt(cfg.pass)} / ${fmt(cfg.watch)}</div>
+              </div>
+              <div class="detail-card">
+                <div class="k">Pool30 P75 / P50 / P25</div>
+                <div class="v">${fmt(rule.strong)} / ${fmt(rule.pass)} / ${fmt(rule.watch)}</div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      $("ruleBox").innerHTML = html;
+    }
+
+    function renderDetail() {
+      const row = state.selected;
+      if (!row) {
+        $("detailBox").innerHTML = "請點左側任一股票列";
+        return;
+      }
+
+      const catRule = state.pool30Rules[row.category] || {};
+      const reasonList = Array.isArray(row.filter_reason) ? row.filter_reason : [];
+
+      $("detailBox").innerHTML = `
+        <div class="detail-section">
+          <h3>${escapeHtml(row.symbol)} ｜ ${escapeHtml(row.name || "")}</h3>
+          <div class="legend">
+            <span class="chip gray">${escapeHtml(row.category)}</span>
+            <span class="chip">${escapeHtml(row.filter_result || "-")}</span>
+            <span class="chip">Rank ${row.rank ?? "-"}</span>
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <h3>分數拆解</h3>
+          <div class="detail-grid">
+            <div class="detail-card"><div class="k">M1 Score</div><div class="v ${scoreClass(row.M1_score)}">${fmt(row.M1_score)}</div></div>
+            <div class="detail-card"><div class="k">Raw M1</div><div class="v">${fmt(row.raw_m1_score)}</div></div>
+            <div class="detail-card"><div class="k">Capex</div><div class="v ${scoreClass(row.breakdown?.capex_score)}">${fmt(row.breakdown?.capex_score)}</div></div>
+            <div class="detail-card"><div class="k">M3</div><div class="v ${scoreClass(row.breakdown?.m3_score)}">${fmt(row.breakdown?.m3_score)}</div></div>
+            <div class="detail-card"><div class="k">M7</div><div class="v ${scoreClass(row.breakdown?.m7_score)}">${fmt(row.breakdown?.m7_score)}</div></div>
+            <div class="detail-card"><div class="k">Vol Ratio</div><div class="v">${fmt(row.volume_ratio)}</div></div>
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <h3>Pool30 對標</h3>
+          <div class="detail-grid">
+            <div class="detail-card"><div class="k">Pool30 P75</div><div class="v">${fmt(catRule.strong)}</div></div>
+            <div class="detail-card"><div class="k">Pool30 P50</div><div class="v">${fmt(catRule.pass)}</div></div>
+            <div class="detail-card"><div class="k">Pool30 P25</div><div class="v">${fmt(catRule.watch)}</div></div>
+            <div class="detail-card"><div class="k">Strictness</div><div class="v">${escapeHtml(catRule.strictness || "-")}</div></div>
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <h3>Why</h3>
+          ${reasonList.length ? `<ul class="list">${reasonList.map(x => `<li>${escapeHtml(x)}</li>`).join("")}</ul>` : `<div class="muted">-</div>`}
+        </div>
+
+        <div class="detail-section">
+          <h3>市場動能</h3>
+          <div class="detail-grid">
+            <div class="detail-card"><div class="k">1D</div><div class="v">${fmtPct(row.ret_1d)}</div></div>
+            <div class="detail-card"><div class="k">1W</div><div class="v">${fmtPct(row.ret_1w)}</div></div>
+            <div class="detail-card"><div class="k">1M</div><div class="v">${fmtPct(row.ret_1m)}</div></div>
+            <div class="detail-card"><div class="k">3M</div><div class="v">${fmtPct(row.ret_3m)}</div></div>
+            <div class="detail-card"><div class="k">6M</div><div class="v">${fmtPct(row.ret_6m)}</div></div>
+            <div class="detail-card"><div class="k">12M</div><div class="v">${fmtPct(row.ret_12m)}</div></div>
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <h3>Raw Data</h3>
+          <pre>${escapeHtml(JSON.stringify({
+            symbol: row.symbol,
+            category: row.category,
+            sector: row.sector,
+            style: row.style,
+            breakdown: row.breakdown,
+            filter_result: row.filter_result,
+            filter_reason: row.filter_reason
+          }, null, 2))}</pre>
+        </div>
+      `;
+    }
+
+    function refreshView() {
+      applyViewFilter();
+      renderSummary();
+      renderTable();
+      if (!state.selected && state.filteredRows.length) {
+        state.selected = state.filteredRows[0];
+      } else if (state.selected) {
+        const keep = state.candidateScored.find(x => x.symbol === state.selected.symbol);
+        state.selected = keep || state.filteredRows[0] || null;
+      }
+      renderDetail();
+      renderRuleBox();
+    }
+
+    async function loadAll() {
+      try {
+        $("tableNote").textContent = "載入中...";
+
+        const [candidateRaw, pool30Raw, fundamentalMap] = await Promise.all([
+          fetchJSON("data/m1/m1_candidate_80.json"),
+          fetchJSON("data/pool30.json"),
+          fetchJSON("data/m1/m1_fundamental_map.json")
+        ]);
+
+        state.candidateRaw = Array.isArray(candidateRaw) ? candidateRaw : [];
+        state.pool30Raw = Array.isArray(pool30Raw) ? pool30Raw : [];
+        state.fundamentalMap = fundamentalMap || {};
+
+        state.candidatePrepared = prepareRows(state.candidateRaw, state.fundamentalMap);
+
+        const pool30Set = new Set(state.pool30Raw.map(x => String(x.symbol || "").toUpperCase().trim()));
+        state.pool30Prepared = state.candidatePrepared.filter(x => pool30Set.has(x.symbol));
+
+        const candidateEngine = runM1Engine(state.candidatePrepared);
+        const pool30Engine = runM1Engine(state.pool30Prepared);
+
+        state.candidateScored = mergeEngineOutput(state.candidatePrepared, candidateEngine);
+        state.pool30Scored = mergeEngineOutput(state.pool30Prepared, pool30Engine);
+
+        state.pool30Rules = buildPool30Rules(state.pool30Scored);
+        state.filterConfig = buildDefaultFilterConfig(state.pool30Rules);
+
+        state.candidateScored = applyFilter(state.candidateScored, state.filterConfig, state.pool30Rules);
+
+        buildCategoryOptions(state.candidateScored);
+        refreshView();
+      } catch (err) {
+        console.error(err);
+        $("tbody").innerHTML = `<tr><td colspan="19" class="bad">載入失敗：${escapeHtml(String(err.message || err))}</td></tr>`;
+        $("detailBox").innerHTML = `<div class="bad">載入失敗：${escapeHtml(String(err.message || err))}</div>`;
+        $("ruleBox").innerHTML = `<div class="bad">載入失敗</div>`;
+        $("tableNote").textContent = "載入失敗";
+      }
+    }
+
+    $("searchInput").addEventListener("input", refreshView);
+    $("categoryFilter").addEventListener("change", refreshView);
+    $("resultFilter").addEventListener("change", refreshView);
+    $("sortFilter").addEventListener("change", refreshView);
+    $("reloadBtn").addEventListener("click", loadAll);
+    $("showAllBtn").addEventListener("click", () => {
+      $("searchInput").value = "";
+      $("categoryFilter").value = "ALL";
+      $("resultFilter").value = "ALL";
+      $("sortFilter").value = "m1_desc";
+      refreshView();
+    });
+
+    loadAll();
   </script>
 </body>
 </html>
