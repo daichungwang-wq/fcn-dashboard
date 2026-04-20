@@ -70,12 +70,12 @@
   {"symbol":"JNJ","category":"defensive","sector":"HEALTHCARE","style":["low_vol"]},
   {"symbol":"PFE","category":"income","sector":"HEALTHCARE","style":["cashflow"]},
   {"symbol":"ABBV","category":"income","sector":"HEALTHCARE","style":["cashflow"]},
-  {"symbol":"UNH","category":"core","sector":"HEALTHCARE","style":["quality"]},
+  {"symbol":"UNH","category":"income","sector":"HEALTHCARE","style":["quality"]},
 
   {"symbol":"JPM","category":"defensive","sector":"BANK","style":["low_vol"]},
   {"symbol":"GS","category":"growth","sector":"BANK","style":["cyclical"]},
   {"symbol":"MS","category":"growth","sector":"BANK","style":["cyclical"]},
-  {"symbol":"BLK","category":"core","sector":"ASSET_MANAGEMENT","style":["quality"]},
+  {"symbol":"BLK","category":"defensive","sector":"ASSET_MANAGEMENT","style":["quality"]},
 
   {"symbol":"QQQ","category":"defensive","sector":"ETF","style":["index"]},
   {"symbol":"SPY","category":"defensive","sector":"ETF","style":["index"]},
@@ -100,7 +100,7 @@
   {"symbol":"PDD","category":"growth","sector":"ECOMMERCE","style":["growth"]},
 
   
-  {"symbol":"REGN","category":"core","sector":"HEALTHCARE","style":["quality"]},
+  {"symbol":"REGN","category":"income","sector":"HEALTHCARE","style":["quality"]},
   {"symbol":"VRTX","category":"core","sector":"HEALTHCARE","style":["growth"]},
   {"symbol":"ISRG","category":"core","sector":"HEALTHCARE","style":["moat"]},
 
