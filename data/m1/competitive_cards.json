@@ -1,0 +1,302 @@
+{
+  "NVDA": {
+    "name": "NVIDIA",
+    "category": "growth",
+    "competitive_analysis": {
+      "competitive_position": {
+        "sector_role": "AI GPU 平台霸主",
+        "industry_rank": "Tier 1",
+        "business_model_type": "Platform + Ecosystem",
+        "market_scope": "global"
+      },
+      "direct_competitors": [
+        {"symbol": "AMD", "name": "AMD", "why_compete": "GPU / AI 加速器"},
+        {"symbol": "INTC", "name": "Intel", "why_compete": "資料中心晶片"}
+      ],
+      "indirect_competitors": [
+        {"name": "Google TPU", "type": "in-house ASIC", "risk_level": "medium"},
+        {"name": "Amazon Trainium", "type": "cloud ASIC", "risk_level": "medium"}
+      ],
+      "moat_analysis": {
+        "scale": 9,
+        "cost_advantage": 6,
+        "technology": 10,
+        "brand_ecosystem": 10,
+        "customer_stickiness": 9,
+        "scarcity_or_regulation": 7,
+        "summary": "CUDA生態系與AI軟硬整合形成極高技術與生態護城河"
+      },
+      "why_it_wins": [
+        "CUDA生態系難以替代",
+        "AI訓練標準平台",
+        "軟硬整合能力強"
+      ],
+      "why_it_can_lose": [
+        "ASIC替代趨勢",
+        "雲端大廠自研晶片",
+        "過高估值風險"
+      ],
+      "industry_structure": {
+        "structure_type": "platform-led oligopoly",
+        "pricing_power": "high",
+        "entry_barrier": "very high",
+        "competition_intensity": "medium",
+        "summary": "AI加速器市場高度集中於少數玩家"
+      },
+      "competition_trend_1y_3y": {
+        "direction": "slightly weakening",
+        "drivers": ["AI需求爆發"],
+        "threats": ["ASIC替代", "客戶自研"]
+      },
+      "fcn_translation": {
+        "fcn_role": "high-yield core",
+        "worst_of_risk": "medium",
+        "structural_decline_risk": "low",
+        "suitable_for_owning": true,
+        "suitable_for_high_yield_fcn": true,
+        "comment": "高波動高收益主體，但需控制集中度"
+      },
+      "competitive_verdict": "AI時代核心平台，短期優勢強但長期替代風險上升"
+    }
+  },
+
+  "TSM": {
+    "name": "TSMC",
+    "category": "core",
+    "competitive_analysis": {
+      "competitive_position": {
+        "sector_role": "先進製程代工龍頭",
+        "industry_rank": "Tier 1",
+        "business_model_type": "Manufacturing Platform",
+        "market_scope": "global"
+      },
+      "direct_competitors": [
+        {"symbol": "INTC", "name": "Intel Foundry", "why_compete": "代工市場"},
+        {"symbol": "Samsung", "name": "Samsung Foundry", "why_compete": "先進製程"}
+      ],
+      "indirect_competitors": [
+        {"name": "Geopolitics", "type": "macro risk", "risk_level": "high"}
+      ],
+      "moat_analysis": {
+        "scale": 10,
+        "cost_advantage": 9,
+        "technology": 10,
+        "brand_ecosystem": 8,
+        "customer_stickiness": 9,
+        "scarcity_or_regulation": 9,
+        "summary": "製程領先與良率優勢形成無可替代地位"
+      },
+      "why_it_wins": [
+        "製程領先",
+        "良率最高",
+        "客戶信任度高"
+      ],
+      "why_it_can_lose": [
+        "地緣政治風險",
+        "資本支出壓力",
+        "週期波動"
+      ],
+      "industry_structure": {
+        "structure_type": "oligopoly",
+        "pricing_power": "high",
+        "entry_barrier": "extreme",
+        "competition_intensity": "low",
+        "summary": "先進製程市場高度寡占"
+      },
+      "competition_trend_1y_3y": {
+        "direction": "stable",
+        "drivers": ["AI晶片需求"],
+        "threats": ["政治風險"]
+      },
+      "fcn_translation": {
+        "fcn_role": "core",
+        "worst_of_risk": "low",
+        "structural_decline_risk": "low",
+        "suitable_for_owning": true,
+        "suitable_for_high_yield_fcn": false,
+        "comment": "核心穩定資產，可長期持有"
+      },
+      "competitive_verdict": "全球晶圓代工核心基礎設施，競爭優勢極強"
+    }
+  },
+
+  "ORCL": {
+    "name": "Oracle",
+    "category": "core",
+    "competitive_analysis": {
+      "competitive_position": {
+        "sector_role": "企業資料庫 + 雲端轉型者",
+        "industry_rank": "Tier 2",
+        "business_model_type": "Software + Cloud",
+        "market_scope": "global"
+      },
+      "direct_competitors": [
+        {"symbol": "MSFT", "name": "Microsoft Azure", "why_compete": "雲端服務"},
+        {"symbol": "AMZN", "name": "AWS", "why_compete": "雲端基礎建設"}
+      ],
+      "indirect_competitors": [
+        {"name": "Open Source DB", "type": "technology substitution", "risk_level": "medium"}
+      ],
+      "moat_analysis": {
+        "scale": 7,
+        "cost_advantage": 6,
+        "technology": 7,
+        "brand_ecosystem": 7,
+        "customer_stickiness": 9,
+        "scarcity_or_regulation": 5,
+        "summary": "資料庫鎖定效應形成高客戶黏性"
+      },
+      "why_it_wins": [
+        "資料庫切換成本高",
+        "企業客戶黏著度高",
+        "雲端轉型帶動新成長"
+      ],
+      "why_it_can_lose": [
+        "雲端競爭落後",
+        "開源替代",
+        "成長不如 hyperscaler"
+      ],
+      "industry_structure": {
+        "structure_type": "competitive cloud oligopoly",
+        "pricing_power": "medium",
+        "entry_barrier": "medium",
+        "competition_intensity": "high",
+        "summary": "雲端市場競爭激烈"
+      },
+      "competition_trend_1y_3y": {
+        "direction": "slightly improving",
+        "drivers": ["AI雲需求"],
+        "threats": ["競爭激烈"]
+      },
+      "fcn_translation": {
+        "fcn_role": "balanced",
+        "worst_of_risk": "medium",
+        "structural_decline_risk": "low",
+        "suitable_for_owning": true,
+        "suitable_for_high_yield_fcn": true,
+        "comment": "穩定中帶成長，可作中間型配置"
+      },
+      "competitive_verdict": "轉型中的企業軟體公司，競爭壓力大但仍具護城河"
+    }
+  },
+
+  "PLD": {
+    "name": "Prologis",
+    "category": "defensive",
+    "competitive_analysis": {
+      "competitive_position": {
+        "sector_role": "全球物流地產平台領導者",
+        "industry_rank": "Tier 1",
+        "business_model_type": "Infrastructure Platform",
+        "market_scope": "global"
+      },
+      "direct_competitors": [
+        {"symbol": "REXR", "name": "Rexford Industrial Realty", "why_compete": "區域物流地產"},
+        {"symbol": "TRNO", "name": "Terreno Realty", "why_compete": "沿海物流資產"}
+      ],
+      "indirect_competitors": [
+        {"name": "Amazon", "type": "self-build logistics", "risk_level": "medium"}
+      ],
+      "moat_analysis": {
+        "scale": 9,
+        "cost_advantage": 7,
+        "technology": 3,
+        "brand_ecosystem": 6,
+        "customer_stickiness": 8,
+        "scarcity_or_regulation": 9,
+        "summary": "地段稀缺與全球網絡形成護城河"
+      },
+      "why_it_wins": [
+        "核心地段資產",
+        "全球租戶網絡",
+        "低融資成本"
+      ],
+      "why_it_can_lose": [
+        "利率風險",
+        "供給增加",
+        "客戶自建倉儲"
+      ],
+      "industry_structure": {
+        "structure_type": "capital-intensive",
+        "pricing_power": "medium",
+        "entry_barrier": "high",
+        "competition_intensity": "medium",
+        "summary": "資本密集與地段限制市場"
+      },
+      "competition_trend_1y_3y": {
+        "direction": "stable",
+        "drivers": ["供應鏈重組"],
+        "threats": ["利率與供給"]
+      },
+      "fcn_translation": {
+        "fcn_role": "stabilizer",
+        "worst_of_risk": "low",
+        "structural_decline_risk": "low",
+        "suitable_for_owning": true,
+        "suitable_for_high_yield_fcn": false,
+        "comment": "穩定器角色"
+      },
+      "competitive_verdict": "全球物流地產龍頭，適合防守配置"
+    }
+  },
+
+  "COIN": {
+    "name": "Coinbase",
+    "category": "speculative",
+    "competitive_analysis": {
+      "competitive_position": {
+        "sector_role": "美國加密交易平台龍頭",
+        "industry_rank": "Tier 1",
+        "business_model_type": "Exchange Platform",
+        "market_scope": "US"
+      },
+      "direct_competitors": [
+        {"symbol": "BINANCE", "name": "Binance", "why_compete": "全球交易所"},
+        {"symbol": "HOOD", "name": "Robinhood", "why_compete": "零售交易"}
+      ],
+      "indirect_competitors": [
+        {"name": "DeFi", "type": "decentralized trading", "risk_level": "high"}
+      ],
+      "moat_analysis": {
+        "scale": 7,
+        "cost_advantage": 5,
+        "technology": 6,
+        "brand_ecosystem": 7,
+        "customer_stickiness": 5,
+        "scarcity_or_regulation": 6,
+        "summary": "法規合規與品牌是主要護城河"
+      },
+      "why_it_wins": [
+        "美國合規優勢",
+        "品牌信任度高",
+        "機構資金入口"
+      ],
+      "why_it_can_lose": [
+        "加密市場波動",
+        "DeFi替代",
+        "監管不確定"
+      ],
+      "industry_structure": {
+        "structure_type": "highly cyclical",
+        "pricing_power": "low",
+        "entry_barrier": "medium",
+        "competition_intensity": "high",
+        "summary": "高度競爭與波動市場"
+      },
+      "competition_trend_1y_3y": {
+        "direction": "volatile",
+        "drivers": ["加密 adoption"],
+        "threats": ["監管與DeFi"]
+      },
+      "fcn_translation": {
+        "fcn_role": "high-yield risky",
+        "worst_of_risk": "high",
+        "structural_decline_risk": "medium",
+        "suitable_for_owning": false,
+        "suitable_for_high_yield_fcn": true,
+        "comment": "高收益但高風險"
+      },
+      "competitive_verdict": "高波動平台型公司，強烈受市場情緒影響"
+    }
+  }
+}
