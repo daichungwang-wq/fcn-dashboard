@@ -902,61 +902,63 @@
   }).join("");
 }
     function renderRuleCards() {
-      $("ruleCards").innerHTML = CATEGORY_ORDER.map(cat => {
-        const baseRule = state.filterConfigBase[cat] || {};
-        const poolRule = state.pool30Rules[cat] || {};
-        const baseRows = state.candidateScoredBase.filter(x => x.category === cat);
-        const previewRows = state.candidateScoredPreview.filter(x => x.category === cat);
+  $("ruleCards").innerHTML = CATEGORY_ORDER.map(cat => {
+    const previewRule = state.filterConfigPreview[cat] || state.filterConfigBase[cat] || {};
+    const baseRule = state.filterConfigBase[cat] || {};
+    const poolRule = state.pool30Rules[cat] || {};
+    const baseRows = state.candidateScoredBase.filter(x => x.category === cat);
+    const previewRows = state.candidateScoredPreview.filter(x => x.category === cat);
 
-        const aiBefore = countAiRecommend(baseRows);
-        const aiAfter = countAiRecommend(previewRows);
+    const aiBefore = countAiRecommend(baseRows);
+    const aiAfter = countAiRecommend(previewRows);
 
-        return `
-          <div class="rule-card">
-            <h3>${escapeHtml(cat.toUpperCase())}</h3>
+    return `
+      <div class="rule-card">
+        <h3>${escapeHtml(cat.toUpperCase())}</h3>
 
-            <div class="row">
-              <label>Preset</label>
-              <select id="preset_${cat}">
-                <option value="strict" ${baseRule.preset === "strict" ? "selected" : ""}>strict</option>
-                <option value="medium" ${baseRule.preset === "medium" ? "selected" : ""}>medium</option>
-                <option value="loose" ${baseRule.preset === "loose" ? "selected" : ""}>loose</option>
-                <option value="custom" ${baseRule.preset === "custom" ? "selected" : ""}>custom</option>
-              </select>
-            </div>
+        <div class="row">
+          <label>Preset</label>
+          <select id="preset_${cat}">
+            <option value="strict" ${previewRule.preset === "strict" ? "selected" : ""}>strict</option>
+            <option value="medium" ${previewRule.preset === "medium" ? "selected" : ""}>medium</option>
+            <option value="loose" ${previewRule.preset === "loose" ? "selected" : ""}>loose</option>
+            <option value="custom" ${previewRule.preset === "custom" ? "selected" : ""}>custom</option>
+          </select>
+        </div>
 
-            <div class="row">
-              <label>Strong</label>
-              <input id="strong_${cat}" type="number" step="0.01" value="${fmt(baseRule.strong)}" />
-            </div>
+        <div class="row">
+          <label>Strong</label>
+          <input id="strong_${cat}" type="number" step="0.01" value="${fmt(previewRule.strong)}" />
+        </div>
 
-            <div class="row">
-              <label>Pass</label>
-              <input id="pass_${cat}" type="number" step="0.01" value="${fmt(baseRule.pass)}" />
-            </div>
+        <div class="row">
+          <label>Pass</label>
+          <input id="pass_${cat}" type="number" step="0.01" value="${fmt(previewRule.pass)}" />
+        </div>
 
-            <div class="row">
-              <label>Watch</label>
-              <input id="watch_${cat}" type="number" step="0.01" value="${fmt(baseRule.watch)}" />
-            </div>
+        <div class="row">
+          <label>Watch</label>
+          <input id="watch_${cat}" type="number" step="0.01" value="${fmt(previewRule.watch)}" />
+        </div>
 
-            <div class="rule-meta">
-              pool30 count：${poolRule.count || 0}<br>
-              p50 / p75 / CV：${fmt(poolRule.pass)} / ${fmt(poolRule.strong)} / ${fmt(poolRule.cv)}<br>
-              strictness：${escapeHtml(poolRule.strictness || "-")}<br>
-              Candidate：${baseRows.length} ｜ AI推薦：${aiBefore} → ${aiAfter}
-            </div>
+        <div class="rule-meta">
+          pool30 count：${poolRule.count || 0}<br>
+          p50 / p75 / CV：${fmt(poolRule.pass)} / ${fmt(poolRule.strong)} / ${fmt(poolRule.cv)}<br>
+          strictness：${escapeHtml(poolRule.strictness || "-")}<br>
+          Base：${baseRule.preset || "-"} ｜ Preview：${previewRule.preset || "-"}<br>
+          Candidate：${baseRows.length} ｜ AI推薦：${aiBefore} → ${aiAfter}
+        </div>
 
-            <div class="rule-actions">
-              <button class="btn small" data-apply-cat="${cat}">套用本類</button>
-              <button class="btn ghost small" data-reset-cat="${cat}">重置本類</button>
-            </div>
-          </div>
-        `;
-      }).join("");
+        <div class="rule-actions">
+          <button class="btn small" data-apply-cat="${cat}">套用本類</button>
+          <button class="btn ghost small" data-reset-cat="${cat}">重置本類</button>
+        </div>
+      </div>
+    `;
+  }).join("");
 
-      bindRuleEvents();
-    }
+  bindRuleEvents();
+}
 
     function renderCompareSection() {
       const beforeAi = countAiRecommend(state.candidateScoredBase);
