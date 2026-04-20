@@ -1,100 +1,142 @@
 {
-  "updated_at": "2026-04-19 23:41",
+  "updated_at": "2026-04-20 23:50",
   "summary": {
     "active_fcn_count": 24,
     "top_risk_code": "FCN710H",
     "worst_of": "ORCL",
-    "market_env": "保守做",
-    "main_conclusion": "今天可保守做 FCN，建議以 TSM / MSFT 為主，避免進攻型標的過重。"
+    "market_env": "可做",
+    "main_conclusion": "今天可做 FCN，優先配置 NVDA / AVGO / TSM / MSFT，並持續監控 ORCL / COIN 風險集中。"
   },
   "morning_brief": {
     "international_news": [
       {
-        "title": "Britain's youngest F1 driver on his debut season so far - and learning to skateboard",
-        "summary": "The youngest ever British F1 driver is looks forward to a lifelong dream of racing at Silverstone.",
-        "content": "Arvid Lindblad was supposed to be driving at 200mph around the streets of Jeddah in the Saudi Arabian Grand Prix this weekend. But Britain's youngest Formula 1 driver's had an unexpected month off j… [+4170 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "When a far-right bully encounters a celebrated Israeli comedian",
+        "summary": "The encounter between Mordechai David and comedian Idan Alterman is a watershed moment. Here then is the true…",
+        "content": "The encounter between Mordechai David and comedian Idan Alterman is a watershed moment. Here then is the true watershed: it revolves around the question of who is a hero, and who looks into the mirro… [+420 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "WrestleMania 42 results: Paige returns after Nicki Bella injury, wins women's tag team titles",
-        "summary": "A longtime fan-favorite and the subject of the film \"Fighting with My Family,\" Paige hadn't wrestled in WWE f…",
-        "content": "The first surprise of WrestleMania 42 weekend came at Night 1 in Allegiant Stadium in Las Vegas when Paige made her WWE return. After an injury to Nicki Bella, sister Brie Bella called on the aid of … [+1722 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "Expert Tells 60 Minutes That Thousands of U.S. Troops Would Be Needed To Retrieve Iran’s Highly-Enriched Uranium",
+        "summary": "A nuclear expert said the U.S. would need to send thousands of troops into Iran if it wanted to retrieve that…",
+        "content": "A nuclear expert told 60 Minutes on Sunday that the U.S. would need to send thousands of troops deep into Iran if it wanted to retrieve that country’s stash of highly enriched uranium (HEU). Andrew … [+2111 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Teams promoted to Premier League: Clubs coming up from EFL Championship in 2026",
-        "summary": "For clubs in the lower leagues of England, earning a spot in the Premier League is like reaching the promised…",
-        "content": "Teams promoted to Premier League: Clubs coming up from EFL Championship in 2026 originally appeared on The Sporting News. Add The Sporting News as a Preferred Source by clicking here. For clubs in t… [+4277 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "Husker Baseball SWEEPS #12 USC",
+        "summary": "A second straight run rule victory sends a statement to the rest of the Big Ten.",
+        "content": "WHAT A WEEKEND!! Nebraska baseball sweeps USC and solidly plants itself in 2nd place in the Big Ten standings. This is the first sweep of a ranked opponent in Haymarket Park since that legendary 201… [+5689 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Behind 30 from Jamal Murray, Nikola Jokic triple-double, Nuggets take Game 1 from Timberwolves 116-105",
-        "summary": "What was anticipated to be the best series of the first round lived up to the billing with a physical Game 1.",
-        "content": "Game 1 showed why this was the most anticipated first-round series. It was physical. It was intense. And these teams do not like each other, meeting in the playoffs for the third time in four years. … [+2741 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "Asia markets set to open higher amid renewed Iran-U.S. tensions",
+        "summary": "Asia-Pacific markets were set to open higher Monday as a U.S. seizure of an Iranian vessel deepened tensions,…",
+        "content": "Currency dealers monitor exchange rates as an electronic screen (top) shows South Korea's benchmark stock index (KOSPI) in a foreign exchange dealing room at the Hana Bank headquarters in Seoul on Ma… [+2191 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Detroit Tigers, Game 21: One thing I loved, one thing I didn't",
-        "summary": "The News' Tony Paul gives his quick takes on the Tigers' game against the Red Sox on Saturday.",
-        "content": "The News' Tony Paul gives his quick takes on the Tigers' 4-1 victory over the Red Sox on Saturday: Kevin McGonigle had two more hits Saturday, giving him the fifth multi-hit game of his young career… [+2686 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "Mets Carlos Mendoza 'nobody's going to feel sorry for us'",
+        "summary": "New York Mets manager Carlos Mendoza has no answers for his team's struggles, saying, \"nobody is going to fee…",
+        "content": "Mets Carlos Mendoza 'nobody's going to feel sorry for us' originally appeared on The Sporting News. Add The Sporting News as a Preferred Source by clicking here. The New York Mets free fall continue… [+1375 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Quietum Plus Claims Evaluated: The Time-Tested Ear Ringing Relief Formula for Tinnitus Support Under Investigation",
-        "summary": "Quietum Plus claims evaluated: tinnitus support positioning, ear ringing relief ingredients, proprietary blen…",
-        "content": "Aurora, CO, April 18, 2026 (GLOBE NEWSWIRE) -- This report provides an informational overview of Quietum Plus, a dietary supplement positioned within the hearing support category. It presents how the… [+23937 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "Worley flags $30–40m EBITA hit from Middle East conflict in FY26 outlook",
+        "summary": "Worley flags a $30–40 million EBITA hit for FY26 from Middle East disruptions, but keeps core targets and foc…",
+        "content": "The Worley Ltd (ASX: WOR) share price is in focus today after the company warned of a $3040 million hit to FY26 underlying EBITA from the ongoing conflict in the Middle East, and said it is now unlik… [+1984 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
+        "affects_fcn": true,
+        "impact_score": -1
+      },
+      {
+        "title": "IMF endorses CBN recapitalisation as buffers strengthen banks",
+        "summary": "The IMF endorses Nigeria’s bank recapitalization, a key CBN reform. Learn how stronger capital buffers enhanc…",
+        "content": "The International Monetary Fund has endorsed Nigerias bank recapitalisation, noting that stronger capital buffers are enhancing resilience, stabilising the financial system, and positioning the econo… [+12897 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Arizona softball evens series with Oklahoma State in dominant run-rule fashion",
-        "summary": "After six home runs on Friday, there were none on Saturday",
-        "content": "Saturday couldnt have been more different than Friday afternoon for the No. 16 Arizona Wildcats and No. 21 Oklahoma State Cowgirls. OSU walked it off in the 10th inning of the series opener after sig… [+9280 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "Petrol price drop in doubt after Hormuz disruption",
+        "summary": "Iran’s reclosure of the Strait of Hormuz has dashed hopes for a significant petrol price drop in Nigeria, rev…",
+        "content": "The decision by Iran to reclose the Strait of Hormuz has dampened hopes that fuel prices would crash in Nigeria. The Strait of Hormuz was opened on Friday following a ceasefire deal between Iran and… [+2964 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "John Portis’ One & Done 2026 NFL Mock Draft: Washington Commanders trade up.",
-        "summary": "A different look at how Washington might approach the NFL Draft.",
-        "content": "Full disclosure, I am not a Draftnik at heart. You wont see me posting the results of my latest mock draft simulator or advertising recently updated rankings. I do find the process interesting, enjoy… [+7546 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "Time to shut out sycophants, economic marauders",
+        "summary": "Discover why effective Nigerian leadership requires shutting out sycophants and economic marauders to solve t…",
+        "content": "While pondering over the current sub-par economic situation of Nigeria, despite six decades of post-independence policy-making and political rhetoric amid abundant natural and human resources, I samp… [+7632 chars]｜分類：全球經濟｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Trump-Linked Crypto Venture Faces Questions After Ties To Sanctioned Network Revealed",
-        "summary": "A cryptocurrency project co-founded by President Donald Trump is facing scrutiny following a report linking a…",
-        "content": "Benzinga and Yahoo Finance LLC may earn commission or revenue on some items through the links below. A cryptocurrency project co-founded by President Donald Trump is facing scrutiny following a repo… [+10762 chars]｜分類：全球經濟｜解讀：影響有限",
+        "title": "Reforms saved Nigeria from severe harship after global shocks – CBN",
+        "summary": "Nigeria’s recent economic reforms have cushioned the country from severe hardship caused by global shocks, ac…",
+        "content": "The reforms implemented by the Central Bank of Nigeria have helped cushion the impact of global economic shocks on Nigerians, preventing more severe hardship despite ongoing external pressures, the a… [+4661 chars]｜分類：全球經濟｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Looking for ASX ETFs to buy and hold? Here are 3 top picks",
-        "summary": "These funds are highly rated for good reason. Let's see what they offer. The post Looking for ASX ETFs to buy…",
-        "content": "Finding investments you can buy and hold is about identifying trends that are likely to matter not just next year, but five or ten years from now. The good news is that ASX exchange traded funds (ET… [+2514 chars]｜分類：全球經濟｜解讀：影響有限",
+        "title": "China’s GDP ratio to US drops amid real estate crisis",
+        "summary": "China's economic challenges may prompt increased government intervention, impacting global markets and alteri…",
+        "content": "China’s GDP ratio to the US has fallen from 78% to 64%, and the real estate crisis is making things worse. The market for China GDP growth in Q1 2026 sits at ? YES, with expectations likely to drop… [+1365 chars]｜分類：全球經濟｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "brainvault added to PyPI",
-        "summary": "Personal memory layer for Claude Code and Cursor — knows who you are, what you've built, how you think",
-        "content": "SQLite + FTS5 + optional semantic search + MCP. Zero infrastructure. One install command. Table of Contents The Problem Every AI coding session starts cold. You open Claude Code or Cursor even if … [+41089 chars]｜分類：全球經濟｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "The jet-fuel surge is making global flight connections disappear",
-        "summary": "The International Energy Agency says Europe has “maybe six weeks” of supplies left.",
-        "content": "Airline passengers should brace for more aggravation in the next few months as carriers around the world deepen cancellations and ground planes to cope with stratospheric increases in jet-fuel prices… [+5929 chars]｜分類：全球經濟｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
+        "title": "Oil Jumps After US Seizure of Iranian Ship Escalates Conflict",
+        "summary": "Oil soared after the US Navy seized an Iranian ship during a chaotic weekend that saw Tehran firing at vessel…",
+        "content": "(Bloomberg) Oil soared after the US Navy seized an Iranian ship during a chaotic weekend that saw Tehran firing at vessels and reimposing controls in the Strait of Hormuz just hours after opening the… [+3967 chars]｜分類：全球經濟｜解讀：地緣風險升高，需留意市場波動擴大",
+        "affects_fcn": true,
+        "impact_score": -1
       }
     ],
     "financial_news": [
+      {
+        "title": "Next Catalyst for Treasury Bonds Is Named Kevin Warsh",
+        "summary": "Bond traders who’ve grown more optimistic about an end to the Iran conflict see their next catalyst coming fr…",
+        "content": "The Fed should be on the sidelines for the rest of the year, unless we get a negative employment surprise, said Jack McIntyre, portfolio manager at Brandywine Global Investment Management, who has be… [+3275 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
+        "affects_fcn": true,
+        "impact_score": 1
+      },
+      {
+        "title": "I want to retire but I have to keep working so my adult kids have insurance. What should I do?",
+        "summary": "You have done the hard part: saved enough to retire. But one line item stops you cold: your adult kids still…",
+        "content": "<ul><li>The ACA subsidy cliff returned in 2026 when enhanced credits expired; if household income exceeds 400% of federal poverty level ($128,600 for a family of four, $84,600 for a couple), you lose… [+6441 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
+        "affects_fcn": true,
+        "impact_score": 1
+      },
+      {
+        "title": "Bitcoin Holds Steady Above $74,000 as U.S. Inflation Climbs to 3.3%",
+        "summary": "Bitcoin traded firmly last week, extending its seven-day rally to nearly 9%. The move came amid fresh macroec…",
+        "content": "Add ZyCrypto News On GoogleBitcoin traded firmly last week, extending its seven-day rally to nearly 9%. The move came amid fresh macroeconomic data from the U.S. Bureau of Labor Statistics last Frid… [+2727 chars]｜分類：Fed / 利率｜解讀：影響有限",
+        "affects_fcn": true,
+        "impact_score": 0
+      },
+      {
+        "title": "Today’s News in a Nutshell",
+        "summary": "KATHMANDU: Khabarhub brings you a glimpse of major developments of the day in Nepal, including politics, busi…",
+        "content": "KATHMANDU: Khabarhub brings you a glimpse of major developments of the day in Nepal, including politics, business/economy, sports, entertainment, and more. Deuba faction dissatisfied with Supreme Co… [+21095 chars]｜分類：Fed / 利率｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Germany's crime figures: Comparing apples to oranges?",
+        "summary": "Is it true that the crime rate in Germany is higher among immigrants? Statistics suggest as much, but numbers…",
+        "content": "Ahead of the presentation of the 2025 figures for crime in Germany by the Federal Criminal Police Office (BKA), Susann Prätor has shared her thoughts on the issue of nationality and statistics. She i… [+4918 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
+        "affects_fcn": true,
+        "impact_score": 1
+      },
+      {
+        "title": "German crime figures: Are migrants unfairly targeted?",
+        "summary": "Is it true that the crime rate in Germany is higher among immigrants? Statistics suggest as much, but numbers…",
+        "content": "Ahead of the presentation of the 2025 figures for crime in Germany by the Federal Criminal Police Office (BKA), Susann Prätor has shared her thoughts on the issue of nationality and statistics. She i… [+4571 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
+        "affects_fcn": true,
+        "impact_score": 1
+      },
       {
         "title": "The Three Numbers That Determine If Your Social Security Gets Taxed",
         "summary": "Most retirees know Social Security can be taxed. Fewer know what triggers it. The formula comes down to three…",
@@ -103,137 +145,95 @@
         "impact_score": 0
       },
       {
-        "title": "Why Kevin Warsh should become Bitcoin’s most impactful Fed chair yet",
-        "summary": "Kevin Warsh is set to become the first Federal Reserve chair with disclosed crypto holdings, and the first wh…",
-        "content": "Kevin Warsh is set to become the first Federal Reserve chair with disclosed crypto holdings, and the first whose policy instincts could still squeeze the sector harder than his predecessors. Most Am… [+6900 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
-        "affects_fcn": true,
-        "impact_score": 1
-      },
-      {
-        "title": "Gold surges on Hormuz news: Here’s what comes next",
-        "summary": "The Strait of Hormuz just got a little less scary. Gold liked what it heard. Spot gold rose approximately 1.0…",
-        "content": "The Strait of Hormuz just got a little less scary. Gold liked what it heard. Spot gold rose approximately 1.0% to $4,838.50 an ounce on April 17 after Iran's foreign ministry declared the Strait \"co… [+5945 chars]｜分類：Fed / 利率｜解讀：影響有限",
+        "title": "Asia markets set to open higher amid renewed Iran-U.S. tensions",
+        "summary": "Asia-Pacific markets were set to open higher Monday as a U.S. seizure of an Iranian vessel deepened tensions,…",
+        "content": "Currency dealers monitor exchange rates as an electronic screen (top) shows South Korea's benchmark stock index (KOSPI) in a foreign exchange dealing room at the Hana Bank headquarters in Seoul on Ma… [+2191 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Record U.S. drought sparks fears about wildfires, water and food prices",
-        "summary": "Meteorologists said the drought is a bad sign for the upcoming wildfire season, food prices and existing wate…",
-        "content": "Drought in the contiguous United States has reached record levels for this time of year, weather data shows. Meteorologists said it's a bad sign for the upcoming wildfire season, food prices and west… [+4683 chars]｜分類：Fed / 利率｜解讀：影響有限",
+        "title": "[SnS, AC] $5.51* | 300-Ct Plackers Micro Line Dental Floss Picks (Fresh Mint) at Amazon (1 replies)",
+        "summary": "Amazon [amazon.com] has 300-Ct Plackers Micro Line Dental Floss Picks (Fresh Mint) for $6.88 - 15% when you '…",
+        "content": "Amazon[amazon.com] has 300-Ct Plackers Micro Line Dental Floss Picks (Fresh Mint) for $6.88 - 15% when you 'clip' the coupon on product page - 5% when you check out via Subscribe &amp; Save = $5.51.S… [+542 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Bitcoin now has just 4 days before ceasefire deadline risks price reversal with Hormuz closed again",
-        "summary": "Iran's Friday announcement that the Strait of Hormuz would be opened during the current ceasefire triggered o…",
-        "content": "Iran's Friday announcement that the Strait of Hormuz would be opened during the current ceasefire triggered one of the sharpest oil reversals of the year. Brent crude fell 12.95% to $86.52, and WTI … [+9567 chars]｜分類：Fed / 利率｜解讀：地緣風險升高，需留意市場波動擴大",
+        "title": "Worley flags $30–40m EBITA hit from Middle East conflict in FY26 outlook",
+        "summary": "Worley flags a $30–40 million EBITA hit for FY26 from Middle East disruptions, but keeps core targets and foc…",
+        "content": "The Worley Ltd (ASX: WOR) share price is in focus today after the company warned of a $3040 million hit to FY26 underlying EBITA from the ongoing conflict in the Middle East, and said it is now unlik… [+1984 chars]｜分類：通膨 / 就業｜解讀：地緣風險升高，需留意市場波動擴大",
         "affects_fcn": true,
         "impact_score": -1
       },
       {
-        "title": "Akshaya Tritiya 2026 gold outlook: Which trends are expected to shape gold purchases this Akshaya Tritiya?",
-        "summary": "Gold's strong appeal continues for Akshaya Tritiya 2026. Investors are showing interest in coins and small ba…",
-        "content": "In recent years, gold has provided good returns, increasing investor interest in the precious metal. With Akshaya Tritiya falling on April 19, 2026, the tradition of purchasing actual gold has regain… [+4260 chars]｜分類：Fed / 利率｜解讀：影響有限",
+        "title": "Another Nigerian found dead in UK apartment",
+        "summary": "A Nigerian father of three, identified as Herbert, was found dead in his UK apartment, leaving his family app…",
+        "content": "Barely one week after a Nigerian mother of three died of cancer in the United Kingdom, another Nigerian father of three, identified simply as Herbert, has been found dead in his apartment. This is j… [+2637 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "FSB warns of ‘triple whammy’ crisis as private credit threat to global markets worsens",
-        "summary": "The Financial Stability Board (FSB) is warning that global markets could be heading toward a chain reaction i…",
-        "content": "The Financial Stability Board (FSB) is warning that global markets could be heading toward a chain reaction in which tighter funding, war-driven volatility, and deepening cracks in non-bank finance c… [+7752 chars]｜分類：Fed / 利率｜解讀：波動升高，FCN 敲入風險增加",
-        "affects_fcn": true,
-        "impact_score": -2
-      },
-      {
-        "title": "Spot Bitcoin ETFs attract nearly $1B in weekly inflows as risk sentiment improves",
-        "summary": "Bitcoin ETFs saw a surge in investor inflows and trading activity, with nearly $1 billion added in a week as…",
-        "content": "Spot Bitcoin exchange-traded funds (ETFs) recorded nearly $1 billion in net inflows over the past week, marking their strongest performance in more than three months as market sentiment shifts toward… [+2600 chars]｜分類：Fed / 利率｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "[SnS, AC] $6.71* | 20-Oz BetterBody Foods Organic Chia Seeds at Amazon (5 replies)",
-        "summary": "Amazon [amazon.com] has 20-Oz BetterBody Foods Organic Chia Seeds for $9.59 - 25% when you 'clip' the coupon…",
-        "content": "Amazon[amazon.com] has 20-Oz BetterBody Foods Organic Chia Seeds for $9.59 - 25% when you 'clip' the coupon on product page - 5% when you check out via Subscribe &amp; Save = $6.71.Shipping is free w… [+528 chars]｜分類：通膨 / 就業｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "One-Owner 2015 Porsche 911 Turbo S Cabriolet",
-        "summary": "This 2015 Porsche 911 Turbo S cabriolet is finished in black over Platinum Grey leather and has 47k miles. It…",
-        "content": "This 2015 Porsche 911 Turbo S cabriolet is finished in black over Platinum Grey leather and has 47k miles. It is powered by a twin-turbocharged 3.8L flat-six linked to a seven-speed PDK dual-clutch t… [+3356 chars]｜分類：通膨 / 就業｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Another ex-Trump attorney tapped to lead investigation of political foes: report",
-        "summary": "Another one of President Donald Trump's former attorneys has landed a gig investigating the president's polit…",
-        "content": "Another one of President Donald Trump's former attorneys has landed a gig investigating the president's political foes, according to a new report. The New York Times reported on Saturday, citing \"a… [+1329 chars]｜分類：通膨 / 就業｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Rockets star Kevin Durant to miss Game 1 of Lakers series",
-        "summary": "The lanky All-Star forward has a bruised right now that will force him to miss series opener, but coach Ime U…",
-        "content": "The Lakers aren't the only team beginning the playoffs with an injured star. The Houston Rockets will be without Kevin Durant in Game 1 against the Lakers on Saturday, Houston coach Ime Udoka said, … [+1721 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "title": "41k-Mile 1998 BMW M Roadster at No Reserve",
+        "summary": "This 1998 BMW M Roadster is a Canadian-market example that was brought from Ontario to the US in 2002 and now…",
+        "content": "This 1998 BMW M Roadster is a Canadian-market example that was brought from Ontario to the US in 2002 and now has 41k miles. Finished in Estoril Blue Metallic over Black and Estoril Blue Nappa leathe… [+2329 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       }
     ],
     "ai_trend": [
       {
-        "title": "visor-mcp 1.0.8",
-        "summary": "Skill-Orchestrated Context Intelligence Engine for AI coding agents",
+        "title": "soma-ai 2026.5.0",
+        "summary": "Behavioral monitoring and directive control for AI agents",
         "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "meta-agents-db added to PyPI",
-        "summary": "Agent-native database with causal memory, composite-scored recall, and storage-layer policy enforcement",
-        "content": "Project description Agent-native database with causal memory, composite-scored recall, and storage-layer policy enforcement. The first database designed for autonomous AI agents. Install pipinsta… [+4277 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "AI agents are slipping past enterprise defenses",
+        "summary": "Palo Alto Networks warns that the rise of AI agents — now operating with human-like identities and largely th…",
+        "content": "Keep me signed in Some subscribers prefer to save their log-in information so they do not have to enter their User ID and Password each time they visit the site. To activate this function, check the… [+285 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "argus-redteam 0.2.2",
-        "summary": "ARGUS — Autonomous AI Red Team Platform. 13 specialized agents attack AI systems, MCP servers, and multi-agen…",
+        "title": "brainctl 2.4.6",
+        "summary": "Context engineering for AI agents — persistent memory, knowledge graph, affect tracking, and MCP server. Sing…",
         "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "gsearch-mcp-cli 0.0.10",
-        "summary": "Google Search CLI and MCP server for AI agents",
+        "title": "Venture Capital Gravitates to Crypto-AI Combo Projects",
+        "summary": "Venture investors are favoring artificial intelligence/cryptocurrency projects over pure crypto firms. That’s…",
+        "content": "Venture investors are favoring artificial intelligence/cryptocurrency projects over pure crypto firms.Thats according to a report Saturday from CoinDesk, which says that 40 cents of every venture cap… [+2368 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：COIN｜建議：持續觀察",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "cartograph-cli 0.6.0",
+        "summary": "Widget library manager for AI agents — CLI",
         "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "mkalkere/agent-coordinator: Lightweight coordination server for autonomous AI coding agents — task claiming, file locks…",
-        "summary": "mkalkere/agent-coordinator: Lightweight coordination server for autonomous AI coding agents — task claiming,…",
-        "content": "Run multiple AI agents on one repo. Zero merge conflicts. Zero duplicate work. Quick StartHow Is This Different?FeaturesAPICLIContributingFull Docs When multiple AI agents (Claude, GPT, Gemini, Cur… [+4237 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "Cloud deployment firm Vercel breached, advises secrets rotation",
+        "summary": "[Updated] \"Small, third-party AI tool\" blamed for compromise.",
+        "content": "Cloud application deployment platform Vercel said it has suffered a security incident that involves unauthorised access to some of its internal systems, and is advising customers to rotate their secr… [+2112 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "writ-agents added to PyPI",
-        "summary": "Translate plain business-language descriptions into portable AI agent specifications",
-        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "Qilimanjaro targets analog quantum computing for AI data center integration within 10 years",
+        "summary": "The timeline for quantum computing to become commercially viable has shrunk from decades to potentially withi…",
+        "content": "The timeline for quantum computing to become commercially viable has shrunk from decades to potentially within 10 years, driven by surging AI demand. That is the view of Dr. Marta P. Estarellas, CEO … [+59 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "gladekit-mcp 0.3.0",
-        "summary": "MCP server for Unity game development — connect Cursor, Claude Code, Windsurf, and other AI clients to your U…",
-        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "agentpub 0.3.7",
-        "summary": "Python SDK for AgentPub — AI research publication platform",
-        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "MSP+ eyes 2026 growth with new Yangmei plant, advances in Micro LED and CPO",
+        "summary": "Micraft System Plus (MSP+), a supplier of mass transfer and laser technology equipment, will officially open…",
+        "content": "Micraft System Plus (MSP+), a supplier of mass transfer and laser technology equipment, will officially open its new Yangmei factory in northern Taiwan in May 2026, significantly boosting production … [+55 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       }
@@ -254,14 +254,14 @@
         "impact_score": 1
       },
       {
-        "title": "VIX：17.94（-0.23）",
+        "title": "VIX：17.48（-0.46）",
         "summary": "VIX 上升代表 FCN 敲入風險上升。",
         "content": "VIX 是你每日要看的核心指標。",
         "affects_fcn": true,
         "impact_score": -2
       },
       {
-        "title": "10Y / 20Y：4.32%（+0.03%） / 4.90%（+0.03%）",
+        "title": "10Y / 20Y：4.26%（-0.06%） / 4.85%（-0.05%）",
         "summary": "中長期利率上升會壓抑科技估值。",
         "content": "科技與 AI 核心股會受中長債殖利率影響。",
         "affects_fcn": true,
@@ -275,7 +275,7 @@
         "impact_score": -1
       },
       {
-        "title": "失業率：4.30%（-0.10%）｜S&P500：7022.95（+55.57）",
+        "title": "失業率：4.30%（-0.10%）｜S&P500：7126.06（+84.78）",
         "summary": "就業與股市穩定度共同反映風險偏好。",
         "content": "若就業惡化且股市回落，FCN 需更保守。",
         "affects_fcn": true,
@@ -299,7 +299,7 @@
     {
       "title": "優先核心池",
       "action": "可配置",
-      "reason": "目前建議先看：TSM / MSFT。",
+      "reason": "目前建議先看：NVDA / AVGO / TSM / MSFT。",
       "level": "ok"
     }
   ],
@@ -310,11 +310,11 @@
     },
     {
       "label": "總經環境",
-      "text": "總經環境中性，FCN 可做但需偏保守，優先核心股。"
+      "text": "總經環境中性偏有利，FCN 可做，但仍需避免風險集中在單一高敏感標的。"
     },
     {
       "label": "今日推薦",
-      "text": "可加入：TSM / MSFT；觀察：NVDA / AVGO / UNH；避免：AMD / ORCL / AMAT。"
+      "text": "可加入：NVDA / AVGO / TSM / MSFT；觀察：AMD / AMAT / MRVL；避免：ORCL / PLTR / COIN。"
     }
   ],
   "risk_radar": [
@@ -330,13 +330,13 @@
     },
     {
       "label": "VIX 壓力",
-      "value": 35,
+      "value": 34,
       "type": "watch"
     },
     {
       "label": "AI 核心股安全度",
-      "value": 62,
-      "type": "watch"
+      "value": 78,
+      "type": "ok"
     }
   ],
   "fcn_rankings": [
@@ -434,9 +434,9 @@
         "eki": "80%",
         "day_change": "",
         "five_day": "",
-        "today": "持續觀察",
-        "reason": "可列觀察，但不宜重壓。",
-        "level": "watch"
+        "today": "可加入",
+        "reason": "屬核心池 / 防守池，且現階段環境允許配置。",
+        "level": "ok"
       },
       {
         "symbol": "AVGO",
@@ -447,9 +447,9 @@
         "eki": "80%",
         "day_change": "",
         "five_day": "",
-        "today": "持續觀察",
-        "reason": "可列觀察，但不宜重壓。",
-        "level": "watch"
+        "today": "可加入",
+        "reason": "屬核心池 / 防守池，且現階段環境允許配置。",
+        "level": "ok"
       },
       {
         "symbol": "TSM",
@@ -473,9 +473,9 @@
         "eki": "80%",
         "day_change": "",
         "five_day": "",
-        "today": "暫不建議",
-        "reason": "現階段波動或集中風險偏高。",
-        "level": "risk"
+        "today": "持續觀察",
+        "reason": "可列觀察，但不宜重壓。",
+        "level": "watch"
       },
       {
         "symbol": "ORCL",
@@ -512,9 +512,9 @@
         "eki": "80%",
         "day_change": "",
         "five_day": "",
-        "today": "暫不建議",
-        "reason": "現階段波動或集中風險偏高。",
-        "level": "risk"
+        "today": "持續觀察",
+        "reason": "可列觀察，但不宜重壓。",
+        "level": "watch"
       },
       {
         "symbol": "PLTR",
@@ -592,9 +592,9 @@
         "eki": "75%",
         "day_change": "",
         "five_day": "",
-        "today": "暫不建議",
-        "reason": "現階段波動或集中風險偏高。",
-        "level": "risk"
+        "today": "持續觀察",
+        "reason": "可列觀察，但不宜重壓。",
+        "level": "watch"
       },
       {
         "symbol": "ARM",
@@ -605,9 +605,9 @@
         "eki": "70%",
         "day_change": "",
         "five_day": "",
-        "today": "暫不建議",
-        "reason": "現階段波動或集中風險偏高。",
-        "level": "risk"
+        "today": "持續觀察",
+        "reason": "可列觀察，但不宜重壓。",
+        "level": "watch"
       },
       {
         "symbol": "LVS",
@@ -618,9 +618,9 @@
         "eki": "80%",
         "day_change": "",
         "five_day": "",
-        "today": "暫不建議",
-        "reason": "現階段波動或集中風險偏高。",
-        "level": "risk"
+        "today": "持續觀察",
+        "reason": "可列觀察，但不宜重壓。",
+        "level": "watch"
       },
       {
         "symbol": "UNH",
@@ -640,6 +640,14 @@
   "today_recommendations": {
     "add": [
       {
+        "symbol": "NVDA",
+        "reason": "屬核心池 / 防守池，且現階段環境允許配置。"
+      },
+      {
+        "symbol": "AVGO",
+        "reason": "屬核心池 / 防守池，且現階段環境允許配置。"
+      },
+      {
         "symbol": "TSM",
         "reason": "屬核心池 / 防守池，且現階段環境允許配置。"
       },
@@ -650,29 +658,29 @@
     ],
     "watch": [
       {
-        "symbol": "NVDA",
+        "symbol": "AMD",
         "reason": "可列觀察，但不宜重壓。"
       },
       {
-        "symbol": "AVGO",
+        "symbol": "AMAT",
         "reason": "可列觀察，但不宜重壓。"
       },
       {
-        "symbol": "UNH",
+        "symbol": "MRVL",
+        "reason": "可列觀察，但不宜重壓。"
+      },
+      {
+        "symbol": "ARM",
+        "reason": "可列觀察，但不宜重壓。"
+      },
+      {
+        "symbol": "LVS",
         "reason": "可列觀察，但不宜重壓。"
       }
     ],
     "avoid": [
       {
-        "symbol": "AMD",
-        "reason": "現階段波動或集中風險偏高。"
-      },
-      {
         "symbol": "ORCL",
-        "reason": "現階段波動或集中風險偏高。"
-      },
-      {
-        "symbol": "AMAT",
         "reason": "現階段波動或集中風險偏高。"
       },
       {
@@ -681,6 +689,14 @@
       },
       {
         "symbol": "COIN",
+        "reason": "現階段波動或集中風險偏高。"
+      },
+      {
+        "symbol": "TSLA",
+        "reason": "現階段波動或集中風險偏高。"
+      },
+      {
+        "symbol": "CRDO",
         "reason": "現階段波動或集中風險偏高。"
       }
     ]
@@ -695,17 +711,28 @@
       ],
       "eki": "80%–85%",
       "tenor": "6–12個月",
-      "goal": "防守優先"
+      "goal": "低波動穩定收息"
     },
     {
       "name": "平衡收益",
       "targets": [
         "NVDA",
-        "AVGO"
+        "AVGO",
+        "AMD"
       ],
-      "eki": "75%–80%",
-      "tenor": "3–6個月",
-      "goal": "只留主力池"
+      "eki": "70%–80%",
+      "tenor": "3–9個月",
+      "goal": "主力配置"
+    },
+    {
+      "name": "進攻型",
+      "targets": [
+        "PLTR",
+        "ARM"
+      ],
+      "eki": "60%–70%",
+      "tenor": "1–3個月",
+      "goal": "部位小、追求收益"
     }
   ]
 }
