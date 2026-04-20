@@ -972,15 +972,7 @@
       };
     }
 
-    function buildCategoryOptions() {
-      const categories = Array.from(
-        new Set(state.candidateScored.map(x => String(x.category_norm || "unknown").toLowerCase()))
-      ).sort();
-
-      $("categoryFilter").innerHTML =
-        '<option value="ALL">全部類別</option>' +
-        categories.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("");
-    }
+  
 
     function renderFilterClass(result) {
       if (result === "OK" || result === "Spec Pool") return "rule-ok";
