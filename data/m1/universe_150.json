@@ -177,5 +177,13 @@
 
 {  "symbol": "NVO",  "category": "core",  "sector": "HEALTHCARE",  "style": ["high_growth", "moat", "drug_leader"]},
   {"symbol":"SQ","category":"growth","sector":"FINTECH","style":["growth"]},
+   { "symbol": "COIN", "category": "speculative", "sector": "CRYPTO", "style": ["high_beta"] },
+  { "symbol": "CEG",  "category": "growth",      "sector": "UTILITY_POWER", "style": ["high_growth", "power"] },
+  { "symbol": "VST",  "category": "growth",      "sector": "UTILITY_POWER", "style": ["turnaround", "power"] },
+  { "symbol": "XLU",  "category": "defensive",   "sector": "ETF", "style": ["index", "utility"] },
+  { "symbol": "VPU",  "category": "defensive",   "sector": "ETF", "style": ["index", "utility"] },
+  { "symbol": "ZAP",  "category": "speculative", "sector": "ETF", "style": ["thematic", "high_beta"] },
+  { "symbol": "AIPO", "category": "speculative", "sector": "AI_THEME", "style": ["high_beta", "ai"] },
+  { "symbol": "VOLT", "category": "speculative", "sector": "ETF", "style": ["thematic", "high_beta"] },
   {"symbol":"PYPL","category":"growth","sector":"FINTECH","style":["turnaround"]}
 ]
