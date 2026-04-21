@@ -883,6 +883,119 @@ function renderResearchCardFull(symbol){
   const base = state.lookup.get(symbol) || {};
   const card = state.cardLookup.get(symbol) || {};
   const m = state.market[symbol] || {};
+  const tpl = card.template || {};
+
+  const businessSummary =
+    tpl.business_summary ||
+    card.basic_info?.business_summary ||
+    "建置中";
+
+  const companyPositioning =
+    tpl.company_positioning ||
+    card.basic_info?.company_positioning ||
+    "建置中";
+
+  const whyInM1 =
+    tpl.why_in_m1 ||
+    card.basic_info?.why_in_m1 ||
+    "建置中";
+
+  const moatSummary =
+    tpl.moat_summary ||
+    card.competition?.moat_summary ||
+    "建置中";
+
+  const industryStructure =
+    tpl.industry_structure ||
+    card.competition?.industry_structure ||
+    "建置中";
+
+  const competitionTrend =
+    tpl.competition_trend_1y_3y ||
+    card.competition?.competition_trend_1y_3y ||
+    "建置中";
+
+  const direct =
+    tpl.direct_competitors ||
+    card.competition?.direct_competitors ||
+    [];
+
+  const indirect =
+    tpl.indirect_competitors ||
+    card.competition?.indirect_competitors ||
+    [];
+
+  const whyWin =
+    tpl.why_it_wins ||
+    card.competition?.why_it_wins ||
+    [];
+
+  const whyLose =
+    tpl.why_it_can_lose ||
+    card.competition?.why_it_can_lose ||
+    [];
+
+  const humanSummary =
+    tpl.human_summary ||
+    card.investment_view?.human_summary ||
+    "建置中";
+
+  const actionHint =
+    tpl.action_hint ||
+    card.investment_view?.action_hint ||
+    "建置中";
+
+  const fcnView =
+    tpl.fcn_view ||
+    card.investment_view?.fcn_view ||
+    "建置中";
+
+  const finalVerdict =
+    tpl.final_verdict ||
+    card.investment_view?.final_verdict ||
+    "建置中";
+
+  const m1p = tpl.m1_positioning || card.m1_positioning || {};
+
+  const capexScore =
+    card.m1_scores?.capex ??
+    card.m1_scores?.capex_score ??
+    "--";
+
+  const trendScore =
+    card.m1_scores?.trend ??
+    card.m1_scores?.trend_score ??
+    "--";
+
+  const compScore =
+    card.m1_scores?.competition ??
+    card.m1_scores?.competition_score ??
+    "--";
+
+  const valuationText =
+    m1p.valuation_status || "⚠️偏高";
+
+  const valuationDetail =
+    card.m1_scores?.valuation_detail || "FPE -- / Anchor -- / PEG --";
+
+  const capexComment =
+    card.m1_scores?.capex_comment || "高資本效率，具長期競爭優勢";
+
+  const trendComment =
+    card.m1_scores?.trend_comment || "產業動能強，屬結構性成長";
+
+  const competitionComment =
+    card.m1_scores?.competition_comment || "具護城河，但仍有競爭壓力";
+
+  const valuationComment =
+    card.m1_scores?.valuation_comment || "市場預期已高，需留意回檔風險";
+
+  const priceNow = m.price_now == null ? "--" : "$" + fmt(m.price_now, 2);
+  const ret1w = m.ret_1w == null ? "--" : pct(m.ret_1w);
+  const ret1m = m.ret_1m == null ? "--" : pct(m.ret_1m);
+  const ret3m = m.ret_3m == null ? "--" : pct(m.ret_3m);
+  const ret12m = m.ret_12m == null ? "--" : pct(m.ret_12m);
+  const volRatio = m.volume_ratio == null ? "--" : fmt(m.volume_ratio, 2);
 
   return `
     <div class="panel research-card">
@@ -890,31 +1003,106 @@ function renderResearchCardFull(symbol){
         <div class="card-left">
           <div class="symbol-box">
             <div class="sym">${symbol}</div>
-            <div class="cat">${base.category || ''}</div>
+            <div class="cat">${base.category || ""}</div>
           </div>
           <div class="head-meta">
-            <h2>${card.company_name || symbol}</h2>
-            <div class="meta-line">${base.sector || ''}</div>
+            <h2>${tpl.company_name || card.company_name || symbol}</h2>
+            <div class="meta-line">${base.sector || ""} ｜ ${base.category || ""}</div>
+            <div class="tags">
+              <span class="tag">${(base.style || []).join(" / ") || "style --"}</span>
+              <span class="tag">Universe 150</span>
+              <span class="tag">Research Card</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="price-strip">
+          <div class="price-box">
+            <div class="k">Price Now</div>
+            <div class="v">${priceNow}</div>
+            <div class="d">1W / 1M：${ret1w} / ${ret1m}</div>
+          </div>
+          <div class="price-box">
+            <div class="k">3M / 12M</div>
+            <div class="v">${ret3m} / ${ret12m}</div>
+            <div class="d">中線 / 長線變化</div>
+          </div>
+          <div class="price-box">
+            <div class="k">Volume Ratio</div>
+            <div class="v">${volRatio}</div>
+            <div class="d">量能強弱</div>
+          </div>
+          <div class="price-box">
+            <div class="k">Final Verdict</div>
+            <div class="v">${finalVerdict === "建置中" ? "--" : "Ready"}</div>
+            <div class="d">研究報告狀態</div>
+          </div>
+          <div class="price-box">
+            <div class="k">Updated</div>
+            <div class="v">${tpl.updated_at || card.updated_at || "--"}</div>
+            <div class="d">研究更新日期</div>
           </div>
         </div>
       </div>
 
       <div class="body-grid">
-
         <div class="info-block">
-          <div class="info-title">公司摘要</div>
-          <div class="info-p">${card.basic_info?.business_summary || '建置中'}</div>
+          <div class="info-title">公司研究摘要</div>
+          <div class="info-p"><b>公司做什麼：</b>${businessSummary}</div>
+          <div class="info-p"><b>公司定位：</b>${companyPositioning}</div>
+          <div class="info-p"><b>為什麼進 M1：</b>${whyInM1}</div>
+          <div class="info-p"><b>人話摘要：</b>${humanSummary}</div>
         </div>
 
-        <div class="info-block">
-          <div class="info-title">M1 定位</div>
-          <div class="info-p">
-            Capex：${card.m1_scores?.capex || '--'}<br>
-            Trend：${card.m1_scores?.trend || '--'}<br>
-            Comp：${card.m1_scores?.competition || '--'}
+        <div class="module-card">
+          <div class="module-title">📊 M1 定位</div>
+
+          <div class="row">
+            <div class="label">Capex</div>
+            <div class="value">${m1p.capex_to_profit || "⭐⭐⭐⭐☆"} <span class="num">${capexScore} / 10</span></div>
+            <div class="desc">→ ${capexComment}</div>
           </div>
+
+          <div class="row">
+            <div class="label">趨勢</div>
+            <div class="value">${m1p.industry_trend || "⭐⭐⭐⭐☆"} <span class="num">${trendScore} / 10</span></div>
+            <div class="desc">→ ${trendComment}</div>
+          </div>
+
+          <div class="row">
+            <div class="label">競爭力</div>
+            <div class="value">${m1p.competition_strength || "⭐⭐⭐⭐"} <span class="num">${compScore} / 10</span></div>
+            <div class="desc">→ ${competitionComment}</div>
+          </div>
+
+          <div class="row">
+            <div class="label">估值</div>
+            <div class="value warn">${valuationText} <span class="num">${valuationDetail}</span></div>
+            <div class="desc">→ ${valuationComment}</div>
+          </div>
+
+          <div class="divider"></div>
+          <div class="conclusion">👉 結論：${finalVerdict}</div>
+        </div>
+      </div>
+
+      <div class="competition-grid" style="margin-top:16px;">
+        <div class="info-block">
+          <div class="info-title">競爭分析</div>
+          <div class="info-p"><b>護城河：</b>${moatSummary}</div>
+          <div class="info-p"><b>產業結構：</b>${industryStructure}</div>
+          <div class="info-p"><b>競爭趨勢：</b>${competitionTrend}</div>
+          <div class="info-p"><b>行動建議：</b>${actionHint}</div>
+          <div class="info-p"><b>FCN View：</b>${fcnView}</div>
         </div>
 
+        <div class="info-block">
+          <div class="info-title">對手 / 贏輸條件</div>
+          <div class="info-p"><b>直接競爭對手：</b>${direct.length ? direct.join("、") : "建置中"}</div>
+          <div class="info-p"><b>間接競爭對手：</b>${indirect.length ? indirect.join("、") : "建置中"}</div>
+          <div class="info-p"><b>Why it wins：</b>${whyWin.length ? whyWin.join("；") : "建置中"}</div>
+          <div class="info-p"><b>Why it can lose：</b>${whyLose.length ? whyLose.join("；") : "建置中"}</div>
+        </div>
       </div>
     </div>
   `;
