@@ -549,12 +549,55 @@ function buildCompetitionCard(stock) {
     symbol: safe(stock.symbol),
     company_name: safe(stock.name),
 
+    const WHITE_LIST = ["NVDA", "TSM", "ORCL", "ETN", "PLD", "COIN"];
+
+function buildCompetitionCard(stock) {
+  const symbol = (stock.symbol || "").toUpperCase();
+
+  const isWhite = WHITE_LIST.includes(symbol);
+
+  return {
+    symbol,
+    company_name: stock.name || "",
+
     basic_info: {
-      business_summary: buildBusinessSummary(stock),
-      company_positioning: buildCompanyPositioning(stock),
-      why_in_m1: buildWhyInM1(stock),
-      initial_pool30_view: buildHumanSummary(stock)
+      business_summary: isWhite
+        ? buildRealBusinessSummary(stock)
+        : "待研究",
+
+      company_positioning: isWhite
+        ? buildRealPositioning(stock)
+        : "待研究",
+
+      why_in_m1: isWhite
+        ? buildWhyInM1(stock)
+        : "待研究",
+
+      initial_pool30_view: isWhite
+        ? buildInitialView(stock)
+        : "待研究"
     },
+
+    competition: isWhite
+      ? buildCompetition(stock)
+      : {
+          competitive_position: "待研究",
+          direct_competitors: [],
+          indirect_competitors: [],
+          moat_summary: "待研究",
+          why_it_wins: [],
+          why_it_can_lose: []
+        },
+
+    research_status: {
+      basic_done: isWhite,
+      competition_done: isWhite,
+      technical_done: false,
+      fcn_view_done: false,
+      final_verdict_done: isWhite
+    }
+  };
+}
 
     competition: {
       competitive_position: buildCompanyPositioning(stock),
