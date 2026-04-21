@@ -1873,68 +1873,74 @@
       };
     }
 
-    function exportPool30() {
-      const selectedRows = state.candidateScored
-        .filter(row => getReview(row.symbol).decision === "pool30");
+   function normalizePool30Row(row) {
+  return {
+    symbol: String(row.symbol || "").toUpperCase(),
+    name: row.name || row.symbol || "",
+    sector: row.sector || "UNKNOWN",
+    subsector: row.subsector || "",
+    category: ["core", "growth", "income", "defensive", "speculative"].includes(row.category)
+      ? row.category
+      : "speculative"
+  };
+}
 
-      const selectedSymbolSet = new Set(selectedRows.map(x => x.symbol));
+function exportPool30() {
+  const selectedRows = state.candidateScored
+    .filter(row => getReview(row.symbol).decision === "pool30");
 
-      const originalMap = new Map(
-        state.pool30Raw.map(item => [
-          String(item.symbol || "").toUpperCase(),
-          {
-            symbol: item.symbol || "",
-            name: item.name || "",
-            sector: item.sector || "",
-            subsector: item.subsector || "",
-            category: item.category || ""
-          }
-        ])
-      );
+  const selectedSymbolSet = new Set(
+    selectedRows.map(x => String(x.symbol || "").toUpperCase())
+  );
 
-      const exported = [];
+  const originalMap = new Map(
+    state.pool30Raw.map(item => [
+      String(item.symbol || "").toUpperCase(),
+      normalizePool30Row(item)
+    ])
+  );
 
-      // 1. 原本就在 pool30 的，完全沿用原檔順序與欄位格式
-      state.pool30Raw.forEach(item => {
-        const sym = String(item.symbol || "").toUpperCase();
-        if (selectedSymbolSet.has(sym)) {
-          exported.push({
-            symbol: item.symbol || "",
-            name: item.name || "",
-            sector: item.sector || "",
-            subsector: item.subsector || "",
-            category: item.category || ""
-          });
-        }
-      });
+  const exported = [];
 
-      // 2. 新加入 pool30 的股票，才用 m1 畫面資料補上，排在最後
-      const newRows = selectedRows
-        .filter(row => !originalMap.has(String(row.symbol || "").toUpperCase()))
-        .sort((a, b) => n(a.rank, 9999) - n(b.rank, 9999));
-
-      newRows.forEach(row => {
-        exported.push({
-          symbol: row.symbol || "",
-          name: row.name || row.symbol || "",
-          sector: row.sector || "",
-          subsector: row.subsector || "",
-          category: row.category || ""
-        });
-      });
-
-      const blob = new Blob([JSON.stringify(exported, null, 2)], {
-        type: "application/json;charset=utf-8"
-      });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "pool30.json";
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
+  // 1. 原本就在 pool30 的，沿用原順序
+  state.pool30Raw.forEach(item => {
+    const sym = String(item.symbol || "").toUpperCase();
+    if (selectedSymbolSet.has(sym)) {
+      exported.push(normalizePool30Row(item));
     }
+  });
+
+  // 2. 新加入 pool30 的股票，排在最後
+  const newRows = selectedRows
+    .filter(row => !originalMap.has(String(row.symbol || "").toUpperCase()))
+    .sort((a, b) => n(a.rank, 9999) - n(b.rank, 9999));
+
+  newRows.forEach(row => {
+    exported.push(normalizePool30Row(row));
+  });
+
+  // 3. 最終輸出格式鎖死
+  const finalOutput = exported.map(x => ({
+    symbol: x.symbol,
+    name: x.name,
+    sector: x.sector,
+    subsector: x.subsector,
+    category: x.category
+  }));
+
+  const blob = new Blob([JSON.stringify(finalOutput, null, 2)], {
+    type: "application/json;charset=utf-8"
+  });
+
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "pool30.json";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
 
     function normalizeFormalRules(raw) {
       if (!raw || typeof raw !== "object" || !raw.rules || typeof raw.rules !== "object") return null;
