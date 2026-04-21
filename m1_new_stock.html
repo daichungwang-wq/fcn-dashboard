@@ -3,283 +3,315 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>M1 New Stock</title>
+  <title>M1 New Stock Pro Panel</title>
   <style>
     :root{
-      --bg:#f4f7fb;
+      --bg:#eff4f9;
+      --bg2:#f8fbfe;
       --panel:#ffffff;
-      --ink:#1e2a36;
-      --muted:#6c7b8a;
-      --line:#d9e2ec;
-      --brand:#17324d;
-      --brand2:#214a70;
-      --accent:#2ea3ff;
-      --good:#1f8f57;
-      --warn:#c77c11;
-      --bad:#c94141;
-      --shadow:0 10px 30px rgba(16,24,40,.08);
-      --radius:18px;
+      --ink:#1d2a36;
+      --muted:#6c7c8d;
+      --line:#d9e4ef;
+      --brand:#11283f;
+      --brand2:#214b73;
+      --blue:#2f80ed;
+      --blue2:#56ccf2;
+      --good:#188b58;
+      --good-bg:#eaf8f1;
+      --warn:#b9770e;
+      --warn-bg:#fff4df;
+      --bad:#be3f3f;
+      --bad-bg:#fff0f0;
+      --core:#173d68;
+      --shadow:0 12px 30px rgba(16,24,40,.08);
+      --radius:20px;
     }
     *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
     body{
       margin:0;
       font-family:"Segoe UI","Noto Sans TC",Arial,sans-serif;
       color:var(--ink);
-      background:linear-gradient(180deg,#eef4fa 0%, #f7f9fc 100%);
+      background:linear-gradient(180deg,var(--bg) 0%, var(--bg2) 100%);
     }
-    .wrap{max-width:1600px;margin:0 auto;padding:18px}
+    .wrap{max-width:1680px;margin:0 auto;padding:18px 18px 40px}
+    .topbar{
+      position:sticky;top:0;z-index:50;
+      backdrop-filter: blur(10px);
+      background:rgba(239,244,249,.82);
+      border-bottom:1px solid rgba(217,228,239,.85);
+      margin:-18px -18px 18px;
+      padding:12px 18px;
+    }
+    .toolbar{
+      max-width:1680px;margin:0 auto;
+      display:grid;grid-template-columns:1.1fr auto auto auto auto;gap:10px;align-items:center;
+    }
+    .searchBox{
+      display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:16px;
+      padding:10px 12px;box-shadow:var(--shadow);position:relative;
+    }
+    .searchBox input{
+      flex:1;border:none;outline:none;font-size:16px;background:transparent;color:var(--ink);font-weight:700;
+    }
+    .icon{font-size:18px;color:var(--muted)}
+    .toolbtn,.selector{
+      height:48px;border-radius:14px;border:1px solid var(--line);background:#fff;color:var(--ink);font-size:14px;font-weight:800;
+      padding:0 16px;cursor:pointer;box-shadow:var(--shadow);
+    }
+    .toolbtn.primary{background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;border:none}
+    .selector{min-width:132px}
+    .suggestions{
+      position:absolute;left:0;right:0;top:calc(100% + 8px);background:#fff;border:1px solid var(--line);border-radius:16px;
+      box-shadow:var(--shadow);display:none;overflow:hidden;
+    }
+    .suggestions.show{display:block}
+    .suggest-item{padding:12px 14px;border-bottom:1px solid #eef4fa;cursor:pointer}
+    .suggest-item:last-child{border-bottom:none}
+    .suggest-item:hover{background:#f6fbff}
+    .suggest-item .sym{font-weight:900;color:var(--brand)}
+    .suggest-item .meta{font-size:12px;color:var(--muted);margin-top:3px}
+
     .hero{
-      background:linear-gradient(135deg,var(--brand),var(--brand2));
-      color:#fff;
-      border-radius:26px;
-      box-shadow:var(--shadow);
-      padding:24px 28px;
+      background:linear-gradient(135deg,var(--brand) 0%, var(--brand2) 100%);
+      color:#fff;border-radius:28px;padding:24px 26px;box-shadow:var(--shadow);
     }
-    .hero h1{margin:0;font-size:34px}
-    .hero p{margin:10px 0 0;color:rgba(255,255,255,.86);line-height:1.65}
-    .hero-badges{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
-    .hero-badges span{
-      padding:7px 12px;border-radius:999px;
-      background:rgba(255,255,255,.12);
-      border:1px solid rgba(255,255,255,.16);
-      font-size:12px;font-weight:700;
+    .hero-top{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;flex-wrap:wrap}
+    .hero h1{margin:0;font-size:34px;letter-spacing:.2px}
+    .hero p{margin:8px 0 0;color:rgba(255,255,255,.86);line-height:1.7;max-width:920px}
+    .hero-actions{display:flex;gap:10px;flex-wrap:wrap}
+    .hero-pill{
+      padding:8px 12px;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.16);
+      font-size:12px;font-weight:800
     }
 
-    .dashboard{
-      display:grid;
-      grid-template-columns:1.1fr 1fr;
-      gap:16px;
-      margin-top:18px;
-    }
+    .page-grid{display:grid;grid-template-columns:300px 1fr;gap:16px;margin-top:16px}
+    .sidebar{display:flex;flex-direction:column;gap:16px}
     .panel{
-      background:var(--panel);
-      border:1px solid var(--line);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
+      background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);
     }
     .panel-body{padding:18px}
-    .panel h3{margin:0 0 12px;font-size:18px}
-    .stats-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
-    .stat{
-      background:#f8fbff;border:1px solid #e4edf6;border-radius:14px;padding:12px;
-    }
-    .stat .k{font-size:12px;color:var(--muted)}
-    .stat .v{font-size:28px;font-weight:800;margin-top:6px}
-    .cover-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-    .cover{
-      background:#f8fbff;border:1px solid #e4edf6;border-radius:14px;padding:12px;
-    }
-    .cover .row{display:flex;justify-content:space-between;gap:12px;font-size:13px}
-    .bar{height:10px;background:#eaf0f6;border-radius:999px;overflow:hidden;margin-top:9px}
-    .bar > span{display:block;height:100%;background:linear-gradient(90deg,#38bdf8,#3b82f6)}
+    .panel h3{margin:0 0 14px;font-size:18px}
+    .panel-head{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+    .panel-sub{font-size:13px;color:var(--muted)}
+    .small-note{font-size:13px;color:var(--muted);line-height:1.8}
 
-    .search-panel{margin-top:16px}
-    .search-box{
-      background:linear-gradient(135deg,#10263f,#1f4467);
-      border-radius:22px;
-      padding:18px;
-      color:#fff;
+    .watchlist{display:grid;gap:10px}
+    .watch-item{
+      border:1px solid var(--line);background:#f8fbff;border-radius:14px;padding:10px 12px;cursor:pointer;
+      display:flex;justify-content:space-between;gap:10px;align-items:center
     }
-    .search-top{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
-    .stock-input{
-      width:96px;height:56px;border-radius:14px;border:none;
-      text-align:center;font-size:20px;font-weight:800;color:#15314e;outline:none;
-    }
-    .btn{
-      height:56px;padding:0 18px;border:none;border-radius:14px;
-      font-size:15px;font-weight:800;cursor:pointer
-    }
-    .btn-run{background:linear-gradient(90deg,#36d1dc,#5b86e5);color:#fff}
-    .btn-clear{background:#fff;color:#22384d}
-    .search-note{margin-top:10px;font-size:13px;color:rgba(255,255,255,.86);line-height:1.6}
+    .watch-item:hover{border-color:#c0d8ef;background:#f2f9ff}
+    .watch-item .sym{font-weight:900}
+    .watch-item .meta{font-size:12px;color:var(--muted);margin-top:2px}
+    .watch-item .badge{font-size:11px;font-weight:900;padding:5px 8px;border-radius:999px;background:#eaf3fc;color:#21486d}
 
-    .main-grid{
-      display:grid;grid-template-columns:360px 1fr;gap:16px;margin-top:16px
+    .content{display:flex;flex-direction:column;gap:16px}
+    .header-panel{padding:20px}
+    .header-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:18px;align-items:start}
+    .head-left{display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap}
+    .logo-pill{
+      width:104px;min-width:104px;height:104px;border-radius:24px;background:linear-gradient(180deg,#0f2238,#294c73);
+      color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;
     }
-    .side-stack{display:flex;flex-direction:column;gap:16px}
-    .small-note{font-size:13px;color:var(--muted);line-height:1.75}
+    .logo-pill .sym{font-size:30px;font-weight:900;line-height:1}
+    .logo-pill .cat{margin-top:8px;font-size:11px;opacity:.82;text-transform:uppercase;font-weight:800}
+    .title h2{margin:0;font-size:34px;line-height:1.15}
+    .title .one-liner{margin-top:10px;font-size:15px;line-height:1.8;color:#314457}
+    .title .meta{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap}
+    .chip{
+      display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border-radius:999px;background:#eef5fc;border:1px solid #d9e7f5;
+      font-size:12px;font-weight:800;color:#294561;
+    }
+    .decision-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+    .decision-card{padding:14px;border-radius:16px;border:1px solid var(--line);background:#f8fbff}
+    .decision-card .k{font-size:12px;color:var(--muted)}
+    .decision-card .v{font-size:22px;font-weight:900;margin-top:6px}
+    .decision-card .d{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.6}
+    .yes{background:var(--good-bg);border-color:#ccead9}.yes .v{color:var(--good)}
+    .warn{background:var(--warn-bg);border-color:#f1dfb5}.warn .v{color:var(--warn)}
+    .no{background:var(--bad-bg);border-color:#f0cfcf}.no .v{color:var(--bad)}
+    .price-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:16px}
+    .mini-kpi{padding:12px;border-radius:15px;background:#f8fbff;border:1px solid #e4edf6}
+    .mini-kpi .k{font-size:11px;color:var(--muted)}
+    .mini-kpi .v{font-size:22px;font-weight:900;margin-top:5px}
+    .mini-kpi .d{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.55}
+    .range-wrap{margin-top:16px;background:#f8fbff;border:1px solid #e4edf6;border-radius:16px;padding:16px}
+    .range-top{display:flex;justify-content:space-between;gap:10px;font-size:13px;color:var(--muted);margin-bottom:10px}
+    .range-bar{height:16px;border-radius:999px;background:linear-gradient(90deg,#dfeaf5,#edf5fb);position:relative;overflow:hidden}
+    .range-fill{height:100%;background:linear-gradient(90deg,#7bc6ff,#2f80ed);width:0%}
+    .range-pin{
+      position:absolute;top:50%;transform:translate(-50%,-50%);width:20px;height:20px;border-radius:50%;background:#103253;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.15)
+    }
+    .range-label{display:flex;justify-content:space-between;gap:10px;font-size:12px;color:var(--muted);margin-top:8px}
 
-    .hidden{display:none !important}
-    .empty{
-      text-align:center;padding:40px;color:var(--muted);font-size:15px
-    }
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .three-col{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
 
-    .basket{padding:18px}
-    .basket-title{font-size:22px;font-weight:900}
-    .basket-sub{margin-top:4px;color:var(--muted);font-size:13px}
-    .basket-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:14px}
-    .basket-box{
-      background:#f8fbff;border:1px solid #e4edf6;border-radius:14px;padding:12px
+    .viz-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .viz-card{border:1px solid #e4edf6;background:#f9fbfe;border-radius:16px;padding:14px}
+    .viz-card h4{margin:0 0 10px;font-size:15px}
+    .legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+    .legend span{font-size:12px;color:var(--muted);display:inline-flex;align-items:center;gap:6px}
+    .dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+    .donut-wrap{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+    .donut{
+      width:180px;height:180px;border-radius:50%;position:relative;flex:0 0 auto;
+      background:conic-gradient(#56ccf2 0 25%, #2f80ed 25% 50%, #7db6ff 50% 75%, #b8d8ff 75% 100%);
     }
-    .basket-box .k{font-size:12px;color:var(--muted)}
-    .basket-box .v{font-size:22px;font-weight:800;margin-top:6px}
-    .basket-box .s{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.55}
+    .donut:after{
+      content:"";position:absolute;inset:28px;background:#fff;border-radius:50%;box-shadow:inset 0 0 0 1px #e7eef6;
+    }
+    .donut-center{
+      position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;z-index:2;text-align:center;padding:0 28px;
+      font-weight:900;color:#123255
+    }
+    .donut-center small{font-size:11px;color:var(--muted);font-weight:700}
+    .segment-list{display:grid;gap:8px;flex:1;min-width:220px}
+    .segment-item{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;font-size:13px}
+    .segment-bar{height:10px;border-radius:999px;background:#e8f1f9;overflow:hidden}
+    .segment-bar span{display:block;height:100%;background:linear-gradient(90deg,#7db6ff,#2f80ed)}
 
-    .cards{display:grid;gap:18px}
-    .card{padding:20px}
-    .card-head{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap}
-    .head-left{display:flex;gap:16px}
-    .symbol-pill{
-      min-width:96px;height:96px;border-radius:20px;
-      background:linear-gradient(180deg,#0f2238,#28496d);
-      color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center
-    }
-    .symbol-pill .sym{font-size:28px;font-weight:900;line-height:1}
-    .symbol-pill .cat{font-size:11px;opacity:.82;margin-top:7px;text-transform:uppercase}
-    .title-block h2{margin:0;font-size:30px}
-    .title-meta{margin-top:7px;color:var(--muted);font-size:14px}
-    .tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:9px}
-    .tag{
-      border-radius:999px;padding:6px 10px;background:#eef5fc;color:#294561;
-      border:1px solid #dae8f5;font-size:12px;font-weight:700
-    }
+    .barlist{display:grid;gap:10px}
+    .bar-row{display:grid;grid-template-columns:110px 1fr 60px;gap:10px;align-items:center}
+    .bar-row .label{font-size:13px;font-weight:700}
+    .bar-track{height:12px;background:#e8f1f9;border-radius:999px;overflow:hidden}
+    .bar-track span{display:block;height:100%;background:linear-gradient(90deg,#56ccf2,#2f80ed)}
+    .bar-row .val{text-align:right;font-size:12px;color:var(--muted);font-weight:800}
 
-    .price-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;min-width:600px}
-    .price-box{
-      background:#f8fbff;border:1px solid #e4edf6;border-radius:14px;padding:12px
-    }
-    .price-box .k{font-size:11px;color:var(--muted)}
-    .price-box .v{font-size:20px;font-weight:800;margin-top:6px}
-    .price-box .d{font-size:12px;color:var(--muted);margin-top:5px}
+    .timeline{display:grid;gap:10px;margin-top:8px}
+    .timeline-item{display:grid;grid-template-columns:120px 1fr;gap:12px;align-items:start}
+    .timeline-year{font-size:12px;font-weight:900;color:#0f3b64;background:#eaf4ff;border:1px solid #d4e5f5;border-radius:999px;padding:7px 10px;text-align:center}
+    .timeline-box{background:#fff;border:1px solid #e4edf6;border-radius:14px;padding:12px}
+    .timeline-box .t{font-weight:900}
+    .timeline-box .m{font-size:13px;color:var(--muted);line-height:1.6;margin-top:4px}
 
-    .section{
-      margin-top:16px;background:#f9fbfe;border:1px solid #e4edf6;border-radius:16px;padding:16px
-    }
-    .section h4{margin:0 0 10px;font-size:18px}
-    .paragraph{font-size:15px;line-height:1.85;color:#263748}
-    .paragraph + .paragraph{margin-top:10px}
-    .arrow{font-weight:800;color:#0b5cad}
-    .twocol{
-      display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px
-    }
-    .listbox{
-      background:#fff;border:1px solid #e4edf6;border-radius:14px;padding:14px
-    }
-    .listbox h5{margin:0 0 10px;font-size:16px}
-    ul.clean{margin:0;padding-left:18px}
-    ul.clean li{margin:0 0 8px;line-height:1.6}
-    .m1view{
-      margin-top:14px;background:linear-gradient(180deg,#f7fbff,#eef6ff);
-      border:1px solid #dce9f6;border-radius:16px;padding:16px
-    }
-    .m1row{
-      display:grid;grid-template-columns:120px 1fr 120px;gap:12px;
-      border-bottom:1px dashed #d7e5f3;padding:9px 0;align-items:center
-    }
-    .m1row:last-child{border-bottom:none}
-    .m1name{font-weight:800}
-    .m1desc{font-size:14px;color:#39536b}
-    .m1val{text-align:right;font-weight:800}
-    .conclusion{
-      margin-top:14px;padding:14px 16px;border-radius:16px;
-      background:#fff8ec;border:1px solid #f3dfb2
-    }
-    .conclusion .headline{font-size:17px;font-weight:900;color:#7a5210}
-    .conclusion .text{margin-top:8px;line-height:1.8}
-    .do-list{margin-top:8px;padding-left:18px}
+    .section-note{margin-top:10px;font-size:14px;line-height:1.85;color:#314457}
+    .score-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}
+    .score-box{background:#fff;border:1px solid #e4edf6;border-radius:14px;padding:12px}
+    .score-box .k{font-size:12px;color:var(--muted)}
+    .score-box .v{font-size:24px;font-weight:900;margin-top:6px}
+    .score-box .d{font-size:12px;color:var(--muted);margin-top:4px}
 
-    .universe .group{margin-top:16px;padding-top:12px;border-top:1px solid var(--line)}
-    .group-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
-    .group-title{font-size:22px;font-weight:900}
-    .mini-btn{
-      padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:#fff;cursor:pointer;font-weight:800
+    .valuation-band{padding:16px;background:#f9fbfe;border:1px solid #e4edf6;border-radius:16px}
+    .band-line{position:relative;height:18px;border-radius:999px;background:linear-gradient(90deg,#eaf3fd 0%,#dcebf9 50%,#d0e6ff 100%);margin:10px 0 6px}
+    .band-zone{position:absolute;top:0;bottom:0;border-radius:999px}
+    .band-low{left:0;width:33%;background:rgba(24,139,88,.15)}
+    .band-mid{left:33%;width:34%;background:rgba(185,119,14,.12)}
+    .band-high{left:67%;width:33%;background:rgba(190,63,63,.14)}
+    .band-pin{position:absolute;top:50%;transform:translate(-50%,-50%);width:18px;height:18px;border-radius:50%;background:#103253;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.16)}
+    .band-labels{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--muted)}
+
+    .heat-meter{background:#f9fbfe;border:1px solid #e4edf6;border-radius:16px;padding:16px}
+    .heat-track{height:14px;border-radius:999px;background:linear-gradient(90deg,#d6f4e4 0%,#fff0cc 50%,#ffd8d8 100%);position:relative;margin-top:12px}
+    .heat-pin{position:absolute;top:50%;transform:translate(-50%,-50%);width:18px;height:18px;border-radius:50%;background:#102c47;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.16)}
+
+    .peer-table{width:100%;border-collapse:collapse;font-size:13px}
+    .peer-table th,.peer-table td{padding:11px 10px;border-bottom:1px solid #e9eef4;text-align:left;vertical-align:top}
+    .peer-table th{font-size:12px;color:var(--muted);font-weight:900;background:#f8fbff}
+    .peer-table tr:first-child th:first-child{border-top-left-radius:12px}
+    .peer-table tr:first-child th:last-child{border-top-right-radius:12px}
+    .peer-highlight{font-weight:900;color:#103253}
+
+    .risk-opp{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .ro-box{border-radius:16px;padding:16px}
+    .risk-box{background:#fff4f4;border:1px solid #efd3d3}
+    .opp-box{background:#f2fbf6;border:1px solid #d4eadc}
+    .ro-box h4{margin:0 0 10px;font-size:16px}
+    .bullet-list{display:grid;gap:10px}
+    .bullet-item{background:rgba(255,255,255,.76);border:1px solid rgba(228,237,246,.9);border-radius:14px;padding:12px}
+    .bullet-item .t{font-weight:900}
+    .bullet-item .m{font-size:13px;color:#44586b;line-height:1.7;margin-top:4px}
+
+    .final-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+    .final-card{border:1px solid var(--line);border-radius:18px;padding:16px;background:#f9fbfe}
+    .final-card .k{font-size:12px;color:var(--muted)}
+    .final-card .v{font-size:26px;font-weight:900;margin-top:6px}
+    .final-card .r{font-size:13px;line-height:1.75;color:#314457;margin-top:6px}
+    .headline-box{margin-top:14px;border-radius:18px;padding:18px;background:linear-gradient(180deg,#fff9eb,#fff3d6);border:1px solid #f0dfb2}
+    .headline-box .h{font-size:18px;font-weight:900;color:#7d5712}
+    .headline-box .t{margin-top:8px;line-height:1.85;color:#523c15}
+
+    .empty{padding:54px 24px;text-align:center;color:var(--muted);font-size:16px}
+
+    @media (max-width:1360px){
+      .page-grid,.two-col,.viz-grid,.risk-opp,.header-grid{grid-template-columns:1fr}
+      .toolbar{grid-template-columns:1fr 1fr 1fr}
+      .toolbar .searchBox{grid-column:1/-1}
+      .kpi-row,.price-strip,.final-grid,.decision-grid,.score-grid,.three-col{grid-template-columns:repeat(2,1fr)}
     }
-    .table{margin-top:10px}
-    .row-head,.row-item{
-      display:grid;grid-template-columns:90px 110px 140px 100px 120px 110px;
-      gap:10px;align-items:center;padding:10px 12px;font-size:14px
-    }
-    .row-head{background:#f7fbff;border:1px solid var(--line);border-radius:12px;font-weight:900}
-    .row-item{border-bottom:1px solid #e9eef4}
-    .report-btn{
-      padding:7px 10px;border:none;border-radius:10px;background:linear-gradient(90deg,#38bdf8,#3b82f6);color:#fff;font-weight:800;cursor:pointer
-    }
-    .muted{color:var(--muted)}
-    @media (max-width:1300px){
-      .dashboard,.main-grid,.twocol{grid-template-columns:1fr}
-      .stats-grid,.basket-grid{grid-template-columns:repeat(3,1fr)}
-      .price-strip{min-width:0;grid-template-columns:repeat(3,1fr)}
-    }
-    @media (max-width:760px){
-      .stats-grid,.basket-grid,.cover-grid,.price-strip,.twocol,.row-head,.row-item{grid-template-columns:1fr}
-      .head-left,.card-head{flex-direction:column}
+    @media (max-width:820px){
+      .wrap{padding:12px 12px 32px}.topbar{margin:-12px -12px 14px;padding:10px 12px}
+      .toolbar{grid-template-columns:1fr 1fr}
+      .toolbar .searchBox{grid-column:1/-1}
+      .page-grid,.kpi-row,.price-strip,.final-grid,.decision-grid,.score-grid,.three-col,.risk-opp,.viz-grid{grid-template-columns:1fr}
+      .title h2{font-size:28px}.hero h1{font-size:28px}.logo-pill{width:92px;min-width:92px;height:92px}
+      .peer-table{display:block;overflow:auto}
     }
   </style>
 </head>
 <body>
   <div class="wrap">
+    <div class="topbar">
+      <div class="toolbar">
+        <div class="searchBox">
+          <span class="icon">🔎</span>
+          <input id="stockSearch" type="text" placeholder="搜尋股票代號 / 公司名稱，例如 AVGO、Broadcom、PLTR" autocomplete="off" />
+          <div id="suggestions" class="suggestions"></div>
+        </div>
+        <select id="listSelector" class="selector">
+          <option value="profile">Profile List</option>
+          <option value="pool30">Pool30 / Stock Pool</option>
+          <option value="universe">Universe</option>
+        </select>
+        <button id="prevBtn" class="toolbtn">← 上一檔</button>
+        <button id="nextBtn" class="toolbtn">下一檔 →</button>
+        <button id="reloadBtn" class="toolbtn primary">重新載入</button>
+      </div>
+    </div>
+
     <section class="hero">
-      <h1>M1 New Stock</h1>
-      <p>公司研究卡入口。讀取 <b>universe_150.json</b>、<b>competitive_cards.json</b>、<b>m1_market_runtime.json</b>，讓股票查詢、分類與完整分析連動。</p>
-      <div class="hero-badges">
-        <span>五欄輸入</span>
-        <span>Basket Summary</span>
-        <span>完整公司分析</span>
-        <span>M1 分類 / 波動 / 類型</span>
-      </div>
-    </section>
-
-    <section class="dashboard">
-      <div class="panel panel-body">
-        <h3>研究目標 / Source Dashboard</h3>
-        <div id="statsGrid" class="stats-grid"></div>
-      </div>
-      <div class="panel panel-body">
-        <h3>研究進度 Dashboard</h3>
-        <div id="coverageGrid" class="cover-grid"></div>
-      </div>
-    </section>
-
-    <section class="panel panel-body search-panel">
-      <h3>股票查詢功能</h3>
-      <div class="search-box">
-        <div class="search-top">
-          <input id="s1" class="stock-input" maxlength="12" placeholder="S1" />
-          <input id="s2" class="stock-input" maxlength="12" placeholder="S2" />
-          <input id="s3" class="stock-input" maxlength="12" placeholder="S3" />
-          <input id="s4" class="stock-input" maxlength="12" placeholder="S4" />
-          <input id="s5" class="stock-input" maxlength="12" placeholder="S5" />
-          <button id="runBtn" class="btn btn-run">Run Research</button>
-          <button id="clearBtn" class="btn btn-clear">Clear</button>
+      <div class="hero-top">
+        <div>
+          <h1>M1 New Stock 專業決策面板</h1>
+          <p>不是公司介紹頁，而是單一股票的投資決策控制台。畫面固定 8 個面板：Header、公司結構、客戶分析、財務品質、市場在反映什麼、競爭分析、風險 / 機會、最終判斷。</p>
         </div>
-        <div class="search-note">輸入 1~5 檔股票代碼，系統會先顯示 Basket Summary，再顯示完整公司分析。若 `competitive_cards.json` 沒資料，會顯示建置中。</div>
+        <div class="hero-actions">
+          <span class="hero-pill">8 Panels</span>
+          <span class="hero-pill">Search / Prev / Next</span>
+          <span class="hero-pill">Pool30 / FCN / Timing</span>
+        </div>
       </div>
     </section>
 
-    <section class="main-grid">
-      <aside class="side-stack">
-        <div class="panel panel-body">
+    <section class="page-grid">
+      <aside class="sidebar">
+        <section class="panel panel-body">
           <h3>頁面定位</h3>
-          <div class="small-note">這頁不是只看 summary，而是讓研究內容、分類、波動與市場資料一起顯示。你後面只要持續補 `competitive_cards.json`，系統就會越來越完整。</div>
-        </div>
-        <div class="panel panel-body">
+          <div class="small-note">同一套 UI，只切不同 symbol。未來你只要補 <b>data/m1/m1_stock_profile.json</b>、<b>universe_150.json</b>、<b>m1_market_runtime.json</b>，這頁就能直接變成正式決策板。</div>
+        </section>
+
+        <section class="panel panel-body">
+          <h3>快速名單</h3>
+          <div class="small-note" style="margin-bottom:10px">這裡會依目前 list 顯示前幾檔，方便快速切換。</div>
+          <div id="watchlist" class="watchlist"></div>
+        </section>
+
+        <section class="panel panel-body">
           <h3>資料來源</h3>
           <div class="small-note">
-            1. <b>data/m1/universe_150.json</b><br/>
-            2. <b>data/m1/competitive_cards.json</b><br/>
+            1. <b>data/m1/m1_stock_profile.json</b><br/>
+            2. <b>data/m1/universe_150.json</b><br/>
             3. <b>data/m1/m1_market_runtime.json</b><br/>
-            4. 未來可再接 M1 / M7 engine
+            4. 後續可再接 M1 / M7 分數與圖表引擎
           </div>
-        </div>
+        </section>
       </aside>
 
-      <main class="side-stack">
-        <section id="basketPanel" class="panel basket hidden">
-          <div class="basket-title">📦 Basket Summary</div>
-          <div id="basketSymbols" class="basket-sub">尚未查詢</div>
-          <div id="basketGrid" class="basket-grid"></div>
-        </section>
-
-        <section id="emptyState" class="panel empty">
-          請在上方輸入股票代碼後按 <b>Run Research</b>。
-        </section>
-
-        <section id="cardsWrap" class="cards hidden"></section>
-
-        <section class="panel panel-body universe">
-          <h3>Universe 150 Research Map</h3>
-          <div id="universeMap"></div>
-        </section>
+      <main class="content">
+        <section id="emptyState" class="panel empty">載入中…</section>
+        <div id="stockPanel" style="display:none;flex-direction:column;gap:16px"></div>
       </main>
     </section>
   </div>
@@ -287,383 +319,688 @@
   <script>
     const state = {
       universe: [],
-      cards: [],
       market: {},
-      lookup: new Map(),
-      cardLookup: new Map()
+      profiles: {},
+      universeMap: new Map(),
+      currentSymbol: null,
+      currentListType: 'profile',
+      currentList: []
     };
 
     const el = {
-      s1: document.getElementById('s1'),
-      s2: document.getElementById('s2'),
-      s3: document.getElementById('s3'),
-      s4: document.getElementById('s4'),
-      s5: document.getElementById('s5'),
-      runBtn: document.getElementById('runBtn'),
-      clearBtn: document.getElementById('clearBtn'),
-      statsGrid: document.getElementById('statsGrid'),
-      coverageGrid: document.getElementById('coverageGrid'),
-      basketPanel: document.getElementById('basketPanel'),
-      basketSymbols: document.getElementById('basketSymbols'),
-      basketGrid: document.getElementById('basketGrid'),
+      stockSearch: document.getElementById('stockSearch'),
+      suggestions: document.getElementById('suggestions'),
+      prevBtn: document.getElementById('prevBtn'),
+      nextBtn: document.getElementById('nextBtn'),
+      reloadBtn: document.getElementById('reloadBtn'),
+      listSelector: document.getElementById('listSelector'),
+      watchlist: document.getElementById('watchlist'),
       emptyState: document.getElementById('emptyState'),
-      cardsWrap: document.getElementById('cardsWrap'),
-      universeMap: document.getElementById('universeMap')
+      stockPanel: document.getElementById('stockPanel')
     };
 
-    function up(v){ return String(v||"").trim().toUpperCase(); }
-    function n(v,d=0){ const x=Number(v); return Number.isFinite(x)?x:d; }
-    function fmt(v,d=1){ const x=Number(v); return Number.isFinite(x)?x.toFixed(d):"--"; }
-    function pct(v){ const x=Number(v); if(!Number.isFinite(x)) return "--"; return (x>=0?"+":"") + (x*100).toFixed(1) + "%"; }
-    function avg(arr){ const a=arr.filter(x=>Number.isFinite(x)); return a.length ? a.reduce((s,x)=>s+x,0)/a.length : null; }
-    function esc(s){ return String(s ?? "").replace(/[&<>"]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m])); }
-
-    async function fetchJson(path){
-      try{
-        const res = await fetch(path, {cache:"no-store"});
-        if(!res.ok) throw new Error(path);
-        return await res.json();
-      }catch(err){
-        console.error("fetch fail", path, err);
-        return null;
-      }
-    }
-
+    function esc(s){ return String(s ?? '').replace(/[&<>\"]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m])); }
+    function n(v,d=0){ const x = Number(v); return Number.isFinite(x) ? x : d; }
+    function fmt(v,d=1){ const x = Number(v); return Number.isFinite(x) ? x.toFixed(d) : '--'; }
+    function money(v, d=1){ const x = Number(v); return Number.isFinite(x) ? `$${x.toFixed(d)}` : '--'; }
+    function pct(v, digits=1){ const x = Number(v); return Number.isFinite(x) ? `${x >= 0 ? '+' : ''}${x.toFixed(digits)}%` : '--'; }
+    function pctDecimal(v, digits=1){ const x = Number(v); return Number.isFinite(x) ? `${x >= 0 ? '+' : ''}${(x*100).toFixed(digits)}%` : '--'; }
+    function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
+    function cap(s){ return String(s || '').charAt(0).toUpperCase() + String(s || '').slice(1); }
+    function up(s){ return String(s || '').trim().toUpperCase(); }
     function asArray(data){
       if(Array.isArray(data)) return data;
       if(Array.isArray(data?.data)) return data.data;
       if(Array.isArray(data?.stocks)) return data.stocks;
       if(Array.isArray(data?.items)) return data.items;
-      if(data && typeof data === "object") return Object.values(data);
+      if(data && typeof data === 'object') return Object.values(data);
       return [];
     }
-
-    function buildLookup(){
-      state.lookup = new Map();
-      state.universe.forEach(x => state.lookup.set(up(x.symbol), x));
-
-      state.cardLookup = new Map();
-      state.cards.forEach(x => state.cardLookup.set(up(x.symbol), x));
+    async function fetchJson(path){
+      try{
+        const res = await fetch(path, {cache:'no-store'});
+        if(!res.ok) throw new Error(path);
+        return await res.json();
+      }catch(err){
+        console.error('fetch fail', path, err);
+        return null;
+      }
     }
 
-    function renderDashboard(){
-      const totalTarget = state.universe.length || 150;
-      const totalCards = state.cards.length;
-      const totalMarket = Object.keys(state.market || {}).length;
+    function getSymbolFromURL(){
+      const p = new URLSearchParams(window.location.search);
+      return up(p.get('symbol') || 'AVGO');
+    }
+    function setSymbolToURL(symbol){
+      const p = new URLSearchParams(window.location.search);
+      p.set('symbol', symbol);
+      history.replaceState({}, '', `${location.pathname}?${p.toString()}`);
+    }
 
-      const stats = [
-        ["研究目標", totalTarget],
-        ["研究卡數", totalCards],
-        ["市場資料", totalMarket],
-        ["Universe", totalTarget],
-        ["覆蓋率", totalTarget ? Math.round(totalCards / totalTarget * 100) + "%" : "--"]
-      ];
+    function buildUniverseMap(){
+      state.universeMap = new Map();
+      asArray(state.universe).forEach(item => state.universeMap.set(up(item.symbol), item));
+    }
 
-      el.statsGrid.innerHTML = stats.map(x => `
-        <div class="stat">
-          <div class="k">${esc(x[0])}</div>
-          <div class="v">${esc(x[1])}</div>
+    function getUniverse(symbol){ return state.universeMap.get(up(symbol)) || {}; }
+    function getProfile(symbol){ return state.profiles[up(symbol)] || null; }
+    function getMarket(symbol){ return state.market?.[up(symbol)] || {}; }
+
+    function getList(type){
+      if(type === 'profile') return Object.keys(state.profiles || {}).map(up);
+      if(type === 'pool30'){
+        return Object.entries(state.profiles || {})
+          .filter(([_, p]) => p?.pool30_fit?.stock_pool || p?.pool30_fit?.pool30)
+          .map(([k]) => up(k));
+      }
+      return asArray(state.universe).map(x => up(x.symbol)).filter(Boolean);
+    }
+
+    function getDecisionClass(v){
+      const s = String(v || '').toLowerCase();
+      if(['yes','true','core','buy','accumulate','收'].includes(s)) return 'yes';
+      if(['no','false','avoid','reject'].includes(s)) return 'no';
+      return 'warn';
+    }
+    function yn(v){ return v === true ? 'YES' : v === false ? 'NO' : (v || '--'); }
+
+    function parseFinancialNumber(text){
+      if(text == null) return null;
+      const s = String(text).replace(/,/g,'');
+      const m = s.match(/(-?\d+(?:\.\d+)?)/);
+      return m ? Number(m[1]) : null;
+    }
+    function parsePercent(text){
+      if(text == null) return null;
+      const s = String(text).replace(/,/g,'');
+      const m = s.match(/(-?\d+(?:\.\d+)?)\s*%/);
+      if(m) return Number(m[1]);
+      const m2 = s.match(/(-?\d+(?:\.\d+)?)/);
+      return m2 ? Number(m2[1]) : null;
+    }
+    function buildRevenueMix(profile){
+      const out = [];
+      const industry = profile?.basic_info?.industry || '';
+      const segs = profile?.business_model?.segments || [];
+      const fromIndustry = industry.match(/半導體\s*(\d+(?:\.\d+)?)%.*軟體\s*(\d+(?:\.\d+)?)%/);
+      if(fromIndustry){
+        out.push({name:'Semiconductor', pct:Number(fromIndustry[1]), detail:'半導體主體'});
+        out.push({name:'Software', pct:Number(fromIndustry[2]), detail:'基礎軟體'});
+      }
+      segs.forEach(s => {
+        const name = String(s).split('：')[0] || 'Segment';
+        const pctMatch = String(s).match(/占比\s*(\d+(?:\.\d+)?)%/);
+        const yoyMatch = String(s).match(/年增\s*(\d+(?:\.\d+)?)%/);
+        if(pctMatch) out.push({name, pct:Number(pctMatch[1]), yoy:yoyMatch ? Number(yoyMatch[1]) : null, detail:s});
+      });
+      const unique = [];
+      const seen = new Set();
+      out.forEach(x => {
+        const k = x.name.toLowerCase();
+        if(seen.has(k)) return;
+        seen.add(k);
+        unique.push(x);
+      });
+      if(!unique.length){
+        unique.push({name:'Core Business', pct:60, detail:'主要業務'});
+        unique.push({name:'Other', pct:40, detail:'其餘收入'});
+      }
+      let total = unique.reduce((s,x)=>s+n(x.pct),0);
+      if(total !== 100 && total > 0){
+        unique.forEach(x => x.pct = x.pct / total * 100);
+      }
+      return unique.slice(0,4);
+    }
+    function buildCustomerMix(profile){
+      const items = profile?.customer_analysis?.key_customers || [];
+      const applePct = 20;
+      const result = [];
+      if(items.find(x => String(x.name).toLowerCase().includes('apple'))) result.push({name:'Apple', pct:applePct});
+      if(items.find(x => String(x.name).toLowerCase().includes('google'))) result.push({name:'Google', pct:14});
+      if(items.find(x => String(x.name).toLowerCase().includes('meta'))) result.push({name:'Meta', pct:10});
+      const top3 = result.reduce((s,x)=>s+x.pct,0);
+      const residual = Math.max(0, 100 - top3);
+      result.push({name:'Other / Enterprise', pct:residual});
+      return result;
+    }
+    function inferContracts(profile){
+      const raw = JSON.stringify(profile || {});
+      const contracts = [];
+      const customers = ['Google','Meta','Apple','U.S. Army','bp','Airbus'];
+      customers.forEach(c => {
+        const re = new RegExp(`${c}[^0-9]{0,40}(20\\d{2})`, 'i');
+        const m = raw.match(re);
+        if(m){
+          contracts.push({customer:c, endYear:Number(m[1]), text:`合作可視度到 ${m[1]}`});
+        }
+      });
+      return contracts.slice(0,4);
+    }
+    function inferPositionPct(profile, market){
+      const text = (profile?.valuation_and_timing?.valuation_view || '') + ' ' + (profile?.market_view || '');
+      const m = text.match(/距\s*52\s*週高點\s*(\d+(?:\.\d+)?)%/) || text.match(/僅約\s*(\d+(?:\.\d+)?)%/);
+      if(m) return clamp(100 - Number(m[1]), 0, 100);
+      if(Number.isFinite(market?.price_now) && Number.isFinite(market?.price_ref_12m)){
+        return clamp(70, 0, 100);
+      }
+      return 72;
+    }
+    function inferHighLow(profile, market){
+      const text = JSON.stringify(profile?.valuation_and_timing || {}) + ' ' + (profile?.market_view || '');
+      const cur = parseFinancialNumber(profile?.valuation_and_timing?.valuation_view) || n(market?.price_now, null);
+      const high = parseFinancialNumber(text.match(/52\s*週高點\s*(\d+(?:\.\d+)?)/)?.[1]);
+      const low = parseFinancialNumber(text.match(/52\s*週低點\s*(\d+(?:\.\d+)?)/)?.[1]);
+      return {
+        low: low ?? (cur ? cur * .7 : null),
+        high: high ?? (cur ? cur * 1.05 : null),
+        cur: cur ?? n(market?.price_now, null)
+      };
+    }
+    function inferSweetZone(profile){
+      const t = profile?.valuation_and_timing?.sweet_zone || '';
+      const m = String(t).match(/(\d+(?:\.\d+)?)\s*[~\-]\s*(\d+(?:\.\d+)?)/);
+      return m ? `${m[1]} ~ ${m[2]}` : '等待回檔再收';
+    }
+    function inferQualityScores(profile){
+      const total = n(profile?.quality_check?.total_score, 8.5);
+      const completeness = n(profile?.quality_check?.completeness, total);
+      const specificity = n(profile?.quality_check?.specificity, total);
+      const dataSupport = n(profile?.quality_check?.data_support, total);
+      return {
+        growth: clamp(((parsePercent(profile?.financial_summary?.growth) || total*8) / 10), 0, 10),
+        cash: clamp(((parsePercent(profile?.financial_summary?.fcf_margin) || total*9) / 5), 0, 10),
+        margin: clamp(((parsePercent(profile?.financial_summary?.net_margin) || total*8) / 5), 0, 10),
+        overall: clamp((completeness + specificity + dataSupport) / 3, 0, 10)
+      };
+    }
+    function inferValuationPin(profile){
+      const pe = parsePercent(profile?.financial_summary?.pe) || 40;
+      const low = Math.max(10, pe * 0.45);
+      const mid = Math.max(low + 5, pe * 0.75);
+      const high = Math.max(mid + 5, pe * 1.1);
+      return {pe, low, mid, high, pos: clamp((pe - low) / (high - low) * 100, 0, 100)};
+    }
+    function inferHeat(profile){
+      const text = `${profile?.valuation_and_timing?.technical_view?.conclusion || ''} ${profile?.valuation_and_timing?.buy_strategy || ''}`.toLowerCase();
+      if(text.includes('不追') || text.includes('等待')) return 75;
+      if(text.includes('收')) return 45;
+      return 60;
+    }
+    function inferPeerRows(symbol, profile){
+      const peers = profile?.competition?.peers || [];
+      const mainPE = parsePercent(profile?.financial_summary?.pe);
+      const mainGrowth = parsePercent(profile?.financial_summary?.growth);
+      const rows = [{
+        symbol: up(symbol), role:'Current', pe: mainPE, growth: mainGrowth,
+        model: profile?.business_model?.summary || profile?.company_overview || '',
+        note:'主分析標的'
+      }];
+      peers.forEach(p => {
+        const pe = parsePercent(p?.comparison);
+        rows.push({
+          symbol: p?.name || '--',
+          role: p?.position || '--',
+          pe: pe,
+          growth: null,
+          model: p?.comparison || '--',
+          note: p?.position || '--'
+        });
+      });
+      return rows.slice(0,4);
+    }
+
+    function getAllSearchItems(){
+      const set = new Map();
+      Object.keys(state.profiles || {}).forEach(sym => {
+        const p = state.profiles[sym];
+        set.set(up(sym), {symbol:up(sym), name:p?.name || sym, category:p?.pool30_fit?.category || getUniverse(sym)?.category_main || '--'});
+      });
+      asArray(state.universe).forEach(u => {
+        const sym = up(u.symbol);
+        if(!set.has(sym)) set.set(sym, {symbol:sym, name:u.name || sym, category:u.category_main || u.category || '--'});
+      });
+      return [...set.values()];
+    }
+
+    function renderSuggestions(keyword){
+      const k = keyword.trim().toLowerCase();
+      if(!k){ el.suggestions.classList.remove('show'); el.suggestions.innerHTML=''; return; }
+      const hits = getAllSearchItems().filter(x =>
+        x.symbol.toLowerCase().includes(k) || String(x.name).toLowerCase().includes(k)
+      ).slice(0,8);
+      if(!hits.length){ el.suggestions.classList.remove('show'); el.suggestions.innerHTML=''; return; }
+      el.suggestions.innerHTML = hits.map(x => `
+        <div class="suggest-item" data-sym="${esc(x.symbol)}">
+          <div class="sym">${esc(x.symbol)} ｜ ${esc(x.name)}</div>
+          <div class="meta">${esc(x.category)}</div>
         </div>
-      `).join("");
+      `).join('');
+      el.suggestions.classList.add('show');
+      [...el.suggestions.querySelectorAll('.suggest-item')].forEach(node => {
+        node.addEventListener('click', () => {
+          el.stockSearch.value = node.dataset.sym;
+          el.suggestions.classList.remove('show');
+          goToStock(node.dataset.sym);
+        });
+      });
+    }
 
-      const coverageKeys = [
-        ["有 summary", c => !!c.summary],
-        ["有 content", c => !!c.content],
-        ["有 tags", c => Array.isArray(c.tags) && c.tags.length > 0],
-        ["有分類", c => !!c.category]
-      ];
-
-      el.coverageGrid.innerHTML = coverageKeys.map(([label, fn]) => {
-        const done = state.cards.filter(fn).length;
-        const ratio = totalCards ? (done / totalCards) * 100 : 0;
+    function renderWatchlist(){
+      const list = state.currentList.slice(0,8);
+      el.watchlist.innerHTML = list.map(sym => {
+        const p = getProfile(sym);
+        const u = getUniverse(sym);
         return `
-          <div class="cover">
-            <div class="row"><span>${esc(label)}</span><span>${done}/${totalCards}</span></div>
-            <div class="bar"><span style="width:${ratio}%"></span></div>
+          <div class="watch-item" data-sym="${esc(sym)}">
+            <div>
+              <div class="sym">${esc(sym)}</div>
+              <div class="meta">${esc(p?.name || u?.name || sym)}</div>
+            </div>
+            <div class="badge">${esc((p?.pool30_fit?.category || u?.category_main || '--').toString().toUpperCase())}</div>
           </div>
         `;
-      }).join("");
+      }).join('');
+      [...el.watchlist.querySelectorAll('.watch-item')].forEach(node => {
+        node.addEventListener('click', () => goToStock(node.dataset.sym));
+      });
     }
 
-    function getInputs(){
-      return [...new Set([el.s1.value, el.s2.value, el.s3.value, el.s4.value, el.s5.value].map(up).filter(Boolean))];
+    function goToStock(symbol){
+      const sym = up(symbol);
+      if(!sym) return;
+      state.currentSymbol = sym;
+      setSymbolToURL(sym);
+      localStorage.setItem('m1_last_symbol', sym);
+      renderStock(sym);
     }
 
-    function clearInputs(){
-      [el.s1, el.s2, el.s3, el.s4, el.s5].forEach(i => i.value = "");
-      el.cardsWrap.innerHTML = "";
-      el.cardsWrap.classList.add("hidden");
-      el.basketPanel.classList.add("hidden");
-      el.emptyState.classList.remove("hidden");
+    function getCurrentIndex(){ return state.currentList.findIndex(s => up(s) === up(state.currentSymbol)); }
+    function goPrev(){
+      if(!state.currentList.length) return;
+      const i = getCurrentIndex();
+      const prev = state.currentList[(i - 1 + state.currentList.length) % state.currentList.length];
+      goToStock(prev);
+    }
+    function goNext(){
+      if(!state.currentList.length) return;
+      const i = getCurrentIndex();
+      const next = state.currentList[(i + 1) % state.currentList.length];
+      goToStock(next);
     }
 
-    function renderBasket(symbols){
-      const stocks = symbols.map(s => state.lookup.get(s)).filter(Boolean);
-      const markets = symbols.map(s => state.market[s] || {});
-      const vols = stocks.map(x => x.volatility).filter(Boolean);
-      const cats = stocks.map(x => x.category_main || x.category || "").filter(Boolean);
-
-      el.basketSymbols.textContent = symbols.join(" / ");
-
-      const avg1m = avg(markets.map(m => Number(m.ret_1m)));
-      const avg3m = avg(markets.map(m => Number(m.ret_3m)));
-
-      const boxes = [
-        ["檔數", stocks.length, "本次查詢檔數"],
-        ["分類", cats.join(" / ") || "--", "大分類"],
-        ["波動", vols.join(" / ") || "--", "volatility"],
-        ["平均1M", pct(avg1m), "月度表現"],
-        ["平均3M", pct(avg3m), "季度表現"]
-      ];
-
-      el.basketGrid.innerHTML = boxes.map(([k,v,s]) => `
-        <div class="basket-box">
-          <div class="k">${esc(k)}</div>
-          <div class="v">${esc(v)}</div>
-          <div class="s">${esc(s)}</div>
-        </div>
-      `).join("");
-
-      el.basketPanel.classList.remove("hidden");
-    }
-
-    function renderM1View(stock){
-      const catMain = stock.category_main || up(stock.category);
-      const catSub = stock.category_sub || "--";
-      const vol = stock.volatility || "--";
-      const type = stock.type || "STOCK";
-      const sector = stock.sector || "--";
-
-      const explain = {
-        CORE: "市場主流 + 核心資產",
-        GROWTH: "跟主流有關，但不是核心必需",
-        INCOME: "成熟 / 現金流 / 景氣型",
-        DEFENSE: "防守 / 重估 / ETF / 低波動",
-        SPEC: "高波動 / 高不確定"
+    function renderStock(symbol){
+      const p = getProfile(symbol);
+      const u = getUniverse(symbol);
+      const m = getMarket(symbol);
+      if(!p && !u){
+        el.emptyState.style.display = 'block';
+        el.emptyState.innerHTML = `找不到 ${esc(symbol)} 資料。`;
+        el.stockPanel.style.display = 'none';
+        return;
+      }
+      const profile = p || {
+        symbol,
+        name: u?.name || symbol,
+        company_overview: `${symbol} 尚未建立完整 m1_stock_profile，先顯示 universe / market 基礎資訊。`,
+        basic_info: { industry: u?.sector || '--' },
+        pool30_fit: { pool30:false, stock_pool:true, category:u?.category_main || u?.category || 'watch', reason:'待補完整分析。' },
+        final_view: '目前只有基礎資料，請補 m1_stock_profile.json 後升級成完整決策板。',
+        valuation_and_timing: { buy_strategy:'等待', technical_view:{ conclusion:'等待資料補完。'} },
+        risk_opportunity: { risk:['資料尚未建置完整。'], opportunity:['可先用這頁作為單一股票入口。'] },
+        customer_analysis: { summary:'待補', key_customers:[] },
+        business_model: { summary:'待補', segments:[] },
+        competition: { summary:'待補', peers:[] },
+        financial_summary: {},
+        market_view: '待補',
+        quality_check: { total_score:7.5, completeness:7.0, specificity:7.0, data_support:7.0 }
       };
 
-      return `
-        <div class="m1view">
-          <div class="m1row">
-            <div class="m1name">大分類</div>
-            <div class="m1desc">${esc(explain[catMain] || "--")}</div>
-            <div class="m1val">${esc(catMain)}</div>
+      const revMix = buildRevenueMix(profile);
+      const cusMix = buildCustomerMix(profile);
+      const contracts = inferContracts(profile);
+      const positionPct = inferPositionPct(profile, m);
+      const hiLo = inferHighLow(profile, m);
+      const q = inferQualityScores(profile);
+      const val = inferValuationPin(profile);
+      const heat = inferHeat(profile);
+      const peerRows = inferPeerRows(symbol, profile);
+      const decisionPool = yn(profile?.pool30_fit?.pool30);
+      const category = String(profile?.pool30_fit?.category || u?.category_main || '--').toUpperCase();
+      const timing = (profile?.valuation_and_timing?.technical_view?.conclusion || profile?.valuation_and_timing?.buy_strategy || '等待').includes('不追') ? 'WAIT' : ((profile?.valuation_and_timing?.buy_strategy || '').includes('收') ? 'ACCUMULATE' : 'WAIT');
+      const fcn = /FCN 可做|適合 FCN|FCN 底層標的|可做名單/.test(JSON.stringify(profile)) ? 'LIMITED' : 'AVOID';
+      const summaryText = profile?.company_overview || profile?.final_view || '--';
+      const topCustomer = /約\s*(\d+(?:\.\d+)?)%/.exec(JSON.stringify(profile?.customer_analysis?.key_customers?.[0] || ''));
+      const topCustomerPct = topCustomer ? Number(topCustomer[1]) : (profile?.symbol === 'AVGO' ? 20 : null);
+      const top3Pct = /top-3[^\d]*(\d+(?:\.\d+)?)%/i.exec(JSON.stringify(profile)) ? Number(/top-3[^\d]*(\d+(?:\.\d+)?)%/i.exec(JSON.stringify(profile))[1]) : (/top-5[^\d]*(\d+(?:\.\d+)?)%/i.exec(JSON.stringify(profile)) ? Number(/top-5[^\d]*(\d+(?:\.\d+)?)%/i.exec(JSON.stringify(profile))[1]) : null);
+
+      const segmentsHtml = revMix.map((x,idx) => `
+        <div class="segment-item">
+          <span class="dot" style="background:${['#56ccf2','#2f80ed','#7db6ff','#b8d8ff'][idx % 4]}"></span>
+          <div>
+            <div style="font-weight:800">${esc(x.name)}</div>
+            <div class="segment-bar"><span style="width:${clamp(x.pct,0,100)}%"></span></div>
           </div>
-          <div class="m1row">
-            <div class="m1name">小分類</div>
-            <div class="m1desc">用來決定模板重點與對口</div>
-            <div class="m1val">${esc(catSub)}</div>
-          </div>
-          <div class="m1row">
-            <div class="m1name">波動</div>
-            <div class="m1desc">用來決定 FCN / 風險使用方式</div>
-            <div class="m1val">${esc(vol)}</div>
-          </div>
-          <div class="m1row">
-            <div class="m1name">類型</div>
-            <div class="m1desc">STOCK / ETF</div>
-            <div class="m1val">${esc(type)}</div>
-          </div>
-          <div class="m1row">
-            <div class="m1name">Sector</div>
-            <div class="m1desc">原始 universe 欄位</div>
-            <div class="m1val">${esc(sector)}</div>
+          <div style="font-weight:900">${fmt(x.pct,0)}%</div>
+        </div>
+      `).join('');
+
+      const growthRows = revMix.map(x => ({label:x.name, value: clamp(n(x.yoy, 12), -30, 120), show: x.yoy != null ? `${fmt(x.yoy,0)}%` : '--'}));
+      const customerRows = cusMix.map(x => `
+        <div class="bar-row">
+          <div class="label">${esc(x.name)}</div>
+          <div class="bar-track"><span style="width:${clamp(n(x.pct),0,100)}%"></span></div>
+          <div class="val">${fmt(x.pct,0)}%</div>
+        </div>
+      `).join('');
+
+      const contractHtml = contracts.length ? contracts.map(c => `
+        <div class="timeline-item">
+          <div class="timeline-year">${esc(c.customer)} → ${esc(c.endYear)}</div>
+          <div class="timeline-box">
+            <div class="t">${esc(c.customer)} 長約 / 合作能見度</div>
+            <div class="m">${esc(c.text)}</div>
           </div>
         </div>
-      `;
-    }
+      `).join('') : `<div class="small-note">目前未解析到具體年限，先以文字結論顯示。</div>`;
 
-    function buildFallbackCard(symbol, stock, market){
-      const price = market.price_now == null ? "--" : "$" + fmt(market.price_now, 2);
-      return {
-        company_name: symbol,
-        summary: "尚未建立完整分析，先以分類與市場資料顯示。",
-        content:
-          `${symbol} 目前尚未放入 competitive_cards.json 的完整分析內容。\n\n` +
-          `你可以先用這張卡看分類、波動與市場位置，再把完整公司分析補進 data/m1/competitive_cards.json。\n\n` +
-          `目前價格：${price}`,
-        tags: [stock?.category_main || up(stock?.category), stock?.category_sub || "--"].filter(Boolean),
-        category: stock?.category_main || up(stock?.category || "")
-      };
-    }
+      const kpiRevenue = parseFinancialNumber(profile?.financial_summary?.revenue);
+      const kpiGrowth = parsePercent(profile?.financial_summary?.growth);
+      const kpiNetMargin = parsePercent(profile?.financial_summary?.net_margin);
+      const kpiFcfMargin = parsePercent(profile?.financial_summary?.fcf_margin);
 
-    function renderCard(symbol){
-      const stock = state.lookup.get(symbol) || {};
-      const market = state.market[symbol] || {};
-      const card = state.cardLookup.get(symbol) || buildFallbackCard(symbol, stock, market);
+      const priceNow = hiLo.cur ?? n(m?.price_now, null);
+      const returns1w = Number.isFinite(m?.ret_1w) ? pctDecimal(m.ret_1w) : '--';
+      const returns1m = Number.isFinite(m?.ret_1m) ? pctDecimal(m.ret_1m) : '--';
+      const returns3m = Number.isFinite(m?.ret_3m) ? pctDecimal(m.ret_3m) : '--';
+      const returns12m = Number.isFinite(m?.ret_12m) ? pctDecimal(m.ret_12m) : '--';
+      const volumeRatio = Number.isFinite(m?.volume_ratio) ? fmt(m.volume_ratio,2) : '--';
 
-      const priceNow = market.price_now == null ? "--" : "$" + fmt(market.price_now,2);
-      const box1w = market.ret_1w == null ? "--" : pct(market.ret_1w);
-      const box1m = market.ret_1m == null ? "--" : pct(market.ret_1m);
-      const box3m = market.ret_3m == null ? "--" : pct(market.ret_3m);
-      const box12m = market.ret_12m == null ? "--" : pct(market.ret_12m);
-      const volRatio = market.volume_ratio == null ? "--" : fmt(market.volume_ratio,2);
+      const riskHtml = (profile?.risk_opportunity?.risk || []).map(x => `
+        <div class="bullet-item"><div class="t">Risk</div><div class="m">${esc(x)}</div></div>
+      `).join('');
+      const oppHtml = (profile?.risk_opportunity?.opportunity || []).map(x => `
+        <div class="bullet-item"><div class="t">Opportunity</div><div class="m">${esc(x)}</div></div>
+      `).join('');
 
-      const contentHtml = esc(card.content || "").replace(/\n/g, "<br>");
+      const peerHtml = peerRows.map((r, idx) => `
+        <tr>
+          <td class="${idx===0 ? 'peer-highlight' : ''}">${esc(r.symbol)}</td>
+          <td>${esc(r.role || '--')}</td>
+          <td>${Number.isFinite(r.pe) ? fmt(r.pe,1) + 'x' : '--'}</td>
+          <td>${Number.isFinite(r.growth) ? fmt(r.growth,1) + '%' : '--'}</td>
+          <td>${esc(r.note || '--')}</td>
+          <td>${esc(r.model || '--')}</td>
+        </tr>
+      `).join('');
 
-      return `
-        <section class="panel card">
-          <div class="card-head">
-            <div class="head-left">
-              <div class="symbol-pill">
-                <div class="sym">${esc(symbol)}</div>
-                <div class="cat">${esc(stock.category_main || stock.category || "")}</div>
+      const html = `
+        <section class="panel header-panel">
+          <div class="header-grid">
+            <div>
+              <div class="head-left">
+                <div class="logo-pill">
+                  <div class="sym">${esc(symbol)}</div>
+                  <div class="cat">${esc(category)}</div>
+                </div>
+                <div class="title">
+                  <h2>${esc(profile?.name || u?.name || symbol)}</h2>
+                  <div class="one-liner">${esc(summaryText)}</div>
+                  <div class="meta">
+                    <span class="chip">Type：${esc(profile?.type || u?.type || 'research')}</span>
+                    <span class="chip">Industry：${esc(profile?.basic_info?.industry || u?.sector || '--')}</span>
+                    <span class="chip">Sweet Zone：${esc(inferSweetZone(profile))}</span>
+                  </div>
+                </div>
               </div>
-              <div class="title-block">
-                <h2>${esc(card.company_name || symbol)}</h2>
-                <div class="title-meta">${esc(stock.sector || "")} ｜ ${esc(stock.category_sub || "")} ｜ ${esc(stock.type || "STOCK")}</div>
-                <div class="tags">
-                  ${(card.tags || []).map(t => `<span class="tag">${esc(t)}</span>`).join("")}
-                  ${stock.volatility ? `<span class="tag">VOL-${esc(stock.volatility)}</span>` : ""}
+
+              <div class="price-strip">
+                <div class="mini-kpi"><div class="k">Price Now</div><div class="v">${money(priceNow,2)}</div><div class="d">現價 / 觀察位階</div></div>
+                <div class="mini-kpi"><div class="k">1W / 1M</div><div class="v">${esc(returns1w)} / ${esc(returns1m)}</div><div class="d">短期變化</div></div>
+                <div class="mini-kpi"><div class="k">3M / 12M</div><div class="v">${esc(returns3m)} / ${esc(returns12m)}</div><div class="d">中長期變化</div></div>
+                <div class="mini-kpi"><div class="k">Volume Ratio</div><div class="v">${esc(volumeRatio)}</div><div class="d">量能強弱</div></div>
+                <div class="mini-kpi"><div class="k">52W Position</div><div class="v">${fmt(positionPct,0)}%</div><div class="d">越高越接近高位</div></div>
+              </div>
+
+              <div class="range-wrap">
+                <div class="range-top"><span>價格位置</span><span>52W Low → Current → 52W High</span></div>
+                <div class="range-bar">
+                  <div class="range-fill" style="width:${fmt(positionPct,0)}%"></div>
+                  <div class="range-pin" style="left:${fmt(positionPct,0)}%"></div>
+                </div>
+                <div class="range-label"><span>Low ${money(hiLo.low,2)}</span><span>Current ${money(priceNow,2)}</span><span>High ${money(hiLo.high,2)}</span></div>
+              </div>
+            </div>
+
+            <div>
+              <div class="decision-grid">
+                <div class="decision-card ${getDecisionClass(String(decisionPool).toLowerCase())}">
+                  <div class="k">Pool30</div><div class="v">${esc(decisionPool)}</div><div class="d">${esc(profile?.pool30_fit?.reason || '--')}</div>
+                </div>
+                <div class="decision-card ${getDecisionClass(category.toLowerCase())}">
+                  <div class="k">Category</div><div class="v">${esc(category)}</div><div class="d">${esc(profile?.pool30_fit?.reason || '--')}</div>
+                </div>
+                <div class="decision-card ${getDecisionClass(timing.toLowerCase())}">
+                  <div class="k">Timing</div><div class="v">${esc(timing)}</div><div class="d">${esc(profile?.valuation_and_timing?.technical_view?.conclusion || profile?.valuation_and_timing?.buy_strategy || '--')}</div>
+                </div>
+              </div>
+
+              <div class="decision-card ${getDecisionClass(fcn.toLowerCase())}" style="margin-top:10px">
+                <div class="k">FCN View</div><div class="v">${esc(fcn)}</div><div class="d">${esc(profile?.final_view || '--')}</div>
+              </div>
+
+              <div class="score-grid">
+                <div class="score-box"><div class="k">Business Quality</div><div class="v">${fmt(q.growth,1)}</div><div class="d">成長結構</div></div>
+                <div class="score-box"><div class="k">Revenue Visibility</div><div class="v">${fmt(top3Pct ? Math.min(10, 10 - (top3Pct/15)) : 7.5,1)}</div><div class="d">客戶 / 長約</div></div>
+                <div class="score-box"><div class="k">Financial Quality</div><div class="v">${fmt(q.overall,1)}</div><div class="d">資料完整 / 品質</div></div>
+                <div class="score-box"><div class="k">Valuation / Timing</div><div class="v">${fmt(Math.max(1, 10 - val.pos/12),1)}</div><div class="d">越高越便宜</div></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="two-col">
+          <section class="panel panel-body">
+            <div class="panel-head"><h3>2. 公司結構</h3><div class="panel-sub">Business model + revenue mix + growth drivers</div></div>
+            <div class="viz-grid">
+              <div class="viz-card">
+                <h4>Revenue Structure</h4>
+                <div class="donut-wrap">
+                  <div class="donut" style="background:conic-gradient(#56ccf2 0 ${fmt(revMix[0]?.pct||0,2)}%, #2f80ed ${fmt(revMix[0]?.pct||0,2)}% ${fmt((revMix[0]?.pct||0)+(revMix[1]?.pct||0),2)}%, #7db6ff ${fmt((revMix[0]?.pct||0)+(revMix[1]?.pct||0),2)}% ${fmt((revMix[0]?.pct||0)+(revMix[1]?.pct||0)+(revMix[2]?.pct||0),2)}%, #b8d8ff ${fmt((revMix[0]?.pct||0)+(revMix[1]?.pct||0)+(revMix[2]?.pct||0),2)}% 100%)">
+                    <div class="donut-center">
+                      <div>${esc(symbol)}</div>
+                      <small>Revenue Mix</small>
+                    </div>
+                  </div>
+                  <div class="segment-list">${segmentsHtml}</div>
+                </div>
+              </div>
+              <div class="viz-card">
+                <h4>Growth Structure</h4>
+                <div class="barlist">
+                  ${growthRows.map(r => `
+                    <div class="bar-row">
+                      <div class="label">${esc(r.label)}</div>
+                      <div class="bar-track"><span style="width:${clamp(Math.abs(r.value), 8, 100)}%"></span></div>
+                      <div class="val">${esc(r.show)}</div>
+                    </div>
+                  `).join('')}
                 </div>
               </div>
             </div>
+            <div class="section-note">${esc(profile?.business_model?.summary || profile?.company_overview || '--')}</div>
+          </section>
 
-            <div class="price-strip">
-              <div class="price-box"><div class="k">Price Now</div><div class="v">${esc(priceNow)}</div><div class="d">即時價格</div></div>
-              <div class="price-box"><div class="k">1W / 1M</div><div class="v">${esc(box1w)} / ${esc(box1m)}</div><div class="d">短期變化</div></div>
-              <div class="price-box"><div class="k">3M / 12M</div><div class="v">${esc(box3m)} / ${esc(box12m)}</div><div class="d">中長期變化</div></div>
-              <div class="price-box"><div class="k">Volume Ratio</div><div class="v">${esc(volRatio)}</div><div class="d">量能強弱</div></div>
-              <div class="price-box"><div class="k">Category</div><div class="v">${esc(stock.category_main || stock.category || "--")}</div><div class="d">${esc(stock.category_sub || "--")}</div></div>
+          <section class="panel panel-body">
+            <div class="panel-head"><h3>3. 客戶分析</h3><div class="panel-sub">Concentration / customer mix / contract visibility</div></div>
+            <div class="three-col">
+              <div class="score-box"><div class="k">Top Customer</div><div class="v">${topCustomerPct != null ? fmt(topCustomerPct,0) + '%' : '--'}</div><div class="d">單一客戶集中度</div></div>
+              <div class="score-box"><div class="k">Top Group</div><div class="v">${top3Pct != null ? fmt(top3Pct,0) + '%' : '--'}</div><div class="d">前 3 / 5 大集中度</div></div>
+              <div class="score-box"><div class="k">Customer Quality</div><div class="v">${fmt(top3Pct ? Math.max(4.5, 10 - top3Pct/10) : 7.8,1)}</div><div class="d">強客戶 + 高集中</div></div>
             </div>
-          </div>
+            <div class="viz-grid" style="margin-top:14px">
+              <div class="viz-card">
+                <h4>Customer Mix</h4>
+                <div class="barlist">${customerRows}</div>
+              </div>
+              <div class="viz-card">
+                <h4>Long Contract Timeline</h4>
+                <div class="timeline">${contractHtml}</div>
+              </div>
+            </div>
+            <div class="section-note">${esc(profile?.customer_analysis?.summary || '--')}</div>
+          </section>
+        </section>
 
-          <div class="section">
-            <h4>一句話摘要</h4>
-            <div class="paragraph"><span class="arrow">👉</span> ${esc(card.summary || "建置中")}</div>
-          </div>
+        <section class="two-col">
+          <section class="panel panel-body">
+            <div class="panel-head"><h3>4. 財務品質</h3><div class="panel-sub">Revenue / growth / margin / FCF / quality</div></div>
+            <div class="kpi-row">
+              <div class="mini-kpi"><div class="k">Revenue</div><div class="v">${kpiRevenue != null ? fmt(kpiRevenue,2) : '--'}</div><div class="d">資料中的營收規模</div></div>
+              <div class="mini-kpi"><div class="k">Growth</div><div class="v">${kpiGrowth != null ? fmt(kpiGrowth,1) + '%' : '--'}</div><div class="d">YoY 成長</div></div>
+              <div class="mini-kpi"><div class="k">Net Margin</div><div class="v">${kpiNetMargin != null ? fmt(kpiNetMargin,1) + '%' : '--'}</div><div class="d">獲利率</div></div>
+              <div class="mini-kpi"><div class="k">FCF Margin</div><div class="v">${kpiFcfMargin != null ? fmt(kpiFcfMargin,1) + '%' : '--'}</div><div class="d">現金轉換率</div></div>
+            </div>
+            <div class="viz-grid" style="margin-top:14px">
+              <div class="viz-card">
+                <h4>Quality Breakdown</h4>
+                <div class="barlist">
+                  <div class="bar-row"><div class="label">Growth</div><div class="bar-track"><span style="width:${q.growth*10}%"></span></div><div class="val">${fmt(q.growth,1)}</div></div>
+                  <div class="bar-row"><div class="label">Cash</div><div class="bar-track"><span style="width:${q.cash*10}%"></span></div><div class="val">${fmt(q.cash,1)}</div></div>
+                  <div class="bar-row"><div class="label">Margin</div><div class="bar-track"><span style="width:${q.margin*10}%"></span></div><div class="val">${fmt(q.margin,1)}</div></div>
+                  <div class="bar-row"><div class="label">Overall</div><div class="bar-track"><span style="width:${q.overall*10}%"></span></div><div class="val">${fmt(q.overall,1)}</div></div>
+                </div>
+              </div>
+              <div class="viz-card">
+                <h4>Financial View</h4>
+                <div class="section-note" style="margin-top:0">${esc(profile?.financial_summary?.revenue || '--')}</div>
+                <div class="section-note">${esc(profile?.financial_summary?.growth || '--')}</div>
+                <div class="section-note">${esc(profile?.financial_summary?.fcf_margin || '--')}</div>
+                <div class="section-note">${esc(profile?.financial_summary?.pe || '--')}</div>
+              </div>
+            </div>
+          </section>
 
-          <div class="section">
-            <h4>完整分析</h4>
-            <div class="paragraph">${contentHtml || "建置中"}</div>
-          </div>
+          <section class="panel panel-body">
+            <div class="panel-head"><h3>5. 市場在反映什麼</h3><div class="panel-sub">52W position / PE band / timing heat</div></div>
+            <div class="valuation-band">
+              <div style="font-weight:900">PE / Valuation Band</div>
+              <div class="band-line">
+                <div class="band-zone band-low"></div>
+                <div class="band-zone band-mid"></div>
+                <div class="band-zone band-high"></div>
+                <div class="band-pin" style="left:${fmt(val.pos,0)}%"></div>
+              </div>
+              <div class="band-labels"><span>Low ${fmt(val.low,1)}x</span><span>Current ${fmt(val.pe,1)}x</span><span>High ${fmt(val.high,1)}x</span></div>
+            </div>
+            <div class="heat-meter" style="margin-top:14px">
+              <div style="font-weight:900">Timing Heat</div>
+              <div class="heat-track"><div class="heat-pin" style="left:${fmt(heat,0)}%"></div></div>
+              <div class="band-labels" style="margin-top:8px"><span>Cold</span><span>Fair</span><span>Hot</span></div>
+            </div>
+            <div class="section-note">${esc(profile?.market_view || '--')}</div>
+            <div class="section-note">${esc(profile?.valuation_and_timing?.valuation_view || '--')}</div>
+            <div class="section-note">${esc(profile?.valuation_and_timing?.buy_strategy || '--')}</div>
+          </section>
+        </section>
 
-          <div class="section">
-            <h4>M1 分類視角</h4>
-            ${renderM1View(stock)}
+        <section class="panel panel-body">
+          <div class="panel-head"><h3>6. 競爭分析</h3><div class="panel-sub">Peer comparison / PE / model difference</div></div>
+          <div style="overflow:auto">
+            <table class="peer-table">
+              <tr>
+                <th>Symbol</th>
+                <th>Role</th>
+                <th>PE</th>
+                <th>Growth</th>
+                <th>Position</th>
+                <th>Business Model Difference</th>
+              </tr>
+              ${peerHtml}
+            </table>
           </div>
+          <div class="section-note">${esc(profile?.competition?.summary || '--')}</div>
+        </section>
 
-          <div class="conclusion">
-            <div class="headline">使用提醒</div>
-            <div class="text">這張卡的完整人話分析來自 <b>competitive_cards.json</b>；分類、波動與原始屬性來自 <b>universe_150.json</b>；價格與報酬來自 <b>m1_market_runtime.json</b>。你之後只要補資料，畫面就會直接更新。</div>
-          </div>
+        <section class="two-col">
+          <section class="panel panel-body">
+            <div class="panel-head"><h3>7. 風險 / 機會</h3><div class="panel-sub">Structured, not essay</div></div>
+            <div class="risk-opp">
+              <div class="ro-box risk-box"><h4>風險</h4><div class="bullet-list">${riskHtml}</div></div>
+              <div class="ro-box opp-box"><h4>機會</h4><div class="bullet-list">${oppHtml}</div></div>
+            </div>
+          </section>
+
+          <section class="panel panel-body">
+            <div class="panel-head"><h3>8. 最終判斷</h3><div class="panel-sub">Pool30 / Category / FCN / Timing</div></div>
+            <div class="final-grid">
+              <div class="final-card"><div class="k">Pool30</div><div class="v">${esc(decisionPool)}</div><div class="r">${esc(profile?.pool30_fit?.reason || '--')}</div></div>
+              <div class="final-card"><div class="k">Category</div><div class="v">${esc(category)}</div><div class="r">${esc(profile?.pool30_fit?.reason || '--')}</div></div>
+              <div class="final-card"><div class="k">FCN</div><div class="v">${esc(fcn)}</div><div class="r">${esc(profile?.final_view || '--')}</div></div>
+              <div class="final-card"><div class="k">Timing</div><div class="v">${esc(timing)}</div><div class="r">${esc(profile?.valuation_and_timing?.technical_view?.conclusion || profile?.valuation_and_timing?.buy_strategy || '--')}</div></div>
+            </div>
+            <div class="headline-box">
+              <div class="h">一句話結論</div>
+              <div class="t">${esc(profile?.final_view || '--')}</div>
+            </div>
+          </section>
         </section>
       `;
-    }
 
-    function runResearch(){
-      const symbols = getInputs();
-      if(!symbols.length){
-        clearInputs();
-        return;
-      }
-
-      renderBasket(symbols);
-      el.cardsWrap.innerHTML = symbols.map(renderCard).join("");
-      el.cardsWrap.classList.remove("hidden");
-      el.emptyState.classList.add("hidden");
-    }
-
-    function buildUniverseSummary(){
-      const groups = { CORE: [], GROWTH: [], INCOME: [], DEFENSE: [], SPEC: [] };
-      state.universe.forEach(x => {
-        const k = x.category_main || up(x.category);
-        if(!groups[k]) groups[k] = [];
-        groups[k].push(x);
-      });
-
-      el.universeMap.innerHTML = "";
-      Object.entries(groups).forEach(([key, list]) => {
-        if(!list.length) return;
-        const wrap = document.createElement("div");
-        wrap.className = "group";
-        const head = document.createElement("div");
-        head.className = "group-head";
-        head.innerHTML = `<div class="group-title">${key}</div><div class="muted">${list.length} 檔</div>`;
-        const btn = document.createElement("button");
-        btn.className = "mini-btn";
-        btn.textContent = "展開";
-        head.appendChild(btn);
-        wrap.appendChild(head);
-
-        const table = document.createElement("div");
-        table.className = "table";
-        wrap.appendChild(table);
-
-        let open = false;
-        function draw(){
-          const show = open ? list : list.slice(0,1);
-          table.innerHTML = `
-            <div class="row-head">
-              <div>Symbol</div>
-              <div>Type</div>
-              <div>Sub</div>
-              <div>Vol</div>
-              <div>Card</div>
-              <div>Action</div>
-            </div>
-          ` + show.map(item => {
-            const hasCard = state.cardLookup.has(up(item.symbol));
-            return `
-              <div class="row-item">
-                <div>${esc(item.symbol)}</div>
-                <div>${esc(item.type || "STOCK")}</div>
-                <div>${esc(item.category_sub || "--")}</div>
-                <div>${esc(item.volatility || "--")}</div>
-                <div>${hasCard ? "Ready" : "建置中"}</div>
-                <div><button class="report-btn" data-s="${esc(item.symbol)}">查看報告</button></div>
-              </div>
-            `;
-          }).join("");
-
-          table.querySelectorAll(".report-btn").forEach(b => {
-            b.addEventListener("click", () => {
-              el.s1.value = b.dataset.s;
-              el.s2.value = ""; el.s3.value = ""; el.s4.value = ""; el.s5.value = "";
-              runResearch();
-              window.scrollTo({top:0, behavior:"smooth"});
-            });
-          });
-        }
-
-        btn.addEventListener("click", () => {
-          open = !open;
-          btn.textContent = open ? "收合" : "展開";
-          draw();
-        });
-
-        draw();
-        el.universeMap.appendChild(wrap);
-      });
+      el.emptyState.style.display = 'none';
+      el.stockPanel.style.display = 'flex';
+      el.stockPanel.innerHTML = html;
+      el.stockSearch.value = symbol;
+      renderWatchlist();
     }
 
     async function init(){
-      const [universe, cards, market] = await Promise.all([
-        fetchJson("data/m1/universe_150.json"),
-        fetchJson("data/m1/competitive_cards.json"),
-        fetchJson("data/m1/m1_market_runtime.json")
+      const [universe, market, profiles] = await Promise.all([
+        fetchJson('data/m1/universe_150.json'),
+        fetchJson('data/m1/m1_market_runtime.json'),
+        fetchJson('data/m1/m1_stock_profile.json')
       ]);
 
       state.universe = asArray(universe);
-      state.cards = asArray(cards);
       state.market = market || {};
+      state.profiles = profiles || {};
+      buildUniverseMap();
 
-      buildLookup();
-      renderDashboard();
-      buildUniverseSummary();
+      state.currentListType = el.listSelector.value;
+      state.currentList = getList(state.currentListType);
+      const urlSymbol = getSymbolFromURL();
+      const last = up(localStorage.getItem('m1_last_symbol'));
+      state.currentSymbol = state.currentList.includes(urlSymbol) ? urlSymbol : (state.currentList.includes(last) ? last : (state.currentList[0] || urlSymbol || 'AVGO'));
+
+      if(!state.currentList.length){
+        el.emptyState.innerHTML = '沒有可用資料，請確認 data/m1/m1_stock_profile.json / universe_150.json / m1_market_runtime.json 路徑。';
+        return;
+      }
+
+      renderWatchlist();
+      renderStock(state.currentSymbol);
     }
 
-    [el.s1, el.s2, el.s3, el.s4, el.s5].forEach(input => {
-      input.addEventListener("input", () => {
-        input.value = up(input.value).replace(/[^A-Z0-9]/g, "");
-      });
-      input.addEventListener("keydown", e => {
-        if(e.key === "Enter") runResearch();
-      });
+    el.stockSearch.addEventListener('input', e => renderSuggestions(e.target.value));
+    el.stockSearch.addEventListener('keydown', e => {
+      if(e.key === 'Enter'){
+        const value = up(el.stockSearch.value);
+        if(value) goToStock(value);
+        el.suggestions.classList.remove('show');
+      }
     });
-
-    el.runBtn.addEventListener("click", runResearch);
-    el.clearBtn.addEventListener("click", clearInputs);
+    document.addEventListener('click', e => {
+      if(!el.stockSearch.closest('.searchBox').contains(e.target)) el.suggestions.classList.remove('show');
+    });
+    el.prevBtn.addEventListener('click', goPrev);
+    el.nextBtn.addEventListener('click', goNext);
+    el.reloadBtn.addEventListener('click', () => location.reload());
+    el.listSelector.addEventListener('change', () => {
+      state.currentListType = el.listSelector.value;
+      state.currentList = getList(state.currentListType);
+      if(!state.currentList.includes(state.currentSymbol)) state.currentSymbol = state.currentList[0] || state.currentSymbol;
+      renderWatchlist();
+      renderStock(state.currentSymbol);
+    });
 
     init();
   </script>
