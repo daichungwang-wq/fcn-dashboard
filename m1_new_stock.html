@@ -860,9 +860,9 @@ async function init(){
     fetchJson('data/m1/m1_market_runtime.json')
   ]);
 
-  state.universe = u || [];
-  state.cards = c || [];
-  state.market = m || {};
+  state.universe = Array.isArray(u) ? u : Object.values(u || {});
+state.cards    = Array.isArray(c) ? c : Object.values(c || {});
+state.market   = m || {};
 
   buildLookup();
   renderDashboard();
