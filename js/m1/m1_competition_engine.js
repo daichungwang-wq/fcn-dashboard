@@ -549,7 +549,7 @@ function buildCompetitionCard(stock) {
     symbol: safe(stock.symbol),
     company_name: safe(stock.name),
 
-    const WHITE_LIST = ["NVDA", "TSM", "ORCL", "ETN", "PLD", "COIN"];
+    const WHITE_LIST = ["NVDA", "TSM", "ORCL", "ETN", "PLD","COIN"];
 
 function buildCompetitionCard(stock) {
   const symbol = (stock.symbol || "").toUpperCase();
