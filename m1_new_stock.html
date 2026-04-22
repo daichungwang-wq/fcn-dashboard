@@ -320,10 +320,10 @@
         <section class="panel panel-body">
           <h3>資料來源</h3>
           <div class="small-note">
-            1. <b>data/m1/m1_stock_profile.json</b>（深度版）<br/>
-            2. <b>data/m1/m1_stock_profile_all.json</b>（泛用版）<br/>
-            3. <b>data/m1/universe_150.json</b><br/>
-            4. <b>data/m1/m1_market_runtime.json</b>
+            1. <b>data/m1/m1_stock_profile.json</b><br/>
+            2. <b>data/m1/universe_150.json</b><br/>
+            3. <b>data/m1/m1_market_runtime.json</b><br/>
+            4. 後續可再接 M1 / M7 分數與圖表引擎
           </div>
         </section>
 
@@ -422,24 +422,20 @@
     }
 
     function getUniverse(symbol){ return state.universeMap.get(up(symbol)) || {}; }
-    function getDeepProfile(symbol){
-      return normalizeProfileShape(state.deepProfiles[up(symbol)] || null);
-    }
-    function getLightProfile(symbol){
-      return normalizeProfileShape(state.lightProfiles[up(symbol)] || null);
-    }
+    function getDeepProfile(symbol){ return state.deepProfiles[up(symbol)] || null; }
+    function getLightProfile(symbol){ return state.lightProfiles[up(symbol)] || null; }
     function getProfile(symbol){
       const sym = up(symbol);
-      if(state.profileMode === 'deep') return getDeepProfile(sym);
-      if(state.profileMode === 'light') return getLightProfile(sym);
+      if(state.profileMode === 'deep') return getDeepProfile(sym) || getLightProfile(sym) || null;
+      if(state.profileMode === 'light') return getLightProfile(sym) || getDeepProfile(sym) || null;
       return getDeepProfile(sym) || getLightProfile(sym) || null;
     }
     function getProfileSource(symbol){
       const sym = up(symbol);
       const hasDeep = !!getDeepProfile(sym);
       const hasLight = !!getLightProfile(sym);
-      if(state.profileMode === 'deep') return hasDeep ? 'deep' : 'fallback';
-      if(state.profileMode === 'light') return hasLight ? 'light' : 'fallback';
+      if(state.profileMode === 'deep') return hasDeep ? 'deep' : (hasLight ? 'light_fallback' : 'fallback');
+      if(state.profileMode === 'light') return hasLight ? 'light' : (hasDeep ? 'deep_fallback' : 'fallback');
       return hasDeep ? 'deep' : (hasLight ? 'light' : 'fallback');
     }
     function getMarket(symbol){ return state.market?.[up(symbol)] || {}; }
@@ -456,33 +452,6 @@
         }
       });
       return out;
-    }
-
-    function normalizeProfileShape(raw){
-      if(!raw || typeof raw !== 'object') return null;
-      const p = { ...raw };
-      const pos = Array.isArray(p.company_positioning) ? p.company_positioning : [];
-      p.one_line_1 = p.one_line_1 || pos[0] || '';
-      p.one_line_2 = p.one_line_2 || pos[1] || '';
-      p.one_line_3 = p.one_line_3 || pos[2] || '';
-      p.type = p.type === 'research_light' ? 'light' : (p.type || 'research');
-      p.company_overview = p.company_overview || [p.one_line_1, p.one_line_2, p.one_line_3].filter(Boolean).join(' ');
-      return p;
-    }
-
-    function modeLabel(mode){
-      return mode === 'deep' ? '深度版' : mode === 'light' ? '泛用版' : '自動';
-    }
-
-    function sourceLabel(source){
-      const m = {
-        deep: 'deep',
-        light: 'light',
-        deep_fallback: 'deep fallback',
-        light_fallback: 'light fallback',
-        fallback: 'fallback'
-      };
-      return m[source] || source || '--';
     }
 
     function getList(type){
@@ -687,7 +656,7 @@
     function renderWatchlist(){
       const list = state.currentList.slice(0,8);
       el.watchlist.innerHTML = list.map(sym => {
-        const p = getProfile(sym) || getDeepProfile(sym) || getLightProfile(sym);
+        const p = getProfile(sym);
         const u = getUniverse(sym);
         return `
           <div class="watch-item" data-sym="${esc(sym)}">
@@ -743,6 +712,8 @@
 
     function setProfileMode(mode){
       state.profileMode = mode;
+      el.deepBtn.classList.toggle('active', mode === 'deep');
+      el.lightBtn.classList.toggle('active', mode === 'light');
       el.deepBtn.classList.toggle('active', state.profileMode === 'deep');
       el.lightBtn.classList.toggle('active', state.profileMode === 'light');
       renderWatchlist();
@@ -795,37 +766,18 @@
       }
       document.dispatchEvent(new CustomEvent('m1:stock-change', { detail: payload }));
       if(el.bridgeSymbol) el.bridgeSymbol.textContent = payload.symbol || '--';
-      if(el.bridgeSource) el.bridgeSource.textContent = sourceLabel(payload.source || '--');
+      if(el.bridgeSource) el.bridgeSource.textContent = payload.source || '--';
     }
 
-    function renderStock(symbol){
-      const p = getProfile(symbol);
-      const source = getProfileSource(symbol);
-      state.currentSource = source;
-      const u = getUniverse(symbol);
-      const m = getMarket(symbol);
-      if(!p && !u){
-        el.emptyState.style.display = 'block';
-        el.emptyState.innerHTML = `找不到 ${esc(symbol)} 資料。`;
-        el.stockPanel.style.display = 'none';
-        return;
-      }
-      if(!p && u){
-        el.emptyState.style.display = 'block';
-        el.stockPanel.style.display = 'none';
-        el.emptyState.innerHTML = `此股票目前沒有可用的${modeLabel(state.profileMode)}研究資料。<br><span style="font-size:13px;color:#6c7c8d">可先切換另一版本，或補上對應 JSON。</span>`;
-        el.stockSearch.value = symbol;
-        syncSharedStockPayload(symbol);
-        renderWatchlist();
-        return;
-      }
-      const profile = p || {
+    
+function buildFallbackProfile(symbol, universe){
+      return {
         symbol,
-        name: u?.name || symbol,
-        company_overview: `${symbol} 尚未建立完整 m1_stock_profile，先顯示 universe / market 基礎資訊。`,
-        basic_info: { industry: u?.sector || '--' },
-        pool30_fit: { pool30:false, stock_pool:true, category:u?.category_main || u?.category || 'watch', reason:'待補完整分析。' },
-        final_view: '目前只有基礎資料，請補 m1_stock_profile.json 後升級成完整決策板。',
+        name: universe?.name || symbol,
+        company_overview: `${symbol} 尚未建立完整研究資料，先顯示 universe / market 基礎資訊。`,
+        basic_info: { industry: universe?.sector || '--' },
+        pool30_fit: { pool30:false, stock_pool:true, category:universe?.category_main || universe?.category || 'watch', reason:'待補完整分析。' },
+        final_view: '目前只有基礎資料，請補 m1_stock_profile.json 或 m1_stock_profile_all.json 後升級成完整決策板。',
         valuation_and_timing: { buy_strategy:'等待', technical_view:{ conclusion:'等待資料補完。'} },
         risk_opportunity: { risk:['資料尚未建置完整。'], opportunity:['可先用這頁作為單一股票入口。'] },
         customer_analysis: { summary:'待補', key_customers:[] },
@@ -835,7 +787,203 @@
         market_view: '待補',
         quality_check: { total_score:7.5, completeness:7.0, specificity:7.0, data_support:7.0 }
       };
+    }
 
+    function normalizeLightProfile(raw, symbol, universe){
+      if(!raw) return null;
+      const positioning = Array.isArray(raw.company_positioning) ? raw.company_positioning : [];
+      return {
+        symbol: raw.symbol || symbol,
+        name: raw.name || universe?.name || symbol,
+        type: 'research_light',
+        company_overview: positioning.filter(Boolean).join(' ') || raw.company_structure || raw.final_decision || '',
+        basic_info: { industry: universe?.sector || universe?.category_main || '--' },
+        pool30_fit: {
+          pool30: null,
+          stock_pool: true,
+          category: universe?.category_main || universe?.category || 'watch',
+          reason: raw.final_decision || raw.market_view || '--'
+        },
+        valuation_and_timing: {
+          valuation_view: raw.market_view || '--',
+          buy_strategy: raw.final_decision || '--',
+          sweet_zone: '',
+          technical_view: { conclusion: raw.final_decision || '--' }
+        },
+        business_model: { summary: raw.company_structure || '--', segments: [] },
+        customer_analysis: { summary: raw.customer_analysis || '--', key_customers: [] },
+        financial_summary: {
+          revenue: raw.financial_quality || '--',
+          growth: '--',
+          net_margin: '--',
+          fcf_margin: '--',
+          pe: '--'
+        },
+        competition: { summary: raw.competition || '--', peers: [] },
+        risk_opportunity: {
+          risk: raw.risk_opportunity ? [raw.risk_opportunity] : [],
+          opportunity: []
+        },
+        market_view: raw.market_view || '--',
+        final_view: raw.final_decision || '--',
+        quality_check: { total_score:7.6, completeness:7.5, specificity:7.6, data_support:7.2 },
+        one_line_1: positioning[0] || '',
+        one_line_2: positioning[1] || '',
+        one_line_3: positioning[2] || '',
+        _light_raw: raw
+      };
+    }
+
+    function getRenderableProfile(symbol){
+      const source = getProfileSource(symbol);
+      const u = getUniverse(symbol);
+      const raw = getProfile(symbol);
+      if(!raw) return { profile: buildFallbackProfile(symbol, u), source:'fallback' };
+      if(source.startsWith('light')) return { profile: normalizeLightProfile(raw, symbol, u), source };
+      return { profile: raw, source };
+    }
+
+    function renderLightStock(symbol, profile, source, universe, market){
+      const priceNow = Number.isFinite(market?.price_now) ? market.price_now : null;
+      const returns1w = Number.isFinite(market?.ret_1w) ? pctDecimal(market.ret_1w) : '--';
+      const returns1m = Number.isFinite(market?.ret_1m) ? pctDecimal(market.ret_1m) : '--';
+      const returns3m = Number.isFinite(market?.ret_3m) ? pctDecimal(market.ret_3m) : '--';
+      const returns12m = Number.isFinite(market?.ret_12m) ? pctDecimal(market.ret_12m) : '--';
+      const volumeRatio = Number.isFinite(market?.volume_ratio) ? fmt(market.volume_ratio,2) : '--';
+      const positionPct = inferPositionPct(profile, market);
+      const hiLo = inferHighLow(profile, market);
+      const category = String(profile?.pool30_fit?.category || universe?.category_main || '--').toUpperCase();
+      const timing = (profile?.final_view || '').includes('等') || (profile?.market_view || '').includes('等待') ? 'WAIT' : '--';
+      const q = inferQualityScores(profile);
+      const decisionPool = yn(profile?.pool30_fit?.pool30);
+      const light = profile._light_raw || {};
+      const sourceLabel = source === 'light_fallback' ? 'light_fallback' : 'light';
+
+      return `
+        <section class="panel header-panel">
+          <div class="header-grid">
+            <div>
+              <div class="head-left">
+                <div class="logo-pill">
+                  <div class="sym">${esc(symbol)}</div>
+                  <div class="cat">${esc(category)}</div>
+                </div>
+                <div class="title">
+                  <h2>${esc(profile?.name || universe?.name || symbol)}</h2>
+                  <div class="one-liner">
+                    ${[profile.one_line_1, profile.one_line_2, profile.one_line_3].filter(Boolean).map(x=>esc(x)).join('<br/>') || esc(profile.company_overview || '--')}
+                  </div>
+                  <div class="meta">
+                    <span class="chip">Type：${esc(profile?.type || 'research_light')}</span>
+                    <span class="chip">Source：${esc(sourceLabel)}</span>
+                    <span class="chip">Industry：${esc(profile?.basic_info?.industry || universe?.sector || '--')}</span>
+                    <span class="chip">Mode：泛用版簡化顯示</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="price-strip">
+                <div class="mini-kpi"><div class="k">Price Now</div><div class="v">${money(priceNow,2)}</div><div class="d">現價 / 觀察位階</div></div>
+                <div class="mini-kpi"><div class="k">1W / 1M</div><div class="v">${esc(returns1w)} / ${esc(returns1m)}</div><div class="d">短期變化</div></div>
+                <div class="mini-kpi"><div class="k">3M / 12M</div><div class="v">${esc(returns3m)} / ${esc(returns12m)}</div><div class="d">中長期變化</div></div>
+                <div class="mini-kpi"><div class="k">Volume Ratio</div><div class="v">${esc(volumeRatio)}</div><div class="d">量能強弱</div></div>
+                <div class="mini-kpi"><div class="k">52W Position</div><div class="v">${fmt(positionPct,0)}%</div><div class="d">越高越接近高位</div></div>
+              </div>
+
+              <div class="range-wrap">
+                <div class="range-top"><span>價格位置</span><span>52W Low → Current → 52W High</span></div>
+                <div class="range-bar">
+                  <div class="range-fill" style="width:${fmt(positionPct,0)}%"></div>
+                  <div class="range-pin" style="left:${fmt(positionPct,0)}%"></div>
+                </div>
+                <div class="range-label"><span>Low ${money(hiLo.low,2)}</span><span>Current ${money(priceNow,2)}</span><span>High ${money(hiLo.high,2)}</span></div>
+              </div>
+            </div>
+
+            <div>
+              <div class="decision-grid">
+                <div class="decision-card warn">
+                  <div class="k">Pool30</div><div class="v">${esc(decisionPool)}</div><div class="d">${esc(profile?.pool30_fit?.reason || '--')}</div>
+                </div>
+                <div class="decision-card ${getDecisionClass(category.toLowerCase())}">
+                  <div class="k">Category</div><div class="v">${esc(category)}</div><div class="d">泛用版先沿用 universe / light 判讀</div>
+                </div>
+                <div class="decision-card warn">
+                  <div class="k">Timing</div><div class="v">${esc(timing)}</div><div class="d">${esc(profile?.final_view || profile?.market_view || '--')}</div>
+                </div>
+              </div>
+
+              <div class="decision-card warn" style="margin-top:10px">
+                <div class="k">FCN View</div><div class="v">LIGHT</div><div class="d">泛用版先提供研究定位與一句話結論，詳細 FCN 判斷待深度版補齊。</div>
+              </div>
+
+              <div class="score-grid">
+                <div class="score-box"><div class="k">Business Quality</div><div class="v">${fmt(q.growth,1)}</div><div class="d">Light 估計值</div></div>
+                <div class="score-box"><div class="k">Revenue Visibility</div><div class="v">7.5</div><div class="d">泛用版預設</div></div>
+                <div class="score-box"><div class="k">Financial Quality</div><div class="v">${fmt(q.overall,1)}</div><div class="d">資料完整度</div></div>
+                <div class="score-box"><div class="k">Valuation / Timing</div><div class="v">${fmt(Math.max(1, 10 - positionPct/12),1)}</div><div class="d">以市場位階粗估</div></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="two-col">
+          <section class="panel panel-body">
+            <div class="panel-head"><h3>2. 公司結構</h3><div class="panel-sub">Light 版本：一段話快速理解在做什麼</div></div>
+            <div class="section-note">${esc(light.company_structure || '--')}</div>
+          </section>
+
+          <section class="panel panel-body">
+            <div class="panel-head"><h3>3. 客戶分析</h3><div class="panel-sub">Light 版本：先看客戶型態與集中風險</div></div>
+            <div class="section-note">${esc(light.customer_analysis || '--')}</div>
+          </section>
+        </section>
+
+        <section class="two-col">
+          <section class="panel panel-body">
+            <div class="panel-head"><h3>4. 財務品質</h3><div class="panel-sub">Light 版本：先看財務特性，不強做 KPI</div></div>
+            <div class="section-note">${esc(light.financial_quality || '--')}</div>
+          </section>
+
+          <section class="panel panel-body">
+            <div class="panel-head"><h3>5. 市場在反映什麼</h3><div class="panel-sub">Light 版本：一句話看市場敘事</div></div>
+            <div class="valuation-band">
+              <div style="font-weight:900">市場位階</div>
+              <div class="band-line">
+                <div class="band-zone band-low"></div>
+                <div class="band-zone band-mid"></div>
+                <div class="band-zone band-high"></div>
+                <div class="band-pin" style="left:${fmt(positionPct,0)}%"></div>
+              </div>
+              <div class="band-labels"><span>Low</span><span>Current ${money(priceNow,2)}</span><span>High</span></div>
+            </div>
+            <div class="section-note">${esc(light.market_view || '--')}</div>
+          </section>
+        </section>
+
+        <section class="panel panel-body">
+          <div class="panel-head"><h3>6. 競爭分析</h3><div class="panel-sub">Light 版本：保留最重要的 2~3 句</div></div>
+          <div class="section-note">${esc(light.competition || '--')}</div>
+        </section>
+
+        <section class="two-col">
+          <section class="panel panel-body">
+            <div class="panel-head"><h3>7. 風險 / 機會</h3><div class="panel-sub">Light 版本：先給一句總結</div></div>
+            <div class="section-note">${esc(light.risk_opportunity || '--')}</div>
+          </section>
+
+          <section class="panel panel-body">
+            <div class="panel-head"><h3>8. 最終判斷</h3><div class="panel-sub">Light 版本：可讀、可篩選、待升級深度研究</div></div>
+            <div class="headline-box" style="margin-top:0">
+              <div class="h">一句話結論</div>
+              <div class="t">${esc(light.final_decision || '--')}</div>
+            </div>
+          </section>
+        </section>
+      `;
+    }
+
+    function renderDeepStock(symbol, profile, source, u, m){
       const revMix = buildRevenueMix(profile);
       const cusMix = buildCustomerMix(profile);
       const contracts = inferContracts(profile);
@@ -914,7 +1062,7 @@
         </tr>
       `).join('');
 
-      const html = `
+      return `
         <section class="panel header-panel">
           <div class="header-grid">
             <div>
@@ -925,14 +1073,10 @@
                 </div>
                 <div class="title">
                   <h2>${esc(profile?.name || u?.name || symbol)}</h2>
-                  <div class="one-liner">
-                    ${[profile?.one_line_1, profile?.one_line_2, profile?.one_line_3].filter(Boolean).length
-                      ? [profile?.one_line_1, profile?.one_line_2, profile?.one_line_3].filter(Boolean).map(x => `<div>${esc(x)}</div>`).join('')
-                      : esc(summaryText)}
-                  </div>
+                  <div class="one-liner">${esc(summaryText)}</div>
                   <div class="meta">
                     <span class="chip">Type：${esc(profile?.type || u?.type || 'research')}</span>
-                    <span class="chip">Source：${esc(sourceLabel(source))}</span>
+                    <span class="chip">Source：${esc(source)}</span>
                     <span class="chip">Industry：${esc(profile?.basic_info?.industry || u?.sector || '--')}</span>
                     <span class="chip">Sweet Zone：${esc(inferSweetZone(profile))}</span>
                   </div>
@@ -1131,6 +1275,27 @@
           </section>
         </section>
       `;
+    }
+
+    function renderStock(symbol){
+      const { profile, source } = getRenderableProfile(symbol);
+      state.currentSource = source;
+      const u = getUniverse(symbol);
+      const m = getMarket(symbol);
+
+      if(!profile && !u){
+        el.emptyState.style.display = 'block';
+        el.emptyState.innerHTML = `找不到 ${esc(symbol)} 資料。`;
+        el.stockPanel.style.display = 'none';
+        return;
+      }
+
+      let html = '';
+      if(source.startsWith('light')){
+        html = renderLightStock(symbol, profile, source, u, m);
+      }else{
+        html = renderDeepStock(symbol, profile, source, u, m);
+      }
 
       el.emptyState.style.display = 'none';
       el.stockPanel.style.display = 'flex';
@@ -1140,7 +1305,7 @@
       renderWatchlist();
     }
 
-    async function init(){
+async function init(){
       const [universe, market, deepProfiles, lightProfiles] = await Promise.all([
         fetchJson('data/m1/universe_150.json'),
         fetchJson('data/m1/m1_market_runtime.json'),
