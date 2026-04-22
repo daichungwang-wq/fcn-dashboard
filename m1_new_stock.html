@@ -251,6 +251,40 @@
       .peer-table{display:block;overflow:auto}
     }
 
+
+    .toolbar-secondary{
+      max-width:1680px;margin:10px auto 0;
+      display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;
+    }
+    .toolbar-secondary .spacer{
+      min-height:48px;border-radius:14px;border:1px dashed transparent;
+    }
+    .module-bar{
+      display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;
+    }
+    .module-btn{
+      height:40px;border-radius:12px;border:1px solid var(--line);background:#fff;color:var(--ink);
+      font-size:13px;font-weight:900;padding:0 12px;cursor:pointer;box-shadow:var(--shadow);
+    }
+    .module-btn:hover{background:#f4f9ff;border-color:#bfd7ef}
+    .progress-stack{display:grid;gap:10px}
+    .progress-card{
+      border:1px solid #e4edf6;background:#f9fbfe;border-radius:14px;padding:12px;
+    }
+    .progress-card .row-top{
+      display:flex;justify-content:space-between;gap:8px;align-items:end;margin-bottom:8px
+    }
+    .progress-card .ttl{font-size:13px;font-weight:900}
+    .progress-card .pct{font-size:22px;font-weight:900;color:#123255}
+    .progress-card .ratio{font-size:12px;color:var(--muted)}
+    .progress-track{height:8px;border-radius:999px;background:#e7eef6;overflow:hidden}
+    .progress-fill{height:100%;background:linear-gradient(90deg,#7bc6ff,#2f80ed)}
+    .cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px}
+    .cat-pill{
+      display:flex;justify-content:space-between;gap:8px;padding:6px 8px;border-radius:10px;
+      background:#fff;border:1px solid #e4edf6;font-size:11px
+    }
+
     @media print{
       body{background:#fff}
       .topbar,.sidebar,.hero{display:none !important}
@@ -288,6 +322,19 @@
         <button id="reloadBtn" class="toolbtn primary">重新載入</button>
         <button id="pdfBtn" class="toolbtn">匯出 PDF</button>
       </div>
+      <div class="toolbar-secondary">
+        <div class="spacer"></div>
+        <div class="module-bar">
+          <button class="module-btn" id="goM1Btn">M1</button>
+          <button class="module-btn" id="goM2Btn">M2</button>
+          <button class="module-btn" id="goM3Btn">M3</button>
+          <button class="module-btn" id="goM4Btn">M4</button>
+          <button class="module-btn" id="goM6Btn">M6</button>
+          <button class="module-btn" id="goM7Btn">M7</button>
+          <button class="module-btn" id="goM8Btn">M8</button>
+          <button class="module-btn" id="goMilestoneBtn">Milestone 3</button>
+        </div>
+      </div>
     </div>
 
     <section class="hero">
@@ -315,6 +362,12 @@
           <h3>快速名單</h3>
           <div class="small-note" style="margin-bottom:10px">這裡會依目前 list 顯示前幾檔，方便快速切換。</div>
           <div id="watchlist" class="watchlist"></div>
+        </section>
+
+        <section class="panel panel-body">
+          <h3>Research Progress</h3>
+          <div class="small-note" style="margin-bottom:10px">研究優先順序：4 → 3 → 2 → 1，並追蹤基本資料建置達成率。</div>
+          <div id="researchProgress" class="progress-stack"></div>
         </section>
 
         <section class="panel panel-body">
@@ -357,7 +410,10 @@
       currentSymbol: null,
       currentListType: 'profile',
       currentList: [],
-      profileMode: 'auto'
+      profileMode: 'auto',
+      candidate80: [],
+      pool30List: [],
+      progressStats: null
     };
 
     const el = {
@@ -375,7 +431,16 @@
       emptyState: document.getElementById('emptyState'),
       stockPanel: document.getElementById('stockPanel'),
       bridgeSymbol: document.getElementById('bridgeSymbol'),
-      bridgeSource: document.getElementById('bridgeSource')
+      bridgeSource: document.getElementById('bridgeSource'),
+      researchProgress: document.getElementById('researchProgress'),
+      goM1Btn: document.getElementById('goM1Btn'),
+      goM2Btn: document.getElementById('goM2Btn'),
+      goM3Btn: document.getElementById('goM3Btn'),
+      goM4Btn: document.getElementById('goM4Btn'),
+      goM6Btn: document.getElementById('goM6Btn'),
+      goM7Btn: document.getElementById('goM7Btn'),
+      goM8Btn: document.getElementById('goM8Btn'),
+      goMilestoneBtn: document.getElementById('goMilestoneBtn')
     };
 
     function esc(s){ return String(s ?? '').replace(/[&<>\"]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m])); }
@@ -617,6 +682,141 @@
       return rows.slice(0,4);
     }
 
+
+    function normalizeSymbolListFromAny(data){
+      if(!data) return [];
+      if(Array.isArray(data)){
+        return data.map(x => {
+          if(typeof x === 'string') return up(x);
+          if(x && typeof x === 'object') return up(x.symbol || x.ticker || x.code || x.name || '');
+          return '';
+        }).filter(Boolean);
+      }
+      if(typeof data === 'object'){
+        if(Array.isArray(data.symbols)) return normalizeSymbolListFromAny(data.symbols);
+        if(Array.isArray(data.items)) return normalizeSymbolListFromAny(data.items);
+        if(Array.isArray(data.stocks)) return normalizeSymbolListFromAny(data.stocks);
+        if(Array.isArray(data.data)) return normalizeSymbolListFromAny(data.data);
+        return Object.keys(data).map(up).filter(Boolean);
+      }
+      return [];
+    }
+
+    function getCategoryOfSymbol(symbol){
+      const sym = up(symbol);
+      const u = getUniverse(sym);
+      const deep = getDeepProfile(sym);
+      const light = getLightProfile(sym);
+      return String(
+        u?.category_main ||
+        u?.category ||
+        deep?.pool30_fit?.category ||
+        light?.pool30_fit?.category ||
+        ''
+      ).toLowerCase();
+    }
+
+    function buildCategoryCounts(symbols, deepSet){
+      const order = ['core','growth','defensive','income','speculative'];
+      const result = {};
+      order.forEach(cat => result[cat] = { done: 0, total: 0 });
+      symbols.forEach(sym => {
+        const cat = getCategoryOfSymbol(sym);
+        const key = order.find(x => cat.includes(x)) || 'speculative';
+        result[key].total += 1;
+        if(deepSet.has(up(sym))) result[key].done += 1;
+      });
+      return result;
+    }
+
+    function buildProgressBlock(symbols, deepSet){
+      const list = [...new Set((symbols || []).map(up).filter(Boolean))];
+      const total = list.length;
+      const done = list.filter(sym => deepSet.has(sym)).length;
+      return {
+        done,
+        total,
+        pct: total ? Math.round(done / total * 100) : 0,
+        byCategory: buildCategoryCounts(list, deepSet)
+      };
+    }
+
+    function derivePool30List(){
+      const set = new Set();
+      Object.entries(state.deepProfiles || {}).forEach(([sym, p]) => {
+        if(p?.pool30_fit?.pool30 || p?.pool30_fit?.stock_pool) set.add(up(sym));
+      });
+      Object.entries(state.lightProfiles || {}).forEach(([sym, p]) => {
+        if(p?.pool30_fit?.pool30 || p?.pool30_fit?.stock_pool) set.add(up(sym));
+      });
+      return [...set];
+    }
+
+    function buildResearchProgressStats(){
+      const deepSet = new Set(Object.keys(state.deepProfiles || {}).map(up));
+      const lightSet = new Set(Object.keys(state.lightProfiles || {}).map(up));
+      const allSymbols = asArray(state.universe).map(x => up(x.symbol)).filter(Boolean);
+      const candidateSymbols = normalizeSymbolListFromAny(state.candidate80);
+      const pool30Symbols = (state.pool30List && state.pool30List.length ? state.pool30List : derivePool30List()).map(up);
+      const prioritySymbols = pool30Symbols.filter(sym => {
+        const cat = getCategoryOfSymbol(sym);
+        return !cat.includes('income') && !cat.includes('defensive');
+      });
+
+      return {
+        priority: buildProgressBlock(prioritySymbols, deepSet),
+        pool30: buildProgressBlock(pool30Symbols, deepSet),
+        candidate: buildProgressBlock(candidateSymbols, deepSet),
+        all: buildProgressBlock(allSymbols, deepSet),
+        basic: {
+          done: lightSet.size,
+          total: allSymbols.length,
+          pct: allSymbols.length ? Math.round(lightSet.size / allSymbols.length * 100) : 0,
+          byCategory: buildCategoryCounts(allSymbols, lightSet)
+        }
+      };
+    }
+
+    function renderProgressCard(title, stat, accent='blue'){
+      const labels = {
+        core:'core',
+        growth:'growth',
+        defensive:'def',
+        income:'inc',
+        speculative:'spec'
+      };
+      const order = ['core','growth','defensive','income','speculative'];
+      const catHtml = order.map(cat => {
+        const item = stat.byCategory?.[cat] || { done:0, total:0 };
+        return `<div class="cat-pill"><span>${labels[cat]}</span><b>${item.done}/${item.total}</b></div>`;
+      }).join('');
+      return `
+        <div class="progress-card">
+          <div class="row-top">
+            <div>
+              <div class="ttl">${title}</div>
+              <div class="ratio">${stat.done}/${stat.total}</div>
+            </div>
+            <div class="pct">${stat.pct}%</div>
+          </div>
+          <div class="progress-track"><div class="progress-fill" style="width:${stat.pct}%"></div></div>
+          <div class="cat-grid">${catHtml}</div>
+        </div>
+      `;
+    }
+
+    function renderResearchProgress(){
+      state.progressStats = buildResearchProgressStats();
+      if(!el.researchProgress) return;
+      el.researchProgress.innerHTML = [
+        renderProgressCard('④ 優先 Stocks', state.progressStats.priority),
+        renderProgressCard('③ Pool30 / FCN', state.progressStats.pool30),
+        renderProgressCard('② Candidate 80', state.progressStats.candidate),
+        renderProgressCard('① All Coverage', state.progressStats.all),
+        renderProgressCard('基本資料建置', state.progressStats.basic)
+      ].join('');
+    }
+
     function getAllSearchItems(){
       const set = new Map();
       Object.keys(state.profiles || {}).forEach(sym => {
@@ -705,9 +905,23 @@
     }
 
 
-    function openM6(){
+    function openModule(target){
       const sym = up(state.currentSymbol || 'AVGO');
-      window.location.href = `m6.html?symbol=${encodeURIComponent(sym)}`;
+      const map = {
+        m1: `m1_new_stock.html?symbol=${encodeURIComponent(sym)}`,
+        m2: `m2.html`,
+        m3: `m3.html`,
+        m4: `m4.html`,
+        m6: `m6.html?symbol=${encodeURIComponent(sym)}`,
+        m7: `m7.html`,
+        m8: `m8.html`,
+        milestone: `milestone3_index.html`
+      };
+      window.location.href = map[target] || map.m1;
+    }
+
+    function openM6(){
+      openModule('m6');
     }
 
     function setProfileMode(mode){
@@ -769,15 +983,25 @@
       if(el.bridgeSource) el.bridgeSource.textContent = payload.source || '--';
     }
 
-    
-function buildFallbackProfile(symbol, universe){
-      return {
+    function renderStock(symbol){
+      const p = getProfile(symbol);
+      const source = getProfileSource(symbol);
+      state.currentSource = source;
+      const u = getUniverse(symbol);
+      const m = getMarket(symbol);
+      if(!p && !u){
+        el.emptyState.style.display = 'block';
+        el.emptyState.innerHTML = `找不到 ${esc(symbol)} 資料。`;
+        el.stockPanel.style.display = 'none';
+        return;
+      }
+      const profile = p || {
         symbol,
-        name: universe?.name || symbol,
-        company_overview: `${symbol} 尚未建立完整研究資料，先顯示 universe / market 基礎資訊。`,
-        basic_info: { industry: universe?.sector || '--' },
-        pool30_fit: { pool30:false, stock_pool:true, category:universe?.category_main || universe?.category || 'watch', reason:'待補完整分析。' },
-        final_view: '目前只有基礎資料，請補 m1_stock_profile.json 或 m1_stock_profile_all.json 後升級成完整決策板。',
+        name: u?.name || symbol,
+        company_overview: `${symbol} 尚未建立完整 m1_stock_profile，先顯示 universe / market 基礎資訊。`,
+        basic_info: { industry: u?.sector || '--' },
+        pool30_fit: { pool30:false, stock_pool:true, category:u?.category_main || u?.category || 'watch', reason:'待補完整分析。' },
+        final_view: '目前只有基礎資料，請補 m1_stock_profile.json 後升級成完整決策板。',
         valuation_and_timing: { buy_strategy:'等待', technical_view:{ conclusion:'等待資料補完。'} },
         risk_opportunity: { risk:['資料尚未建置完整。'], opportunity:['可先用這頁作為單一股票入口。'] },
         customer_analysis: { summary:'待補', key_customers:[] },
@@ -787,203 +1011,7 @@ function buildFallbackProfile(symbol, universe){
         market_view: '待補',
         quality_check: { total_score:7.5, completeness:7.0, specificity:7.0, data_support:7.0 }
       };
-    }
 
-    function normalizeLightProfile(raw, symbol, universe){
-      if(!raw) return null;
-      const positioning = Array.isArray(raw.company_positioning) ? raw.company_positioning : [];
-      return {
-        symbol: raw.symbol || symbol,
-        name: raw.name || universe?.name || symbol,
-        type: 'research_light',
-        company_overview: positioning.filter(Boolean).join(' ') || raw.company_structure || raw.final_decision || '',
-        basic_info: { industry: universe?.sector || universe?.category_main || '--' },
-        pool30_fit: {
-          pool30: null,
-          stock_pool: true,
-          category: universe?.category_main || universe?.category || 'watch',
-          reason: raw.final_decision || raw.market_view || '--'
-        },
-        valuation_and_timing: {
-          valuation_view: raw.market_view || '--',
-          buy_strategy: raw.final_decision || '--',
-          sweet_zone: '',
-          technical_view: { conclusion: raw.final_decision || '--' }
-        },
-        business_model: { summary: raw.company_structure || '--', segments: [] },
-        customer_analysis: { summary: raw.customer_analysis || '--', key_customers: [] },
-        financial_summary: {
-          revenue: raw.financial_quality || '--',
-          growth: '--',
-          net_margin: '--',
-          fcf_margin: '--',
-          pe: '--'
-        },
-        competition: { summary: raw.competition || '--', peers: [] },
-        risk_opportunity: {
-          risk: raw.risk_opportunity ? [raw.risk_opportunity] : [],
-          opportunity: []
-        },
-        market_view: raw.market_view || '--',
-        final_view: raw.final_decision || '--',
-        quality_check: { total_score:7.6, completeness:7.5, specificity:7.6, data_support:7.2 },
-        one_line_1: positioning[0] || '',
-        one_line_2: positioning[1] || '',
-        one_line_3: positioning[2] || '',
-        _light_raw: raw
-      };
-    }
-
-    function getRenderableProfile(symbol){
-      const source = getProfileSource(symbol);
-      const u = getUniverse(symbol);
-      const raw = getProfile(symbol);
-      if(!raw) return { profile: buildFallbackProfile(symbol, u), source:'fallback' };
-      if(source.startsWith('light')) return { profile: normalizeLightProfile(raw, symbol, u), source };
-      return { profile: raw, source };
-    }
-
-    function renderLightStock(symbol, profile, source, universe, market){
-      const priceNow = Number.isFinite(market?.price_now) ? market.price_now : null;
-      const returns1w = Number.isFinite(market?.ret_1w) ? pctDecimal(market.ret_1w) : '--';
-      const returns1m = Number.isFinite(market?.ret_1m) ? pctDecimal(market.ret_1m) : '--';
-      const returns3m = Number.isFinite(market?.ret_3m) ? pctDecimal(market.ret_3m) : '--';
-      const returns12m = Number.isFinite(market?.ret_12m) ? pctDecimal(market.ret_12m) : '--';
-      const volumeRatio = Number.isFinite(market?.volume_ratio) ? fmt(market.volume_ratio,2) : '--';
-      const positionPct = inferPositionPct(profile, market);
-      const hiLo = inferHighLow(profile, market);
-      const category = String(profile?.pool30_fit?.category || universe?.category_main || '--').toUpperCase();
-      const timing = (profile?.final_view || '').includes('等') || (profile?.market_view || '').includes('等待') ? 'WAIT' : '--';
-      const q = inferQualityScores(profile);
-      const decisionPool = yn(profile?.pool30_fit?.pool30);
-      const light = profile._light_raw || {};
-      const sourceLabel = source === 'light_fallback' ? 'light_fallback' : 'light';
-
-      return `
-        <section class="panel header-panel">
-          <div class="header-grid">
-            <div>
-              <div class="head-left">
-                <div class="logo-pill">
-                  <div class="sym">${esc(symbol)}</div>
-                  <div class="cat">${esc(category)}</div>
-                </div>
-                <div class="title">
-                  <h2>${esc(profile?.name || universe?.name || symbol)}</h2>
-                  <div class="one-liner">
-                    ${[profile.one_line_1, profile.one_line_2, profile.one_line_3].filter(Boolean).map(x=>esc(x)).join('<br/>') || esc(profile.company_overview || '--')}
-                  </div>
-                  <div class="meta">
-                    <span class="chip">Type：${esc(profile?.type || 'research_light')}</span>
-                    <span class="chip">Source：${esc(sourceLabel)}</span>
-                    <span class="chip">Industry：${esc(profile?.basic_info?.industry || universe?.sector || '--')}</span>
-                    <span class="chip">Mode：泛用版簡化顯示</span>
-                  </div>
-                </div>
-              </div>
-
-              <div class="price-strip">
-                <div class="mini-kpi"><div class="k">Price Now</div><div class="v">${money(priceNow,2)}</div><div class="d">現價 / 觀察位階</div></div>
-                <div class="mini-kpi"><div class="k">1W / 1M</div><div class="v">${esc(returns1w)} / ${esc(returns1m)}</div><div class="d">短期變化</div></div>
-                <div class="mini-kpi"><div class="k">3M / 12M</div><div class="v">${esc(returns3m)} / ${esc(returns12m)}</div><div class="d">中長期變化</div></div>
-                <div class="mini-kpi"><div class="k">Volume Ratio</div><div class="v">${esc(volumeRatio)}</div><div class="d">量能強弱</div></div>
-                <div class="mini-kpi"><div class="k">52W Position</div><div class="v">${fmt(positionPct,0)}%</div><div class="d">越高越接近高位</div></div>
-              </div>
-
-              <div class="range-wrap">
-                <div class="range-top"><span>價格位置</span><span>52W Low → Current → 52W High</span></div>
-                <div class="range-bar">
-                  <div class="range-fill" style="width:${fmt(positionPct,0)}%"></div>
-                  <div class="range-pin" style="left:${fmt(positionPct,0)}%"></div>
-                </div>
-                <div class="range-label"><span>Low ${money(hiLo.low,2)}</span><span>Current ${money(priceNow,2)}</span><span>High ${money(hiLo.high,2)}</span></div>
-              </div>
-            </div>
-
-            <div>
-              <div class="decision-grid">
-                <div class="decision-card warn">
-                  <div class="k">Pool30</div><div class="v">${esc(decisionPool)}</div><div class="d">${esc(profile?.pool30_fit?.reason || '--')}</div>
-                </div>
-                <div class="decision-card ${getDecisionClass(category.toLowerCase())}">
-                  <div class="k">Category</div><div class="v">${esc(category)}</div><div class="d">泛用版先沿用 universe / light 判讀</div>
-                </div>
-                <div class="decision-card warn">
-                  <div class="k">Timing</div><div class="v">${esc(timing)}</div><div class="d">${esc(profile?.final_view || profile?.market_view || '--')}</div>
-                </div>
-              </div>
-
-              <div class="decision-card warn" style="margin-top:10px">
-                <div class="k">FCN View</div><div class="v">LIGHT</div><div class="d">泛用版先提供研究定位與一句話結論，詳細 FCN 判斷待深度版補齊。</div>
-              </div>
-
-              <div class="score-grid">
-                <div class="score-box"><div class="k">Business Quality</div><div class="v">${fmt(q.growth,1)}</div><div class="d">Light 估計值</div></div>
-                <div class="score-box"><div class="k">Revenue Visibility</div><div class="v">7.5</div><div class="d">泛用版預設</div></div>
-                <div class="score-box"><div class="k">Financial Quality</div><div class="v">${fmt(q.overall,1)}</div><div class="d">資料完整度</div></div>
-                <div class="score-box"><div class="k">Valuation / Timing</div><div class="v">${fmt(Math.max(1, 10 - positionPct/12),1)}</div><div class="d">以市場位階粗估</div></div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section class="two-col">
-          <section class="panel panel-body">
-            <div class="panel-head"><h3>2. 公司結構</h3><div class="panel-sub">Light 版本：一段話快速理解在做什麼</div></div>
-            <div class="section-note">${esc(light.company_structure || '--')}</div>
-          </section>
-
-          <section class="panel panel-body">
-            <div class="panel-head"><h3>3. 客戶分析</h3><div class="panel-sub">Light 版本：先看客戶型態與集中風險</div></div>
-            <div class="section-note">${esc(light.customer_analysis || '--')}</div>
-          </section>
-        </section>
-
-        <section class="two-col">
-          <section class="panel panel-body">
-            <div class="panel-head"><h3>4. 財務品質</h3><div class="panel-sub">Light 版本：先看財務特性，不強做 KPI</div></div>
-            <div class="section-note">${esc(light.financial_quality || '--')}</div>
-          </section>
-
-          <section class="panel panel-body">
-            <div class="panel-head"><h3>5. 市場在反映什麼</h3><div class="panel-sub">Light 版本：一句話看市場敘事</div></div>
-            <div class="valuation-band">
-              <div style="font-weight:900">市場位階</div>
-              <div class="band-line">
-                <div class="band-zone band-low"></div>
-                <div class="band-zone band-mid"></div>
-                <div class="band-zone band-high"></div>
-                <div class="band-pin" style="left:${fmt(positionPct,0)}%"></div>
-              </div>
-              <div class="band-labels"><span>Low</span><span>Current ${money(priceNow,2)}</span><span>High</span></div>
-            </div>
-            <div class="section-note">${esc(light.market_view || '--')}</div>
-          </section>
-        </section>
-
-        <section class="panel panel-body">
-          <div class="panel-head"><h3>6. 競爭分析</h3><div class="panel-sub">Light 版本：保留最重要的 2~3 句</div></div>
-          <div class="section-note">${esc(light.competition || '--')}</div>
-        </section>
-
-        <section class="two-col">
-          <section class="panel panel-body">
-            <div class="panel-head"><h3>7. 風險 / 機會</h3><div class="panel-sub">Light 版本：先給一句總結</div></div>
-            <div class="section-note">${esc(light.risk_opportunity || '--')}</div>
-          </section>
-
-          <section class="panel panel-body">
-            <div class="panel-head"><h3>8. 最終判斷</h3><div class="panel-sub">Light 版本：可讀、可篩選、待升級深度研究</div></div>
-            <div class="headline-box" style="margin-top:0">
-              <div class="h">一句話結論</div>
-              <div class="t">${esc(light.final_decision || '--')}</div>
-            </div>
-          </section>
-        </section>
-      `;
-    }
-
-    function renderDeepStock(symbol, profile, source, u, m){
       const revMix = buildRevenueMix(profile);
       const cusMix = buildCustomerMix(profile);
       const contracts = inferContracts(profile);
@@ -1062,7 +1090,7 @@ function buildFallbackProfile(symbol, universe){
         </tr>
       `).join('');
 
-      return `
+      const html = `
         <section class="panel header-panel">
           <div class="header-grid">
             <div>
@@ -1275,27 +1303,6 @@ function buildFallbackProfile(symbol, universe){
           </section>
         </section>
       `;
-    }
-
-    function renderStock(symbol){
-      const { profile, source } = getRenderableProfile(symbol);
-      state.currentSource = source;
-      const u = getUniverse(symbol);
-      const m = getMarket(symbol);
-
-      if(!profile && !u){
-        el.emptyState.style.display = 'block';
-        el.emptyState.innerHTML = `找不到 ${esc(symbol)} 資料。`;
-        el.stockPanel.style.display = 'none';
-        return;
-      }
-
-      let html = '';
-      if(source.startsWith('light')){
-        html = renderLightStock(symbol, profile, source, u, m);
-      }else{
-        html = renderDeepStock(symbol, profile, source, u, m);
-      }
 
       el.emptyState.style.display = 'none';
       el.stockPanel.style.display = 'flex';
@@ -1305,12 +1312,14 @@ function buildFallbackProfile(symbol, universe){
       renderWatchlist();
     }
 
-async function init(){
-      const [universe, market, deepProfiles, lightProfiles] = await Promise.all([
+    async function init(){
+      const [universe, market, deepProfiles, lightProfiles, candidate80, pool30Json] = await Promise.all([
         fetchJson('data/m1/universe_150.json'),
         fetchJson('data/m1/m1_market_runtime.json'),
         fetchJson('data/m1/m1_stock_profile.json'),
-        fetchJson('data/m1/m1_stock_profile_all.json')
+        fetchJson('data/m1/m1_stock_profile_all.json'),
+        fetchJson('data/m1/m1_candidate_80.json'),
+        fetchJson('data/pool30.json')
       ]);
 
       state.universe = asArray(universe);
@@ -1318,7 +1327,10 @@ async function init(){
       state.deepProfiles = normalizeProfiles(deepProfiles || {});
       state.lightProfiles = normalizeProfiles(lightProfiles || {});
       state.profiles = { ...state.lightProfiles, ...state.deepProfiles };
+      state.candidate80 = candidate80 || [];
+      state.pool30List = normalizeSymbolListFromAny(pool30Json);
       buildUniverseMap();
+      renderResearchProgress();
 
       state.currentListType = el.listSelector.value;
       state.currentList = getList(state.currentListType);
@@ -1353,6 +1365,14 @@ async function init(){
     el.deepBtn.addEventListener('click', () => setProfileMode('deep'));
     el.lightBtn.addEventListener('click', () => setProfileMode('light'));
     el.m6Btn.addEventListener('click', openM6);
+    if(el.goM1Btn) el.goM1Btn.addEventListener('click', () => openModule('m1'));
+    if(el.goM2Btn) el.goM2Btn.addEventListener('click', () => openModule('m2'));
+    if(el.goM3Btn) el.goM3Btn.addEventListener('click', () => openModule('m3'));
+    if(el.goM4Btn) el.goM4Btn.addEventListener('click', () => openModule('m4'));
+    if(el.goM6Btn) el.goM6Btn.addEventListener('click', () => openModule('m6'));
+    if(el.goM7Btn) el.goM7Btn.addEventListener('click', () => openModule('m7'));
+    if(el.goM8Btn) el.goM8Btn.addEventListener('click', () => openModule('m8'));
+    if(el.goMilestoneBtn) el.goMilestoneBtn.addEventListener('click', () => openModule('milestone'));
     el.reloadBtn.addEventListener('click', () => location.reload());
     el.pdfBtn.addEventListener('click', exportPDF);
     el.listSelector.addEventListener('change', () => {
