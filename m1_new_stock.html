@@ -45,7 +45,7 @@
     }
     .toolbar{
       max-width:1680px;margin:0 auto;
-      display:grid;grid-template-columns:1.1fr auto auto auto auto;gap:10px;align-items:center;
+      display:grid;grid-template-columns:1.1fr auto auto auto auto auto;gap:10px;align-items:center;
     }
     .searchBox{
       display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:16px;
@@ -249,6 +249,20 @@
       .title h2{font-size:28px}.hero h1{font-size:28px}.logo-pill{width:92px;min-width:92px;height:92px}
       .peer-table{display:block;overflow:auto}
     }
+
+    @media print{
+      body{background:#fff}
+      .topbar,.sidebar,.hero{display:none !important}
+      .wrap{max-width:none;padding:0}
+      .page-grid{display:block;margin-top:0}
+      .content{display:block}
+      #stockPanel{display:block !important}
+      .panel{box-shadow:none;border:1px solid #d8dee6;break-inside:avoid;page-break-inside:avoid}
+      .two-col,.viz-grid,.risk-opp,.header-grid,.final-grid,.decision-grid,.score-grid,.three-col,.kpi-row,.price-strip{display:grid;grid-template-columns:1fr 1fr !important}
+      .headline-box,.range-wrap,.valuation-band,.heat-meter,.viz-card,.decision-card,.final-card,.score-box,.mini-kpi{break-inside:avoid;page-break-inside:avoid}
+      .searchBox,.toolbtn,.selector,.suggestions{display:none !important}
+    }
+
   </style>
 </head>
 <body>
@@ -268,6 +282,7 @@
         <button id="prevBtn" class="toolbtn">← 上一檔</button>
         <button id="nextBtn" class="toolbtn">下一檔 →</button>
         <button id="reloadBtn" class="toolbtn primary">重新載入</button>
+        <button id="pdfBtn" class="toolbtn">匯出 PDF</button>
       </div>
     </div>
 
@@ -333,6 +348,7 @@
       prevBtn: document.getElementById('prevBtn'),
       nextBtn: document.getElementById('nextBtn'),
       reloadBtn: document.getElementById('reloadBtn'),
+      pdfBtn: document.getElementById('pdfBtn'),
       listSelector: document.getElementById('listSelector'),
       watchlist: document.getElementById('watchlist'),
       emptyState: document.getElementById('emptyState'),
@@ -385,6 +401,20 @@
     function getUniverse(symbol){ return state.universeMap.get(up(symbol)) || {}; }
     function getProfile(symbol){ return state.profiles[up(symbol)] || null; }
     function getMarket(symbol){ return state.market?.[up(symbol)] || {}; }
+
+    function normalizeProfiles(raw){
+      const out = {};
+      if(!raw || typeof raw !== 'object') return out;
+      Object.entries(raw).forEach(([k,v]) => {
+        if(v && typeof v === 'object' && !Array.isArray(v)) {
+          const keySym = up(k);
+          const valueSym = up(v.symbol || '');
+          if(keySym) out[keySym] = v;
+          if(valueSym) out[valueSym] = v;
+        }
+      });
+      return out;
+    }
 
     function getList(type){
       if(type === 'profile') return Object.keys(state.profiles || {}).map(up);
@@ -626,6 +656,14 @@
       const i = getCurrentIndex();
       const next = state.currentList[(i + 1) % state.currentList.length];
       goToStock(next);
+    }
+
+    function exportPDF(){
+      const sym = up(state.currentSymbol || 'M1');
+      const oldTitle = document.title;
+      document.title = `M1_${sym}_Decision_Panel`;
+      window.print();
+      setTimeout(() => { document.title = oldTitle; }, 300);
     }
 
     function renderStock(symbol){
@@ -962,7 +1000,7 @@
 
       state.universe = asArray(universe);
       state.market = market || {};
-      state.profiles = profiles || {};
+      state.profiles = normalizeProfiles(profiles || {});
       buildUniverseMap();
 
       state.currentListType = el.listSelector.value;
@@ -994,6 +1032,7 @@
     el.prevBtn.addEventListener('click', goPrev);
     el.nextBtn.addEventListener('click', goNext);
     el.reloadBtn.addEventListener('click', () => location.reload());
+    el.pdfBtn.addEventListener('click', exportPDF);
     el.listSelector.addEventListener('change', () => {
       state.currentListType = el.listSelector.value;
       state.currentList = getList(state.currentListType);
@@ -1006,7 +1045,6 @@
   </script>
 </body>
 </html>
-
 
 
 
