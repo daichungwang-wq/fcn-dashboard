@@ -492,8 +492,7 @@
 "risk_opportunity": "機會在廣告版、全球內容與 live programming，風險在內容支出與訂戶增速放緩。",
 "final_decision": "可進 stock_pool 與 growth/core 邊緣名單，但不建議在高估值突破時追價。"
 },
-  {
-  "NVDA": {
+    "NVDA": {
     "symbol": "NVDA",
     "name": "NVIDIA",
     "type": "research_light",
