@@ -31,16 +31,31 @@
     const box = document.getElementById("active-build-context");
     if (!box) return;
 
-    const rows = [
-      `• Current Task：${ctx?.current_task || "--"}`,
-      `• Current Focus：${ctx?.current_focus || "--"}`,
-      `• Production Modules Locked：${(ctx?.production_modules_locked || []).join(", ") || "--"}`,
-      `• Sandbox Modules Active：${(ctx?.sandbox_modules_active || []).join(", ") || "--"}`,
-      `• Allowed Scope：${(ctx?.allowed_scope || []).join(", ") || "--"}`,
-      `• Forbidden Scope：${(ctx?.forbidden_scope || []).join(", ") || "--"}`
-    ];
+    const line = (v) => {
+      if (Array.isArray(v)) return v.length ? v.join(", ") : "--";
+      if (typeof v === "string") return v.trim() || "--";
+      return v ?? "--";
+    };
 
-    box.innerHTML = rows.join("<br>");
+    box.innerHTML = [
+      "目前任務 Current Task：",
+      line(ctx?.current_task),
+      "",
+      "本輪重點 Current Focus：",
+      line(ctx?.current_focus),
+      "",
+      "正式版已鎖定模組 Production Locked：",
+      line(ctx?.production_modules_locked),
+      "",
+      "目前 Sandbox：",
+      line(ctx?.sandbox_modules_active),
+      "",
+      "本輪可做 Allowed Scope：",
+      line(ctx?.allowed_scope),
+      "",
+      "本輪禁止 Forbidden Scope：",
+      line(ctx?.forbidden_scope)
+    ].join("<br>");
   }
 
   function card(k, v) {
@@ -61,7 +76,7 @@
     `).join("");
   }
 
-  function renderData(rows) {
+  function renderDataReadiness(rows) {
     const tbody = document.getElementById("data-table");
     tbody.innerHTML = (rows || []).map(r => `
       <tr>
@@ -147,18 +162,18 @@
     try {
       const res = await fetch(DATA_PATH, { cache: "no-store" });
       if (!res.ok) throw new Error(`讀取失敗：${res.status}`);
-      const data = await res.json();
+      const dashboardData = await res.json();
 
-      document.getElementById("generatedAt").textContent = `資料時間：${data.generated_at || "--"} ｜ 版本：${data.version || "--"}`;
-      renderActiveBuildContext(data.active_build_context || {});
-      renderOverview(data.overview || {});
-      renderEngines(data.engines || []);
-      renderData(data.data_artifacts || []);
-      renderFormulas(data.formula_domains || []);
-      renderModules(data.modules || []);
-      renderRisks(data.blockers || []);
-      renderMilestones(data.milestones || []);
-      renderHandoffMemory(data.handoff_memory || {});
+      document.getElementById("generatedAt").textContent = `資料時間：${dashboardData.generated_at || "--"} ｜ 版本：${dashboardData.version || "--"}`;
+      renderActiveBuildContext(dashboardData.active_build_context || {});
+      renderOverview(dashboardData.overview || {});
+      renderEngines(dashboardData.engines || []);
+      renderDataReadiness(dashboardData.data_artifacts || []);
+      renderFormulas(dashboardData.formula_domains || []);
+      renderModules(dashboardData.modules || []);
+      renderRisks(dashboardData.blockers || []);
+      renderMilestones(dashboardData.milestones || []);
+      renderHandoffMemory(dashboardData.handoff_memory || {});
     } catch (err) {
       setError(`Engine Progress Dashboard 載入失敗：${err.message}`);
     }
