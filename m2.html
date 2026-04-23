@@ -1175,13 +1175,54 @@
       return result;
     }
 
-    function bankHtml(split) {
-      return `
-        <div class="summary-sub">富邦：USD ${fmt(split.富邦, 0)}</div>
-        <div class="summary-sub">永豐：USD ${fmt(split.永豐, 0)}</div>
-        ${split.other > 0 ? `<div class="summary-sub">其他：USD ${fmt(split.other, 0)}</div>` : ``}
-      `;
-    }
+   function bankHtml(split, totalAmt = 0, showPct = false) {
+  const fbPct = totalAmt > 0
+    ? ((split.富邦 / totalAmt) * 100).toFixed(0)
+    : 0;
+
+  const sinoPct = totalAmt > 0
+    ? ((split.永豐 / totalAmt) * 100).toFixed(0)
+    : 0;
+
+  const otherPct = totalAmt > 0
+    ? ((split.other / totalAmt) * 100).toFixed(0)
+    : 0;
+
+  let html = "";
+
+  if (showPct) {
+    html += `
+      <div class="summary-sub">
+        富邦：USD ${fmt(split.富邦,0)} (${fbPct}%)
+      </div>
+
+      <div class="summary-sub">
+        永豐：USD ${fmt(split.永豐,0)} (${sinoPct}%)
+      </div>
+    `;
+  } else {
+    html += `
+      <div class="summary-sub">
+        富邦：USD ${fmt(split.富邦,0)}
+      </div>
+
+      <div class="summary-sub">
+        永豐：USD ${fmt(split.永豐,0)}
+      </div>
+    `;
+  }
+
+  if (split.other > 0) {
+    html += `
+      <div class="summary-sub">
+        其他：USD ${fmt(split.other,0)}
+        ${showPct ? `(${otherPct}%)` : ""}
+      </div>
+    `;
+  }
+
+  return html;
+}
 
     function buildSummary(data) {
       const totalList = data.fcns || [];
