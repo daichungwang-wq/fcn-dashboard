@@ -425,7 +425,7 @@
     ],
     "type": "STOCK",
     "category_main": "SPEC",
-    "category_sub": "CRYPTO_EXCHANGE_MINERS",
+    "category_sub": "CRYPTO_EXCHANGE_PLATFORM",
     "Anchor": 20,
     "volatility": "HIGH"
   },
@@ -464,7 +464,7 @@
     ],
     "type": "STOCK",
     "category_main": "SPEC",
-    "category_sub": "CRYPTO_EXCHANGE_MINERS",
+    "category_sub": "CRYPTO_MINERS",
     "Anchor": 20,
     "volatility": "HIGH"
   },
@@ -477,7 +477,7 @@
     ],
     "type": "STOCK",
     "category_main": "SPEC",
-    "category_sub": "CRYPTO_EXCHANGE_MINERS",
+    "category_sub": "CRYPTO_MINERS",
     "Anchor": 20,
     "volatility": "HIGH"
   },
@@ -568,7 +568,7 @@
     ],
     "type": "STOCK",
     "category_main": "INCOME",
-    "category_sub": "YIELD_REIT_BONDLIKE_INCOME",
+    "category_sub": "ENERGY_CASHFLOW_CYCLICAL",
     "Anchor": 14,
     "volatility": "HIGH"
   },
@@ -581,7 +581,7 @@
     ],
     "type": "STOCK",
     "category_main": "INCOME",
-    "category_sub": "YIELD_REIT_BONDLIKE_INCOME",
+    "category_sub": "ENERGY_CASHFLOW_CYCLICAL",
     "Anchor": 14,
     "volatility": "HIGH"
   },
@@ -594,7 +594,7 @@
     ],
     "type": "STOCK",
     "category_main": "INCOME",
-    "category_sub": "YIELD_REIT_BONDLIKE_INCOME",
+    "category_sub": "ENERGY_CASHFLOW_CYCLICAL",
     "Anchor": 14,
     "volatility": "HIGH"
   },
@@ -607,7 +607,7 @@
     ],
     "type": "STOCK",
     "category_main": "INCOME",
-    "category_sub": "YIELD_REIT_BONDLIKE_INCOME",
+    "category_sub": "ENERGY_CASHFLOW_CYCLICAL",
     "Anchor": 14,
     "volatility": "HIGH"
   },
@@ -1556,8 +1556,8 @@
     ],
     "type": "STOCK",
     "category_main": "INCOME",
-    "category_sub": "RERATING_TURNAROUND_GROWTH",
-    "Anchor": 18,
+    "category_sub": "HEALTHCARE_DEFENSIVE_MANAGED",
+    "Anchor": 17,
     "volatility": "MID"
   },
   {
@@ -1569,8 +1569,8 @@
     ],
     "type": "STOCK",
     "category_main": "INCOME",
-    "category_sub": "RERATING_TURNAROUND_GROWTH",
-    "Anchor": 18,
+    "category_sub": "HEALTHCARE_DEFENSIVE_MANAGED",
+    "Anchor": 17,
     "volatility": "MID"
   },
   {
@@ -1582,8 +1582,8 @@
     ],
     "type": "STOCK",
     "category_main": "INCOME",
-    "category_sub": "RERATING_TURNAROUND_GROWTH",
-    "Anchor": 18,
+    "category_sub": "HEALTHCARE_DEFENSIVE_MANAGED",
+    "Anchor": 17,
     "volatility": "MID"
   },
   {
@@ -1693,19 +1693,6 @@
     "category_sub": "RERATING_TURNAROUND_GROWTH",
     "Anchor": 18,
     "volatility": "MID"
-  },
-  {
-    "symbol": "COIN",
-    "category": "speculative",
-    "sector": "CRYPTO",
-    "style": [
-      "high_beta"
-    ],
-    "type": "STOCK",
-    "category_main": "SPEC",
-    "category_sub": "CRYPTO_EXCHANGE_MINERS",
-    "Anchor": 20,
-    "volatility": "HIGH"
   },
   {
     "symbol": "CEG",

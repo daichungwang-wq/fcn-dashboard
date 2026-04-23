@@ -287,6 +287,30 @@ def load_json(path: Path) -> Any:
         return json.load(f)
 
 
+DYNAMIC_ANCHOR_CONFIG = load_json(Path("configs/mm/dynamic_anchor_regime_v1.json"))
+UNIVERSE_ROWS = load_json(Path("data/m1/universe_150.json"))
+UNIVERSE_BY_SYMBOL = {
+    str(row.get("symbol", "")).upper(): row
+    for row in (UNIVERSE_ROWS if isinstance(UNIVERSE_ROWS, list) else [])
+    if isinstance(row, dict)
+}
+
+CURRENT_MARKET_REGIME = "growth_bull"
+
+FAMILY_INDUSTRY_REGIME = {
+    "semi": "semi_upcycle",
+    "semi_etf": "semi_upcycle",
+    "software": "software_rerating",
+    "platform": "software_rerating",
+    "consumer": "consumer_weak",
+    "industrial": "industrial_normal",
+    "healthcare": "healthcare_defensive",
+    "bond_proxy": "bond_supportive",
+    "defensive_income": "bond_supportive",
+    "travel": "travel_recovery",
+}
+
+
 def save_json(path: Path, payload: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8") as f:
@@ -449,11 +473,45 @@ def build_feature_row(symbol: str, bundle: InputBundle) -> dict[str, Any]:
         swing_days.append(0.0)
 
     valuation_data = b.get("估值資料", {}) if isinstance(b.get("估值資料"), dict) else {}
+    universe_row = UNIVERSE_BY_SYMBOL.get(symbol, {})
 
     forward_pe = safe_num(valuation_data.get("ForwardPE"), None)
     anchor_pe = safe_num(valuation_data.get("AnchorPE"), None)
     peg = safe_num(valuation_data.get("PEG"), None)
     eps_growth = safe_num(valuation_data.get("EPS成長率"), None)
+    category_sub = (
+        universe_row.get("category_sub")
+        or b.get("子產業")
+        or p.get("subsector")
+        or ""
+    )
+    base_anchor = safe_num(
+        universe_row.get("Anchor"),
+        safe_num(DYNAMIC_ANCHOR_CONFIG.get("base_anchor_by_category_sub", {}).get(category_sub), anchor_pe or 0.0),
+    )
+    family = DYNAMIC_ANCHOR_CONFIG.get("category_family_map", {}).get(category_sub, "unknown")
+    industry_regime = FAMILY_INDUSTRY_REGIME.get(family, "software_normal")
+    market_multiplier = safe_num(
+        DYNAMIC_ANCHOR_CONFIG.get("market_regimes", {})
+        .get(CURRENT_MARKET_REGIME, {})
+        .get("multiplier"),
+        1.0,
+    )
+    industry_cfg = DYNAMIC_ANCHOR_CONFIG.get("industry_regimes", {}).get(industry_regime, {})
+    industry_multiplier = safe_num(
+        industry_cfg.get("family_multipliers", {}).get(family),
+        safe_num(industry_cfg.get("default_multiplier"), 1.0),
+    )
+    archetype = DYNAMIC_ANCHOR_CONFIG.get("symbol_archetype_overrides", {}).get(symbol) or DYNAMIC_ANCHOR_CONFIG.get(
+        "default_archetype_by_category_sub", {}
+    ).get(category_sub, "BASELINE")
+    archetype_multiplier = safe_num(
+        DYNAMIC_ANCHOR_CONFIG.get("valuation_archetypes", {})
+        .get(archetype, {})
+        .get("multiplier"),
+        1.0,
+    )
+
     quality_momentum = safe_num(valuation_data.get("QualityMomentum"), None)
 
     volume_ratio = safe_num(b.get("量比"), None)
@@ -486,6 +544,14 @@ def build_feature_row(symbol: str, bundle: InputBundle) -> dict[str, Any]:
         "valuation": {
             "forward_pe": forward_pe,
             "anchor_pe": anchor_pe,
+            "base_anchor": base_anchor,
+            "category_sub": category_sub,
+            "market_regime": CURRENT_MARKET_REGIME,
+            "market_multiplier": market_multiplier,
+            "industry_regime": industry_regime,
+            "industry_multiplier": industry_multiplier,
+            "valuation_archetype": archetype,
+            "archetype_multiplier": archetype_multiplier,
             "peg": peg,
             "eps_growth": eps_growth,
         },
@@ -554,23 +620,39 @@ def compute_valuation(feature: dict[str, Any]) -> dict[str, float]:
     val = feature["valuation"]
 
     fpe = safe_num(val.get("forward_pe"), 0.0)
-    ape = safe_num(val.get("anchor_pe"), 0.0)
-    peg = safe_num(val.get("peg"), 0.0)
-    growth = safe_num(val.get("eps_growth"), 0.0)
+    base_anchor = safe_num(val.get("base_anchor"), safe_num(val.get("anchor_pe"), 0.0))
+    market_multiplier = safe_num(val.get("market_multiplier"), 1.0)
+    industry_multiplier = safe_num(val.get("industry_multiplier"), 1.0)
+    archetype_multiplier = safe_num(val.get("archetype_multiplier"), 1.0)
 
-    pe_ratio = fpe / ape if ape > 0 else max(peg, 0.0)
-
-    pe_score = piecewise(curve_params["valuation_curve"]["pe_ratio"]["points"], pe_ratio)
-    g_score = piecewise(curve_params["valuation_curve"]["growth"]["points"], growth)
-
-    bw = curve_params["valuation_curve"]["blend_weights"]
-    valuation_raw = bw["pe"] * pe_score + bw["growth"] * g_score
+    raw_final_anchor = base_anchor * market_multiplier * industry_multiplier * archetype_multiplier
+    caps = DYNAMIC_ANCHOR_CONFIG.get("caps", {})
+    final_anchor = clamp(
+        raw_final_anchor,
+        safe_num(caps.get("min_final_anchor"), 8.0),
+        safe_num(caps.get("max_final_anchor"), 45.0),
+    )
+    valuation_gap = (fpe / final_anchor - 1.0) if final_anchor > 0 else 0.0
+    valuation_raw = piecewise(
+        [
+            [-1.0, 10.0],
+            [-0.40, 9.0],
+            [-0.20, 8.0],
+            [-0.05, 7.0],
+            [0.05, 7.0],
+            [0.20, 6.0],
+            [0.40, 4.0],
+            [0.80, 2.0],
+        ],
+        valuation_gap,
+    )
 
     return {
         "raw": valuation_raw,
-        "score_10": clamp(valuation_raw, 0.0, 10.0),
-        "pe_ratio": pe_ratio,
-        "growth": growth,
+        "score_10": clamp(valuation_raw, 2.0, 10.0),
+        "valuation_gap": valuation_gap,
+        "base_anchor": base_anchor,
+        "final_anchor": final_anchor,
     }
 
 

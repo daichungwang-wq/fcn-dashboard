@@ -27,6 +27,84 @@
     ].join("");
   }
 
+  function renderModuleSwitch(items) {
+    const box = document.getElementById("module-switch");
+    if (!box) return;
+    const allowed = new Set(["M1", "M3", "M7", "M8", "M9"]);
+    box.innerHTML = (items || []).filter(x => allowed.has(x?.module_id)).map(x => {
+      if (x?.enabled) {
+        return `<a class="module-btn" href="${x.path || '#'}">${x.label || x.module_id || "--"}</a>`;
+      }
+      return `<span class="module-btn disabled">${x.label || x.module_id || "--"}（coming soon）</span>`;
+    }).join("");
+  }
+
+  function renderParameterController(data) {
+    const box = document.getElementById("param-controller");
+    if (!box) return;
+    box.innerHTML = [
+      `<div><b>目前 MM 參數檔（Current Config）：</b> ${data?.config_file || "--"}</div>`,
+      `<div class="control-grid" style="margin-top:8px;">
+        <div class="control-item">
+          <label>market_regime</label>
+          <select disabled><option>${data?.current_market_regime || "--"}</option></select>
+        </div>
+        <div class="control-item">
+          <label>industry_regime</label>
+          <select disabled><option>${data?.current_industry_regime_policy || "--"}</option></select>
+        </div>
+        <div class="control-item">
+          <label>valuation_archetype toggle</label>
+          <input disabled value="${data?.archetype_layer_enabled ? "Enabled" : "Disabled"}" />
+        </div>
+        <div class="control-item">
+          <label>valuation curve profile</label>
+          <select disabled><option>${data?.valuation_curve_profile || "--"}</option></select>
+        </div>
+      </div>`,
+      `<div style="margin-top:8px;"><b>scoring weights summary：</b> ${data?.scoring_weights_summary || "--"}</div>`,
+      `<div class="formula-box">${data?.anchor_formula_summary || "--"}</div>`
+    ].join("");
+  }
+
+  function renderEngineActions(rows) {
+    const box = document.getElementById("engine-actions");
+    if (!box) return;
+    box.innerHTML = `<div class="actions-grid">${(rows || []).map(x => `
+      <div class="action-card">
+        <div style="font-weight:700;">${x.name || "--"}</div>
+        <div style="font-size:12px; color:#667085; margin-top:4px;">${x.description || "--"}</div>
+        <button class="action-btn" disabled>${x.button_label || "Run"}</button>
+      </div>
+    `).join("")}</div>`;
+  }
+
+  function renderOutputDemo(data) {
+    const box = document.getElementById("output-demo");
+    if (!box) return;
+
+    const demoItems = (data?.demo_outputs || []).map(x => `
+      <div class="demo-item">
+        <div><a href="${x.path || '#'}" target="_blank" rel="noopener noreferrer">${x.name || "--"}</a></div>
+        <div style="font-size:12px; color:#667085; margin-top:4px;">${x.summary || "--"}</div>
+      </div>
+    `).join("");
+
+    const topM7 = (data?.top_m7_preview || []).map(x =>
+      `#${x.rank} ${x.symbol}（FCN ${x.fcn_score ?? "--"} / Active ${x.active_score ?? "--"}）`
+    ).join("<br>");
+
+    box.innerHTML = [
+      `<div style="font-weight:700; margin:0 0 6px;">Dynamic Anchor Demo</div>`,
+      `<div>${data?.dynamic_anchor_focus || "--"}</div>`,
+      `<div class="demo-grid" style="margin-top:8px;">${demoItems || "<div class='demo-item'>無</div>"}</div>`,
+      `<div style="font-weight:700; margin:10px 0 6px;">M7 Top Score Preview（Single-stock engine output）</div>`,
+      `<div>${topM7 || "無"}</div>`,
+      `<div style="font-weight:700; margin:10px 0 6px;">關鍵分歧摘要（Divergence Highlights）</div>`,
+      `<div>${(data?.divergence_highlights || []).map(x => `• ${x}`).join("<br>") || "無"}</div>`
+    ].join("");
+  }
+
   function renderActiveBuildContext(ctx) {
     const box = document.getElementById("active-build-context");
     if (!box) return;
@@ -165,6 +243,10 @@
       const dashboardData = await res.json();
 
       document.getElementById("generatedAt").textContent = `資料時間：${dashboardData.generated_at || "--"} ｜ 版本：${dashboardData.version || "--"}`;
+      renderModuleSwitch(dashboardData.module_switch || []);
+      renderParameterController(dashboardData.parameter_controller || {});
+      renderEngineActions(dashboardData.engine_actions || []);
+      renderOutputDemo(dashboardData.output_demo || {});
       renderActiveBuildContext(dashboardData.active_build_context || {});
       renderOverview(dashboardData.overview || {});
       renderEngines(dashboardData.engines || []);

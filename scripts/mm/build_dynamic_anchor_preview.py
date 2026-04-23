@@ -37,6 +37,9 @@ def compute_dynamic_anchor(
     industry_map = config["industry_regimes"]
     caps = config["caps"]
     band_map = config["tolerance_bands"]
+    archetype_defs = config.get("valuation_archetypes", {})
+    default_archetype_map = config.get("default_archetype_by_category_sub", {})
+    symbol_archetype_map = config.get("symbol_archetype_overrides", {})
 
     if category_sub not in base_map:
         raise KeyError(f"missing base anchor for category_sub={category_sub}")
@@ -54,7 +57,12 @@ def compute_dynamic_anchor(
     industry_multiplier = float(industry_rule.get("default_multiplier", 1.0))
     industry_multiplier = float(industry_rule.get("family_multipliers", {}).get(family, industry_multiplier))
 
-    raw_final = base_anchor * market_multiplier * industry_multiplier
+    symbol = str(row.get("symbol", ""))
+    valuation_archetype = symbol_archetype_map.get(symbol) or default_archetype_map.get(category_sub, "BASELINE")
+    archetype_rule = archetype_defs.get(valuation_archetype, {"multiplier": 1.0})
+    archetype_multiplier = float(archetype_rule.get("multiplier", 1.0))
+
+    raw_final = base_anchor * market_multiplier * industry_multiplier * archetype_multiplier
 
     up_cap = 1.0 + float(caps["max_adjustment_up_pct"])
     down_cap = 1.0 - float(caps["max_adjustment_down_pct"])
@@ -68,11 +76,13 @@ def compute_dynamic_anchor(
         "symbol": row.get("symbol"),
         "category_sub": category_sub,
         "industry_family": family,
+        "valuation_archetype": valuation_archetype,
         "base_anchor": round(base_anchor, digits),
         "market_regime": market_regime,
         "market_multiplier": round(market_multiplier, digits),
         "industry_regime": industry_regime,
         "industry_multiplier": round(industry_multiplier, digits),
+        "archetype_multiplier": round(archetype_multiplier, digits),
         "raw_final_anchor": round(raw_final, digits),
         "final_anchor": round(final_anchor, digits),
         "anchor_floor": round(final_anchor * (1.0 - tolerance_band), digits),
