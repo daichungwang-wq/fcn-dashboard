@@ -1,0 +1,121 @@
+{
+  "version": "dynamic_anchor_regime@v1",
+  "description": "MM-controlled parameter center for Dynamic Anchor Regime Engine (Phase 1 sandbox)",
+  "caps": {
+    "min_final_anchor": 8.0,
+    "max_final_anchor": 45.0,
+    "max_adjustment_up_pct": 0.5,
+    "max_adjustment_down_pct": 0.4,
+    "round_digits": 2
+  },
+  "tolerance_bands": {
+    "risk_off_bear": 0.12,
+    "normal": 0.15,
+    "growth_bull": 0.18,
+    "euphoric_ai": 0.22
+  },
+  "market_regimes": {
+    "risk_off_bear": { "multiplier": 0.9, "note": "de-rate valuation under macro stress" },
+    "normal": { "multiplier": 1.0, "note": "neutral baseline" },
+    "growth_bull": { "multiplier": 1.12, "note": "moderate premium in growth-led tape" },
+    "euphoric_ai": { "multiplier": 1.2, "note": "high premium in AI euphoria" }
+  },
+  "industry_regimes": {
+    "semi_upcycle": {
+      "default_multiplier": 1.0,
+      "family_multipliers": { "semi": 1.1, "semi_etf": 1.07 }
+    },
+    "semi_downcycle": {
+      "default_multiplier": 1.0,
+      "family_multipliers": { "semi": 0.9, "semi_etf": 0.93 }
+    },
+    "software_rerating": {
+      "default_multiplier": 1.0,
+      "family_multipliers": { "software": 1.08, "platform": 1.06 }
+    },
+    "software_normal": {
+      "default_multiplier": 1.0,
+      "family_multipliers": { "software": 1.0, "platform": 1.0 }
+    },
+    "consumer_weak": {
+      "default_multiplier": 1.0,
+      "family_multipliers": { "consumer": 0.92, "travel": 0.88 }
+    },
+    "industrial_normal": {
+      "default_multiplier": 1.0,
+      "family_multipliers": { "industrial": 1.0 }
+    },
+    "healthcare_defensive": {
+      "default_multiplier": 1.0,
+      "family_multipliers": { "healthcare_defensive": 1.05, "healthcare_growth": 0.98 }
+    },
+    "bond_supportive": {
+      "default_multiplier": 1.0,
+      "family_multipliers": { "bond": 1.07, "yield_income": 1.04, "utility": 1.03 }
+    },
+    "travel_recovery": {
+      "default_multiplier": 1.0,
+      "family_multipliers": { "travel": 1.1 }
+    },
+    "travel_weak": {
+      "default_multiplier": 1.0,
+      "family_multipliers": { "travel": 0.9 }
+    }
+  },
+  "category_family_map": {
+    "CPU_GPU_COMPUTE_SEMI": "semi",
+    "ASIC_CUSTOM_SILICON": "semi",
+    "FOUNDRY_FAB_INFRA": "semi",
+    "MEMORY_CYCLICAL_SEMI": "semi",
+    "SEMI_EQUIPMENT": "semi",
+    "ANALOG_CASHFLOW_SEMI": "semi",
+    "SEMI_TURNAROUND_LEGACY": "semi",
+    "CLOUD_PLATFORM_MEGACAP": "software",
+    "ENTERPRISE_SOFTWARE_SAAS": "software",
+    "CYBERSECURITY_DATA_SOFTWARE": "software",
+    "PLATFORM_ECOSYSTEM_CONSUMER_INTERNET": "platform",
+    "RERATING_TURNAROUND_GROWTH": "platform",
+    "CONSUMER_DEFENSIVE_RETAIL_STAPLES": "consumer",
+    "TRAVEL_LEISURE_CYCLICAL": "travel",
+    "INDUSTRIAL_CAPITAL_GOODS_LOGISTICS": "industrial",
+    "HEALTHCARE_DEFENSIVE_MANAGED": "healthcare_defensive",
+    "HEALTHCARE_GROWTH_BIOTECH": "healthcare_growth",
+    "FINANCIAL_QUALITY_BANK_PAYMENTS": "financial",
+    "UTILITY_LOWVOL_DEFENSIVE": "utility",
+    "YIELD_REIT_BONDLIKE_INCOME": "yield_income",
+    "BROAD_MARKET_ETF": "broad_etf",
+    "SECTOR_ETF": "sector_etf",
+    "SEMI_THEMATIC_ETF": "semi_etf",
+    "BOND_ETF": "bond",
+    "SPEC_THEMATIC_ETF": "spec_etf",
+    "CRYPTO_EXCHANGE_MINERS": "crypto"
+  },
+  "base_anchor_by_category_sub": {
+    "CPU_GPU_COMPUTE_SEMI": 30,
+    "ASIC_CUSTOM_SILICON": 28,
+    "FOUNDRY_FAB_INFRA": 24,
+    "MEMORY_CYCLICAL_SEMI": 14,
+    "SEMI_EQUIPMENT": 22,
+    "ANALOG_CASHFLOW_SEMI": 20,
+    "SEMI_TURNAROUND_LEGACY": 15,
+    "CLOUD_PLATFORM_MEGACAP": 26,
+    "ENTERPRISE_SOFTWARE_SAAS": 22,
+    "CYBERSECURITY_DATA_SOFTWARE": 24,
+    "PLATFORM_ECOSYSTEM_CONSUMER_INTERNET": 25,
+    "RERATING_TURNAROUND_GROWTH": 18,
+    "CONSUMER_DEFENSIVE_RETAIL_STAPLES": 20,
+    "TRAVEL_LEISURE_CYCLICAL": 14,
+    "INDUSTRIAL_CAPITAL_GOODS_LOGISTICS": 18,
+    "HEALTHCARE_DEFENSIVE_MANAGED": 17,
+    "HEALTHCARE_GROWTH_BIOTECH": 23,
+    "FINANCIAL_QUALITY_BANK_PAYMENTS": 18,
+    "UTILITY_LOWVOL_DEFENSIVE": 16,
+    "YIELD_REIT_BONDLIKE_INCOME": 14,
+    "BROAD_MARKET_ETF": 21,
+    "SECTOR_ETF": 20,
+    "SEMI_THEMATIC_ETF": 24,
+    "BOND_ETF": 16,
+    "SPEC_THEMATIC_ETF": 26,
+    "CRYPTO_EXCHANGE_MINERS": 20
+  }
+}
