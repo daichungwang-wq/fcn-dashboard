@@ -27,6 +27,22 @@
     ].join("");
   }
 
+  function renderActiveBuildContext(ctx) {
+    const box = document.getElementById("active-build-context");
+    if (!box) return;
+
+    const rows = [
+      `• Current Task：${ctx?.current_task || "--"}`,
+      `• Current Focus：${ctx?.current_focus || "--"}`,
+      `• Production Modules Locked：${(ctx?.production_modules_locked || []).join(", ") || "--"}`,
+      `• Sandbox Modules Active：${(ctx?.sandbox_modules_active || []).join(", ") || "--"}`,
+      `• Allowed Scope：${(ctx?.allowed_scope || []).join(", ") || "--"}`,
+      `• Forbidden Scope：${(ctx?.forbidden_scope || []).join(", ") || "--"}`
+    ];
+
+    box.innerHTML = rows.join("<br>");
+  }
+
   function card(k, v) {
     return `<div class="card"><div class="k">${k}</div><div class="v">${v}</div></div>`;
   }
@@ -106,6 +122,7 @@
       const data = await res.json();
 
       document.getElementById("generatedAt").textContent = `資料時間：${data.generated_at || "--"} ｜ 版本：${data.version || "--"}`;
+      renderActiveBuildContext(data.active_build_context || {});
       renderOverview(data.overview || {});
       renderEngines(data.engines || []);
       renderData(data.data_artifacts || []);
