@@ -1,0 +1,395 @@
+{
+  "version": "engine_progress_dashboard@v1.1.0",
+  "generated_at": "2026-04-23T12:00:00Z",
+  "active_build_context": {
+    "current_task": "M7 single-stock scoring engine + MM parameter/output center proof",
+    "current_focus": "把 MM 變成參數控制中心 + 輸出預覽中心（最小可見版本）",
+    "production_modules_locked": [
+      "M1",
+      "M2",
+      "M3",
+      "M6",
+      "M7",
+      "M8",
+      "M9"
+    ],
+    "sandbox_modules_active": [
+      "M7 v2 sandbox",
+      "runtime staging"
+    ],
+    "allowed_scope": [
+      "M7 score validation",
+      "A/B compare review",
+      "dashboard tracking",
+      "sandbox tuning"
+    ],
+    "forbidden_scope": [
+      "production rewrite",
+      "M8 integration",
+      "M9 integration",
+      "unnecessary frontend rebuild"
+    ]
+  },
+  "handoff_memory": {
+    "recently_created_files": [
+      "scripts/new/build_m7_v2_scores.py",
+      "data/m7_sandbox/m7_v2_scores.json",
+      "data/m7_sandbox/m7_v2_ab_compare.json",
+      "data/m7_sandbox/m7_v2_run_manifest.json"
+    ],
+    "recently_modified_files": [
+      "mm/engine_progress_dashboard.html",
+      "js/mm/engine_progress_dashboard.js",
+      "data/mm/engine_progress_dashboard.json"
+    ],
+    "last_completed_task": "完成 M7 v2 sandbox scoring engine + MM memory dashboard",
+    "next_task": "檢查 M7 ranking quality 與 score distribution",
+    "known_risks": [
+      "M7 score weighting drift",
+      "overengineering risk",
+      "avoid production contamination"
+    ]
+  },
+  "overview": {
+    "overall_progress_pct": 34,
+    "production_stability": "YES",
+    "critical_blockers_count": 1,
+    "active_milestones": [
+      "Milestone X: M7 Factor/Data Normalization"
+    ]
+  },
+  "engines": [
+    {
+      "engine_id": "M1_ENGINE",
+      "name": "Research & Pool Builder Engine",
+      "owner": "MM",
+      "status": "BUILD",
+      "readiness_score": 45,
+      "formula_externalized_pct": 20,
+      "blocked": false,
+      "rollback_ready": true,
+      "next_gate": "SANDBOX",
+      "notes": "M1 rule calibration 已可運作，待接 runtime family"
+    },
+    {
+      "engine_id": "M3_ENGINE",
+      "name": "FCN Simulation Engine",
+      "owner": "MM",
+      "status": "SANDBOX",
+      "readiness_score": 60,
+      "formula_externalized_pct": 40,
+      "blocked": false,
+      "rollback_ready": true,
+      "next_gate": "STAGING",
+      "notes": "以 parameter_matrix 驅動，適合先作 governance 試點"
+    },
+    {
+      "engine_id": "M7_ENGINE",
+      "name": "M7 Single-Stock Score Engine",
+      "owner": "MM",
+      "status": "SANDBOX",
+      "readiness_score": 72,
+      "formula_externalized_pct": 78,
+      "blocked": false,
+      "rollback_ready": true,
+      "next_gate": "STAGING",
+      "notes": "已定位為單檔評分引擎（single-stock scoring）"
+    },
+    {
+      "engine_id": "M8_ENGINE",
+      "name": "FCN Pricing Engine",
+      "owner": "MM",
+      "status": "BUILD",
+      "readiness_score": 52,
+      "formula_externalized_pct": 15,
+      "blocked": false,
+      "rollback_ready": true,
+      "next_gate": "SANDBOX",
+      "notes": "核心公式集中，待公式正規化"
+    }
+  ],
+  "data_artifacts": [
+    {
+      "artifact_id": "MARKET_RUNTIME",
+      "path": "data/market_runtime.json",
+      "schema_version": "legacy",
+      "status": "PRODUCTION",
+      "coverage_pct": 100,
+      "missing_rate": 0.0,
+      "freshness": "daily",
+      "validator_status": "WARN",
+      "notes": "正式檔，僅讀取不覆蓋"
+    },
+    {
+      "artifact_id": "LONG_TERM_RUNTIME",
+      "path": "data/runtime_staging/long_term_runtime.json",
+      "schema_version": "long_term_runtime@v1.0.0",
+      "status": "DESIGN",
+      "coverage_pct": 0,
+      "missing_rate": 1.0,
+      "freshness": "stale",
+      "validator_status": "WARN",
+      "notes": "Milestone X 第一階段目標"
+    }
+  ],
+  "formula_domains": [
+    {
+      "domain": "valuation",
+      "total_formulas": 12,
+      "registered_formulas": 2,
+      "hardcoded_formulas": 10,
+      "normalization_pct": 16.7,
+      "policy_linked": false
+    },
+    {
+      "domain": "trend",
+      "total_formulas": 10,
+      "registered_formulas": 3,
+      "hardcoded_formulas": 7,
+      "normalization_pct": 30,
+      "policy_linked": true
+    },
+    {
+      "domain": "structure",
+      "total_formulas": 8,
+      "registered_formulas": 1,
+      "hardcoded_formulas": 7,
+      "normalization_pct": 12.5,
+      "policy_linked": true
+    },
+    {
+      "domain": "timing",
+      "total_formulas": 6,
+      "registered_formulas": 1,
+      "hardcoded_formulas": 5,
+      "normalization_pct": 16.7,
+      "policy_linked": true
+    },
+    {
+      "domain": "money",
+      "total_formulas": 4,
+      "registered_formulas": 0,
+      "hardcoded_formulas": 4,
+      "normalization_pct": 0,
+      "policy_linked": true
+    },
+    {
+      "domain": "quality",
+      "total_formulas": 6,
+      "registered_formulas": 1,
+      "hardcoded_formulas": 5,
+      "normalization_pct": 16.7,
+      "policy_linked": false
+    },
+    {
+      "domain": "policy",
+      "total_formulas": 9,
+      "registered_formulas": 2,
+      "hardcoded_formulas": 7,
+      "normalization_pct": 22.2,
+      "policy_linked": true
+    }
+  ],
+  "modules": [
+    {
+      "module_id": "FCN",
+      "status": "SANDBOX",
+      "module_readiness_score": 58,
+      "runtime_dependency_ready": true,
+      "adapter_dependency_ready": false,
+      "go_live_gate_passed": false,
+      "blocked": false,
+      "notes": "M3/M8 鏈路先行"
+    },
+    {
+      "module_id": "US_STOCKS",
+      "status": "BUILD",
+      "module_readiness_score": 50,
+      "runtime_dependency_ready": true,
+      "adapter_dependency_ready": false,
+      "go_live_gate_passed": false,
+      "blocked": false,
+      "notes": "M1/M6/M7 逐步接 runtime family"
+    },
+    {
+      "module_id": "BONDS_ETF",
+      "status": "DESIGN",
+      "module_readiness_score": 30,
+      "runtime_dependency_ready": false,
+      "adapter_dependency_ready": false,
+      "go_live_gate_passed": false,
+      "blocked": false,
+      "notes": "先沿用現有 ETF 欄位，不做擴張"
+    },
+    {
+      "module_id": "CASH_LIABILITIES",
+      "status": "BUILD",
+      "module_readiness_score": 46,
+      "runtime_dependency_ready": true,
+      "adapter_dependency_ready": false,
+      "go_live_gate_passed": false,
+      "blocked": false,
+      "notes": "M9 為主，先維持既有流程"
+    }
+  ],
+  "runtime_builder": {
+    "build_id": "",
+    "bundle_version": "runtime_bundle@v1.0.0",
+    "validation_passed": false,
+    "partial_publish": false,
+    "fallback_used_count": 0,
+    "artifact_outputs": []
+  },
+  "blockers": [
+    {
+      "risk_id": "RISK-001",
+      "severity": "P1",
+      "category": "schema",
+      "title": "M7/M8 欄位仍有硬編碼依賴",
+      "affected_scope": [
+        "US_STOCKS",
+        "FCN"
+      ],
+      "mitigation": "先建立 long_term_runtime + manifest，後接 adapter",
+      "eta": "2026-05-15",
+      "status": "open"
+    }
+  ],
+  "milestones": [
+    {
+      "milestone_id": "MSX-P1",
+      "name": "Milestone X Phase 1",
+      "phase": "long_term_runtime v1",
+      "planned_date": "2026-05-31",
+      "actual_date": null,
+      "status": "in_progress"
+    }
+  ],
+  "module_switch": [
+    {
+      "module_id": "M1",
+      "label": "M1",
+      "path": "../m1.html",
+      "enabled": true
+    },
+    {
+      "module_id": "M2",
+      "label": "M2",
+      "path": "../m2.html",
+      "enabled": true
+    },
+    {
+      "module_id": "M3",
+      "label": "M3",
+      "path": "../m3.html",
+      "enabled": true
+    },
+    {
+      "module_id": "M6",
+      "label": "M6",
+      "path": "../m6.html",
+      "enabled": true
+    },
+    {
+      "module_id": "M7",
+      "label": "M7",
+      "path": "../m7.html",
+      "enabled": false,
+      "note": "coming_soon"
+    },
+    {
+      "module_id": "M8",
+      "label": "M8",
+      "path": "../m8_batch.html",
+      "enabled": true
+    },
+    {
+      "module_id": "M9",
+      "label": "M9",
+      "path": "../m9.html",
+      "enabled": true
+    },
+    {
+      "module_id": "MM",
+      "label": "MM",
+      "path": "../mm/engine_progress_dashboard.html",
+      "enabled": true
+    }
+  ],
+  "parameter_controller": {
+    "config_file": "configs/mm/dynamic_anchor_regime_v1.json",
+    "current_market_regime": "growth_bull",
+    "current_industry_regime_policy": "family-based mapping (semi_upcycle / software_rerating / travel_recovery ...)",
+    "archetype_layer_enabled": true,
+    "valuation_curve_profile": "piecewise_v_current (fair zone -5%~+5%, score=7, floor=2, ceiling=10)",
+    "scoring_weights_summary": "FCN: trend 0.20 / structure 0.22 / timing 0.12 / valuation 0.24 / quality 0.12 / mkt_acc 0.10; Active: trend 0.24 / structure 0.16 / timing 0.26 / valuation 0.10 / quality 0.08 / mkt_acc 0.16",
+    "anchor_formula_summary": "final_anchor = base_anchor × market_multiplier × industry_multiplier × archetype_multiplier; valuation_gap = forward_pe / final_anchor - 1",
+    "read_only_today": true
+  },
+  "engine_actions": [
+    {
+      "name": "Run Dynamic Anchor Engine",
+      "description": "Rebuild dynamic anchor sandbox previews from current MM parameters.",
+      "button_label": "Run (placeholder)"
+    },
+    {
+      "name": "Run M7 Scoring Engine",
+      "description": "Rerun M7 single-stock sandbox scoring with latest framework.",
+      "button_label": "Run (placeholder)"
+    },
+    {
+      "name": "Run Compare Engine",
+      "description": "Recompute baseline vs FCN/Active A/B compare deltas.",
+      "button_label": "Run (placeholder)"
+    },
+    {
+      "name": "Refresh Runtime Bundle",
+      "description": "Refresh runtime staging bundle/manifest for downstream readers.",
+      "button_label": "Refresh (placeholder)"
+    }
+  ],
+  "output_demo": {
+    "dynamic_anchor_focus": "NVDA vs AMD anchor behavior is now reviewed from core M7 sandbox outputs (no standalone temp preview files).",
+    "demo_outputs": [
+      {
+        "name": "m7_v2_scores.json",
+        "path": "../data/m7_sandbox/m7_v2_scores.json",
+        "summary": "Core M7 single-stock scoring output"
+      },
+      {
+        "name": "m7_v2_ab_compare.json",
+        "path": "../data/m7_sandbox/m7_v2_ab_compare.json",
+        "summary": "Baseline vs FCN/Active compare output"
+      },
+      {
+        "name": "m7_v2_run_manifest.json",
+        "path": "../data/m7_sandbox/m7_v2_run_manifest.json",
+        "summary": "Run metadata + parameter snapshot"
+      }
+    ],
+    "top_m7_preview": [
+      {
+        "rank": 1,
+        "symbol": "AMZN",
+        "fcn_score": 80.53,
+        "active_score": 89.78
+      },
+      {
+        "rank": 2,
+        "symbol": "TGT",
+        "fcn_score": 88.8,
+        "active_score": 89.49
+      },
+      {
+        "rank": 3,
+        "symbol": "AAPL",
+        "fcn_score": 84.06,
+        "active_score": 88.25
+      }
+    ],
+    "divergence_highlights": [
+      "NVDA vs AMD：同 category_sub，不同 archetype，final_anchor 仍可在 core M7 output 內追蹤",
+      "M7 top preview：同市場 regime 下，不同 valuation_gap 對 single-stock score 造成明顯排序差異"
+    ]
+  }
+}
