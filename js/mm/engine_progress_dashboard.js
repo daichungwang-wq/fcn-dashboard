@@ -182,6 +182,7 @@
       if (parsed.repaired) {
         setError("資料檔偵測到常見 JSON 尾逗號，已自動修復後載入。請同步修正原始 JSON。");
       }
+      const data = await res.json();
 
       document.getElementById("generatedAt").textContent = `資料時間：${data.generated_at || "--"} ｜ 版本：${data.version || "--"}`;
       renderActiveBuildContext(data.active_build_context || {});
