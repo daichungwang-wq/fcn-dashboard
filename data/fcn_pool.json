@@ -1956,7 +1956,7 @@
 },
   {
   "date": "2026-04-21",
-  "fcn_id": "FCN369N",
+  "fcn_id": "FCN369N 富邦",
   "basket": [
     "AMD",
     "ARM",
@@ -1968,7 +1968,7 @@
   "strike": 65,
   "ki": 55,
   "eki": true,
-  "bank": "",
+  "bank": "法國外貿銀行",
   "has_position": true,
   "amt": 20000,
   "currency": "USD",
