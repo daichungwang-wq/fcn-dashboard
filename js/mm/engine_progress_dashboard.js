@@ -43,16 +43,20 @@
     const box = document.getElementById("param-controller");
     if (!box) return;
     const controlBlock = (title, items) => `
-      <div class="group-box">
-        <div class="group-title">${title}</div>
-        <div class="control-grid">${(items || []).map(x => `
-          <div class="control-item">
-            <label>${x.label || "--"}</label>
-            <input disabled value="${x.value || "--"}" />
-            <div class="mini" style="margin-top:6px;">${x.note || ""}</div>
-          </div>
-        `).join("")}</div>
-      </div>
+      <details class="collapsible-section">
+        <summary>${title}</summary>
+        <div class="group-box">
+          <div class="control-grid">${(items || []).map(x => `
+            <div class="control-item">
+              <label>${x.label || "--"}</label>
+              <input disabled value="original = ${x.value || "--"}" />
+              <input disabled value="changed = pending" style="margin-top:6px;" />
+              <input disabled value="delta = pending" style="margin-top:6px;" />
+              <div class="mini" style="margin-top:6px;">${x.note || ""}</div>
+            </div>
+          `).join("")}</div>
+        </div>
+      </details>
     `;
 
     const blueprint = data?.blueprint || {};
@@ -65,7 +69,7 @@
 
     box.innerHTML = [
       `<div><b>目前 MM 參數檔（Current Config）：</b> ${data?.config_file || "--"}</div>`,
-      `<details><summary>Blueprint / 藍圖說明（click to expand）</summary>
+      `<details class="collapsible-section"><summary>Blueprint / 藍圖說明（click to expand）</summary>
         ${bpSection("A. MM 模組規則", blueprint.mm_module_rule)}
         ${bpSection("B. MM ↔ M7 功能定義", blueprint.mm_m7_definition)}
         ${bpSection("C. Full M7 定義（single-stock score engine）", blueprint.m7_full_definition)}
@@ -93,8 +97,10 @@
   function renderOutputDemo(data) {
     const box = document.getElementById("output-demo");
     if (!box) return;
+    const summaryRows = (data?.representative_groups || []).map(g => `• ${g.group_name}：${g.summary || ""}`).join("<br>");
     box.innerHTML = [
       `<div class="mini">Parameter → item → score（若資料不足，明確標示 unavailable）</div>`,
+      `<div class="group-box"><div class="group-title">代表組摘要（Representative Summary）</div><div>${summaryRows || "無"}</div></div>`,
       ...(data?.representative_groups || []).map(g => {
         const rows = (g.items || []).map(x => `
           <tr>
@@ -111,17 +117,38 @@
           </tr>
         `).join("");
         return `
-          <div class="group-box">
+          <details class="collapsible-section">
+            <summary>${g.group_name || "--"}（click to expand）</summary>
+            <div class="group-box">
             <div class="group-title">${g.group_name || "--"}</div>
             <div class="mini">${g.summary || ""}</div>
             <table class="preview-table">
               <thead><tr><th>Symbol</th><th>Status</th><th>category_sub</th><th>archetype</th><th>base</th><th>market</th><th>industry</th><th>final</th><th>gap</th><th>score</th></tr></thead>
               <tbody>${rows || "<tr><td colspan='10'>無</td></tr>"}</tbody>
             </table>
-          </div>
+            <details class="collapsible-section">
+              <summary>Impact Factors / 影響因子</summary>
+              <div class="mini">
+                • market_regime impact：調整估值中樞（final_anchor）<br>
+                • industry_regime impact：按 category_family 映射調節 final_anchor<br>
+                • valuation_archetype impact：個股溢價/折價層<br>
+                • valuation_curve impact：valuation_gap 映射到 valuation_score<br>
+                • final_anchor impact：gap 分母，直接影響估值區間判定<br>
+                • valuation_gap impact：決定分數區間（含 fair zone 與 floor/ceiling）
+              </div>
+            </details>
+            </div>
+          </details>
         `;
       }).join(""),
-      `<div class="group-box"><div class="group-title">Abnormal Movers（代表）</div><div>${(data?.abnormal_movers || []).map(x => `• ${x}`).join("<br>") || "無"}</div></div>`
+      `<details class="collapsible-section"><summary>五大類分布變化 / Category Distribution Change</summary><div class="group-box mini">
+         CORE：mean/p75/p50/p25/dispersion = pending / not computed yet<br>
+         GROWTH：mean/p75/p50/p25/dispersion = pending / not computed yet<br>
+         INCOME：mean/p75/p50/p25/dispersion = pending / not computed yet<br>
+         DEFENSIVE：mean/p75/p50/p25/dispersion = pending / not computed yet<br>
+         SPECULATIVE：mean/p75/p50/p25/dispersion = pending / not computed yet
+      </div></details>`,
+      `<details class="collapsible-section"><summary>Abnormal Movers（代表）</summary><div class="group-box"><div>${(data?.abnormal_movers || []).map(x => `• ${x}`).join("<br>") || "無"}</div></div></details>`
     ].join("");
   }
 
@@ -134,13 +161,24 @@
         <div>${(rows || []).map(x => `• ${x}`).join("<br>") || "--"}</div>
       </div>
     `;
-    box.innerHTML = [
-      sec("A. 已完成（Complete）", data?.complete),
-      sec("B. 未完成（Incomplete）", data?.incomplete),
-      sec("C. 缺失欄位/計算/輸出定義（Missing）", data?.missing_inputs),
-      sec("D. 明日可交付判定（Tomorrow Readiness）", data?.tomorrow_readiness),
-      `<div class="mini">結論：${data?.verdict || "--"}</div>`
-    ].join("");
+    box.innerHTML = `<details class="collapsible-section">
+      <summary>Readiness 明細（click to expand）</summary>
+      ${sec("A. 已完成（Complete）", data?.complete)}
+      ${sec("B. 未完成（Incomplete）", data?.incomplete)}
+      ${sec("C. 缺失欄位/計算/輸出定義（Missing）", data?.missing_inputs)}
+      ${sec("D. 明日可交付判定（Tomorrow Readiness）", data?.tomorrow_readiness)}
+      <div class="mini">結論：${data?.verdict || "--"}</div>
+    </details>`;
+  }
+
+  function setupGlobalExpandCollapse() {
+    const expandBtn = document.getElementById("expand-all-btn");
+    const collapseBtn = document.getElementById("collapse-all-btn");
+    const all = () => Array.from(document.querySelectorAll(".collapsible-section, #system-reporting"));
+    if (expandBtn) expandBtn.addEventListener("click", () => all().forEach(el => { el.open = true; }));
+    if (collapseBtn) collapseBtn.addEventListener("click", () => all().forEach(el => { el.open = false; }));
+    // defaults
+    all().forEach(el => { el.open = false; });
   }
 
   function renderActiveBuildContext(ctx) {
@@ -295,6 +333,7 @@
       renderRisks(dashboardData.blockers || []);
       renderMilestones(dashboardData.milestones || []);
       renderHandoffMemory(dashboardData.handoff_memory || {});
+      setupGlobalExpandCollapse();
     } catch (err) {
       setError(`Engine Progress Dashboard 載入失敗：${err.message}`);
     }

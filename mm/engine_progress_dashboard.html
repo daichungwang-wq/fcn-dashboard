@@ -43,6 +43,10 @@
     .mini { font-size:12px; color:#667085; }
     .preview-table { width:100%; margin-top:8px; }
     .preview-table th, .preview-table td { font-size:12px; }
+    .command-layout { display:grid; grid-template-columns: 1fr 1fr; gap:12px; align-items:start; }
+    .command-col { min-width:0; }
+    .top-actions { display:flex; gap:8px; margin:8px 0 12px; }
+    .top-actions button { padding:8px 10px; border:1px solid #98a2b3; border-radius:8px; background:#fff; font-weight:700; cursor:pointer; }
     details { margin-top: 12px; }
     details summary { cursor:pointer; font-weight:700; font-size:18px; margin-bottom:8px; }
     #dashboard-error { display:none; background:#fef3f2; color:#b42318; border:1px solid #fecdca; border-radius:10px; padding:10px; margin-bottom:12px; }
@@ -57,14 +61,24 @@
 
     <div id="dashboard-error"></div>
 
-    <h2>SECTION 1 · Parameter Center</h2>
-    <div id="param-controller" class="list"></div>
-
     <h2>SECTION 2 · Engine Actions</h2>
     <div id="engine-actions" class="list"></div>
 
-    <h2>SECTION 3 · Output Preview</h2>
-    <div id="output-demo" class="list"></div>
+    <div class="top-actions">
+      <button id="expand-all-btn">全部展開（Expand All）</button>
+      <button id="collapse-all-btn">全部收合（Collapse All）</button>
+    </div>
+
+    <div class="command-layout">
+      <div class="command-col">
+        <h2>SECTION 1 · 參數控制中心（Parameter Control Center）</h2>
+        <div id="param-controller" class="list"></div>
+      </div>
+      <div class="command-col">
+        <h2>SECTION 3 · 輸出預覽（Output Preview）</h2>
+        <div id="output-demo" class="list"></div>
+      </div>
+    </div>
 
     <h2>M7 完整分數完成度檢查（M7 Complete Readiness Check）</h2>
     <div id="m7-readiness" class="list"></div>
