@@ -1,5 +1,8 @@
 (function () {
   const DATA_PATH = "../data/mm/engine_progress_dashboard.json";
+  const SCORES_PATH = "../data/m7_sandbox/m7_v2_scores.json";
+  const AUDIT_PATH = "../data/m7_sandbox/m7_formula_input_audit.json";
+  const RUNTIME_PATH = "../data/runtime_staging/market_runtime_long_horizon.json";
 
   function statusPill(status) {
     if (status === "PRODUCTION") return '<span class="pill ok">PRODUCTION</span>';
@@ -94,11 +97,26 @@
     `).join("")}</div>`;
   }
 
-  function renderOutputDemo(data) {
+  function compactMissing(missingInputs) {
+    if (!missingInputs || typeof missingInputs !== "object") return [];
+    return Object.entries(missingInputs).flatMap(([factor, fields]) =>
+      (fields || []).map(f => `${factor}.${f}`)
+    );
+  }
+
+  function renderOutputDemo(data, explain = {}) {
     const box = document.getElementById("output-demo");
     if (!box) return;
     const summaryRows = (data?.representative_groups || []).map(g => `• ${g.group_name}：${g.summary || ""}`).join("<br>");
-    const p = data?.prototype_symbol_snapshot || {};
+    const p = { ...(data?.prototype_symbol_snapshot || {}), ...(explain.scoreRow || {}) };
+    const missingList = compactMissing(explain.auditRow?.missing_inputs);
+    const compareAdj = (typeof p.z_adj === "number") ? p.z_adj : "--";
+    const hAdj = (typeof p.h_adj === "number") ? p.h_adj : "--";
+    const confidence = (typeof p.confidence === "number") ? `${p.confidence}%` : "--";
+    const coveragePct = (typeof p.coverage_pct === "number")
+      ? `${p.coverage_pct}%`
+      : (typeof explain.runtimeRow?.coverage_pct === "number" ? `${explain.runtimeRow.coverage_pct}%` : "--");
+    const dataWarning = p.data_warning || explain.runtimeRow?.data_warning || "--";
     box.innerHTML = [
       `<div class="mini">Parameter → item → score（若資料不足，明確標示 unavailable）</div>`,
       `<details class="collapsible-section">
@@ -110,9 +128,12 @@
                <tr><td>valuation_score</td><td>${p.valuation_score ?? "--"}</td><td>trend_score</td><td>${p.trend_score ?? "--"}</td></tr>
                <tr><td>structure_score</td><td>${p.structure_score ?? "--"}</td><td>timing_score</td><td>${p.timing_score ?? "--"}</td></tr>
                <tr><td>money_score</td><td>${p.money_score ?? "--"}</td><td>m7_raw_score</td><td>${p.m7_raw_score ?? "--"}</td></tr>
-               <tr><td>zscore</td><td>${p.zscore ?? "--"}</td><td>historical_score</td><td>${p.historical_score ?? "--"}</td></tr>
-               <tr><td>h_value</td><td>${p.h_value ?? "--"}</td><td>m7_final_score</td><td>${p.m7_final_score ?? "--"}</td></tr>
-               <tr><td>today_fcn_pool_status</td><td>${p.today_fcn_pool_status ?? "--"}</td><td></td><td></td></tr>
+               <tr><td>missing_fields</td><td colspan="3">${missingList.length ? missingList.join(", ") : "none"}</td></tr>
+               <tr><td>coverage_pct</td><td>${coveragePct}</td><td>data_warning</td><td>${dataWarning}</td></tr>
+               <tr><td>zscore</td><td>${p.zscore ?? "--"}</td><td>compare_adjustment(z_adj)</td><td>${compareAdj}</td></tr>
+               <tr><td>h_value</td><td>${p.h_value ?? "--"}</td><td>h_adjustment(h_adj)</td><td>${hAdj}</td></tr>
+               <tr><td>final_score</td><td>${p.m7_final_score ?? "--"}</td><td>confidence</td><td>${confidence}</td></tr>
+               <tr><td>today_fcn_pool_status</td><td colspan="3">${p.today_fcn_pool_status ?? "--"}</td></tr>
              </tbody>
            </table>
          </div>
@@ -349,15 +370,31 @@
 
   async function init() {
     try {
-      const res = await fetch(DATA_PATH, { cache: "no-store" });
-      if (!res.ok) throw new Error(`讀取失敗：${res.status}`);
-      const dashboardData = await res.json();
+      const [dashboardRes, scoresRes, auditRes, runtimeRes] = await Promise.all([
+        fetch(DATA_PATH, { cache: "no-store" }),
+        fetch(SCORES_PATH, { cache: "no-store" }),
+        fetch(AUDIT_PATH, { cache: "no-store" }),
+        fetch(RUNTIME_PATH, { cache: "no-store" })
+      ]);
+      if (!dashboardRes.ok) throw new Error(`讀取失敗：${dashboardRes.status}`);
+      const dashboardData = await dashboardRes.json();
+      const scoresData = scoresRes.ok ? await scoresRes.json() : {};
+      const auditData = auditRes.ok ? await auditRes.json() : {};
+      const runtimeData = runtimeRes.ok ? await runtimeRes.json() : {};
+
+      const prototypeSymbol = dashboardData?.output_demo?.prototype_symbol_snapshot?.symbol;
+      const scoreRows = (scoresData?.rows || []);
+      const scoreRow = scoreRows.find(r => r.symbol === prototypeSymbol) || scoreRows[0] || {};
+      const auditRows = (auditData?.rows || []);
+      const auditRow = auditRows.find(r => r.symbol === (scoreRow.symbol || prototypeSymbol)) || {};
+      const runtimeRows = runtimeData?.rows || {};
+      const runtimeRow = runtimeRows[scoreRow.symbol || prototypeSymbol] || {};
 
       document.getElementById("generatedAt").textContent = `資料時間：${dashboardData.generated_at || "--"} ｜ 版本：${dashboardData.version || "--"}`;
       renderModuleSwitch(dashboardData.module_switch || []);
       renderParameterController(dashboardData.parameter_controller || {});
       renderEngineActions(dashboardData.engine_actions || []);
-      renderOutputDemo(dashboardData.output_demo || {});
+      renderOutputDemo(dashboardData.output_demo || {}, { scoreRow, auditRow, runtimeRow });
       renderM7Readiness(dashboardData.m7_complete_readiness_check || {}, dashboardData.compare_governance || {});
       renderActiveBuildContext(dashboardData.active_build_context || {});
       renderOverview(dashboardData.overview || {});

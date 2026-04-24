@@ -570,6 +570,9 @@ def build_feature_row(symbol: str, bundle: InputBundle) -> dict[str, Any]:
             "volume_ratio": volume_ratio,
             "liquidity_proxy": volume,
             "size_proxy": size_proxy,
+            "coverage_pct": safe_num(m.get("coverage_pct"), None),
+            "data_warning": m.get("data_warning"),
+            "missing_price_refs": m.get("missing_price_refs") if isinstance(m.get("missing_price_refs"), list) else [],
         },
         "exposure": {
             "ratio": exposure_ratio,
@@ -608,11 +611,55 @@ def compute_trend(feature: dict[str, Any]) -> dict[str, float]:
 
 
 def compute_structure(feature: dict[str, Any]) -> dict[str, float]:
+    rets = feature.get("returns", {})
+    horizon_points = []
+    for horizon, month_x in BUCKET_MONTH_EQUIV.items():
+        if horizon in {"1d", "1w"}:
+            continue
+        rv = safe_num(rets.get(horizon), None)
+        if rv is None:
+            continue
+        y_val = rv * 100.0 if abs(rv) <= 2.0 else rv
+        horizon_points.append((month_x, y_val))
+
+    slope = None
+    dispersion = None
+    stability = None
+    r2 = None
+    regression_raw = None
+
+    if len(horizon_points) >= 3:
+        xs = [p[0] for p in horizon_points]
+        ys = [p[1] for p in horizon_points]
+        mean_x = sum(xs) / len(xs)
+        mean_y = sum(ys) / len(ys)
+        sxx = sum((x - mean_x) ** 2 for x in xs)
+        if sxx > 0:
+            sxy = sum((x - mean_x) * (y - mean_y) for x, y in zip(xs, ys))
+            slope = sxy / sxx
+            intercept = mean_y - slope * mean_x
+            fitted = [intercept + slope * x for x in xs]
+            residuals = [y - y_hat for y, y_hat in zip(ys, fitted)]
+            ss_res = sum(r * r for r in residuals)
+            ss_tot = sum((y - mean_y) ** 2 for y in ys)
+            r2 = 1.0 if ss_tot <= 1e-12 else max(0.0, min(1.0, 1.0 - ss_res / ss_tot))
+            dispersion = (ss_res / len(residuals)) ** 0.5
+            stability = max(0.0, min(10.0, r2 * 10.0 - 0.05 * dispersion))
+            regression_raw = slope * 2.5 + stability * 0.8
+
     days = feature["swing_days"]
     d_weights = [0.2, 0.2, 0.1, 0.1, 0.2, 0.2]
-    structure_raw = sum(dw * safe_num(days[i], 0.0) for i, dw in enumerate(d_weights))
+    swing_raw = sum(dw * safe_num(days[i], 0.0) for i, dw in enumerate(d_weights))
+    structure_raw = regression_raw if regression_raw is not None else swing_raw
     structure_score_10 = piecewise(curve_params["structure_curve"]["points"], structure_raw)
-    return {"raw": structure_raw, "score_10": clamp(structure_score_10, 0.0, 10.0)}
+    return {
+        "raw": structure_raw,
+        "score_10": clamp(structure_score_10, 0.0, 10.0),
+        "slope": slope,
+        "dispersion": dispersion,
+        "stability": stability,
+        "r2": r2,
+    }
 
 
 def compute_timing(feature: dict[str, Any]) -> dict[str, float]:
@@ -955,12 +1002,19 @@ def main() -> int:
                 "valuation_archetype": feature["valuation"].get("valuation_archetype"),
                 "valuation_score": round2(valuation["score_10"]),
                 "trend_score": round2(trend["score_10"]),
+                "structure_slope": round2(structure["slope"]) if structure.get("slope") is not None else None,
+                "structure_dispersion": round2(structure["dispersion"]) if structure.get("dispersion") is not None else None,
+                "structure_stability": round2(structure["stability"]) if structure.get("stability") is not None else None,
+                "structure_r2": round2(structure["r2"]) if structure.get("r2") is not None else None,
                 "structure_score": round2(structure["score_10"]),
                 "timing_score": round2(timing["score_10"]),
                 "money_score": round2(money["score_10"]),
                 "m7_raw_score": round2(m7_raw_score),
                 "historical_score": round2(historical_score),
                 "warning_flag": warning_flag,
+                "coverage_pct": feature["market_acceptance"].get("coverage_pct"),
+                "data_warning": feature["market_acceptance"].get("data_warning"),
+                "missing_price_refs": feature["market_acceptance"].get("missing_price_refs"),
                 "feature_snapshot": {
                     "valuation": feature["valuation"],
                     "returns": feature["returns"],
@@ -1004,9 +1058,12 @@ def main() -> int:
 
             row.update({
                 "zscore": round2(zscore),
+                "z_adj": round2(z_adj),
                 "h_value": round2(h_value),
+                "h_adj": round2(h_adj),
                 "m7_final_score": round2(m7_final_score),
                 "p_value": round2(p_value),
+                "confidence": round2((1.0 - p_value) * 100.0),
                 "today_fcn_pool_status": today_status,
             })
 
@@ -1014,10 +1071,13 @@ def main() -> int:
                 "symbol": row["symbol"],
                 "m7_score": row["m7_raw_score"],
                 "zscore": row["zscore"],
+                "z_adj": row["z_adj"],
                 "historical_score": row["historical_score"],
                 "h_value": row["h_value"],
+                "h_adj": row["h_adj"],
                 "m7_final_score": row["m7_final_score"],
                 "p_value": row["p_value"],
+                "confidence": row["confidence"],
                 "warning_flag": row["warning_flag"],
                 "today_fcn_pool_status": row["today_fcn_pool_status"],
             })

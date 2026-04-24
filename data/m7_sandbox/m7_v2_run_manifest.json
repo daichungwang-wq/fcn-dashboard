@@ -1,7 +1,7 @@
 {
   "run_id": "M7V2-a7db908d791f",
-  "started_at": "2026-04-24T11:00:29.839561+00:00",
-  "finished_at": "2026-04-24T11:00:29.870373+00:00",
+  "started_at": "2026-04-24T11:23:04.590326+00:00",
+  "finished_at": "2026-04-24T11:23:04.610191+00:00",
   "inputs": {
     "baseline": "data/m7/m7_new_stock_today.json",
     "market_runtime": "data/market_runtime.json",
