@@ -1,5 +1,5 @@
 {
-  "version": "engine_progress_dashboard@v1.3.0",
+  "version": "engine_progress_dashboard@v1.4.0",
   "generated_at": "2026-04-23T23:30:00Z",
   "active_build_context": {
     "current_task": "M7 single-stock scoring engine + MM parameter/output center proof",
@@ -355,24 +355,24 @@
       ],
       "score_architecture_controls": [
         {
-          "label": "factor families",
-          "value": "trend / structure / timing / valuation / quality / market_acceptance",
-          "note": "僅列現有家族，非宣告已完成"
+          "label": "m7_raw_score formula",
+          "value": "0.30 valuation + 0.25 trend + 0.20 structure + 0.15 timing + 0.10 money",
+          "note": "正式核准權重"
         },
         {
-          "label": "enabled today",
-          "value": "valuation path = implemented",
-          "note": "以 anchor+gap+curve 可運算"
+          "label": "statistical adjustment",
+          "value": "zscore adjustment + h_value adjustment",
+          "note": "Compare 作為最終分數層"
         },
         {
-          "label": "placeholder / TBD",
-          "value": "trend / structure / timing / quality / market_acceptance aggregation still not finalized",
-          "note": "不可宣稱 full M7 已完成"
+          "label": "deprecated factors",
+          "value": "quality removed from finalized M7 raw formula",
+          "note": "不再列為主公式因子"
         },
         {
-          "label": "weight profile",
-          "value": "Not exposed in MM (approval pending)",
-          "note": "避免展示未批准或易誤解權重"
+          "label": "deprecated score branch",
+          "value": "active score removed from finalized architecture",
+          "note": "僅保留 m7_raw / m7_final"
         }
       ],
       "runtime_execution_controls": [
@@ -421,9 +421,9 @@
         "M1 維持獨立長期池引擎，不與 M7 compare pipeline 混用"
       ],
       "mm_m7_definition": [
-        "正式管線：M7 raw score → Compare statistical layer → M7 final score → Today FCN pool → M8 basket → M6 post-assignment",
-        "MM 控制：compare 參數、horizon 規則、pool gate、warning gate、語義契約",
-        "M7 接收 MM 參數後輸出 raw 與 final 兩層分數（prototype contract）"
+        "正式管線：M1 → M7 → today_fcn_pool → M8 → M6（M1 為長期池，M7 為單檔評分）",
+        "M7 內部：m7_raw_score → Compare statistical adjustment layer → m7_final_score",
+        "MM 控制 compare 參數、horizon 規則與 pool gate 契約"
       ],
       "m7_full_definition": [
         "M7 定義：single-stock score engine；Compare 為 M7 最終分數管線的一部分（非僅解釋層）",
@@ -433,11 +433,10 @@
         "未完成：生產級 compare 計算與統計檢定落地（目前屬 blueprint/governance 層）"
       ],
       "m7_formula_terminology": [
-        "m7_score：raw score（Compare 之前）",
-        "zscore：(stock_score - category_mean_adjusted) / pooled_std",
-        "h_value：stock_historical_score / subcategory_historical_score",
-        "m7_final_score：raw + zscore adjustment + historical adjustment，最後 clamp 到 0~10",
-        "today_fcn_pool_status：以 final score + p_value + warning gate 三條件決策"
+        "m7_raw_score = 0.30 valuation + 0.25 trend + 0.20 structure + 0.15 timing + 0.10 money",
+        "m7_final_score = m7_raw_score + zscore adjustment + h_value adjustment (clamp 0~10)",
+        "Compare 統計層為 M7 最終分數管線的一部分",
+        "today_fcn_pool_status 由 final threshold + p_value + warning gate 決策"
       ],
       "parameter_impact_ranking": [
         "High：zscore_weight / zscore_cap / historical_weight / historical_cap / m7_final_threshold / p_value_threshold",
@@ -475,12 +474,13 @@
       "trend_score": 7.2,
       "structure_score": 6.4,
       "timing_score": 8.5,
-      "quality_score": 7.9,
-      "money_flow_score": 6.2,
-      "baseline_score": null,
-      "fcn_score": null,
-      "active_score": null,
-      "status": "prototype"
+      "money_score": 6.2,
+      "m7_raw_score": 7.34,
+      "zscore": 0.41,
+      "historical_score": 22.0,
+      "h_value": 1.08,
+      "m7_final_score": 7.9,
+      "today_fcn_pool_status": "prototype"
     },
     "representative_groups": [
       {
@@ -903,7 +903,7 @@
     "verdict": "目前定位應為「valuation-first prototype / partial score」，不是 full M7 完成版。"
   },
   "compare_governance": {
-    "approved_formula": "m7_final_score = clamp(m7_score + clamp(zscore * zscore_weight, -zscore_cap, +zscore_cap) + clamp(h_value_adjustment, -historical_cap, +historical_cap), 0, 10)",
+    "approved_formula": "m7_final_score = clamp(m7_raw_score + clamp(zscore * zscore_weight, -zscore_cap, +zscore_cap) + clamp(h_value_adjustment, -historical_cap, +historical_cap), 0, 10)",
     "zscore_definition": "zscore = (stock_score - category_mean_adjusted) / pooled_std",
     "historical_definition": "h_value = stock_historical_score / subcategory_historical_score",
     "historical_score_definition": "historical_score = Σ(weight_i × return_i), where weight_i = period_length_i / total_target_horizon; buckets: D1,D2,D3,D4,D5,1W,1M,3M,6M,12M,3Y,5Y,10Y",
@@ -921,19 +921,24 @@
     "today_fcn_pool_gate": "if m7_final_score >= m7_final_threshold AND p_value <= p_value_threshold AND no_critical_warning => TODAY_FCN_POOL else WATCH/REVIEW/REJECT",
     "output_contract": {
       "symbol": "",
-      "m7_score": 0,
+      "valuation_score": 0,
+      "trend_score": 0,
+      "structure_score": 0,
+      "timing_score": 0,
+      "money_score": 0,
+      "m7_raw_score": 0,
       "zscore": 0,
       "historical_score": 0,
       "h_value": 0,
       "m7_final_score": 0,
-      "p_value": 0,
-      "warning_flag": false,
       "today_fcn_pool_status": ""
     },
     "deprecated_legacy_compare_semantics": [
       "major_change_reason",
       "valuation_dominant_delta",
-      "old compare ranking semantics"
+      "old compare ranking semantics",
+      "active_score_branch",
+      "quality_factor_in_raw_formula"
     ]
   }
 }

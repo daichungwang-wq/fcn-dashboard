@@ -109,9 +109,10 @@
              <tbody>
                <tr><td>valuation_score</td><td>${p.valuation_score ?? "--"}</td><td>trend_score</td><td>${p.trend_score ?? "--"}</td></tr>
                <tr><td>structure_score</td><td>${p.structure_score ?? "--"}</td><td>timing_score</td><td>${p.timing_score ?? "--"}</td></tr>
-               <tr><td>quality_score</td><td>${p.quality_score ?? "--"}</td><td>money_flow_score</td><td>${p.money_flow_score ?? "--"}</td></tr>
-               <tr><td>baseline_score</td><td>${p.baseline_score ?? "null"}</td><td>fcn_score</td><td>${p.fcn_score ?? "null"}</td></tr>
-               <tr><td>active_score</td><td>${p.active_score ?? "null"}</td><td></td><td></td></tr>
+               <tr><td>money_score</td><td>${p.money_score ?? "--"}</td><td>m7_raw_score</td><td>${p.m7_raw_score ?? "--"}</td></tr>
+               <tr><td>zscore</td><td>${p.zscore ?? "--"}</td><td>historical_score</td><td>${p.historical_score ?? "--"}</td></tr>
+               <tr><td>h_value</td><td>${p.h_value ?? "--"}</td><td>m7_final_score</td><td>${p.m7_final_score ?? "--"}</td></tr>
+               <tr><td>today_fcn_pool_status</td><td>${p.today_fcn_pool_status ?? "--"}</td><td></td><td></td></tr>
              </tbody>
            </table>
          </div>
