@@ -168,7 +168,7 @@
     ].join("");
   }
 
-  function renderM7Readiness(data) {
+  function renderM7Readiness(data, compareGov) {
     const box = document.getElementById("m7-readiness");
     if (!box) return;
     const sec = (title, rows) => `
@@ -177,6 +177,8 @@
         <div>${(rows || []).map(x => `• ${x}`).join("<br>") || "--"}</div>
       </div>
     `;
+    const gov = compareGov || {};
+    const contract = gov.output_contract || {};
     box.innerHTML = `<details class="collapsible-section">
       <summary>Readiness 明細（click to expand）</summary>
       ${sec("A. 已完成（Complete）", data?.complete)}
@@ -184,6 +186,22 @@
       ${sec("C. 缺失欄位/計算/輸出定義（Missing）", data?.missing_inputs)}
       ${sec("D. 明日可交付判定（Tomorrow Readiness）", data?.tomorrow_readiness)}
       <div class="mini">結論：${data?.verdict || "--"}</div>
+      <div class="group-box">
+        <div class="group-title">Compare Formula Governance（正式核准）</div>
+        <div class="mini">m7_final_score：${gov.approved_formula || "--"}</div>
+        <div class="mini" style="margin-top:6px;">zscore：${gov.zscore_definition || "--"}</div>
+        <div class="mini" style="margin-top:6px;">historical：${gov.historical_definition || "--"}</div>
+        <div class="mini" style="margin-top:6px;">historical_score：${gov.historical_score_definition || "--"}</div>
+        <div class="mini" style="margin-top:6px;">Today FCN gate：${gov.today_fcn_pool_gate || "--"}</div>
+      </div>
+      <div class="group-box">
+        <div class="group-title">Output Contract（prototype）</div>
+        <pre style="white-space:pre-wrap; font-size:12px; margin:0;">${JSON.stringify(contract, null, 2)}</pre>
+      </div>
+      <div class="group-box">
+        <div class="group-title">Deprecated Legacy Compare Semantics</div>
+        <div>${(gov.deprecated_legacy_compare_semantics || []).map(x => `• ${x}`).join("<br>") || "--"}</div>
+      </div>
     </details>`;
   }
 
@@ -339,7 +357,7 @@
       renderParameterController(dashboardData.parameter_controller || {});
       renderEngineActions(dashboardData.engine_actions || []);
       renderOutputDemo(dashboardData.output_demo || {});
-      renderM7Readiness(dashboardData.m7_complete_readiness_check || {});
+      renderM7Readiness(dashboardData.m7_complete_readiness_check || {}, dashboardData.compare_governance || {});
       renderActiveBuildContext(dashboardData.active_build_context || {});
       renderOverview(dashboardData.overview || {});
       renderEngines(dashboardData.engines || []);

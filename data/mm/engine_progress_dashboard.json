@@ -1,5 +1,5 @@
 {
-  "version": "engine_progress_dashboard@v1.2.0",
+  "version": "engine_progress_dashboard@v1.3.0",
   "generated_at": "2026-04-23T23:30:00Z",
   "active_build_context": {
     "current_task": "M7 single-stock scoring engine + MM parameter/output center proof",
@@ -390,42 +390,59 @@
           "label": "refresh status",
           "value": "manual trigger (placeholder actions)",
           "note": "今晚先確立控制中心骨架"
+        },
+        {
+          "label": "zscore_weight / zscore_cap",
+          "value": "pending_governance_binding",
+          "note": "Compare 統計調整核心參數"
+        },
+        {
+          "label": "historical_weight / historical_cap",
+          "value": "pending_governance_binding",
+          "note": "h_value 調整權重與上限"
+        },
+        {
+          "label": "p_value_threshold / m7_final_threshold",
+          "value": "pending_governance_binding",
+          "note": "Today FCN pool gate 參數"
+        },
+        {
+          "label": "category_target_horizon",
+          "value": "category_sub horizon map (1Y/3Y/5Y/10Y)",
+          "note": "歷史分數時間尺度由 MM 控制"
         }
       ]
     },
     "blueprint": {
       "mm_module_rule": [
-        "MM = 控制中心 / 任務橋（mission bridge）",
-        "引擎由 MM 下發參數與執行動作，不放回各 module 頁面",
-        "各 module 只消費輸出，不承擔主控責任",
-        "禁止 module-local control pages，避免控制權分散"
+        "MM = 控制中心 / mission bridge（參數、治理、執行動作統一在 MM）",
+        "Engine layer 由 MM 控制；modules 只消費輸出，不承擔控制職責",
+        "禁止 module-local control pages，避免架構回退",
+        "M1 維持獨立長期池引擎，不與 M7 compare pipeline 混用"
       ],
       "mm_m7_definition": [
-        "MM 控制：regime / archetype / curve / compare mode / execution actions",
-        "M7 接收：taxonomy + base anchor + regime multipliers + archetype layer + valuation curve",
-        "M7 回傳 MM：single-stock valuation-first score preview + 異常 movers + 缺失訊號"
+        "正式管線：M7 raw score → Compare statistical layer → M7 final score → Today FCN pool → M8 basket → M6 post-assignment",
+        "MM 控制：compare 參數、horizon 規則、pool gate、warning gate、語義契約",
+        "M7 接收 MM 參數後輸出 raw 與 final 兩層分數（prototype contract）"
       ],
       "m7_full_definition": [
-        "M7 定義：single-stock score engine（單檔評分引擎）",
-        "目的：把單檔從參數映射為可比較分數，供 MM 做跨標的管控",
-        "公式家族：anchor family、gap family、curve family、multi-factor aggregation family",
-        "命名慣例：factor_* / score_* / penalty_* / compare_*",
-        "已完成：valuation anchor + archetype + valuation gap + valuation curve",
-        "未完成：trend/structure/timing/quality/money 終版公式與總分聚合語義"
+        "M7 定義：single-stock score engine；Compare 為 M7 最終分數管線的一部分（非僅解釋層）",
+        "核心公式家族：raw factor score + statistical compare adjustment + gating",
+        "已完成：valuation-first raw scoring骨架",
+        "本次 formalize：Compare statistical adjustment architecture + output contract",
+        "未完成：生產級 compare 計算與統計檢定落地（目前屬 blueprint/governance 層）"
       ],
       "m7_formula_terminology": [
-        "valuation：相對 final_anchor 的估值偏離；目前可按 gap curve 計分",
-        "trend：價格趨勢強弱；目前存在框架但終版定義未鎖定",
-        "structure：結構/波段穩定度；目前為框架級，仍需校準",
-        "timing：進出時機；目前為框架級，仍需與策略一致化",
-        "quality：品質與基本面動能；目前資料與公式仍不完整",
-        "market_acceptance(money)：量能/流動性接受度；尚未終版",
-        "aggregation：多因子合成與 compare semantics 仍待治理，暫不宣稱 full score"
+        "m7_score：raw score（Compare 之前）",
+        "zscore：(stock_score - category_mean_adjusted) / pooled_std",
+        "h_value：stock_historical_score / subcategory_historical_score",
+        "m7_final_score：raw + zscore adjustment + historical adjustment，最後 clamp 到 0~10",
+        "today_fcn_pool_status：以 final score + p_value + warning gate 三條件決策"
       ],
       "parameter_impact_ranking": [
-        "High：market_regime / industry_regime / archetype / valuation_curve_profile / base_anchor",
-        "Medium：compare mode / penalty gates / runtime refresh cadence",
-        "Low：dashboard呈現樣式、文案與排序偏好（不改核心計算）"
+        "High：zscore_weight / zscore_cap / historical_weight / historical_cap / m7_final_threshold / p_value_threshold",
+        "Medium：category_target_horizon（依 category_sub）與 warning gate policy",
+        "Low：呈現層排序與文案（不改核心計算）"
       ]
     }
   },
@@ -884,5 +901,39 @@
       "不可交付：宣稱 full M7 stock score production-ready"
     ],
     "verdict": "目前定位應為「valuation-first prototype / partial score」，不是 full M7 完成版。"
+  },
+  "compare_governance": {
+    "approved_formula": "m7_final_score = clamp(m7_score + clamp(zscore * zscore_weight, -zscore_cap, +zscore_cap) + clamp(h_value_adjustment, -historical_cap, +historical_cap), 0, 10)",
+    "zscore_definition": "zscore = (stock_score - category_mean_adjusted) / pooled_std",
+    "historical_definition": "h_value = stock_historical_score / subcategory_historical_score",
+    "historical_score_definition": "historical_score = Σ(weight_i × return_i), where weight_i = period_length_i / total_target_horizon; buckets: D1,D2,D3,D4,D5,1W,1M,3M,6M,12M,3Y,5Y,10Y",
+    "category_target_horizon_examples": [
+      "CPU_GPU_COMPUTE_SEMI -> 3Y",
+      "ASIC_CUSTOM_SILICON -> 3Y",
+      "FOUNDRY_FAB_INFRA -> 5Y",
+      "SEMI_EQUIPMENT -> 5Y",
+      "CYBERSECURITY_DATA_SOFTWARE -> 3Y",
+      "TRAVEL_LEISURE_CYCLICAL -> 1Y",
+      "CRYPTO_EXCHANGE_PLATFORM -> 1Y",
+      "UTILITY_LOWVOL_DEFENSIVE -> 10Y",
+      "BOND_ETF -> 10Y"
+    ],
+    "today_fcn_pool_gate": "if m7_final_score >= m7_final_threshold AND p_value <= p_value_threshold AND no_critical_warning => TODAY_FCN_POOL else WATCH/REVIEW/REJECT",
+    "output_contract": {
+      "symbol": "",
+      "m7_score": 0,
+      "zscore": 0,
+      "historical_score": 0,
+      "h_value": 0,
+      "m7_final_score": 0,
+      "p_value": 0,
+      "warning_flag": false,
+      "today_fcn_pool_status": ""
+    },
+    "deprecated_legacy_compare_semantics": [
+      "major_change_reason",
+      "valuation_dominant_delta",
+      "old compare ranking semantics"
+    ]
   }
 }
