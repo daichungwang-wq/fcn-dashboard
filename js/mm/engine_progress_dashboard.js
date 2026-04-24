@@ -98,8 +98,25 @@
     const box = document.getElementById("output-demo");
     if (!box) return;
     const summaryRows = (data?.representative_groups || []).map(g => `• ${g.group_name}：${g.summary || ""}`).join("<br>");
+    const p = data?.prototype_symbol_snapshot || {};
     box.innerHTML = [
       `<div class="mini">Parameter → item → score（若資料不足，明確標示 unavailable）</div>`,
+      `<details class="collapsible-section">
+         <summary>Prototype Symbol Snapshot（原型單檔快照）</summary>
+         <div class="group-box">
+           <div class="group-title">${p.symbol || "--"} / status: ${p.status || "--"}</div>
+           <table class="preview-table">
+             <tbody>
+               <tr><td>valuation_score</td><td>${p.valuation_score ?? "--"}</td><td>trend_score</td><td>${p.trend_score ?? "--"}</td></tr>
+               <tr><td>structure_score</td><td>${p.structure_score ?? "--"}</td><td>timing_score</td><td>${p.timing_score ?? "--"}</td></tr>
+               <tr><td>money_score</td><td>${p.money_score ?? "--"}</td><td>m7_raw_score</td><td>${p.m7_raw_score ?? "--"}</td></tr>
+               <tr><td>zscore</td><td>${p.zscore ?? "--"}</td><td>historical_score</td><td>${p.historical_score ?? "--"}</td></tr>
+               <tr><td>h_value</td><td>${p.h_value ?? "--"}</td><td>m7_final_score</td><td>${p.m7_final_score ?? "--"}</td></tr>
+               <tr><td>today_fcn_pool_status</td><td>${p.today_fcn_pool_status ?? "--"}</td><td></td><td></td></tr>
+             </tbody>
+           </table>
+         </div>
+      </details>`,
       `<div class="group-box"><div class="group-title">代表組摘要（Representative Summary）</div><div>${summaryRows || "無"}</div></div>`,
       ...(data?.representative_groups || []).map(g => {
         const rows = (g.items || []).map(x => `
@@ -152,7 +169,7 @@
     ].join("");
   }
 
-  function renderM7Readiness(data) {
+  function renderM7Readiness(data, compareGov) {
     const box = document.getElementById("m7-readiness");
     if (!box) return;
     const sec = (title, rows) => `
@@ -161,6 +178,8 @@
         <div>${(rows || []).map(x => `• ${x}`).join("<br>") || "--"}</div>
       </div>
     `;
+    const gov = compareGov || {};
+    const contract = gov.output_contract || {};
     box.innerHTML = `<details class="collapsible-section">
       <summary>Readiness 明細（click to expand）</summary>
       ${sec("A. 已完成（Complete）", data?.complete)}
@@ -168,6 +187,22 @@
       ${sec("C. 缺失欄位/計算/輸出定義（Missing）", data?.missing_inputs)}
       ${sec("D. 明日可交付判定（Tomorrow Readiness）", data?.tomorrow_readiness)}
       <div class="mini">結論：${data?.verdict || "--"}</div>
+      <div class="group-box">
+        <div class="group-title">Compare Formula Governance（正式核准）</div>
+        <div class="mini">m7_final_score：${gov.approved_formula || "--"}</div>
+        <div class="mini" style="margin-top:6px;">zscore：${gov.zscore_definition || "--"}</div>
+        <div class="mini" style="margin-top:6px;">historical：${gov.historical_definition || "--"}</div>
+        <div class="mini" style="margin-top:6px;">historical_score：${gov.historical_score_definition || "--"}</div>
+        <div class="mini" style="margin-top:6px;">Today FCN gate：${gov.today_fcn_pool_gate || "--"}</div>
+      </div>
+      <div class="group-box">
+        <div class="group-title">Output Contract（prototype）</div>
+        <pre style="white-space:pre-wrap; font-size:12px; margin:0;">${JSON.stringify(contract, null, 2)}</pre>
+      </div>
+      <div class="group-box">
+        <div class="group-title">Deprecated Legacy Compare Semantics</div>
+        <div>${(gov.deprecated_legacy_compare_semantics || []).map(x => `• ${x}`).join("<br>") || "--"}</div>
+      </div>
     </details>`;
   }
 
@@ -323,7 +358,7 @@
       renderParameterController(dashboardData.parameter_controller || {});
       renderEngineActions(dashboardData.engine_actions || []);
       renderOutputDemo(dashboardData.output_demo || {});
-      renderM7Readiness(dashboardData.m7_complete_readiness_check || {});
+      renderM7Readiness(dashboardData.m7_complete_readiness_check || {}, dashboardData.compare_governance || {});
       renderActiveBuildContext(dashboardData.active_build_context || {});
       renderOverview(dashboardData.overview || {});
       renderEngines(dashboardData.engines || []);

@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -445,6 +446,9 @@ def build_feature_row(symbol: str, bundle: InputBundle) -> dict[str, Any]:
         "3m": safe_num(b.get("3月漲跌幅"), None),
         "6m": safe_num(b.get("6月漲跌幅"), None),
         "12m": safe_num(b.get("12月漲跌幅"), None),
+        "3y": safe_num(b.get("3年漲跌幅"), None),
+        "5y": safe_num(b.get("5年漲跌幅"), None),
+        "10y": safe_num(b.get("10年漲跌幅"), None),
     }
 
     returns_market = {
@@ -454,10 +458,13 @@ def build_feature_row(symbol: str, bundle: InputBundle) -> dict[str, Any]:
         "3m": safe_num(m.get("ret_3m"), 0.0) * 100.0,
         "6m": safe_num(m.get("ret_6m"), 0.0) * 100.0,
         "12m": safe_num(m.get("ret_12m"), 0.0) * 100.0,
+        "3y": safe_num(m.get("ret_3y"), 0.0) * 100.0,
+        "5y": safe_num(m.get("ret_5y"), 0.0) * 100.0,
+        "10y": safe_num(m.get("ret_10y"), 0.0) * 100.0,
     }
 
     rets = {}
-    for k in ["1d", "1w", "1m", "3m", "6m", "12m"]:
+    for k in ["1d", "1w", "1m", "3m", "6m", "12m", "3y", "5y", "10y"]:
         val = returns_base[k]
         if val is None:
             val = returns_market[k]
@@ -820,6 +827,78 @@ def build_major_change_reason(compare_row: dict[str, Any]) -> str:
     return f"{top[0]}_dominant_delta"
 
 
+RAW_WEIGHTS = {
+    "valuation": 0.30,
+    "trend": 0.25,
+    "structure": 0.20,
+    "timing": 0.15,
+    "money": 0.10,
+}
+
+COMPARE_PARAMS = {
+    "zscore_weight": 0.6,
+    "zscore_cap": 1.5,
+    "historical_weight": 1.0,
+    "historical_cap": 1.0,
+    "p_value_threshold": 0.2,
+    "m7_final_threshold": 6.5,
+}
+
+CATEGORY_TARGET_HORIZON = {
+    "CPU_GPU_COMPUTE_SEMI": "3Y",
+    "ASIC_CUSTOM_SILICON": "3Y",
+    "FOUNDRY_FAB_INFRA": "5Y",
+    "MEMORY_CYCLICAL_SEMI": "3Y",
+    "SEMI_EQUIPMENT": "5Y",
+    "CLOUD_PLATFORM_MEGACAP": "3Y",
+    "CYBERSECURITY_DATA_SOFTWARE": "3Y",
+    "TRAVEL_LEISURE_CYCLICAL": "1Y",
+    "CRYPTO_EXCHANGE_PLATFORM": "1Y",
+    "CRYPTO_MINERS": "1Y",
+    "UTILITY_LOWVOL_DEFENSIVE": "10Y",
+    "YIELD_REIT_BONDLIKE_INCOME": "10Y",
+    "BOND_ETF": "10Y",
+}
+
+HORIZON_BUCKETS = {
+    "1Y": ["1d", "1w", "1m", "3m", "6m", "12m"],
+    "3Y": ["1m", "3m", "6m", "12m", "3y"],
+    "5Y": ["6m", "12m", "3y", "5y"],
+    "10Y": ["12m", "3y", "5y", "10y"],
+}
+
+BUCKET_MONTH_EQUIV = {
+    "1d": 0.03,
+    "1w": 0.23,
+    "1m": 1.0,
+    "3m": 3.0,
+    "6m": 6.0,
+    "12m": 12.0,
+    "3y": 36.0,
+    "5y": 60.0,
+    "10y": 120.0,
+}
+
+
+def compute_historical_score(feature: dict[str, Any]) -> float:
+    category_sub = feature["valuation"].get("category_sub", "")
+    horizon = CATEGORY_TARGET_HORIZON.get(category_sub, "3Y")
+    buckets = HORIZON_BUCKETS.get(horizon, HORIZON_BUCKETS["3Y"])
+    rets = feature.get("returns", {})
+    total = 0.0
+    weights_sum = 0.0
+    for b in buckets:
+        rv = safe_num(rets.get(b), None)
+        if rv is None:
+            continue
+        w = BUCKET_MONTH_EQUIV.get(b, 1.0)
+        total += w * rv
+        weights_sum += w
+    if weights_sum <= 0:
+        return 0.0
+    return total / weights_sum
+
+
 # -------------------------
 # Main
 # -------------------------
@@ -842,139 +921,111 @@ def main() -> int:
 
     try:
         bundle = load_inputs()
-
         symbols = sorted(set(bundle.pool30_rows.keys()) | set(bundle.baseline_rows.keys()))
-
         rows_out: list[dict[str, Any]] = []
 
         for sym in symbols:
             feature = build_feature_row(sym, bundle)
-
             trend = compute_trend(feature)
             structure = compute_structure(feature)
             timing = compute_timing(feature)
             valuation = compute_valuation(feature)
-            quality = compute_quality(feature)
-            market_acc = compute_market_acceptance(feature)
-
+            money = compute_market_acceptance(feature)
             exposure_data = compute_exposure_penalty(feature)
-            overheat_penalty = compute_overheat_penalty(timing["raw"])
+            warning_flag = bool(exposure_data["tags"])
 
-            comps = {
-                "trend": trend["score_10"],
-                "structure": structure["score_10"],
-                "timing": timing["score_10"],
-                "valuation": valuation["score_10"],
-                "quality": quality["score_10"],
-                "market_acceptance": market_acc["score_10"],
-            }
-            penalties = {
-                "exposure_penalty": exposure_data["penalty"],
-                "overheat_penalty": overheat_penalty,
-            }
-
-            event_score_10 = clamp(safe_num(feature["event_score"], 0.0), 0.0, 10.0)
-
-            fcn_score, fcn_dbg = compute_fcn_score(comps, penalties, event_score_10)
-            active_score, active_dbg = compute_active_score(comps, penalties, event_score_10)
-
-            explain = explain_row(
-                feature=feature,
-                comps_10=comps,
-                penalties_10=penalties,
-                baseline_score=feature["baseline"].get("today_score"),
-                fcn_score=fcn_score,
-                active_score=active_score,
+            m7_raw_score = (
+                RAW_WEIGHTS["valuation"] * valuation["score_10"]
+                + RAW_WEIGHTS["trend"] * trend["score_10"]
+                + RAW_WEIGHTS["structure"] * structure["score_10"]
+                + RAW_WEIGHTS["timing"] * timing["score_10"]
+                + RAW_WEIGHTS["money"] * money["score_10"]
             )
+            historical_score = compute_historical_score(feature)
 
             rows_out.append({
                 "symbol": sym,
                 "name": feature["name"],
                 "category": feature["category"],
-                "sector": feature["sector"],
                 "subsector": feature["subsector"],
-                "baseline": feature["baseline"],
-                "features": {
-                    "returns": feature["returns"],
-                    "swing_days": feature["swing_days"],
+                "category_sub": feature["valuation"].get("category_sub"),
+                "valuation_archetype": feature["valuation"].get("valuation_archetype"),
+                "valuation_score": round2(valuation["score_10"]),
+                "trend_score": round2(trend["score_10"]),
+                "structure_score": round2(structure["score_10"]),
+                "timing_score": round2(timing["score_10"]),
+                "money_score": round2(money["score_10"]),
+                "m7_raw_score": round2(m7_raw_score),
+                "historical_score": round2(historical_score),
+                "warning_flag": warning_flag,
+                "feature_snapshot": {
                     "valuation": feature["valuation"],
-                    "event_score": event_score_10,
-                    "market_acceptance": feature["market_acceptance"],
-                    "exposure": feature["exposure"],
+                    "returns": feature["returns"],
                 },
-                "factor_scores_10": {k: round2(v) for k, v in comps.items()},
-                "penalties_10": {
-                    "exposure_penalty": round2(exposure_data["penalty"]),
-                    "overheat_penalty": round2(overheat_penalty),
-                    "warning_tags": exposure_data["tags"],
-                },
-                "scores": {
-                    "fcn_score": round2(fcn_score),
-                    "active_score": round2(active_score),
-                },
-                "debug": {
-                    "fcn": fcn_dbg,
-                    "active": active_dbg,
-                },
-                "explainability": explain,
             })
 
-        # rankings
-        sorted_fcn = sorted(rows_out, key=lambda r: r["scores"]["fcn_score"], reverse=True)
-        sorted_active = sorted(rows_out, key=lambda r: r["scores"]["active_score"], reverse=True)
-        sorted_baseline = sorted(rows_out, key=lambda r: safe_num(r["baseline"].get("today_score"), -1.0), reverse=True)
+        # statistical adjustment layer
+        if rows_out:
+            pooled_mean = sum(r["m7_raw_score"] for r in rows_out) / len(rows_out)
+            pooled_var = sum((r["m7_raw_score"] - pooled_mean) ** 2 for r in rows_out) / max(1, len(rows_out) - 1)
+            pooled_std = max(1e-6, pooled_var ** 0.5)
+        else:
+            pooled_std = 1.0
 
-        fcn_rank = {r["symbol"]: i + 1 for i, r in enumerate(sorted_fcn)}
-        active_rank = {r["symbol"]: i + 1 for i, r in enumerate(sorted_active)}
-        base_rank = {r["symbol"]: i + 1 for i, r in enumerate(sorted_baseline) if r["baseline"].get("today_score") is not None}
+        cat_mean: dict[str, float] = {}
+        for cat in sorted(set(r["category"] for r in rows_out)):
+            vals = [r["m7_raw_score"] for r in rows_out if r["category"] == cat]
+            cat_mean[cat] = sum(vals) / len(vals) if vals else 0.0
 
-        for row in rows_out:
-            sym = row["symbol"]
-            row["ranks"] = {
-                "baseline_rank": base_rank.get(sym),
-                "fcn_rank": fcn_rank.get(sym),
-                "active_rank": active_rank.get(sym),
-            }
+        sub_hist_mean: dict[str, float] = {}
+        for sub in sorted(set(r["category_sub"] for r in rows_out)):
+            vals = [r["historical_score"] for r in rows_out if r["category_sub"] == sub]
+            sub_hist_mean[sub] = sum(vals) / len(vals) if vals else 0.0
 
-        # A/B compare output
         ab_rows: list[dict[str, Any]] = []
         for row in rows_out:
-            bscore = row["baseline"].get("today_score")
-            fcn_s = row["scores"]["fcn_score"]
-            act_s = row["scores"]["active_score"]
-            b_comp = row["baseline"].get("components", {})
-            f_comp = row["factor_scores_10"]
+            category_mean_adjusted = cat_mean.get(row["category"], row["m7_raw_score"])
+            zscore = (row["m7_raw_score"] - category_mean_adjusted) / pooled_std
+            z_adj = clamp(zscore * COMPARE_PARAMS["zscore_weight"], -COMPARE_PARAMS["zscore_cap"], COMPARE_PARAMS["zscore_cap"])
+            sub_h = sub_hist_mean.get(row["category_sub"], 0.0)
+            h_value = (row["historical_score"] / sub_h) if abs(sub_h) > 1e-6 else 1.0
+            h_adjustment = (h_value - 1.0) * COMPARE_PARAMS["historical_weight"]
+            h_adj = clamp(h_adjustment, -COMPARE_PARAMS["historical_cap"], COMPARE_PARAMS["historical_cap"])
+            m7_final_score = clamp(row["m7_raw_score"] + z_adj + h_adj, 0.0, 10.0)
+            p_value = max(0.0, min(1.0, math.erfc(abs(zscore) / math.sqrt(2))))
+            today_status = (
+                "TODAY_FCN_POOL"
+                if (m7_final_score >= COMPARE_PARAMS["m7_final_threshold"] and p_value <= COMPARE_PARAMS["p_value_threshold"] and not row["warning_flag"])
+                else ("WATCH" if m7_final_score >= COMPARE_PARAMS["m7_final_threshold"] else "REVIEW")
+            )
 
-            compare = {
+            row.update({
+                "zscore": round2(zscore),
+                "h_value": round2(h_value),
+                "m7_final_score": round2(m7_final_score),
+                "p_value": round2(p_value),
+                "today_fcn_pool_status": today_status,
+            })
+
+            ab_rows.append({
                 "symbol": row["symbol"],
-                "name": row["name"],
-                "baseline_score": bscore,
-                "fcn_score": fcn_s,
-                "active_score": act_s,
-                "fcn_vs_baseline_delta": round2(fcn_s - safe_num(bscore, 0.0)) if bscore is not None else None,
-                "active_vs_baseline_delta": round2(act_s - safe_num(bscore, 0.0)) if bscore is not None else None,
-                "baseline_rank": row["ranks"]["baseline_rank"],
-                "fcn_rank": row["ranks"]["fcn_rank"],
-                "active_rank": row["ranks"]["active_rank"],
-                "fcn_rank_delta": (row["ranks"]["fcn_rank"] - row["ranks"]["baseline_rank"]) if row["ranks"]["baseline_rank"] else None,
-                "active_rank_delta": (row["ranks"]["active_rank"] - row["ranks"]["baseline_rank"]) if row["ranks"]["baseline_rank"] else None,
-                "trend_diff": round2(f_comp.get("trend", 0.0) - safe_num(b_comp.get("trend"), 0.0)),
-                "structure_diff": round2(f_comp.get("structure", 0.0) - safe_num(b_comp.get("structure"), 0.0)),
-                "timing_diff": round2(f_comp.get("timing", 0.0) - safe_num(b_comp.get("timing"), 0.0)),
-                "valuation_diff": round2(f_comp.get("valuation", 0.0) - safe_num(b_comp.get("valuation"), 0.0)),
-                "quality_diff": round2(f_comp.get("quality", 0.0) - safe_num(b_comp.get("quality"), 0.0)),
-                "major_change_reason": "",
-                "delta_driver_vs_baseline": row["explainability"]["delta_driver_vs_baseline"],
-            }
-            compare["major_change_reason"] = build_major_change_reason(compare)
-            ab_rows.append(compare)
+                "m7_score": row["m7_raw_score"],
+                "zscore": row["zscore"],
+                "historical_score": row["historical_score"],
+                "h_value": row["h_value"],
+                "m7_final_score": row["m7_final_score"],
+                "p_value": row["p_value"],
+                "warning_flag": row["warning_flag"],
+                "today_fcn_pool_status": row["today_fcn_pool_status"],
+            })
 
-        ab_rows.sort(key=lambda x: x["fcn_score"], reverse=True)
+        rows_out.sort(key=lambda r: r["m7_final_score"], reverse=True)
+        ab_rows.sort(key=lambda r: r["m7_final_score"], reverse=True)
 
         scores_payload = {
             "generated_at": now_iso(),
             "scope": {
-                "scenarios": ["FCN", "Active"],
+                "scenarios": ["M7_RAW", "M7_FINAL"],
                 "symbol_count": len(rows_out),
             },
             "rows": rows_out,
@@ -983,14 +1034,16 @@ def main() -> int:
         ab_payload = {
             "generated_at": now_iso(),
             "scope": {
-                "comparison": "same-day same-universe",
+                "comparison": "statistical_adjustment_layer",
                 "symbol_count": len(ab_rows),
             },
             "rows": ab_rows,
         }
 
         params_snapshot = {
-            "scenario_params": scenario_params,
+            "raw_weights": RAW_WEIGHTS,
+            "compare_params": COMPARE_PARAMS,
+            "category_target_horizon": CATEGORY_TARGET_HORIZON,
             "regime_params": regime_params,
             "module_params": module_params,
             "curve_params": curve_params,
@@ -1015,7 +1068,7 @@ def main() -> int:
             "outputs": {k: str(v) for k, v in output_paths.items()},
             "summary": {
                 "symbol_count": len(symbols),
-                "baseline_coverage": sum(1 for r in rows_out if r["baseline"].get("today_score") is not None),
+                "baseline_coverage": 0,
                 "warnings": len(warnings),
                 "notes": len(notes),
             },
