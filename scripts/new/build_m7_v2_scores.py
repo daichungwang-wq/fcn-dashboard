@@ -375,7 +375,9 @@ class InputBundle:
 # -------------------------
 def load_inputs() -> InputBundle:
     baseline_path = Path("data/m7/m7_new_stock_today.json")
-    market_path = Path("data/market_runtime.json")
+    market_path = Path("data/runtime_staging/market_runtime_long_horizon.json")
+    if not market_path.exists():
+        market_path = Path("data/market_runtime.json")
     pool_path = Path("data/pool30.json")
 
     baseline_raw = load_json(baseline_path)
@@ -404,8 +406,9 @@ def load_inputs() -> InputBundle:
                 baseline_rows[sym] = row
 
     market_rows: dict[str, dict[str, Any]] = {}
-    if isinstance(market_raw, dict):
-        for sym, row in market_raw.items():
+    market_source = market_raw.get("rows") if isinstance(market_raw, dict) and "rows" in market_raw else market_raw
+    if isinstance(market_source, dict):
+        for sym, row in market_source.items():
             if isinstance(row, dict):
                 market_rows[normalize_symbol(sym)] = row
 
@@ -452,15 +455,15 @@ def build_feature_row(symbol: str, bundle: InputBundle) -> dict[str, Any]:
     }
 
     returns_market = {
-        "1d": safe_num(m.get("ret_1d"), 0.0) * 100.0,
-        "1w": safe_num(m.get("ret_1w"), 0.0) * 100.0,
-        "1m": safe_num(m.get("ret_1m"), 0.0) * 100.0,
-        "3m": safe_num(m.get("ret_3m"), 0.0) * 100.0,
-        "6m": safe_num(m.get("ret_6m"), 0.0) * 100.0,
-        "12m": safe_num(m.get("ret_12m"), 0.0) * 100.0,
-        "3y": safe_num(m.get("ret_3y"), 0.0) * 100.0,
-        "5y": safe_num(m.get("ret_5y"), 0.0) * 100.0,
-        "10y": safe_num(m.get("ret_10y"), 0.0) * 100.0,
+        "1d": safe_num(m.get("ret_d1", m.get("ret_1d")), None),
+        "1w": safe_num(m.get("ret_1w"), None),
+        "1m": safe_num(m.get("ret_1m"), None),
+        "3m": safe_num(m.get("ret_3m"), None),
+        "6m": safe_num(m.get("ret_6m"), None),
+        "12m": safe_num(m.get("ret_12m"), None),
+        "3y": safe_num(m.get("ret_3y"), None),
+        "5y": safe_num(m.get("ret_5y"), None),
+        "10y": safe_num(m.get("ret_10y"), None),
     }
 
     rets = {}
@@ -468,7 +471,7 @@ def build_feature_row(symbol: str, bundle: InputBundle) -> dict[str, Any]:
         val = returns_base[k]
         if val is None:
             val = returns_market[k]
-        rets[k] = safe_num(val, 0.0)
+        rets[k] = safe_num(val, 0.0 if k in {"1d", "1w", "1m", "3m", "6m", "12m"} else None)
 
     swing_days = b.get("結構資料", {}).get("swing_days")
     if not isinstance(swing_days, list):

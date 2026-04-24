@@ -1,7 +1,7 @@
 {
-  "run_id": "M7V2-950a8a06d135",
-  "started_at": "2026-04-23T01:38:50.918830+00:00",
-  "finished_at": "2026-04-23T01:38:50.953556+00:00",
+  "run_id": "M7V2-a7db908d791f",
+  "started_at": "2026-04-24T11:00:29.839561+00:00",
+  "finished_at": "2026-04-24T11:00:29.870373+00:00",
   "inputs": {
     "baseline": "data/m7/m7_new_stock_today.json",
     "market_runtime": "data/market_runtime.json",
@@ -14,48 +14,40 @@
   },
   "summary": {
     "symbol_count": 33,
-    "baseline_coverage": 33,
+    "baseline_coverage": 0,
     "warnings": 0,
     "notes": 0
   },
   "parameter_snapshot": {
-    "scenario_params": {
-      "FCN": {
-        "factor_weights": {
-          "trend": 0.2,
-          "structure": 0.22,
-          "timing": 0.12,
-          "valuation": 0.24,
-          "quality": 0.12,
-          "market_acceptance": 0.1
-        },
-        "event_blend_weights": {
-          "event_score": 0.6,
-          "market_acceptance": 0.4
-        },
-        "penalty_weights": {
-          "exposure": 1.0,
-          "overheat": 0.6
-        }
-      },
-      "Active": {
-        "factor_weights": {
-          "trend": 0.24,
-          "structure": 0.16,
-          "timing": 0.26,
-          "valuation": 0.1,
-          "quality": 0.08,
-          "market_acceptance": 0.16
-        },
-        "event_blend_weights": {
-          "event_score": 0.7,
-          "market_acceptance": 0.3
-        },
-        "penalty_weights": {
-          "exposure": 0.6,
-          "overheat": 1.0
-        }
-      }
+    "raw_weights": {
+      "valuation": 0.3,
+      "trend": 0.25,
+      "structure": 0.2,
+      "timing": 0.15,
+      "money": 0.1
+    },
+    "compare_params": {
+      "zscore_weight": 0.6,
+      "zscore_cap": 1.5,
+      "historical_weight": 1.0,
+      "historical_cap": 1.0,
+      "p_value_threshold": 0.2,
+      "m7_final_threshold": 6.5
+    },
+    "category_target_horizon": {
+      "CPU_GPU_COMPUTE_SEMI": "3Y",
+      "ASIC_CUSTOM_SILICON": "3Y",
+      "FOUNDRY_FAB_INFRA": "5Y",
+      "MEMORY_CYCLICAL_SEMI": "3Y",
+      "SEMI_EQUIPMENT": "5Y",
+      "CLOUD_PLATFORM_MEGACAP": "3Y",
+      "CYBERSECURITY_DATA_SOFTWARE": "3Y",
+      "TRAVEL_LEISURE_CYCLICAL": "1Y",
+      "CRYPTO_EXCHANGE_PLATFORM": "1Y",
+      "CRYPTO_MINERS": "1Y",
+      "UTILITY_LOWVOL_DEFENSIVE": "10Y",
+      "YIELD_REIT_BONDLIKE_INCOME": "10Y",
+      "BOND_ETF": "10Y"
     },
     "regime_params": {
       "default_regime": "neutral",
