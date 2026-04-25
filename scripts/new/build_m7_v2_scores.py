@@ -385,6 +385,7 @@ class InputBundle:
     baseline_rows: dict[str, dict[str, Any]]
     market_runtime: dict[str, dict[str, Any]]
     pool30_rows: dict[str, dict[str, Any]]
+    weekly_history: dict[str, dict[str, Any]]
 
 
 # -------------------------
@@ -396,10 +397,12 @@ def load_inputs() -> InputBundle:
     if not market_path.exists():
         market_path = Path("data/market_runtime.json")
     pool_path = Path("data/pool30.json")
+    weekly_history_path = Path("data/runtime_staging/weekly_price_history.json")
 
     baseline_raw = load_json(baseline_path)
     market_raw = load_json(market_path)
     pool_raw = load_json(pool_path)
+    weekly_history_raw = load_json(weekly_history_path) if weekly_history_path.exists() else {}
 
     baseline_rows: dict[str, dict[str, Any]] = {}
     if isinstance(baseline_raw, dict):
@@ -438,10 +441,18 @@ def load_inputs() -> InputBundle:
             if sym:
                 pool_rows[sym] = row
 
+    weekly_history_rows: dict[str, dict[str, Any]] = {}
+    weekly_source = weekly_history_raw.get("rows") if isinstance(weekly_history_raw, dict) and "rows" in weekly_history_raw else weekly_history_raw
+    if isinstance(weekly_source, dict):
+        for sym, row in weekly_source.items():
+            if isinstance(row, dict):
+                weekly_history_rows[normalize_symbol(sym)] = row
+
     return InputBundle(
         baseline_rows=baseline_rows,
         market_runtime=market_rows,
         pool30_rows=pool_rows,
+        weekly_history=weekly_history_rows,
     )
 
 
@@ -458,6 +469,7 @@ def build_feature_row(symbol: str, bundle: InputBundle) -> dict[str, Any]:
     b = bundle.baseline_rows.get(symbol, {})
     m = bundle.market_runtime.get(symbol, {})
     p = bundle.pool30_rows.get(symbol, {})
+    wh = bundle.weekly_history.get(symbol, {})
 
     returns_base = {
         "1d": safe_num(b.get("1日漲跌幅"), None),
@@ -569,10 +581,21 @@ def build_feature_row(symbol: str, bundle: InputBundle) -> dict[str, Any]:
     # event score placeholder: baseline quality score proxy (safe fallback)
     event_score = safe_num(exposure.get("Event平均"), 0.0)
 
-    weekly_prices = m.get("weekly_prices")
-    weekly_returns = m.get("weekly_returns")
-    history_weeks = m.get("history_weeks")
-    history_horizon_used = m.get("history_horizon_used")
+    weekly_prices_src = m.get("weekly_prices")
+    if not isinstance(weekly_prices_src, list) or len(weekly_prices_src) == 0:
+        weekly_prices_src = wh.get("weekly_prices")
+
+    weekly_returns_src = m.get("weekly_returns")
+    if not isinstance(weekly_returns_src, list) or len(weekly_returns_src) == 0:
+        weekly_returns_src = wh.get("weekly_returns")
+
+    history_weeks_src = m.get("history_weeks")
+    if not history_weeks_src:
+        history_weeks_src = wh.get("history_weeks")
+
+    history_horizon_used_src = m.get("history_horizon_used")
+    if not history_horizon_used_src:
+        history_horizon_used_src = wh.get("history_horizon_used")
 
     return {
         "symbol": symbol,
@@ -581,10 +604,10 @@ def build_feature_row(symbol: str, bundle: InputBundle) -> dict[str, Any]:
         "sector": b.get("產業") or p.get("sector") or "",
         "subsector": b.get("子產業") or p.get("subsector") or "",
         "returns": rets,
-        "weekly_prices": [safe_num(x, None) for x in m.get("weekly_prices", [])] if isinstance(m.get("weekly_prices"), list) else [],
-        "weekly_returns": [safe_num(x, None) for x in m.get("weekly_returns", [])] if isinstance(m.get("weekly_returns"), list) else [],
-        "history_weeks": int(safe_num(m.get("history_weeks"), 0) or 0),
-        "history_horizon_used": m.get("history_horizon_used"),
+        "weekly_prices": [safe_num(x, None) for x in weekly_prices_src] if isinstance(weekly_prices_src, list) else [],
+        "weekly_returns": [safe_num(x, None) for x in weekly_returns_src] if isinstance(weekly_returns_src, list) else [],
+        "history_weeks": int(safe_num(history_weeks_src, 0) or 0),
+        "history_horizon_used": history_horizon_used_src,
         "swing_days": swing_days,
         "valuation": {
             "forward_pe": forward_pe,
@@ -634,21 +657,30 @@ def build_feature_row(symbol: str, bundle: InputBundle) -> dict[str, Any]:
 # -------------------------
 def compute_trend(feature: dict[str, Any]) -> dict[str, Any]:
     """
-    Trend v3 stable version
-    -----------------------
-    Trend = 長期方向 + MA20 結構趨勢 + 加速/減速
+    Trend v3 fixed.
+
+    Definition:
+    Trend = long-term direction + MA20 trend + acceleration.
 
     Input:
-      feature["weekly_prices"] = weekly close price sequence.
+      feature["weekly_prices"]
 
-    Final score:
-      0.50 * linear_score
-    + 0.30 * ma_score
-    + 0.20 * acceleration_score
+    Formula:
+      trend_score =
+        0.50 * linear_slope_score
+      + 0.30 * ma20_slope_score
+      + 0.20 * acceleration_score
     """
 
-    weekly_prices = [safe_num(x, None) for x in feature.get("weekly_prices", [])]
-    weekly_prices = [x for x in weekly_prices if x is not None and x > 0]
+    weekly_prices = [
+        safe_num(x, None)
+        for x in feature.get("weekly_prices", [])
+    ]
+    weekly_prices = [
+        x for x in weekly_prices
+        if x is not None and x > 0
+    ]
+
     history_weeks = len(weekly_prices)
 
     if history_weeks < 4:
@@ -688,10 +720,49 @@ def compute_trend(feature: dict[str, Any]) -> dict[str, Any]:
 
         if denominator == 0:
             return 0.0
+
         return numerator / denominator
 
+    def score_slope(slope: float, zero_score: float = 2.0) -> float:
+        """
+        Smooth scoring to avoid too many ties:
+        slope 0      -> zero_score
+        slope 0.006  -> about 9
+        """
+        return clamp(zero_score + (slope / 0.006) * 7.0, 0.0, 10.0)
+
+    # -------------------------
+    # 1. Long-term direction
+    # -------------------------
+    long_slope = calc_slope(log_prices)
+    linear_score = score_slope(long_slope, zero_score=2.0)
+
+    # -------------------------
+    # 2. MA20 slope
+    # MA20 weekly ~= MA100 trading days
+    # -------------------------
+    ma_window = 20
+    ma_series = []
+
+    if history_weeks >= ma_window:
+        for i in range(ma_window, history_weeks + 1):
+            ma_series.append(
+                sum(weekly_prices[i - ma_window:i]) / ma_window
+            )
+
+    if len(ma_series) >= 10:
+        ma_log = [math.log(x) for x in ma_series if x > 0]
+        ma_slope = calc_slope(ma_log)
+    else:
+        ma_slope = 0.0
+
+    ma_score = score_slope(ma_slope, zero_score=3.0)
+
+    # -------------------------
+    # 3. Acceleration / deceleration
+    # use quadratic coefficient on log(price)
+    # -------------------------
     def calc_quadratic_a(y_vals: list[float]) -> float:
-        """Return c in y = a + b*x + c*x^2."""
         n = len(y_vals)
         if n < 10:
             return 0.0
@@ -715,17 +786,19 @@ def compute_trend(feature: dict[str, Any]) -> dict[str, Any]:
         ]
         b = [sy, sxy, sx2y]
 
-        mat = [row[:] + [b[i]] for i, row in enumerate(a)]
+        mat = [a[i][:] + [b[i]] for i in range(3)]
+
         for col in range(3):
             pivot = max(range(col, 3), key=lambda r: abs(mat[r][col]))
             if abs(mat[pivot][col]) < 1e-12:
                 return 0.0
+
             if pivot != col:
                 mat[col], mat[pivot] = mat[pivot], mat[col]
 
-            pivot_val = mat[col][col]
+            pv = mat[col][col]
             for j in range(col, 4):
-                mat[col][j] /= pivot_val
+                mat[col][j] /= pv
 
             for r in range(3):
                 if r == col:
@@ -734,66 +807,19 @@ def compute_trend(feature: dict[str, Any]) -> dict[str, Any]:
                 for j in range(col, 4):
                     mat[r][j] -= factor * mat[col][j]
 
-        return mat[2][3]
+        coeffs = [mat[i][3] for i in range(3)]
+        return coeffs[2]
 
-    # -------------------------
-    # 1. Long-term direction
-    # -------------------------
-    long_slope = calc_slope(log_prices)
-
-    if long_slope <= 0:
-        linear_score = 2.0
-    elif long_slope <= 0.002:
-        linear_score = 5.0
-    elif long_slope <= 0.005:
-        linear_score = 7.0
-    else:
-        linear_score = 9.0
-
-    # -------------------------
-    # 2. MA20 slope
-    # MA20 weeks ~= 100 trading days
-    # -------------------------
-    ma_window = 20
-    ma_series: list[float] = []
-
-    for i in range(ma_window, history_weeks + 1):
-        window = weekly_prices[i - ma_window:i]
-        if len(window) == ma_window:
-            ma_series.append(sum(window) / ma_window)
-
-    if len(ma_series) >= 10:
-        ma_log = [math.log(x) for x in ma_series if x > 0]
-        ma_slope = calc_slope(ma_log)
-    else:
-        ma_slope = 0.0
-
-    if ma_slope <= 0:
-        ma_score = 3.0
-    elif ma_slope <= 0.002:
-        ma_score = 5.0
-    elif ma_slope <= 0.005:
-        ma_score = 7.0
-    else:
-        ma_score = 9.0
-
-    # -------------------------
-    # 3. Acceleration / deceleration
-    # quadratic_a = c in log(price)=a+b*x+c*x^2
-    # -------------------------
     acceleration = calc_quadratic_a(log_prices)
 
-    if acceleration < -0.00001:
-        acc_score = 3.0
-    elif acceleration < 0:
-        acc_score = 5.0
-    elif acceleration <= 0.00001:
-        acc_score = 5.0
-    else:
-        acc_score = 8.0
+    # Smooth acceleration score:
+    # 0              -> 5
+    # +0.00010       -> 8
+    # -0.00010       -> 2
+    acc_score = clamp(5.0 + (acceleration / 0.0001) * 3.0, 0.0, 10.0)
 
     # -------------------------
-    # Final trend score
+    # Final
     # -------------------------
     final_score = (
         0.50 * linear_score +
@@ -1280,7 +1306,7 @@ def compute_historical_score(feature: dict[str, Any]) -> float:
 def main() -> int:
     input_paths = {
         "baseline": "data/m7/m7_new_stock_today.json",
-        "market_runtime": "data/market_runtime.json",
+        "market_runtime": "data/runtime_staging/market_runtime_long_horizon.json",
         "pool30": "data/pool30.json",
     }
 
@@ -1530,4 +1556,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
