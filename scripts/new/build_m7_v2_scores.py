@@ -632,14 +632,6 @@ def build_feature_row(symbol: str, bundle: InputBundle) -> dict[str, Any]:
 # -------------------------
 # Skeleton factor computations
 # -------------------------
-請直接 **完整覆蓋你原本 `build_m7_v2_scores_FIXED.py` 的 `compute_trend()` function**。
-
-其他程式不要動。
-
-```python
-import math
-
-
 def compute_trend(feature: dict[str, Any]) -> dict[str, Any]:
     """
     Trend v3
@@ -823,21 +815,6 @@ def compute_trend(feature: dict[str, Any]) -> dict[str, Any]:
         "ma_score": round2(ma_score),
         "acceleration_score": round2(acc_score)
     }
-```
-
----
-
-這版會自然呈現你要的結果：
-
-* entity["stock","Taiwan Semiconductor Manufacturing Company","TSM"] → Trend 中高 + Structure 很高
-* entity["stock","NVIDIA Corporation","NVDA"] → Trend 高 + acceleration 高
-* entity["stock","Coinbase Global, Inc.","COIN"] → Trend 高但 reliability 可能 medium
-* entity["stock","iShares iBoxx $ Investment Grade Corporate Bond ETF","LQD"] → Trend 中低 + Structure 高
-* entity["stock","UnitedHealth Group Incorporated","UNH"] → recent slope 變弱會被抓出來
-
-這版比 avg weekly return 合理非常多。
-
-
 
 def compute_structure(feature: dict[str, Any]) -> dict[str, Any]:
     """
@@ -1362,6 +1339,16 @@ def main() -> int:
                 "valuation_archetype": feature["valuation"].get("valuation_archetype"),
                 "valuation_score": round2(valuation["score_10"]),
                 "trend_score": round2(trend["score_10"]),
+                "trend_mode": trend.get("trend_mode"),
+                "trend_reliability": trend.get("trend_reliability"),
+                "trend_linear_slope": trend.get("linear_slope"),
+                "trend_recent_slope": trend.get("recent_slope"),
+                "trend_ma_slope": trend.get("ma_slope"),
+                "trend_acceleration": trend.get("acceleration"),
+                "trend_linear_score": trend.get("linear_score"),
+                "trend_recent_score": trend.get("recent_score"),
+                "trend_ma_score": trend.get("ma_score"),
+                "trend_acceleration_score": trend.get("acceleration_score"),
                 "structure_slope": round2(structure["slope"]) if structure.get("slope") is not None else None,
                 "structure_dispersion": round2(structure["dispersion"]) if structure.get("dispersion") is not None else None,
                 "structure_stability": round2(structure["stability"]) if structure.get("stability") is not None else None,
@@ -1536,3 +1523,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
