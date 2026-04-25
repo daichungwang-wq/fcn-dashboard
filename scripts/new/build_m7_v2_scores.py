@@ -697,7 +697,8 @@ def compute_structure(feature: dict[str, Any]) -> dict[str, float]:
     structure_score_10 = clamp(safe_num(structure_raw, 0.0), 0.0, 10.0) if regression_raw is not None else piecewise(curve_params["structure_curve"]["points"], structure_raw)
     return {
         "raw": structure_raw,
-        "score_10": clamp(structure_score_10, 0.0, 10.0),
+        "score_10": clamp(structure_score, 0.0, 10.0),
+        "structure_score": clamp(structure_score, 0.0, 10.0),
         "slope": slope,
         "dispersion": dispersion,
         "stability": stability,
