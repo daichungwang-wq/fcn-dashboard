@@ -1,16 +1,16 @@
 {
   "run_id": "M7V2-a7db908d791f",
-  "started_at": "2026-04-24T11:23:04.590326+00:00",
-  "finished_at": "2026-04-24T11:23:04.610191+00:00",
+  "started_at": "2026-04-25T12:39:50.125534+00:00",
+  "finished_at": "2026-04-25T12:39:50.399634+00:00",
   "inputs": {
     "baseline": "data/m7/m7_new_stock_today.json",
     "market_runtime": "data/market_runtime.json",
     "pool30": "data/pool30.json"
   },
   "outputs": {
-    "scores": "data/m7_sandbox/m7_v2_scores.json",
-    "ab_compare": "data/m7_sandbox/m7_v2_ab_compare.json",
-    "manifest": "data/m7_sandbox/m7_v2_run_manifest.json"
+    "scores": "data\\m7_sandbox\\m7_v2_scores.json",
+    "ab_compare": "data\\m7_sandbox\\m7_v2_ab_compare.json",
+    "manifest": "data\\m7_sandbox\\m7_v2_run_manifest.json"
   },
   "summary": {
     "symbol_count": 33,
