@@ -634,44 +634,45 @@ def build_feature_row(symbol: str, bundle: InputBundle) -> dict[str, Any]:
 # -------------------------
 def compute_trend(feature: dict[str, Any]) -> dict[str, Any]:
     """
-    Trend v3
-    ---------------------------
-    Trend = 方向強不強
-    Structure = 穩不穩（已由 compute_structure 處理）
+    Trend v3 stable version
+    -----------------------
+    Trend = 長期方向 + MA20 結構趨勢 + 加速/減速
 
-    Full mode (history >=300 weeks):
-    0.40 linear_slope_score
-    0.25 recent_slope_score
-    0.20 ma_slope_score
-    0.15 acceleration_score
+    Input:
+      feature["weekly_prices"] = weekly close price sequence.
 
-    Medium mode (52~299 weeks):
-    0.45 recent_slope_score
-    0.35 ma_slope_score
-    0.20 acceleration_score
-
-    Short mode (<52 weeks):
-    fallback to return model
+    Final score:
+      0.50 * linear_score
+    + 0.30 * ma_score
+    + 0.20 * acceleration_score
     """
 
     weekly_prices = [safe_num(x, None) for x in feature.get("weekly_prices", [])]
     weekly_prices = [x for x in weekly_prices if x is not None and x > 0]
-
     history_weeks = len(weekly_prices)
 
     if history_weeks < 4:
         return {
-            "raw": 0,
-            "score_10": 0,
+            "raw": 0.0,
+            "score_10": 0.0,
             "trend_mode": "insufficient_data",
-            "trend_reliability": "low"
+            "trend_reliability": "low",
+            "history_weeks": history_weeks,
+            "linear_slope": None,
+            "ma_slope": None,
+            "acceleration": None,
+            "linear_score": None,
+            "ma_score": None,
+            "acceleration_score": None,
         }
 
     log_prices = [math.log(x) for x in weekly_prices]
-    x = list(range(history_weeks))
 
-    def calc_slope(y_vals):
+    def calc_slope(y_vals: list[float]) -> float:
         n = len(y_vals)
+        if n <= 1:
+            return 0.0
+
         x_vals = list(range(n))
         x_mean = sum(x_vals) / n
         y_mean = sum(y_vals) / n
@@ -686,69 +687,11 @@ def compute_trend(feature: dict[str, Any]) -> dict[str, Any]:
         )
 
         if denominator == 0:
-            return 0
-
+            return 0.0
         return numerator / denominator
 
-    # -------------------------
-    # 1. Long-term slope
-    # -------------------------
-    long_slope = calc_slope(log_prices)
-
-    if long_slope <= 0:
-        linear_score = 2
-    elif long_slope <= 0.002:
-        linear_score = 5
-    elif long_slope <= 0.005:
-        linear_score = 7
-    else:
-        linear_score = 9
-
-        # -------------------------
-    # 3. MA slope
-    # -------------------------
-    ma_window = 20 
-
-    ma_series = []
-    for i in range(ma_window, history_weeks):
-        ma_series.append(
-            sum(weekly_prices[i-ma_window:i]) / ma_window
-        )
-
-    if len(ma_series) >= 10:
-        ma_log = [math.log(x) for x in ma_series if x > 0]
-        ma_slope = calc_slope(ma_log)
-    else:
-        ma_slope = 0
-
-    if ma_slope <= 0:
-        ma_score = 3
-    elif ma_slope <= 0.002:
-        ma_score = 5
-    elif ma_slope <= 0.005:
-        ma_score = 7
-    else:
-        ma_score = 9
-
-    # -------------------------
-    # 4. Acceleration
-    # -------------------------
-    quadratic_a = calc_quadratic_a(log_prices)
-    acceleration = quadratic_a
-
-    if acceleration < -0.00001:
-        acc_score = 3
-    elif acceleration < 0:
-        acc_score = 5
-    elif acceleration <= 0.00001:
-        acc_score = 5
-    else:
-        acc_score = 8
-
-    # -------------------------
-    # Final logic
-    # -------------------------
-    def calc_quadratic_a(y_vals):
+    def calc_quadratic_a(y_vals: list[float]) -> float:
+        """Return c in y = a + b*x + c*x^2."""
         n = len(y_vals)
         if n < 10:
             return 0.0
@@ -765,82 +708,121 @@ def compute_trend(feature: dict[str, Any]) -> dict[str, Any]:
         sxy = sum(x * y for x, y in zip(x_vals, y_vals))
         sx2y = sum((x ** 2) * y for x, y in zip(x_vals, y_vals))
 
-        A = [
+        a = [
             [sx0, sx1, sx2],
             [sx1, sx2, sx3],
             [sx2, sx3, sx4],
         ]
-        B = [sy, sxy, sx2y]
+        b = [sy, sxy, sx2y]
 
-        def solve_3x3(A, B):
-            mat = [A[i][:] + [B[i]] for i in range(3)]
-            for col in range(3):
-                pivot = max(range(col, 3), key=lambda r: abs(mat[r][col]))
-                if abs(mat[pivot][col]) < 1e-12:
-                    return None
+        mat = [row[:] + [b[i]] for i, row in enumerate(a)]
+        for col in range(3):
+            pivot = max(range(col, 3), key=lambda r: abs(mat[r][col]))
+            if abs(mat[pivot][col]) < 1e-12:
+                return 0.0
+            if pivot != col:
                 mat[col], mat[pivot] = mat[pivot], mat[col]
 
-                pv = mat[col][col]
+            pivot_val = mat[col][col]
+            for j in range(col, 4):
+                mat[col][j] /= pivot_val
+
+            for r in range(3):
+                if r == col:
+                    continue
+                factor = mat[r][col]
                 for j in range(col, 4):
-                    mat[col][j] /= pv
+                    mat[r][j] -= factor * mat[col][j]
 
-                for r in range(3):
-                    if r == col:
-                        continue
-                    factor = mat[r][col]
-                    for j in range(col, 4):
-                        mat[r][j] -= factor * mat[col][j]
+        return mat[2][3]
 
-            return [mat[i][3] for i in range(3)]
+    # -------------------------
+    # 1. Long-term direction
+    # -------------------------
+    long_slope = calc_slope(log_prices)
 
-        coeffs = solve_3x3(A, B)
-        if not coeffs:
-            return 0.0
+    if long_slope <= 0:
+        linear_score = 2.0
+    elif long_slope <= 0.002:
+        linear_score = 5.0
+    elif long_slope <= 0.005:
+        linear_score = 7.0
+    else:
+        linear_score = 9.0
 
-        return coeffs[2]
+    # -------------------------
+    # 2. MA20 slope
+    # MA20 weeks ~= 100 trading days
+    # -------------------------
+    ma_window = 20
+    ma_series: list[float] = []
+
+    for i in range(ma_window, history_weeks + 1):
+        window = weekly_prices[i - ma_window:i]
+        if len(window) == ma_window:
+            ma_series.append(sum(window) / ma_window)
+
+    if len(ma_series) >= 10:
+        ma_log = [math.log(x) for x in ma_series if x > 0]
+        ma_slope = calc_slope(ma_log)
+    else:
+        ma_slope = 0.0
+
+    if ma_slope <= 0:
+        ma_score = 3.0
+    elif ma_slope <= 0.002:
+        ma_score = 5.0
+    elif ma_slope <= 0.005:
+        ma_score = 7.0
+    else:
+        ma_score = 9.0
+
+    # -------------------------
+    # 3. Acceleration / deceleration
+    # quadratic_a = c in log(price)=a+b*x+c*x^2
+    # -------------------------
+    acceleration = calc_quadratic_a(log_prices)
+
+    if acceleration < -0.00001:
+        acc_score = 3.0
+    elif acceleration < 0:
+        acc_score = 5.0
+    elif acceleration <= 0.00001:
+        acc_score = 5.0
+    else:
+        acc_score = 8.0
+
+    # -------------------------
+    # Final trend score
+    # -------------------------
+    final_score = (
+        0.50 * linear_score +
+        0.30 * ma_score +
+        0.20 * acc_score
+    )
+
     if history_weeks >= 300:
-        final_score = (
-         0.50 * linear_score +
-         0.20 * acc_score +
-         0.30 * ma_score
-        )
         mode = "full"
         reliability = "high"
-
     elif history_weeks >= 52:
-        final_score = (
-            0.50 * linear_score +
-            0.20 * acc_score +
-            0.30 * ma_score
-         )
         mode = "medium"
         reliability = "medium"
-
     else:
-        rets = feature.get("returns", {})
-
-        final_score = (
-            0.4 * safe_num(rets.get("1m"), 0) +
-            0.3 * safe_num(rets.get("3m"), 0) +
-            0.3 * safe_num(rets.get("6m"), 0)
-        )
-
-        final_score = clamp(final_score * 20 + 5, 0, 10)
         mode = "short_history"
         reliability = "low"
 
     return {
         "raw": round2(final_score),
-        "score_10": round2(clamp(final_score, 0, 10)),
+        "score_10": round2(clamp(final_score, 0.0, 10.0)),
         "trend_mode": mode,
         "trend_reliability": reliability,
         "history_weeks": history_weeks,
         "linear_slope": round(long_slope, 6),
         "ma_slope": round(ma_slope, 6),
-        "acceleration": round(acceleration, 6),
+        "acceleration": round(acceleration, 8),
         "linear_score": round2(linear_score),
         "ma_score": round2(ma_score),
-        "acceleration_score": round2(acc_score)
+        "acceleration_score": round2(acc_score),
     }
 
 def compute_structure(feature: dict[str, Any]) -> dict[str, Any]:
