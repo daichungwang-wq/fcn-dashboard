@@ -1027,9 +1027,11 @@ def main() -> int:
             historical_score = compute_historical_score(feature)
             m1_score = normalize_m1_score_to_10(feature.get("baseline", {}).get("today_score"))
             m7_v2_score = clamp(
-                0.55 * valuation["score_10"]
-                + 0.30 * trend["score_10"]
-                + 0.15 * money["score_10"],
+                0.20 * m1_score
+                + 0.35 * m7_raw_score
+                + 0.25 * trend["score_10"]
+                + 0.10 * structure["score_10"]
+                + 0.10 * money["score_10"],
                 0.0,
                 10.0,
             )
@@ -1054,9 +1056,6 @@ def main() -> int:
                 "m1_score": round2(m1_score),
                 "m7_raw_score": round2(m7_raw_score),
                 "m7_v2_score": round2(m7_v2_score),
-                "m7_v2_formula": "0.55*valuation + 0.30*trend + 0.15*money",
-                "structure_diagnostic_score": round2(structure["score_10"]),
-                "timing_diagnostic_score": round2(timing["score_10"]),
                 "historical_score": round2(historical_score),
                 "warning_flag": warning_flag,
                 "coverage_pct": feature["market_acceptance"].get("coverage_pct"),
