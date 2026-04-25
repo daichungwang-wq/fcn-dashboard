@@ -650,83 +650,166 @@ def compute_trend(feature: dict[str, Any]) -> dict[str, float]:
     return {"raw": trend_raw, "score_10": clamp(trend_score_10, 0.0, 10.0)}
 
 
-def compute_structure(feature):
-    import math
-    import numpy as np
-    from sklearn.metrics import r2_score
-    from sklearn.linear_model import LinearRegression
-    from sklearn.preprocessing import PolynomialFeatures
+def compute_structure(feature: dict[str, Any]) -> dict[str, Any]:
+    """
+    Structure score uses weekly PRICE series, not weekly returns and not horizon returns.
 
-    weekly_prices = feature.get("weekly_prices", [])
+    Input:
+      feature["weekly_prices"] = 10Y/5Y/3Y/1Y weekly close price sequence from runtime.
 
-    weekly_prices = [
-        float(x) for x in weekly_prices
-        if x is not None and float(x) > 0
-    ]
+    Models:
+      1) linear:      log(price) = a + b*x
+      2) quadratic:   log(price) = a + b*x + c*x^2
+      3) logarithmic: log(price) = a + b*log(x+1)
+
+    Score:
+      structure_score = max(R² of the 3 models) * 10
+      Example: best R² = 0.98 -> structure_score = 9.8
+    """
+
+    weekly_prices = [safe_num(x, None) for x in feature.get("weekly_prices", [])]
+    weekly_prices = [x for x in weekly_prices if x is not None and x > 0]
+
+    def _solve_linear_system(a: list[list[float]], b: list[float]) -> list[float] | None:
+        """Small Gaussian elimination solver to avoid sklearn/numpy dependency."""
+        n = len(b)
+        mat = [row[:] + [b[i]] for i, row in enumerate(a)]
+
+        for col in range(n):
+            pivot = max(range(col, n), key=lambda r: abs(mat[r][col]))
+            if abs(mat[pivot][col]) < 1e-12:
+                return None
+            if pivot != col:
+                mat[col], mat[pivot] = mat[pivot], mat[col]
+
+            pivot_val = mat[col][col]
+            for j in range(col, n + 1):
+                mat[col][j] /= pivot_val
+
+            for r in range(n):
+                if r == col:
+                    continue
+                factor = mat[r][col]
+                for j in range(col, n + 1):
+                    mat[r][j] -= factor * mat[col][j]
+
+        return [mat[i][n] for i in range(n)]
+
+    def _fit_r2(x_values: list[float], y_values: list[float], degree: int) -> dict[str, Any]:
+        n = len(x_values)
+        if n < degree + 2:
+            return {"r2": None, "coeffs": None, "dispersion": None}
+
+        basis = [[x ** p for p in range(degree + 1)] for x in x_values]
+        lhs = []
+        rhs = []
+        for i in range(degree + 1):
+            lhs_row = []
+            for j in range(degree + 1):
+                lhs_row.append(sum(row[i] * row[j] for row in basis))
+            lhs.append(lhs_row)
+            rhs.append(sum(row[i] * y for row, y in zip(basis, y_values)))
+
+        coeffs = _solve_linear_system(lhs, rhs)
+        if coeffs is None:
+            return {"r2": None, "coeffs": None, "dispersion": None}
+
+        fitted = [sum(c * (x ** p) for p, c in enumerate(coeffs)) for x in x_values]
+        mean_y = sum(y_values) / len(y_values)
+        ss_tot = sum((y - mean_y) ** 2 for y in y_values)
+        ss_res = sum((y - yhat) ** 2 for y, yhat in zip(y_values, fitted))
+        r2 = 1.0 if ss_tot <= 1e-12 else 1.0 - ss_res / ss_tot
+        r2 = clamp(r2, 0.0, 1.0)
+        dispersion = (ss_res / len(y_values)) ** 0.5
+        return {
+            "r2": r2,
+            "coeffs": coeffs,
+            "dispersion": dispersion,
+        }
 
     if len(weekly_prices) < 52:
         return {
-            "structure_score": 0,
+            "raw": 0.0,
+            "score_10": 0.0,
+            "structure_score": 0.0,
+
+            "slope": None,
+            "dispersion": None,
+            "stability": None,
+            "r2": None,
+            "drawdown_frequency": None,
+
             "structure_r2_linear": None,
             "structure_r2_quadratic": None,
             "structure_r2_logarithmic": None,
             "best_structure_r2": None,
-            "best_structure_model": "insufficient_data"
+            "best_structure_model": "insufficient_data",
+            "structure_score_method": "best_r2_of_linear_quadratic_logarithmic",
+
+            "linear_slope": None,
+            "quadratic_a": None,
+            "logarithmic_slope": None,
         }
 
-    y = np.log(np.array(weekly_prices))
-    X = np.arange(len(y)).reshape(-1, 1)
+    y = [math.log(p) for p in weekly_prices]
+    x = list(range(len(y)))
+    x_log = [math.log(i + 1.0) for i in x]
 
-    # -------------------
-    # Linear regression
-    # -------------------
-    linear_model = LinearRegression()
-    linear_model.fit(X, y)
-    y_pred_linear = linear_model.predict(X)
-    r2_linear = r2_score(y, y_pred_linear)
+    linear = _fit_r2(x, y, degree=1)
+    quadratic = _fit_r2(x, y, degree=2)
+    logarithmic = _fit_r2(x_log, y, degree=1)
 
-    # -------------------
-    # Quadratic regression
-    # -------------------
-    poly = PolynomialFeatures(degree=2)
-    X_poly = poly.fit_transform(X)
-
-    quad_model = LinearRegression()
-    quad_model.fit(X_poly, y)
-    y_pred_quad = quad_model.predict(X_poly)
-    r2_quad = r2_score(y, y_pred_quad)
-
-    # -------------------
-    # Logarithmic regression
-    # -------------------
-    X_log = np.log(X + 1)
-
-    log_model = LinearRegression()
-    log_model.fit(X_log, y)
-    y_pred_log = log_model.predict(X_log)
-    r2_log = r2_score(y, y_pred_log)
-
-    # -------------------
-    # Pick best model
-    # -------------------
-    models = {
-        "linear": r2_linear,
-        "quadratic": r2_quad,
-        "logarithmic": r2_log
+    model_r2 = {
+        "linear": linear.get("r2"),
+        "quadratic": quadratic.get("r2"),
+        "logarithmic": logarithmic.get("r2"),
     }
+    valid_models = {k: v for k, v in model_r2.items() if v is not None}
 
-    best_model = max(models, key=models.get)
-    best_r2 = models[best_model]
+    if not valid_models:
+        best_model = "insufficient_data"
+        best_r2 = None
+        structure_score = 0.0
+    else:
+        best_model = max(valid_models, key=valid_models.get)
+        best_r2 = valid_models[best_model]
+        structure_score = clamp(best_r2 * 10.0, 0.0, 10.0)
 
-    structure_score = max(0, min(best_r2 * 10, 10))
+    best_dispersion = {
+        "linear": linear.get("dispersion"),
+        "quadratic": quadratic.get("dispersion"),
+        "logarithmic": logarithmic.get("dispersion"),
+    }.get(best_model)
+
+    linear_coeffs = linear.get("coeffs") or []
+    quadratic_coeffs = quadratic.get("coeffs") or []
+    logarithmic_coeffs = logarithmic.get("coeffs") or []
+
+    linear_slope = linear_coeffs[1] if len(linear_coeffs) > 1 else None
+    quadratic_a = quadratic_coeffs[2] if len(quadratic_coeffs) > 2 else None
+    logarithmic_slope = logarithmic_coeffs[1] if len(logarithmic_coeffs) > 1 else None
 
     return {
-        "structure_score": round(structure_score, 2),
-        "structure_r2_linear": round(r2_linear, 4),
-        "structure_r2_quadratic": round(r2_quad, 4),
-        "structure_r2_logarithmic": round(r2_log, 4),
-        "best_structure_r2": round(best_r2, 4),
-        "best_structure_model": best_model
+        "raw": structure_score,
+        "score_10": structure_score,
+        "structure_score": structure_score,
+
+        "slope": linear_slope,
+        "dispersion": best_dispersion,
+        "stability": None if best_r2 is None else best_r2 * 10.0,
+        "r2": best_r2,
+        "drawdown_frequency": None,
+
+        "structure_r2_linear": linear.get("r2"),
+        "structure_r2_quadratic": quadratic.get("r2"),
+        "structure_r2_logarithmic": logarithmic.get("r2"),
+        "best_structure_r2": best_r2,
+        "best_structure_model": best_model,
+        "structure_score_method": "best_r2_of_linear_quadratic_logarithmic",
+
+        "linear_slope": linear_slope,
+        "quadratic_a": quadratic_a,
+        "logarithmic_slope": logarithmic_slope,
     }
 
 def compute_timing(feature: dict[str, Any]) -> dict[str, float]:
@@ -1072,14 +1155,14 @@ def main() -> int:
             historical_score = compute_historical_score(feature)
             m1_score = normalize_m1_score_to_10(feature.get("baseline", {}).get("today_score"))
             m7_v2_score = clamp(
-                0.20 * m1_score
-                + 0.35 * m7_raw_score
+                0.45 * valuation["score_10"]
                 + 0.25 * trend["score_10"]
-                + 0.10 * structure["score_10"]
+                + 0.20 * structure["score_10"]
                 + 0.10 * money["score_10"],
                 0.0,
                 10.0,
             )
+            m7_v2_formula = "0.45*valuation + 0.25*trend + 0.20*structure + 0.10*money"
 
             rows_out.append({
                 "symbol": sym,
@@ -1094,6 +1177,15 @@ def main() -> int:
                 "structure_dispersion": round2(structure["dispersion"]) if structure.get("dispersion") is not None else None,
                 "structure_stability": round2(structure["stability"]) if structure.get("stability") is not None else None,
                 "structure_r2": round2(structure["r2"]) if structure.get("r2") is not None else None,
+                "structure_r2_linear": round2(structure["structure_r2_linear"]) if structure.get("structure_r2_linear") is not None else None,
+                "structure_r2_quadratic": round2(structure["structure_r2_quadratic"]) if structure.get("structure_r2_quadratic") is not None else None,
+                "structure_r2_logarithmic": round2(structure["structure_r2_logarithmic"]) if structure.get("structure_r2_logarithmic") is not None else None,
+                "best_structure_r2": round2(structure["best_structure_r2"]) if structure.get("best_structure_r2") is not None else None,
+                "best_structure_model": structure.get("best_structure_model"),
+                "structure_score_method": structure.get("structure_score_method"),
+                "linear_slope": structure.get("linear_slope"),
+                "quadratic_a": structure.get("quadratic_a"),
+                "logarithmic_slope": structure.get("logarithmic_slope"),
                 "drawdown_frequency": round2(structure["drawdown_frequency"] * 100.0) if structure.get("drawdown_frequency") is not None else None,
                 "structure_score": round2(structure["score_10"]),
                 "timing_score": round2(timing["score_10"]),
@@ -1101,6 +1193,7 @@ def main() -> int:
                 "m1_score": round2(m1_score),
                 "m7_raw_score": round2(m7_raw_score),
                 "m7_v2_score": round2(m7_v2_score),
+                "m7_v2_formula": m7_v2_formula,
                 "historical_score": round2(historical_score),
                 "warning_flag": warning_flag,
                 "coverage_pct": feature["market_acceptance"].get("coverage_pct"),
