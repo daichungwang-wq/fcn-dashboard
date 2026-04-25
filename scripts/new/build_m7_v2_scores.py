@@ -748,6 +748,56 @@ def compute_trend(feature: dict[str, Any]) -> dict[str, Any]:
     # -------------------------
     # Final logic
     # -------------------------
+    def calc_quadratic_a(y_vals):
+        n = len(y_vals)
+        if n < 10:
+            return 0.0
+
+        x_vals = list(range(n))
+
+        sx0 = n
+        sx1 = sum(x_vals)
+        sx2 = sum(x ** 2 for x in x_vals)
+        sx3 = sum(x ** 3 for x in x_vals)
+        sx4 = sum(x ** 4 for x in x_vals)
+
+        sy = sum(y_vals)
+        sxy = sum(x * y for x, y in zip(x_vals, y_vals))
+        sx2y = sum((x ** 2) * y for x, y in zip(x_vals, y_vals))
+
+        A = [
+            [sx0, sx1, sx2],
+            [sx1, sx2, sx3],
+            [sx2, sx3, sx4],
+        ]
+        B = [sy, sxy, sx2y]
+
+        def solve_3x3(A, B):
+            mat = [A[i][:] + [B[i]] for i in range(3)]
+            for col in range(3):
+                pivot = max(range(col, 3), key=lambda r: abs(mat[r][col]))
+                if abs(mat[pivot][col]) < 1e-12:
+                    return None
+                mat[col], mat[pivot] = mat[pivot], mat[col]
+
+                pv = mat[col][col]
+                for j in range(col, 4):
+                    mat[col][j] /= pv
+
+                for r in range(3):
+                    if r == col:
+                        continue
+                    factor = mat[r][col]
+                    for j in range(col, 4):
+                        mat[r][j] -= factor * mat[col][j]
+
+            return [mat[i][3] for i in range(3)]
+
+        coeffs = solve_3x3(A, B)
+        if not coeffs:
+            return 0.0
+
+        return coeffs[2]
     if history_weeks >= 300:
         final_score = (
          0.50 * linear_score +
