@@ -704,31 +704,10 @@ def compute_trend(feature: dict[str, Any]) -> dict[str, Any]:
     else:
         linear_score = 9
 
-    # -------------------------
-    # 2. Recent slope (recent 52 weeks)
-    # -------------------------
-    recent_window = min(52, history_weeks)
-    recent_prices = log_prices[-recent_window:]
-    recent_slope = calc_slope(recent_prices)
-
-    if long_slope <= 0:
-        recent_ratio = 0
-    else:
-        recent_ratio = recent_slope / long_slope
-
-    if recent_ratio <= 0.5:
-        recent_score = 3
-    elif recent_ratio <= 0.9:
-        recent_score = 5
-    elif recent_ratio <= 1.2:
-        recent_score = 7
-    else:
-        recent_score = 9
-
-    # -------------------------
+        # -------------------------
     # 3. MA slope
     # -------------------------
-    ma_window = 100 if history_weeks >= 100 else 50 if history_weeks >= 50 else 20
+    ma_window = 20 
 
     ma_series = []
     for i in range(ma_window, history_weeks):
@@ -754,7 +733,8 @@ def compute_trend(feature: dict[str, Any]) -> dict[str, Any]:
     # -------------------------
     # 4. Acceleration
     # -------------------------
-    acceleration = recent_slope - long_slope
+    quadratic_a = feature.get("quadratic_a")
+    acceleration = safe_num(quadratic_a, 0)
 
     if acceleration < -0.002:
         acc_score = 3
@@ -770,20 +750,19 @@ def compute_trend(feature: dict[str, Any]) -> dict[str, Any]:
     # -------------------------
     if history_weeks >= 300:
         final_score = (
-            0.40 * linear_score +
-            0.25 * recent_score +
-            0.20 * ma_score +
-            0.15 * acc_score
+         0.50 * linear_score +
+         0.20 * acc_score +
+         0.30 * ma_score
         )
         mode = "full"
         reliability = "high"
 
     elif history_weeks >= 52:
         final_score = (
-            0.45 * recent_score +
-            0.35 * ma_score +
-            0.20 * acc_score
-        )
+            0.50 * linear_score +
+            0.20 * acc_score +
+            0.30 * ma_score
+         )
         mode = "medium"
         reliability = "medium"
 
@@ -807,11 +786,9 @@ def compute_trend(feature: dict[str, Any]) -> dict[str, Any]:
         "trend_reliability": reliability,
         "history_weeks": history_weeks,
         "linear_slope": round2(long_slope),
-        "recent_slope": round2(recent_slope),
         "ma_slope": round2(ma_slope),
         "acceleration": round2(acceleration),
         "linear_score": round2(linear_score),
-        "recent_score": round2(recent_score),
         "ma_score": round2(ma_score),
         "acceleration_score": round2(acc_score)
     }
@@ -1342,11 +1319,9 @@ def main() -> int:
                 "trend_mode": trend.get("trend_mode"),
                 "trend_reliability": trend.get("trend_reliability"),
                 "trend_linear_slope": trend.get("linear_slope"),
-                "trend_recent_slope": trend.get("recent_slope"),
                 "trend_ma_slope": trend.get("ma_slope"),
                 "trend_acceleration": trend.get("acceleration"),
                 "trend_linear_score": trend.get("linear_score"),
-                "trend_recent_score": trend.get("recent_score"),
                 "trend_ma_score": trend.get("ma_score"),
                 "trend_acceleration_score": trend.get("acceleration_score"),
                 "structure_slope": round2(structure["slope"]) if structure.get("slope") is not None else None,
