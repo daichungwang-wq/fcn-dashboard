@@ -1,169 +1,214 @@
 (function () {
-  const DATA_PATH = "../data/mm/engine_progress_dashboard.json";
-  const SCORES_PATH = "../data/m7_sandbox/m7_v2_scores.json";
-  const AUDIT_PATH = "../data/m7_sandbox/m7_formula_input_audit.json";
-  const RUNTIME_PATH = "../data/runtime_staging/market_runtime_long_horizon.json";
+  const DASHBOARD_PATH = "../data/mm/engine_progress_dashboard.json";
+  const SCORE_PATH = "../data/m7_sandbox/m7_v2_scores.json";
 
-  function statusPill(status) {
-    if (status === "PRODUCTION") return '<span class="pill ok">PRODUCTION</span>';
-    if (status === "SANDBOX" || status === "STAGING") return `<span class="pill warn">${status}</span>`;
-    return `<span class="pill bad">${status}</span>`;
+  // ------------------------
+  // helpers
+  // ------------------------
+  function $(id) {
+    return document.getElementById(id);
   }
 
-  function yn(v) {
-    return v ? "✅" : "—";
+  function safe(v, d = "--") {
+    return v === null || v === undefined || v === ""
+      ? d
+      : v;
   }
 
-  function setError(msg) {
-    const box = document.getElementById("dashboard-error");
+  function num(v, d = 0) {
+    const n = Number(v);
+    return Number.isFinite(n) ? n : d;
+  }
+
+  function loadMMConfig() {
+    try {
+      return JSON.parse(
+        localStorage.getItem("mm_parameter_config_v1") || "{}"
+      );
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function saveMMConfig(config) {
+    localStorage.setItem(
+      "mm_parameter_config_v1",
+      JSON.stringify(config)
+    );
+  }
+
+  function formatDelta(a, b) {
+    const oldVal = num(a, null);
+    const newVal = num(b, null);
+
+    if (oldVal === null || newVal === null) {
+      return "--";
+    }
+
+    const delta = newVal - oldVal;
+
+    if (delta > 0) return `+${delta.toFixed(2)}`;
+    if (delta < 0) return delta.toFixed(2);
+
+    return "0";
+  }
+
+  // ------------------------
+  // overview
+  // ------------------------
+  function renderOverview(data) {
+    const box = $("overview-section");
     if (!box) return;
-    box.style.display = "block";
-    box.textContent = msg;
-  }
 
-  function card(k, v) {
-    return `
-      <div class="card">
-        <div class="k">${k}</div>
-        <div class="v">${v}</div>
+    const overview = data.overview || {};
+
+    box.innerHTML = `
+      <div class="metric-grid">
+        <div class="metric-card">
+          <div class="metric-title">Overall Progress</div>
+          <div class="metric-value">${safe(
+            overview.overall_progress_pct
+          )}%</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-title">Critical Blockers</div>
+          <div class="metric-value">${safe(
+            overview.critical_blockers_count
+          )}</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-title">Production Stability</div>
+          <div class="metric-value">${safe(
+            overview.production_stability
+          )}</div>
+        </div>
       </div>
     `;
   }
 
-  function renderOverview(overview) {
-    const el = document.getElementById("overview");
-    if (!el) return;
-
-    el.innerHTML = [
-      card("Overall Progress", `${overview.overall_progress_pct ?? "--"}%`),
-      card("Production Stability", overview.production_stability || "--"),
-      card("Critical Blockers", overview.critical_blockers_count ?? "--"),
-      card("Active Milestones", (overview.active_milestones || []).length)
-    ].join("");
-  }
-
-  function renderModuleSwitch(items) {
-    const box = document.getElementById("module-switch");
-    if (!box) return;
-
-    box.innerHTML = (items || []).map(x => {
-      if (x.enabled) {
-        return `
-          <a class="module-btn" href="${x.path}">
-            ${x.label}
-          </a>
-        `;
-      }
-
-      return `
-        <span class="module-btn disabled">
-          ${x.label}
-        </span>
-      `;
-    }).join("");
-  }
-
-  //---------------------------------------------------
-  // MM CONTROL CENTER (NEW)
-  //---------------------------------------------------
+  // ------------------------
+  // MM CONTROL CENTER
+  // ------------------------
   function renderParameterController(data) {
-    const box = document.getElementById("param-controller");
+    const box = $("param-controller");
     if (!box) return;
 
-    const savedConfig = JSON.parse(
-      localStorage.getItem("mm_parameter_config_v1") || "{}"
-    );
+    const savedConfig = loadMMConfig();
 
-    function controlBlock(title, items) {
+    function buildGroup(title, rows) {
       return `
-        <details class="collapsible-section">
+        <details class="collapsible-section" open>
           <summary>${title}</summary>
 
-          <div class="group-box">
-            <div class="control-grid">
-              ${(items || []).map(x => {
+          <div class="control-grid">
+
+            ${(rows || [])
+              .map((row) => {
+                const originalVal = row.value;
                 const currentVal =
-                  savedConfig[x.key] ??
-                  x.value ??
-                  "";
+                  savedConfig[row.key] ?? originalVal;
 
                 return `
-                  <div class="control-item">
-                    <label>${x.label || "--"}</label>
+                  <div class="control-card">
+
+                    <div class="control-title">
+                      ${safe(row.label)}
+                    </div>
 
                     <input
                       class="mm-param-input"
-                      data-param="${x.key || "unknown"}"
+                      data-key="${row.key}"
+                      data-original="${originalVal}"
                       value="${currentVal}"
                     />
 
-                    <div class="mini" style="margin-top:6px;">
-                      original: ${x.value || "--"}
+                    <div class="mini-row">
+                      original:
+                      ${safe(originalVal)}
                     </div>
 
-                    <div class="mini">
-                      ${x.note || ""}
+                    <div class="mini-row delta-box">
+                      changed:
+                      ${safe(currentVal)}
                     </div>
+
+                    <div class="mini-row delta-box">
+                      delta:
+                      ${formatDelta(
+                        originalVal,
+                        currentVal
+                      )}
+                    </div>
+
+                    <div class="mini-note">
+                      ${safe(row.note, "")}
+                    </div>
+
                   </div>
                 `;
-              }).join("")}
-            </div>
+              })
+              .join("")}
+
           </div>
         </details>
       `;
     }
 
     box.innerHTML = `
-      <div>
-        <b>Current Config File:</b>
-        ${data.config_file || "--"}
+      <div class="config-header">
+        Current Config:
+        ${safe(data.config_file)}
       </div>
 
-      ${controlBlock(
+      ${buildGroup(
         "A. Core Valuation Controls",
         data?.groups?.core_valuation_controls
       )}
 
-      ${controlBlock(
+      ${buildGroup(
         "B. Score Architecture Controls",
         data?.groups?.score_architecture_controls
       )}
 
-      ${controlBlock(
+      ${buildGroup(
         "C. Runtime Controls",
         data?.groups?.runtime_execution_controls
       )}
 
-      <div style="margin-top:16px; display:flex; gap:10px;">
-        <button id="save-mm-config" class="action-btn">
+      <div class="action-row">
+        <button id="save-mm-config">
           Save Config
         </button>
 
-        <button id="reset-mm-config" class="action-btn">
+        <button id="reset-mm-config">
           Reset Config
         </button>
 
-        <button id="export-mm-config" class="action-btn">
+        <button id="export-mm-config">
           Export Config
         </button>
       </div>
     `;
   }
 
-  function initParameterControlActions() {
-    const saveBtn = document.getElementById("save-mm-config");
-    const resetBtn = document.getElementById("reset-mm-config");
-    const exportBtn = document.getElementById("export-mm-config");
+  function initParameterActions() {
+    const saveBtn = $("save-mm-config");
+    const resetBtn = $("reset-mm-config");
+    const exportBtn = $("export-mm-config");
 
     if (saveBtn) {
       saveBtn.addEventListener("click", () => {
         const inputs =
-          document.querySelectorAll(".mm-param-input");
+          document.querySelectorAll(
+            ".mm-param-input"
+          );
 
         const config = {};
 
-        inputs.forEach(input => {
-          const key = input.dataset.param;
+        inputs.forEach((input) => {
+          const key = input.dataset.key;
           const val = Number(input.value);
 
           config[key] = Number.isFinite(val)
@@ -171,10 +216,7 @@
             : input.value;
         });
 
-        localStorage.setItem(
-          "mm_parameter_config_v1",
-          JSON.stringify(config)
-        );
+        saveMMConfig(config);
 
         alert("MM config saved.");
       });
@@ -193,14 +235,11 @@
 
     if (exportBtn) {
       exportBtn.addEventListener("click", () => {
-        const config =
+        console.log(
+          "MM CONFIG:",
           localStorage.getItem(
             "mm_parameter_config_v1"
-          );
-
-        console.log(
-          "MM CONFIG EXPORT:",
-          config
+          )
         );
 
         alert(
@@ -210,112 +249,202 @@
     }
   }
 
-  function setupGlobalExpandCollapse() {
+  // ------------------------
+  // output preview
+  // ------------------------
+  function renderOutputPreview(scoreData) {
+    const box = $("output-preview");
+    if (!box) return;
+
+    const rows = scoreData.rows || [];
+
+    const top = rows
+      .sort(
+        (a, b) =>
+          (b.m7_final_score || 0) -
+          (a.m7_final_score || 0)
+      )
+      .slice(0, 10);
+
+    box.innerHTML = `
+      <table class="preview-table">
+        <thead>
+          <tr>
+            <th>Symbol</th>
+            <th>Final</th>
+            <th>Valuation</th>
+            <th>Trend</th>
+            <th>Structure</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          ${top
+            .map(
+              (x) => `
+              <tr>
+                <td>${x.symbol}</td>
+                <td>${safe(
+                  x.m7_final_score
+                )}</td>
+                <td>${safe(
+                  x.valuation_score
+                )}</td>
+                <td>${safe(
+                  x.trend_score
+                )}</td>
+                <td>${safe(
+                  x.structure_score
+                )}</td>
+              </tr>
+            `
+            )
+            .join("")}
+        </tbody>
+      </table>
+    `;
+  }
+
+  // ------------------------
+  // automation panel
+  // ------------------------
+  function renderAutomationPanel() {
+    const box = $("automation-panel");
+    if (!box) return;
+
+    box.innerHTML = `
+      <div class="automation-box">
+        Future Scope:
+        python rerun / auto batch / config sync
+      </div>
+    `;
+  }
+
+  // ------------------------
+  // module routing
+  // ------------------------
+  function renderModuleRouting(data) {
+    const box = $("module-routing");
+    if (!box) return;
+
+    const rows =
+      data.module_switch || [];
+
+    box.innerHTML = rows
+      .map(
+        (x) => `
+      <a
+        class="module-link"
+        href="${x.path}"
+      >
+        ${x.label}
+      </a>
+    `
+      )
+      .join("");
+  }
+
+  // ------------------------
+  // reporting
+  // ------------------------
+  function renderReporting(data) {
+    const box = $("system-reporting");
+    if (!box) return;
+
+    box.innerHTML = `
+      <div class="report-box">
+        Generated:
+        ${safe(data.generated_at)}
+      </div>
+    `;
+  }
+
+  // ------------------------
+  // expand collapse
+  // ------------------------
+  function initExpandCollapse() {
     const expandBtn =
-      document.getElementById("expand-all-btn");
+      $("expand-all-btn");
 
     const collapseBtn =
-      document.getElementById("collapse-all-btn");
-
-    const all = () =>
-      Array.from(
-        document.querySelectorAll(
-          ".collapsible-section"
-        )
-      );
+      $("collapse-all-btn");
 
     if (expandBtn) {
-      expandBtn.addEventListener(
-        "click",
-        () => {
-          all().forEach(el => {
-            el.open = true;
+      expandBtn.onclick = () => {
+        document
+          .querySelectorAll(
+            ".collapsible-section"
+          )
+          .forEach((x) => {
+            x.open = true;
           });
-        }
-      );
+      };
     }
 
     if (collapseBtn) {
-      collapseBtn.addEventListener(
-        "click",
-        () => {
-          all().forEach(el => {
-            el.open = false;
+      collapseBtn.onclick = () => {
+        document
+          .querySelectorAll(
+            ".collapsible-section"
+          )
+          .forEach((x) => {
+            x.open = false;
           });
-        }
-      );
+      };
     }
   }
 
+  // ------------------------
+  // init
+  // ------------------------
   async function init() {
     try {
       const [
         dashboardRes,
-        scoresRes,
-        auditRes,
-        runtimeRes
+        scoreRes
       ] = await Promise.all([
-        fetch(DATA_PATH),
-        fetch(SCORES_PATH),
-        fetch(AUDIT_PATH),
-        fetch(RUNTIME_PATH)
+        fetch(DASHBOARD_PATH),
+        fetch(SCORE_PATH)
       ]);
 
       const dashboardData =
         await dashboardRes.json();
 
-      const scoresData =
-        await scoresRes.json();
+      const scoreData =
+        await scoreRes.json();
 
-      const auditData =
-        await auditRes.json();
-
-      const runtimeData =
-        await runtimeRes.json();
-
-      document.getElementById(
-        "generatedAt"
-      ).textContent =
-        `資料時間：${dashboardData.generated_at || "--"}`;
-
-      renderModuleSwitch(
-        dashboardData.module_switch || []
+      renderOverview(
+        dashboardData
       );
 
       renderParameterController(
-        dashboardData.parameter_controller || {}
+        dashboardData.parameter_controller
       );
 
-      renderOverview(
-        dashboardData.overview || {}
+      renderOutputPreview(
+        scoreData
       );
 
-      setupGlobalExpandCollapse();
+      renderAutomationPanel();
 
-      initParameterControlActions();
+      renderModuleRouting(
+        dashboardData
+      );
+
+      renderReporting(
+        dashboardData
+      );
+
+      initParameterActions();
+      initExpandCollapse();
 
       console.log(
-        "M7 rows:",
-        scoresData?.rows?.length || 0
+        "MM dashboard loaded"
       );
-
-      console.log(
-        "Audit rows:",
-        auditData?.rows?.length || 0
-      );
-
-      console.log(
-        "Runtime rows:",
-        Object.keys(
-          runtimeData?.rows || {}
-        ).length
-      );
-
     } catch (err) {
-      setError(err.message);
+      console.error(err);
     }
   }
 
   init();
-
 })();
