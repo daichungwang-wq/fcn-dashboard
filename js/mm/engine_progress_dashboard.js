@@ -659,8 +659,7 @@
     const changedStats = stats(rows.map(r => r.mm_changed_score));
     const deltaStats = stats(rows.map(r => r.mm_delta_score));
 
-    const factorStats = factor => stats(rows.map(r => r[f]));
-
+   const factorStats = factor => stats(rows.map(r => r[factor]));
     const sec = (title, rows) => `
       <div class="group-box">
         <div class="group-title">${title}</div>
