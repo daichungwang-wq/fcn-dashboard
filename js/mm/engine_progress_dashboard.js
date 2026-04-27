@@ -763,7 +763,6 @@
 
     box.innerHTML = [
       `<div class="mini">Parameter → item → score；輸入參數後會即時 preview original / changed / delta。</div>`,
-      renderPrototypeSnapshot(data, explain),
       renderTopCompareGroups(),
       renderAllStocksByCategory(),
       `<div class="group-box"><div class="group-title">代表組摘要（Representative Summary）</div><div>${summaryRows || "無"}</div></div>`,
@@ -1368,8 +1367,7 @@
 
     all().forEach(el => { el.open = false; });
   }
-   renderStandardStockCard("NVDA");
-bindStockQuery();
+
   function renderActiveBuildContext(ctx) {
     const box = document.getElementById("active-build-context");
     if (!box) return;
@@ -1560,6 +1558,9 @@ bindStockQuery();
       renderMilestones(DASHBOARD_DATA.milestones || []);
       renderHandoffMemory(DASHBOARD_DATA.handoff_memory || {});
       setupGlobalExpandCollapse();
+
+      renderStandardStockCard("NVDA");
+      bindStockQuery();
 
     } catch (err) {
       setError(`Engine Progress Dashboard 載入失敗：${err.message}`);
@@ -1808,15 +1809,15 @@ function bindStockQuery() {
 
   if (!btn || !input) return;
 
-  btn.addEventListener("click", () => {
+  btn.onclick = () => {
     renderStandardStockCard(input.value);
-  });
+  };
 
-  input.addEventListener("keypress", (e) => {
+  input.onkeypress = (e) => {
     if (e.key === "Enter") {
       renderStandardStockCard(input.value);
     }
-  });
+  };
 }
   init();
 })();
