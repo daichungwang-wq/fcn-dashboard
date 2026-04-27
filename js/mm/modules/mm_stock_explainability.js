@@ -1,40 +1,108 @@
-window.MMStockExplainability=(function(){
+window.MMStockExplainability = (function () {
 
-function render(symbol="NVDA"){
+  function safe(v, fallback = "--") {
+    return v === null || v === undefined || v === "" ? fallback : v;
+  }
 
-  const rows=MM_STATE.scores.rows || [];
-  const stock=rows.find(x=>x.symbol===symbol) || rows[0];
+  function num(v, fallback = null) {
+    const n = Number(v);
+    return Number.isFinite(n) ? n : fallback;
+  }
 
-  const box=document.getElementById("standard-stock-card");
-  if(!box || !stock) return;
+  function findStockBySymbol(symbol) {
+    const rows = window.SCORES_DATA?.rows || [];
 
-  box.innerHTML=`
-    <div class="panel">
-      <h3>${stock.symbol} | ${stock.name}</h3>
+    if (!rows.length) return null;
 
-      <div class="metric">
-        <span>Valuation</span>
-        <b>${stock.valuation_score}</b>
+    const target = (symbol || "NVDA").toUpperCase();
+
+    return rows.find(
+      x => (x.symbol || "").toUpperCase() === target
+    ) || rows[0];
+  }
+
+  function renderStandardStockCard(symbol = "NVDA") {
+    const stock = findStockBySymbol(symbol);
+
+    const container = document.getElementById("standard-stock-card");
+
+    if (!container || !stock) return;
+
+    container.innerHTML = `
+      <div class="metric-grid">
+        <div class="metric-card">
+          <div class="metric-label">Symbol</div>
+          <div class="metric-value">${safe(stock.symbol)}</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-label">Valuation</div>
+          <div class="metric-value">${safe(stock.valuation_score)}</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-label">Trend</div>
+          <div class="metric-value">${safe(stock.trend_score)}</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-label">Structure</div>
+          <div class="metric-value">${safe(stock.structure_score)}</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-label">Data Health</div>
+          <div class="metric-value">${safe(stock.coverage_pct)}%</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-label">M7 Score</div>
+          <div class="metric-value">${safe(stock.m7_v2_score)}</div>
+        </div>
       </div>
 
-      <div class="metric">
-        <span>Trend</span>
-        <b>${stock.trend_score}</b>
-      </div>
+      <details style="margin-top:12px;">
+        <summary>Trend Detail</summary>
+        <div>Linear: ${safe(stock.linear_slope)}</div>
+        <div>MA200: ${safe(stock.ma200_slope)}</div>
+        <div>Acceleration: ${safe(stock.quadratic_a)}</div>
+      </details>
 
-      <div class="metric">
-        <span>Structure</span>
-        <b>${stock.structure_score}</b>
-      </div>
+      <details>
+        <summary>Valuation Detail</summary>
+        <div>Forward PE: ${safe(stock.forward_pe)}</div>
+        <div>Anchor PE: ${safe(stock.anchor_pe)}</div>
+      </details>
 
-      <div class="metric">
-        <span>Data Health</span>
-        <b>${stock.coverage_pct}%</b>
-      </div>
-    </div>
-  `;
-}
+      <details>
+        <summary>Structure Detail</summary>
+        <div>Best Model: ${safe(stock.best_structure_model)}</div>
+        <div>R²: ${safe(stock.best_structure_r2)}</div>
+      </details>
+    `;
+  }
 
-return {render};
+  function bindStockQuery() {
+    const btn = document.getElementById("stock-query-btn");
+    const input = document.getElementById("stock-query-input");
+
+    if (!btn || !input) return;
+
+    btn.onclick = () => {
+      const symbol = input.value.trim() || "NVDA";
+      renderStandardStockCard(symbol);
+    };
+  }
+
+  function init() {
+    renderStandardStockCard("NVDA");
+    bindStockQuery();
+  }
+
+  return {
+    init,
+    renderStandardStockCard,
+    findStockBySymbol
+  };
 
 })();
