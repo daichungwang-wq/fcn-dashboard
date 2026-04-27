@@ -289,6 +289,123 @@ def load_json(path: Path) -> Any:
 
 
 DYNAMIC_ANCHOR_CONFIG = load_json(Path("configs/mm/dynamic_anchor_regime_v1.json"))
+
+
+def load_optional_json(path: Path, default: Any) -> Any:
+    """Load optional JSON config. If missing or invalid, keep sandbox runnable."""
+    try:
+        if path.exists():
+            return load_json(path)
+    except Exception:
+        pass
+    return default
+
+
+DEFAULT_M7_PARAM_CONFIG: dict[str, Any] = {
+    "version": "m7_v2_parameter_config@fallback_default",
+    "m7_v2_weights": {
+        "valuation": 0.45,
+        "trend": 0.25,
+        "structure": 0.20,
+        "timing": 0.0,
+        "money": 0.10,
+    },
+    "legacy_raw_fallback": {
+        "enabled": True,
+        "fallback_history_weeks": 156,
+        "rule": "if history_weeks < 156 then use m7_raw_score; else use m7_v2_score",
+    },
+    "trend": {
+        "data_frequency": "weekly",
+        "annualization_formula": "annualized_pct = (exp(weekly_slope * 52) - 1) * 100",
+        "internal_weights": {
+            "linear": 0.35,
+            "ma200": 0.50,
+            "acceleration": 0.15,
+        },
+        "periods": {
+            "linear": "full_available_history",
+            "ma200": "full_available_history",
+            "ma_window_weeks": 40,
+            "acceleration_recent_weeks": 156,
+            "acceleration_compare": "recent_3y_annualized - full_history_annualized",
+        },
+        "linear_curve": {
+            "type": "piecewise_linear",
+            "input": "annualized_return_pct",
+            "points": [
+                [-20.0, -20.0],
+                [-10.0, -10.0],
+                [-5.0, -5.0],
+                [0.0, 2.0],
+                [5.0, 5.0],
+                [10.0, 8.0],
+                [15.0, 9.5],
+                [20.0, 10.0],
+                [40.0, 15.0],
+            ],
+            "cap_min": -20.0,
+            "cap_max": 15.0,
+        },
+        "ma200_curve": {
+            "type": "piecewise_linear",
+            "input": "annualized_return_pct",
+            "points": [
+                [-20.0, -12.0],
+                [-10.0, -8.0],
+                [-5.0, -4.0],
+                [0.0, 2.0],
+                [5.0, 5.0],
+                [10.0, 7.0],
+                [15.0, 8.5],
+                [20.0, 10.0],
+                [40.0, 12.0],
+            ],
+            "cap_min": -12.0,
+            "cap_max": 12.0,
+        },
+        "acceleration_curve": {
+            "type": "piecewise_linear",
+            "input": "recent_3y_annualized_minus_full_annualized_pct",
+            "points": [
+                [-30.0, -8.0],
+                [-20.0, -6.0],
+                [-10.0, -4.0],
+                [-5.0, -2.0],
+                [0.0, 0.0],
+                [5.0, 2.0],
+                [10.0, 4.0],
+                [20.0, 5.0],
+                [30.0, 6.0],
+            ],
+            "cap_min": -8.0,
+            "cap_max": 6.0,
+        },
+    },
+    "valuation": {
+        "gap_curve": {
+            "type": "piecewise_linear",
+            "input": "valuation_gap",
+            "points": [
+                [-1.0, 10.0],
+                [-0.40, 10.0],
+                [-0.20, 9.0],
+                [-0.05, 7.0],
+                [0.05, 7.0],
+                [0.20, 6.0],
+                [0.40, 3.0],
+                [0.80, 2.0],
+            ],
+            "cap_min": 2.0,
+            "cap_max": 10.0,
+        }
+    },
+}
+
+M7_PARAM_CONFIG = load_optional_json(
+    Path("configs/mm/m7_v2_parameter_config.json"),
+    DEFAULT_M7_PARAM_CONFIG,
+)
 UNIVERSE_ROWS = load_json(Path("data/m1/universe_150.json"))
 UNIVERSE_BY_SYMBOL = {
     str(row.get("symbol", "")).upper(): row
@@ -657,30 +774,45 @@ def build_feature_row(symbol: str, bundle: InputBundle) -> dict[str, Any]:
 # -------------------------
 def compute_trend(feature: dict[str, Any]) -> dict[str, Any]:
     """
-    Trend v3 fixed.
+    Trend v4 MM-config driven.
 
     Definition:
-    Trend = long-term direction + MA20 trend + acceleration.
+      Trend = linear long-term direction + MA200 confirmation + acceleration.
 
-    Input:
-      feature["weekly_prices"]
+    Data:
+      - weekly_prices from runtime staging.
+      - linear and MA use full available history.
+      - acceleration uses recent 3Y annualized slope minus full-history annualized slope.
 
-    Formula:
-      trend_score =
-        0.50 * linear_slope_score
-      + 0.30 * ma20_slope_score
-      + 0.20 * acceleration_score
+    Annualization:
+      annualized_pct = (exp(weekly_slope * 52) - 1) * 100
+
+    Default MM weights:
+      0.35 * linear + 0.50 * ma200 + 0.15 * acceleration
+
+    Governance:
+      If history_weeks < fallback_history_weeks (default 156), dashboard/consumer should treat
+      m7_raw_score as fallback main score, because long-horizon regression signals are not reliable.
     """
 
-    weekly_prices = [
-        safe_num(x, None)
-        for x in feature.get("weekly_prices", [])
-    ]
-    weekly_prices = [
-        x for x in weekly_prices
-        if x is not None and x > 0
-    ]
+    trend_cfg = M7_PARAM_CONFIG.get("trend", {}) if isinstance(M7_PARAM_CONFIG, dict) else {}
+    internal_weights = trend_cfg.get("internal_weights", {}) if isinstance(trend_cfg, dict) else {}
+    periods = trend_cfg.get("periods", {}) if isinstance(trend_cfg, dict) else {}
+    fallback_cfg = M7_PARAM_CONFIG.get("legacy_raw_fallback", {}) if isinstance(M7_PARAM_CONFIG, dict) else {}
 
+    w_linear = safe_num(internal_weights.get("linear"), 0.35)
+    w_ma = safe_num(internal_weights.get("ma200"), 0.50)
+    w_acc = safe_num(internal_weights.get("acceleration"), 0.15)
+    fallback_history_weeks = int(safe_num(fallback_cfg.get("fallback_history_weeks"), 156))
+    acceleration_recent_weeks = int(safe_num(periods.get("acceleration_recent_weeks"), 156))
+    ma_window_weeks = int(safe_num(periods.get("ma_window_weeks"), 40))
+
+    linear_curve = trend_cfg.get("linear_curve", DEFAULT_M7_PARAM_CONFIG["trend"]["linear_curve"])
+    ma_curve = trend_cfg.get("ma200_curve", DEFAULT_M7_PARAM_CONFIG["trend"]["ma200_curve"])
+    acceleration_curve = trend_cfg.get("acceleration_curve", DEFAULT_M7_PARAM_CONFIG["trend"]["acceleration_curve"])
+
+    weekly_prices = [safe_num(x, None) for x in feature.get("weekly_prices", [])]
+    weekly_prices = [x for x in weekly_prices if x is not None and x > 0]
     history_weeks = len(weekly_prices)
 
     if history_weeks < 4:
@@ -690,8 +822,15 @@ def compute_trend(feature: dict[str, Any]) -> dict[str, Any]:
             "trend_mode": "insufficient_data",
             "trend_reliability": "low",
             "history_weeks": history_weeks,
+            "fallback_to_raw": True,
+            "fallback_reason": "history_weeks < 4",
             "linear_slope": None,
             "ma_slope": None,
+            "recent_3y_slope": None,
+            "linear_annualized_pct": None,
+            "ma_annualized_pct": None,
+            "recent_3y_annualized_pct": None,
+            "acceleration_annualized_delta_pct": None,
             "acceleration": None,
             "linear_score": None,
             "ma_score": None,
@@ -704,51 +843,40 @@ def compute_trend(feature: dict[str, Any]) -> dict[str, Any]:
         n = len(y_vals)
         if n <= 1:
             return 0.0
-
         x_vals = list(range(n))
         x_mean = sum(x_vals) / n
         y_mean = sum(y_vals) / n
-
-        numerator = sum(
-            (x_vals[i] - x_mean) * (y_vals[i] - y_mean)
-            for i in range(n)
-        )
-        denominator = sum(
-            (x_vals[i] - x_mean) ** 2
-            for i in range(n)
-        )
-
+        numerator = sum((x_vals[i] - x_mean) * (y_vals[i] - y_mean) for i in range(n))
+        denominator = sum((x_vals[i] - x_mean) ** 2 for i in range(n))
         if denominator == 0:
             return 0.0
-
         return numerator / denominator
 
-    def score_slope(slope: float, zero_score: float = 2.0) -> float:
-        """
-        Smooth scoring to avoid too many ties:
-        slope 0      -> zero_score
-        slope 0.006  -> about 9
-        """
-        return clamp(zero_score + (slope / 0.006) * 7.0, 0.0, 10.0)
+    def annualize_pct(weekly_slope: float) -> float:
+        try:
+            return (math.exp(safe_num(weekly_slope, 0.0) * 52.0) - 1.0) * 100.0
+        except OverflowError:
+            return 9999.0 if weekly_slope > 0 else -100.0
 
-    # -------------------------
-    # 1. Long-term direction
-    # -------------------------
+    def score_curve(curve: dict[str, Any], x: float) -> float:
+        pts = curve.get("points", []) if isinstance(curve, dict) else []
+        raw = piecewise(pts, x)
+        cap_min = safe_num(curve.get("cap_min"), None) if isinstance(curve, dict) else None
+        cap_max = safe_num(curve.get("cap_max"), None) if isinstance(curve, dict) else None
+        if cap_min is not None and cap_max is not None:
+            return clamp(raw, cap_min, cap_max)
+        return raw
+
+    # 1) Linear: full available weekly log-price regression
     long_slope = calc_slope(log_prices)
-    linear_score = score_slope(long_slope, zero_score=2.0)
+    linear_annualized_pct = annualize_pct(long_slope)
+    linear_score = score_curve(linear_curve, linear_annualized_pct)
 
-    # -------------------------
-    # 2. MA20 slope
-    # MA20 weekly ~= MA100 trading days
-    # -------------------------
-    ma_window = 20
-    ma_series = []
-
-    if history_weeks >= ma_window:
-        for i in range(ma_window, history_weeks + 1):
-            ma_series.append(
-                sum(weekly_prices[i - ma_window:i]) / ma_window
-            )
+    # 2) MA200 confirmation: default 40 weekly MA ~= 200 trading days.
+    ma_series: list[float] = []
+    if history_weeks >= ma_window_weeks:
+        for i in range(ma_window_weeks, history_weeks + 1):
+            ma_series.append(sum(weekly_prices[i - ma_window_weeks:i]) / ma_window_weeks)
 
     if len(ma_series) >= 10:
         ma_log = [math.log(x) for x in ma_series if x > 0]
@@ -756,99 +884,71 @@ def compute_trend(feature: dict[str, Any]) -> dict[str, Any]:
     else:
         ma_slope = 0.0
 
-    ma_score = score_slope(ma_slope, zero_score=3.0)
+    ma_annualized_pct = annualize_pct(ma_slope)
+    ma_score = score_curve(ma_curve, ma_annualized_pct)
 
-    # -------------------------
-    # 3. Acceleration / deceleration
-    # use quadratic coefficient on log(price)
-    # -------------------------
-    def calc_quadratic_a(y_vals: list[float]) -> float:
-        n = len(y_vals)
-        if n < 10:
-            return 0.0
-
-        x_vals = list(range(n))
-
-        sx0 = n
-        sx1 = sum(x_vals)
-        sx2 = sum(x ** 2 for x in x_vals)
-        sx3 = sum(x ** 3 for x in x_vals)
-        sx4 = sum(x ** 4 for x in x_vals)
-
-        sy = sum(y_vals)
-        sxy = sum(x * y for x, y in zip(x_vals, y_vals))
-        sx2y = sum((x ** 2) * y for x, y in zip(x_vals, y_vals))
-
-        a = [
-            [sx0, sx1, sx2],
-            [sx1, sx2, sx3],
-            [sx2, sx3, sx4],
-        ]
-        b = [sy, sxy, sx2y]
-
-        mat = [a[i][:] + [b[i]] for i in range(3)]
-
-        for col in range(3):
-            pivot = max(range(col, 3), key=lambda r: abs(mat[r][col]))
-            if abs(mat[pivot][col]) < 1e-12:
-                return 0.0
-
-            if pivot != col:
-                mat[col], mat[pivot] = mat[pivot], mat[col]
-
-            pv = mat[col][col]
-            for j in range(col, 4):
-                mat[col][j] /= pv
-
-            for r in range(3):
-                if r == col:
-                    continue
-                factor = mat[r][col]
-                for j in range(col, 4):
-                    mat[r][j] -= factor * mat[col][j]
-
-        coeffs = [mat[i][3] for i in range(3)]
-        return coeffs[2]
-
-    acceleration = calc_quadratic_a(log_prices)
-
-    # Smooth acceleration score:
-    # 0              -> 5
-    # +0.00010       -> 8
-    # -0.00010       -> 2
-    acc_score = clamp(5.0 + (acceleration / 0.0001) * 3.0, 0.0, 10.0)
-
-    # -------------------------
-    # Final
-    # -------------------------
-    final_score = (
-        0.50 * linear_score +
-        0.30 * ma_score +
-        0.20 * acc_score
-    )
-
-    if history_weeks >= 300:
-        mode = "full"
-        reliability = "high"
-    elif history_weeks >= 52:
-        mode = "medium"
-        reliability = "medium"
+    # 3) Acceleration: recent 3Y slope minus full-history slope, both annualized.
+    if history_weeks >= acceleration_recent_weeks:
+        recent_prices = weekly_prices[-acceleration_recent_weeks:]
+        recent_log_prices = [math.log(x) for x in recent_prices if x > 0]
+        recent_3y_slope = calc_slope(recent_log_prices)
+        recent_3y_annualized_pct = annualize_pct(recent_3y_slope)
+        acceleration_delta_pct = recent_3y_annualized_pct - linear_annualized_pct
+        acceleration_score = score_curve(acceleration_curve, acceleration_delta_pct)
+        acceleration_mode = "recent_3y_minus_full"
     else:
-        mode = "short_history"
+        recent_3y_slope = None
+        recent_3y_annualized_pct = None
+        acceleration_delta_pct = None
+        acceleration_score = 0.0
+        acceleration_mode = "insufficient_3y_history"
+
+    final_score = w_linear * linear_score + w_ma * ma_score + w_acc * acceleration_score
+
+    if history_weeks >= 520:
+        mode = "full_10y"
+        reliability = "high"
+    elif history_weeks >= 260:
+        mode = "full_5y"
+        reliability = "high"
+    elif history_weeks >= fallback_history_weeks:
+        mode = "minimum_3y"
+        reliability = "medium"
+    elif history_weeks >= 52:
+        mode = "short_history_fallback_raw"
         reliability = "low"
+    else:
+        mode = "insufficient_data"
+        reliability = "low"
+
+    fallback_to_raw = bool(fallback_cfg.get("enabled", True)) and history_weeks < fallback_history_weeks
+    fallback_reason = None
+    if fallback_to_raw:
+        fallback_reason = f"history_weeks < {fallback_history_weeks}; use m7_raw_score as effective M7 score"
 
     return {
         "raw": round2(final_score),
-        "score_10": round2(clamp(final_score, 0.0, 10.0)),
+        "score_10": round2(final_score),
         "trend_mode": mode,
         "trend_reliability": reliability,
         "history_weeks": history_weeks,
+        "fallback_to_raw": fallback_to_raw,
+        "fallback_reason": fallback_reason,
+        "trend_formula": "0.35*linear + 0.50*ma200 + 0.15*acceleration",
         "linear_slope": round(long_slope, 6),
         "ma_slope": round(ma_slope, 6),
-        "acceleration": round(acceleration, 8),
+        "recent_3y_slope": round(recent_3y_slope, 6) if recent_3y_slope is not None else None,
+        "linear_annualized_pct": round2(linear_annualized_pct),
+        "ma_annualized_pct": round2(ma_annualized_pct),
+        "recent_3y_annualized_pct": round2(recent_3y_annualized_pct) if recent_3y_annualized_pct is not None else None,
+        "acceleration_annualized_delta_pct": round2(acceleration_delta_pct) if acceleration_delta_pct is not None else None,
+        "acceleration": round2(acceleration_delta_pct) if acceleration_delta_pct is not None else None,
+        "acceleration_mode": acceleration_mode,
         "linear_score": round2(linear_score),
         "ma_score": round2(ma_score),
-        "acceleration_score": round2(acc_score),
+        "acceleration_score": round2(acceleration_score),
+        "ma_window_weeks": ma_window_weeks,
+        "acceleration_recent_weeks": acceleration_recent_weeks,
     }
 
 def compute_structure(feature: dict[str, Any]) -> dict[str, Any]:
@@ -1041,23 +1141,18 @@ def compute_valuation(feature: dict[str, Any]) -> dict[str, float]:
         safe_num(caps.get("max_final_anchor"), 45.0),
     )
     valuation_gap = (fpe / final_anchor - 1.0) if final_anchor > 0 else 0.0
-    valuation_raw = piecewise(
-        [
-            [-1.0, 10.0],
-            [-0.40, 9.0],
-            [-0.20, 8.0],
-            [-0.05, 7.0],
-            [0.05, 7.0],
-            [0.20, 6.0],
-            [0.40, 4.0],
-            [0.80, 2.0],
-        ],
-        valuation_gap,
+    valuation_cfg = M7_PARAM_CONFIG.get("valuation", {}) if isinstance(M7_PARAM_CONFIG, dict) else {}
+    gap_curve = valuation_cfg.get("gap_curve", DEFAULT_M7_PARAM_CONFIG["valuation"]["gap_curve"])
+    valuation_raw = piecewise(gap_curve.get("points", []), valuation_gap)
+    valuation_score = clamp(
+        valuation_raw,
+        safe_num(gap_curve.get("cap_min"), 2.0),
+        safe_num(gap_curve.get("cap_max"), 10.0),
     )
 
     return {
         "raw": valuation_raw,
-        "score_10": clamp(valuation_raw, 2.0, 10.0),
+        "score_10": valuation_score,
         "valuation_gap": valuation_gap,
         "base_anchor": base_anchor,
         "final_anchor": final_anchor,
@@ -1355,15 +1450,29 @@ def main() -> int:
             )
             historical_score = compute_historical_score(feature)
             m1_score = normalize_m1_score_to_10(feature.get("baseline", {}).get("today_score"))
-            m7_v2_score = clamp(
-                0.45 * valuation["score_10"]
-                + 0.25 * trend["score_10"]
-                + 0.20 * structure["score_10"]
-                + 0.10 * money["score_10"],
-                0.0,
-                10.0,
+            m7_v2_weights = M7_PARAM_CONFIG.get("m7_v2_weights", {}) if isinstance(M7_PARAM_CONFIG, dict) else {}
+            w_val = safe_num(m7_v2_weights.get("valuation"), 0.45)
+            w_trend = safe_num(m7_v2_weights.get("trend"), 0.25)
+            w_structure = safe_num(m7_v2_weights.get("structure"), 0.20)
+            w_timing = safe_num(m7_v2_weights.get("timing"), 0.0)
+            w_money = safe_num(m7_v2_weights.get("money"), 0.10)
+
+            m7_v2_score_unclamped = (
+                w_val * valuation["score_10"]
+                + w_trend * trend["score_10"]
+                + w_structure * structure["score_10"]
+                + w_timing * timing["score_10"]
+                + w_money * money["score_10"]
             )
-            m7_v2_formula = "0.45*valuation + 0.25*trend + 0.20*structure + 0.10*money"
+            m7_v2_score = clamp(m7_v2_score_unclamped, 0.0, 10.0)
+            m7_v2_formula = (
+                f"{w_val:.2f}*valuation + {w_trend:.2f}*trend + "
+                f"{w_structure:.2f}*structure + {w_timing:.2f}*timing + {w_money:.2f}*money"
+            )
+
+            m7_v2_fallback_to_raw = bool(trend.get("fallback_to_raw"))
+            m7_effective_score = m7_raw_score if m7_v2_fallback_to_raw else m7_v2_score
+            m7_effective_score_source = "m7_raw_score" if m7_v2_fallback_to_raw else "m7_v2_score"
 
             rows_out.append({
                 "symbol": sym,
@@ -1382,6 +1491,17 @@ def main() -> int:
                 "trend_linear_score": trend.get("linear_score"),
                 "trend_ma_score": trend.get("ma_score"),
                 "trend_acceleration_score": trend.get("acceleration_score"),
+                "trend_formula": trend.get("trend_formula"),
+                "trend_fallback_to_raw": trend.get("fallback_to_raw"),
+                "trend_fallback_reason": trend.get("fallback_reason"),
+                "trend_linear_annualized_pct": trend.get("linear_annualized_pct"),
+                "trend_ma_annualized_pct": trend.get("ma_annualized_pct"),
+                "trend_recent_3y_slope": trend.get("recent_3y_slope"),
+                "trend_recent_3y_annualized_pct": trend.get("recent_3y_annualized_pct"),
+                "trend_acceleration_annualized_delta_pct": trend.get("acceleration_annualized_delta_pct"),
+                "trend_acceleration_mode": trend.get("acceleration_mode"),
+                "trend_ma_window_weeks": trend.get("ma_window_weeks"),
+                "trend_acceleration_recent_weeks": trend.get("acceleration_recent_weeks"),
                 "structure_slope": round2(structure["slope"]) if structure.get("slope") is not None else None,
                 "structure_dispersion": round2(structure["dispersion"]) if structure.get("dispersion") is not None else None,
                 "structure_stability": round2(structure["stability"]) if structure.get("stability") is not None else None,
@@ -1403,6 +1523,10 @@ def main() -> int:
                 "m7_raw_score": round2(m7_raw_score),
                 "m7_v2_score": round2(m7_v2_score),
                 "m7_v2_formula": m7_v2_formula,
+                "m7_v2_score_unclamped": round2(m7_v2_score_unclamped),
+                "m7_effective_score": round2(m7_effective_score),
+                "m7_effective_score_source": m7_effective_score_source,
+                "m7_v2_fallback_to_raw": m7_v2_fallback_to_raw,
                 "historical_score": round2(historical_score),
                 "warning_flag": warning_flag,
                 "coverage_pct": feature["market_acceptance"].get("coverage_pct"),
@@ -1475,6 +1599,8 @@ def main() -> int:
                 "h_value": row["h_value"],
                 "h_adj": row["h_adj"],
                 "m7_final_score": row["m7_final_score"],
+                "m7_effective_score": row.get("m7_effective_score"),
+                "m7_effective_score_source": row.get("m7_effective_score_source"),
                 "p_value": row["p_value"],
                 "confidence": row["confidence"],
                 "warning_flag": row["warning_flag"],
@@ -1487,7 +1613,7 @@ def main() -> int:
         scores_payload = {
             "generated_at": now_iso(),
             "scope": {
-                "scenarios": ["M7_RAW", "M7_FINAL"],
+                "scenarios": ["M7_RAW", "M7_V2", "M7_EFFECTIVE", "M7_FINAL"],
                 "symbol_count": len(rows_out),
             },
             "rows": rows_out,
@@ -1509,6 +1635,7 @@ def main() -> int:
             "regime_params": regime_params,
             "module_params": module_params,
             "curve_params": curve_params,
+            "m7_v2_parameter_config": M7_PARAM_CONFIG,
         }
 
         raw_id = json.dumps(
