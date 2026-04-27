@@ -422,6 +422,7 @@
 
   function refreshImpactOnly() {
     const scoreRows = getScoreRows();
+    const params = readWhatIfParamsFromDom();
 
     renderOutputDemo(
       DASHBOARD_DATA.output_demo || {},
@@ -442,12 +443,16 @@
 
     renderStandardStockCard(currentSymbol);
 
-    const resultBox = document.getElementById("m7-what-if-results");
+    
+    renderStocksDisplayTable();
+const resultBox = document.getElementById("m7-what-if-results");
     if (resultBox) {
-      resultBox.innerHTML = renderWhatIfResultsTable(
-        scoreRows,
-        readWhatIfParamsFromDom()
-      );
+      resultBox.innerHTML = renderWhatIfResultsTable(scoreRows, params);
+    }
+
+    const rankingBox = document.getElementById("ranking-impact");
+    if (rankingBox) {
+      rankingBox.innerHTML = renderWhatIfResultsTable(scoreRows, params);
     }
   }
 
@@ -1183,12 +1188,25 @@
 
   function readWhatIfParamsFromDom() {
     const base = defaultWhatIfParams();
-    document.querySelectorAll('.m7-sim-input').forEach(input => {
+
+    // 先讀所有 what-if inputs
+    document.querySelectorAll(".m7-sim-input").forEach(input => {
       const key = input.dataset.key;
       if (!key) return;
       const n = num(input.value, null);
-      base[key] = n === null ? base[key] : n;
+      if (n !== null) base[key] = n;
     });
+
+    // 再讀左側 Parameter Brain，讓左側 B1/B2 成為最高優先控制器
+    document
+      .querySelectorAll("#m7-main-weight-controls .m7-sim-input, #trend-internal-weight-controls .m7-sim-input")
+      .forEach(input => {
+        const key = input.dataset.key;
+        if (!key) return;
+        const n = num(input.value, null);
+        if (n !== null) base[key] = n;
+      });
+
     return base;
   }
 
@@ -1544,40 +1562,178 @@
     const trendBox = document.getElementById("trend-internal-weight-controls");
     const p = defaultWhatIfParams();
 
-    if (mainBox && !mainBox.innerHTML.trim()) {
+    const row = (key, nowVal) => `
+      <div class="form-row mm-brain-row" data-key="${key}" data-original="${Number(nowVal).toFixed(2)}">
+        <div>${key}</div>
+        <div>${Number(nowVal).toFixed(2)}</div>
+        <div>
+          <input
+            class="m7-sim-input mm-brain-input"
+            data-key="${key}"
+            type="number"
+            step="0.01"
+            value="${Number(nowVal).toFixed(2)}"
+          />
+        </div>
+        <div class="mm-brain-delta">0.00</div>
+      </div>
+    `;
+
+    if (mainBox) {
       const keys = ["valuation", "trend", "structure", "timing", "money"];
-      mainBox.innerHTML = keys.map(key => {
-        const nowVal = p[key] ?? 0;
-        return `
-          <div class="form-row">
-            <div>${key}</div>
-            <div>${formatNum(nowVal, 2)}</div>
-            <div><input class="m7-sim-input" data-key="${key}" type="number" step="0.01" value="${formatNum(nowVal, 2)}" /></div>
-            <div class="muted">0.00</div>
-          </div>
-        `;
-      }).join("");
+      mainBox.innerHTML = keys.map(key => row(key, p[key] ?? 0)).join("");
     }
 
-    if (trendBox && !trendBox.innerHTML.trim()) {
+    if (trendBox) {
       const keys = ["linear", "ma200", "acceleration"];
-      trendBox.innerHTML = keys.map(key => {
-        const nowVal = p[key] ?? 0;
-        return `
-          <div class="form-row">
-            <div>${key}</div>
-            <div>${formatNum(nowVal, 2)}</div>
-            <div><input class="m7-sim-input" data-key="${key}" type="number" step="0.01" value="${formatNum(nowVal, 2)}" /></div>
-            <div class="muted">0.00</div>
-          </div>
-        `;
-      }).join("");
+      trendBox.innerHTML = keys.map(key => row(key, p[key] ?? 0)).join("");
     }
 
-    document.querySelectorAll(".m7-sim-input").forEach(input => {
-      input.oninput = () => refreshImpactOnly();
+    document.querySelectorAll(".mm-brain-input").forEach(input => {
+      input.oninput = () => {
+        const key = input.dataset.key;
+        const rowEl = input.closest(".mm-brain-row");
+        const original = num(rowEl?.dataset.original, 0);
+        const changed = num(input.value, original);
+        const deltaEl = rowEl?.querySelector(".mm-brain-delta");
+
+        if (deltaEl) {
+          const d = changed - original;
+          deltaEl.textContent = Math.abs(d) < 0.000001 ? "0.00" : (d > 0 ? "+" : "") + d.toFixed(2);
+          deltaEl.className = "mm-brain-delta " + (d > 0 ? "delta-pos" : d < 0 ? "delta-neg" : "delta-flat");
+        }
+
+        // 同步同 key 的 hidden what-if simulator input，避免 hidden inputs 覆蓋左側參數
+        document.querySelectorAll(`.m7-sim-input[data-key="${key}"]`).forEach(other => {
+          if (other !== input) other.value = input.value;
+        });
+
+        refreshImpactOnly();
+      };
     });
   }
+
+
+  function renderStocksDisplayTable() {
+    const tbody = document.getElementById("stocks-display-tbody");
+    if (!tbody) return;
+
+    const searchInput = document.getElementById("stock-table-search");
+    const sortSelect = document.getElementById("stock-table-sort");
+    const categorySelect = document.getElementById("stock-table-category");
+
+    const runtimeRows = getRuntimeRows();
+    const params = readWhatIfParamsFromDom();
+    let rows = whatIfRows(getScoreRows(), params);
+
+    // populate category dropdown once
+    if (categorySelect && categorySelect.options.length <= 1) {
+      const cats = Array.from(new Set(rows.map(r => r.category).filter(Boolean))).sort();
+      cats.forEach(cat => {
+        const opt = document.createElement("option");
+        opt.value = cat;
+        opt.textContent = cat;
+        categorySelect.appendChild(opt);
+      });
+    }
+
+    const keyword = String(searchInput?.value || "").trim().toUpperCase();
+    const category = String(categorySelect?.value || "").trim();
+    const sortKey = sortSelect?.value || "rank_delta";
+
+    if (keyword) {
+      rows = rows.filter(r =>
+        String(r.symbol || "").toUpperCase().includes(keyword) ||
+        String(r.name || "").toUpperCase().includes(keyword)
+      );
+    }
+
+    if (category) {
+      rows = rows.filter(r => String(r.category || "") === category);
+    }
+
+    rows.sort((a, b) => {
+      if (sortKey === "new_score") return num(b.whatif_effective_score, -999) - num(a.whatif_effective_score, -999);
+      if (sortKey === "score_delta") return num(b.whatif_score_delta, -999) - num(a.whatif_score_delta, -999);
+      if (sortKey === "symbol") return String(a.symbol || "").localeCompare(String(b.symbol || ""));
+      return Math.abs(num(b.whatif_rank_delta, 0)) - Math.abs(num(a.whatif_rank_delta, 0));
+    });
+
+    const statusText = (r) => {
+      const parts = [];
+      if (r.today_fcn_pool_status) parts.push(r.today_fcn_pool_status);
+      if (r.pool30 || r.in_pool30) parts.push("pool30");
+      if (r.recommendation) parts.push(r.recommendation);
+      if (!parts.length) {
+        const s = num(r.whatif_effective_score ?? r.m7_effective_score ?? r.m7_v2_score, 0);
+        if (s >= 8) parts.push("推薦");
+        else if (s >= 7) parts.push("候選");
+        else parts.push("觀察");
+      }
+      return parts.join(" / ");
+    };
+
+    const deltaClass = (v) => v > 0 ? "delta-pos" : v < 0 ? "delta-neg" : "delta-flat";
+
+    if (!rows.length) {
+      tbody.innerHTML = `<tr><td colspan="13">No rows</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = rows.map(r => {
+      const rt = runtimeRows[r.symbol] || {};
+      const price = rt.price_now ?? r.price_now ?? r.price;
+      const dayDelta = rt.ret_1d ?? r.ret_1d;
+      const oldRank = r.original_rank ?? "--";
+      const newRank = r.whatif_rank ?? "--";
+      const m1Now = r.m1_score;
+      const m7Now = r.m7_effective_score ?? r.m7_v2_score ?? r.m7_raw_score;
+      const m7New = r.whatif_effective_score ?? m7Now;
+      const expandHtml = `
+        <details class="subsection" style="margin:6px 0;">
+          <summary>Detail</summary>
+          <div class="subsection-body">
+            <b>L1 M1</b> ｜ M1 Score: ${formatNum(r.m1_score)}<br>
+            <b>L2 M2</b> ｜ status: ${r.today_fcn_pool_status || "--"}<br>
+            <b>L3 M7</b> ｜ valuation ${formatNum(r.valuation_score)}, trend ${formatNum(r.trend_score)}, structure ${formatNum(r.structure_score)}, timing ${formatNum(r.timing_score)}, money ${formatNum(r.money_score)}<br>
+            <b>L4 M8</b> ｜ reserved for fair rate / basket linkage<br>
+            <b>L5 M6</b> ｜ reserved for stock execution / market comment
+          </div>
+        </details>
+      `;
+
+      return `
+        <tr>
+          <td>${expandHtml}</td>
+          <td>${oldRank}</td>
+          <td>${newRank}</td>
+          <td><b>${r.symbol || "--"}</b><br><span class="muted">${r.name || "--"}</span></td>
+          <td>${formatNum(price)}</td>
+          <td class="${deltaClass(num(dayDelta, 0))}">${formatNum(dayDelta)}%</td>
+          <td>${formatNum(m1Now)}</td>
+          <td>${formatNum(m1Now)}</td>
+          <td>${formatNum(m7Now)}</td>
+          <td class="${deltaClass(num(m7New,0)-num(m7Now,0))}">${formatNum(m7New)}</td>
+          <td>${r.category || "--"}</td>
+          <td>${r.category_sub || r.subsector || "--"}</td>
+          <td>${statusText(r)}</td>
+        </tr>
+      `;
+    }).join("");
+  }
+
+  function bindStocksDisplayTable() {
+    const searchInput = document.getElementById("stock-table-search");
+    const sortSelect = document.getElementById("stock-table-sort");
+    const categorySelect = document.getElementById("stock-table-category");
+    const refreshBtn = document.getElementById("stock-table-refresh");
+
+    if (searchInput) searchInput.oninput = renderStocksDisplayTable;
+    if (sortSelect) sortSelect.onchange = renderStocksDisplayTable;
+    if (categorySelect) categorySelect.onchange = renderStocksDisplayTable;
+    if (refreshBtn) refreshBtn.onclick = renderStocksDisplayTable;
+  }
+
 
   async function init() {
     try {
@@ -1630,6 +1786,9 @@
         document.getElementById("stock-query-input")?.value || "NVDA";
       renderStandardStockCard(currentSymbol);
       bindStockQuery();
+      bindStocksDisplayTable();
+      renderStocksDisplayTable();
+      refreshImpactOnly();
 
     } catch (err) {
       setError(`Engine Progress Dashboard 載入失敗：${err.message}`);
