@@ -98,11 +98,11 @@
     }
     .section > summary::-webkit-details-marker{display:none;}
     .section > summary:before{
-      content:"â¶";
+      content:"▶";
       margin-right:8px;
       font-size:13px;
     }
-    .section[open] > summary:before{content:"â¼";}
+    .section[open] > summary:before{content:"▼";}
 
     .section-body{padding:16px;}
 
@@ -182,11 +182,11 @@
     }
     .subsection > summary::-webkit-details-marker{display:none;}
     .subsection > summary:before{
-      content:"â¶";
+      content:"▶";
       margin-right:8px;
       font-size:12px;
     }
-    .subsection[open] > summary:before{content:"â¼";}
+    .subsection[open] > summary:before{content:"▼";}
     .subsection-body{padding:14px;}
 
     .table-wrap{overflow:auto; border:1px solid var(--line); border-radius:14px;}
@@ -285,16 +285,16 @@
     <div class="hero">
       <h1>MM Portfolio Operating System v1.7</h1>
       <div class="sub">
-        MM(control center) + powerful engines + display by modules ï½ parameter brain / what-if simulation / stock explainability
+        MM(control center) + powerful engines + display by modules ｜ parameter brain / what-if simulation / stock explainability
       </div>
-      <div id="generatedAt" class="sub">è³ææéï¼-- ï½ çæ¬ï¼--</div>
+      <div id="generatedAt" class="sub">資料時間：-- ｜ 版本：--</div>
     </div>
 
     <div id="dashboard-error" class="error"></div>
 
     <div class="top-actions">
-      <button id="expand-all-btn">å¨é¨å±éï¼Expand Allï¼</button>
-      <button id="collapse-all-btn">å¨é¨æ¶åï¼Collapse Allï¼</button>
+      <button id="expand-all-btn">全部展開（Expand All）</button>
+      <button id="collapse-all-btn">全部收合（Collapse All）</button>
       <a class="pill ok" href="../m1.html">Go M1</a>
       <a class="pill ok" href="./m7.html">Go M7</a>
       <a class="pill ok" href="../milestone3_index.html">Go M3</a>
@@ -304,7 +304,7 @@
 
     <!-- A. Top Dashboard -->
     <details class="section" id="section-top-dashboard">
-      <summary>A. Top Dashboardï¼æ¨¡çµå¥å£ + è©²æ¨¡çµçµ±è¨è³æï¼</summary>
+      <summary>A. Top Dashboard（模組入口 + 該模組統計資料）</summary>
       <div class="section-body">
         <div class="grid-5" id="module-stat-cards">
           <div class="module-card">
@@ -355,15 +355,15 @@
     <div class="layout-main">
       <!-- B. Parameter Brain -->
       <details class="section" id="section-parameter-brain">
-        <summary>B. Parameter Brainï¼å·¦å´ï¼by moduleï¼</summary>
+        <summary>B. Parameter Brain（左側：by module）</summary>
         <div class="section-body">
           <div class="search-row">
             <select id="active-module-select">
-              <option value="M7">M7ï½FCN åé¸è¡ç¥¨é²éç®¡ç</option>
-              <option value="M1">M1ï½è¡ç¥¨ç¯©é¸ç®¡ç</option>
-              <option value="M3">M3ï½Basket è¡ç¥¨ç¯©é¸</option>
-              <option value="M6">M6ï½è¡ç¥¨å·è¡ç®¡ç</option>
-              <option value="M8">M8ï½FCN æ¨è¦ç®¡ç</option>
+              <option value="M7">M7｜FCN 候選股票進階管理</option>
+              <option value="M1">M1｜股票篩選管理</option>
+              <option value="M3">M3｜Basket 股票篩選</option>
+              <option value="M6">M6｜股票執行管理</option>
+              <option value="M8">M8｜FCN 推薦管理</option>
             </select>
             <span class="pill warn">now / new / delta</span>
             <span class="pill">what-if only</span>
@@ -371,49 +371,49 @@
           </div>
 
           <details class="subsection" id="b1-main-weights">
-            <summary>B1 ä¸»åæ¸åï¼æ¨æºå¬å¼æ¬éï¼Weight Now / Newï¼</summary>
+            <summary>B1 主參數區：標準公式權重（Weight Now / New）</summary>
             <div class="subsection-body">
               <div class="form-row header">
-                <div>é ç®</div><div>weight now</div><div>weight new</div><div>delta</div>
+                <div>項目</div><div>weight now</div><div>weight new</div><div>delta</div>
               </div>
               <div id="m7-main-weight-controls"></div>
             </div>
           </details>
 
           <details class="subsection" id="b2-secondary-params">
-            <summary>B2 æ¬¡åæ¸åï¼by é ç®å±éï¼Trend / Valuation / Structure / Moneyï¼</summary>
+            <summary>B2 次參數區：by 項目展開（Trend / Valuation / Structure / Money）</summary>
             <div class="subsection-body" id="secondary-param-controls">
               <details class="subsection">
-                <summary>Trendï¼linear / ma200 / acceleration</summary>
+                <summary>Trend：linear / ma200 / acceleration</summary>
                 <div class="subsection-body">
                   <div class="form-row header">
-                    <div>é ç®</div><div>now</div><div>new</div><div>delta</div>
+                    <div>項目</div><div>now</div><div>new</div><div>delta</div>
                   </div>
                   <div id="trend-internal-weight-controls"></div>
                 </div>
               </details>
               <details class="subsection">
-                <summary>Valuationï¼market / industry / archetype multiplier</summary>
+                <summary>Valuation：market / industry / archetype multiplier</summary>
                 <div class="subsection-body" id="valuation-secondary-controls">
-                  <div class="muted">ä¸ä¸éæ®µæ¥ valuation what-ifãæ­¤èåä¿ç UI ä½ç½®ã</div>
+                  <div class="muted">下一階段接 valuation what-if。此處先保留 UI 位置。</div>
                 </div>
               </details>
             </div>
           </details>
 
           <details class="subsection" id="b3-score-curve">
-            <summary>B3 Score Curve åï¼raw value â score</summary>
+            <summary>B3 Score Curve 區：raw value → score</summary>
             <div class="subsection-body" id="score-curve-controls">
-              <div class="muted">é¡¯ç¤º valuation / trend / acceleration curveï¼ä¸ä¸éæ®µéæ¾æ²ç· what-ifã</div>
+              <div class="muted">顯示 valuation / trend / acceleration curve；下一階段開放曲線 what-if。</div>
               <pre id="score-curve-json">--</pre>
             </div>
           </details>
 
           <details class="subsection" id="b4-raw-data">
-            <summary>B4 Raw Data åï¼è³æä¾æº / æåæé / å¬å¼éè¼¯</summary>
+            <summary>B4 Raw Data 區：資料來源 / 抓取期間 / 公式邏輯</summary>
             <div class="subsection-body" id="raw-data-definition">
               <div class="muted">
-                Trendï¼10Y weekly prices / MA200 weekly proxy / regression slope / annualized = exp(slope Ã 52) - 1ã
+                Trend：10Y weekly prices / MA200 weekly proxy / regression slope / annualized = exp(slope × 52) - 1。
               </div>
             </div>
           </details>
@@ -422,15 +422,15 @@
 
       <!-- C. Output Preview -->
       <details class="section" id="section-output-preview">
-        <summary>C. Output Previewï¼å³å´ï¼èå·¦å´æ¨¡çµé£åï¼</summary>
+        <summary>C. Output Preview（右側：與左側模組連動）</summary>
         <div class="section-body">
           <details class="subsection" id="c1-stock-query" open>
-            <summary>C1 è¡ç¥¨æ¥è©¢åï¼é è¨­ NVDA standard stockï¼</summary>
+            <summary>C1 股票查詢區（預設 NVDA standard stock）</summary>
             <div class="subsection-body">
               <div class="search-row">
-                <input id="stock-query-input" value="NVDA" placeholder="è¼¸å¥ symbolï¼ä¾å¦ NVDA / TSM / AVGO" />
-                <button id="stock-query-btn">æ¥è©¢</button>
-                <button id="set-standard-stock-btn">è¨­çºæ¨æºè¡</button>
+                <input id="stock-query-input" value="NVDA" placeholder="輸入 symbol，例如 NVDA / TSM / AVGO" />
+                <button id="stock-query-btn">查詢</button>
+                <button id="set-standard-stock-btn">設為標準股</button>
                 <span class="pill">now / new / delta</span>
               </div>
               <div id="standard-stock-card"></div>
@@ -438,7 +438,7 @@
           </details>
 
           <details class="subsection" id="c2-ranking-impact" open>
-            <summary>C2 Ranking Impactï¼èª°ä¸å / èª°ä¸éï¼</summary>
+            <summary>C2 Ranking Impact（誰上升 / 誰下降）</summary>
             <div class="subsection-body">
               <div id="ranking-impact"></div>
             </div>
@@ -449,7 +449,7 @@
 
     <!-- D1. Stocks Display -->
     <details class="section" id="section-stocks-display">
-      <summary>D1. Stocks Displayï¼è¡ç¥¨çµæå±ç¤ºåï¼</summary>
+      <summary>D1. Stocks Display（股票結果展示區）</summary>
       <div class="section-body">
         <div class="search-row">
           <input id="stock-table-search" placeholder="Search symbol / name" />
@@ -469,7 +469,7 @@
           <table id="stocks-display-table">
             <thead>
               <tr>
-                <th>å±é</th>
+                <th>展開</th>
                 <th>Rank Now</th>
                 <th>Rank New</th>
                 <th>Name</th>
@@ -481,7 +481,7 @@
                 <th>M7 New</th>
                 <th>Category</th>
                 <th>Subcategory</th>
-                <th>Pool30 / æ¨è¦ / åé¸ / è§å¯</th>
+                <th>Pool30 / 推薦 / 候選 / 觀察</th>
               </tr>
             </thead>
             <tbody id="stocks-display-tbody">
@@ -494,7 +494,7 @@
 
     <!-- D2. Blueprint -->
     <details class="section" id="section-blueprint">
-      <summary>D2. Blueprintï¼å¬å¼æ²»ç / Parameter Blueprint / Score Architectureï¼</summary>
+      <summary>D2. Blueprint（公式治理 / Parameter Blueprint / Score Architecture）</summary>
       <div class="section-body">
         <div id="m7-formula-registry"></div>
         <div id="param-controller"></div>
@@ -504,7 +504,7 @@
 
     <!-- D3. Ops Memory -->
     <details class="section" id="section-ops-memory">
-      <summary>D3. Ops Memoryï¼æ¥å ± / Handoff / Known Risks / Next Tasksï¼</summary>
+      <summary>D3. Ops Memory（日報 / Handoff / Known Risks / Next Tasks）</summary>
       <div class="section-body">
         <div class="grid-2">
           <div class="panel">
