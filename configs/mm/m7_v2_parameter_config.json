@@ -1,0 +1,142 @@
+{
+  "version": "m7_v2_parameter_config@v1.0.0",
+  "updated_at": "2026-04-27",
+  "scope": "M7 v2 sandbox parameter governance",
+  "status": "sandbox",
+  "owner": "MM control center",
+  "do_not_touch": [
+    "production M7 engine",
+    "M8 engine",
+    "M3 engine"
+  ],
+  "m7_v2_weights": {
+    "valuation": 0.45,
+    "trend": 0.25,
+    "structure": 0.2,
+    "timing": 0,
+    "money": 0.1
+  },
+  "legacy_raw_fallback": {
+    "enabled": true,
+    "fallback_history_weeks": 156,
+    "rule": "if history_weeks < 156 then use m7_raw_score; else use m7_v2_score",
+    "reason": "低於 3 年的股票不適合使用長期回歸型 trend / structure，改用 legacy raw 作為 fallback"
+  },
+  "trend": {
+    "data_frequency": "weekly",
+    "annualization_formula": "annualized = exp(weekly_slope * 52) - 1",
+    "internal_weights": {
+      "linear": 0.35,
+      "ma200": 0.5,
+      "acceleration": 0.15
+    },
+    "periods": {
+      "linear": "full_available_history",
+      "ma200": "full_available_history",
+      "acceleration_recent_weeks": 156,
+      "acceleration_compare": "recent_3y_annualized - full_history_annualized"
+    },
+    "linear_curve": {
+      "type": "piecewise_linear",
+      "input": "annualized_return_pct",
+      "points": [
+        [-20, -20],
+        [-10, -10],
+        [-5, -5],
+        [0, 2],
+        [5, 5],
+        [10, 8],
+        [15, 9.5],
+        [20, 10],
+        [40, 15]
+      ],
+      "cap_min": -20,
+      "cap_max": 15
+    },
+    "ma200_curve": {
+      "type": "piecewise_linear",
+      "input": "annualized_return_pct",
+      "points": [
+        [-20, -12],
+        [-10, -8],
+        [-5, -4],
+        [0, 2],
+        [5, 5],
+        [10, 7],
+        [15, 8.5],
+        [20, 10],
+        [40, 12]
+      ],
+      "cap_min": -12,
+      "cap_max": 12
+    },
+    "acceleration_curve": {
+      "type": "piecewise_linear",
+      "input": "recent_3y_annualized_minus_full_annualized_pct",
+      "points": [
+        [-30, -8],
+        [-20, -6],
+        [-10, -4],
+        [-5, -2],
+        [0, 0],
+        [5, 2],
+        [10, 4],
+        [20, 5],
+        [30, 6]
+      ],
+      "cap_min": -8,
+      "cap_max": 6
+    }
+  },
+  "valuation": {
+    "formula": "valuation_score = curve(forward_pe / final_anchor - 1)",
+    "final_anchor_formula": "base_anchor * market_multiplier * industry_multiplier * archetype_multiplier",
+    "gap_curve": {
+      "type": "piecewise_linear",
+      "input": "valuation_gap",
+      "points": [
+        [-1, 10],
+        [-0.4, 10],
+        [-0.2, 9],
+        [-0.05, 7],
+        [0.05, 7],
+        [0.2, 6],
+        [0.4, 3],
+        [0.8, 2]
+      ],
+      "cap_min": 2,
+      "cap_max": 10
+    }
+  },
+  "structure": {
+    "formula": "structure_score = max(linear_r2, quadratic_r2, logarithmic_r2) * 10",
+    "models": [
+      "linear",
+      "quadratic",
+      "logarithmic"
+    ],
+    "future_upgrade": "later add drawdown_frequency and dispersion penalty"
+  },
+  "timing": {
+    "included": true,
+    "m7_v2_weight": 0,
+    "reason": "timing 不刪除，但 M7 v2 權重為 0；M6 可用同 engine 不同權重"
+  },
+  "money": {
+    "weight": 0.1,
+    "status": "pending refinement",
+    "current_inputs": [
+      "volume_ratio",
+      "liquidity_proxy",
+      "size_proxy"
+    ]
+  },
+  "mm_validation_checklist": [
+    "config readable by Python engine",
+    "dashboard can display all weights and curves",
+    "engine output includes parameter_snapshot",
+    "output includes history_weeks and fallback decision",
+    "trend output includes annualized linear / ma200 / acceleration",
+    "dashboard can compare old vs new score"
+  ]
+}
