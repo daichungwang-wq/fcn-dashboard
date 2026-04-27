@@ -778,6 +778,126 @@
     `;
   }
 
+
+  function renderM7FormulaRegistry(registry) {
+    let box = document.getElementById("m7-formula-registry");
+
+    if (!box) {
+      const anchor =
+        document.getElementById("m7-readiness") ||
+        document.getElementById("output-demo") ||
+        document.getElementById("control-center-automation");
+
+      if (!anchor || !anchor.parentNode) return;
+
+      box = document.createElement("div");
+      box.id = "m7-formula-registry";
+      box.className = "section-box";
+      anchor.parentNode.insertBefore(box, anchor.nextSibling);
+    }
+
+    const components = Array.isArray(registry?.score_components)
+      ? registry.score_components
+      : [];
+
+    const listHtml = arr => (arr || []).length
+      ? (arr || []).map(x => `• ${x}`).join("<br>")
+      : "--";
+
+    const inputFieldsHtml = x => listHtml(x?.input_fields || []);
+    const issuesHtml = x => listHtml(x?.issues || []);
+    const suggestionsHtml = x => listHtml(x?.improvement_suggestions || []);
+    const recommendationsHtml = listHtml(registry?.current_recommendation || []);
+
+    box.innerHTML = `
+      <h2>SECTION 4・M7 公式中心（M7 Formula Registry）</h2>
+      <div class="mini">
+        M7 score formula / item-level formula / input fields / current status / improvement suggestions.
+        這是 MM dashboard 的公式說明層，不修改 M7 engine。
+      </div>
+
+      <details class="collapsible-section" open>
+        <summary>M7 Formula Registry（完整公式中心）</summary>
+
+        <div class="group-box">
+          <div class="group-title">Purpose / 用途</div>
+          <div>${registry?.purpose || "--"}</div>
+        </div>
+
+        <div class="group-box">
+          <div class="group-title">Current Status / 目前狀況</div>
+          <div>${registry?.current_status || "--"}</div>
+        </div>
+
+        <div class="group-box">
+          <div class="group-title">Factor Formula Summary / 因子公式總表</div>
+          <table class="preview-table">
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>中文</th>
+                <th>Main Formula</th>
+                <th>Current Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${components.length ? components.map(x => `
+                <tr>
+                  <td>${x.item || "--"}</td>
+                  <td>${x.item_zh || "--"}</td>
+                  <td>${x.formula || "--"}</td>
+                  <td>${x.current_status || "--"}</td>
+                </tr>
+              `).join("") : `<tr><td colspan="4">No formula registry data</td></tr>`}
+            </tbody>
+          </table>
+        </div>
+
+        ${components.map(x => `
+          <details class="collapsible-section">
+            <summary>${x.item_zh || x.item || "--"} / ${x.item || "--"}</summary>
+
+            <div class="group-box">
+              <div class="group-title">Main Formula / 主公式</div>
+              <div class="formula-box">${x.formula || "--"}</div>
+            </div>
+
+            <div class="group-box">
+              <div class="group-title">Sub Formula / 子公式</div>
+              <div>${x.sub_formula || "--"}</div>
+            </div>
+
+            <div class="group-box">
+              <div class="group-title">Input Fields / 需要欄位</div>
+              <div>${inputFieldsHtml(x)}</div>
+            </div>
+
+            <div class="group-box">
+              <div class="group-title">Current Status / 目前狀況</div>
+              <div>${x.current_status || "--"}</div>
+            </div>
+
+            <div class="group-box">
+              <div class="group-title">Issues / 目前問題</div>
+              <div>${issuesHtml(x)}</div>
+            </div>
+
+            <div class="group-box">
+              <div class="group-title">Improvement Suggestions / 改善建議</div>
+              <div>${suggestionsHtml(x)}</div>
+            </div>
+          </details>
+        `).join("")}
+
+        <div class="group-box">
+          <div class="group-title">Current Recommendation / 目前建議</div>
+          <div>${recommendationsHtml}</div>
+        </div>
+      </details>
+    `;
+  }
+
+
   function renderControlCenterAutomationPanel(dashboardData, scoreRows, runtimeRows) {
     const box = document.getElementById("control-center-automation");
     if (!box) return;
@@ -1022,6 +1142,7 @@
       renderEngineActions(DASHBOARD_DATA.engine_actions || []);
       renderOutputDemo(DASHBOARD_DATA.output_demo || {}, explain);
       renderM7Readiness(DASHBOARD_DATA.m7_complete_readiness_check || {}, DASHBOARD_DATA.compare_governance || {});
+      renderM7FormulaRegistry(DASHBOARD_DATA.m7_formula_registry || {});
       renderControlCenterAutomationPanel(DASHBOARD_DATA, scoreRows, runtimeRows);
       renderActiveBuildContext(DASHBOARD_DATA.active_build_context || {});
       renderOverview(DASHBOARD_DATA.overview || {});
