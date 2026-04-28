@@ -1224,6 +1224,36 @@ const resultBox = document.getElementById("m7-what-if-results");
     };
   }
 
+  function isWhatIfParamsChanged(params) {
+    const base = defaultWhatIfParams();
+    const keys = [
+      "valuation", "trend", "structure", "timing", "money",
+      "linear", "ma200", "acceleration", "fallbackWeeks",
+      "valuation_market_multiplier", "valuation_industry_multiplier", "valuation_archetype_multiplier",
+      "money_liquidity_weight", "money_flow_weight"
+    ];
+
+    for (const key of keys) {
+      const a = num(params?.[key], null);
+      const b = num(base?.[key], null);
+      if (a === null && b === null) continue;
+      if (a === null || b === null) return true;
+      if (Math.abs(a - b) > 0.000001) return true;
+    }
+
+    const boolKeys = [
+      "structure_allow_linear",
+      "structure_allow_quadratic",
+      "structure_allow_logarithmic"
+    ];
+
+    for (const key of boolKeys) {
+      if (!!params?.[key] !== !!base?.[key]) return true;
+    }
+
+    return false;
+  }
+
   function renderWhatIfSimulator(scoreRows) {
     const p = defaultWhatIfParams();
     const input = (key, label, value, step = '0.01') => `
@@ -1304,7 +1334,7 @@ const resultBox = document.getElementById("m7-what-if-results");
   function whatIfRows(scoreRows, params) {
     const rows = [...(scoreRows || [])].filter(r => r && r.symbol);
 
-    if (window.MM_HAS_MANUAL_PARAM_CHANGE !== true) {
+    if (!isWhatIfParamsChanged(params)) {
       const baselineRanked = [...rows]
         .sort((a, b) => num(b.m7_effective_score ?? b.m7_v2_score, -999) - num(a.m7_effective_score ?? a.m7_v2_score, -999))
         .map((r, i) => {
