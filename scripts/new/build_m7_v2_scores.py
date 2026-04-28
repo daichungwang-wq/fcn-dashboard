@@ -413,6 +413,12 @@ UNIVERSE_BY_SYMBOL = {
     if isinstance(row, dict)
 }
 
+MONEY_LIQUIDITY_BENCHMARK: dict[str, float] = {
+    "mean": 0.0,
+    "p25": 0.0,
+    "p75": 0.0,
+}
+
 CURRENT_MARKET_REGIME = "growth_bull"
 
 FAMILY_INDUSTRY_REGIME = {
@@ -495,6 +501,58 @@ def piecewise(points: list[list[float]], x: float) -> float:
 
 def normalize_symbol(x: Any) -> str:
     return str(x or "").strip().upper()
+
+
+def percentile(values: list[float], p: float) -> float:
+    arr = sorted([safe_num(v, None) for v in values if safe_num(v, None) is not None and safe_num(v, 0.0) > 0])
+    if not arr:
+        return 0.0
+    if len(arr) == 1:
+        return arr[0]
+    idx = (len(arr) - 1) * clamp(p, 0.0, 1.0)
+    lo = math.floor(idx)
+    hi = math.ceil(idx)
+    if lo == hi:
+        return arr[int(idx)]
+    w = idx - lo
+    return arr[lo] * (1.0 - w) + arr[hi] * w
+
+
+def curve_score(curve: dict[str, Any], x: float, fallback: float = 0.0) -> float:
+    if not isinstance(curve, dict):
+        return fallback
+    pts = curve.get("points", [])
+    raw = piecewise(pts, x) if isinstance(pts, list) else fallback
+    cap_min = safe_num(curve.get("cap_min"), None)
+    cap_max = safe_num(curve.get("cap_max"), None)
+    if cap_min is not None and cap_max is not None:
+        return clamp(raw, cap_min, cap_max)
+    return raw
+
+
+def score_by_benchmark_linear(value: float, benchmark: dict[str, float], scores: dict[str, float], mean_band_pct: float = 0.05) -> float:
+    v = safe_num(value, 0.0)
+    p25 = safe_num(benchmark.get("p25"), 0.0)
+    mean = safe_num(benchmark.get("mean"), 0.0)
+    p75 = safe_num(benchmark.get("p75"), 0.0)
+    s25 = safe_num(scores.get("p25"), 3.0)
+    smean = safe_num(scores.get("mean"), 7.0)
+    s75 = safe_num(scores.get("p75"), 10.0)
+    if mean <= 0 or p25 <= 0 or p75 <= 0 or p75 <= p25:
+        return smean
+    low_band = mean * (1.0 - mean_band_pct)
+    high_band = mean * (1.0 + mean_band_pct)
+    if v <= p25:
+        return s25
+    if v >= p75:
+        return s75
+    if low_band <= v <= high_band:
+        return smean
+    if v < low_band:
+        denom = max(1e-9, low_band - p25)
+        return clamp(s25 + (v - p25) / denom * (smean - s25), s25, smean)
+    denom = max(1e-9, p75 - high_band)
+    return clamp(smean + (v - high_band) / denom * (s75 - smean), smean, s75)
 
 
 @dataclass
@@ -685,7 +743,15 @@ def build_feature_row(symbol: str, bundle: InputBundle) -> dict[str, Any]:
 
     volume = safe_num(m.get("volume"), 0.0)
     price_now = safe_num(m.get("price_now"), safe_num(b.get("股價"), 0.0))
-    size_proxy = max(price_now, 0.0) * max(volume, 0.0)
+    avg_volume = safe_num(
+        m.get("avg_volume", m.get("average_volume", m.get("averageVolume", m.get("averageVolume3M")))),
+        None,
+    )
+    if avg_volume is None or avg_volume <= 0:
+        avg_volume = volume / max(volume_ratio, 1e-9) if volume > 0 and volume_ratio > 0 else 0.0
+    today_dollar_volume = max(price_now, 0.0) * max(volume, 0.0)
+    avg_dollar_volume = max(price_now, 0.0) * max(avg_volume, 0.0)
+    size_proxy = today_dollar_volume
 
     exposure = b.get("持倉曝險", {}) if isinstance(b.get("持倉曝險"), dict) else {}
     exposure_ratio = safe_num(exposure.get("投入資金比"), 0.0)
@@ -718,6 +784,7 @@ def build_feature_row(symbol: str, bundle: InputBundle) -> dict[str, Any]:
         "symbol": symbol,
         "name": b.get("股名") or p.get("name") or p.get("名稱") or symbol,
         "category": b.get("分類") or p.get("category") or "unknown",
+        "is_pool30": bool(p),
         "sector": b.get("產業") or p.get("sector") or "",
         "subsector": b.get("子產業") or p.get("subsector") or "",
         "returns": rets,
@@ -743,7 +810,11 @@ def build_feature_row(symbol: str, bundle: InputBundle) -> dict[str, Any]:
         "quality_momentum": quality_momentum,
         "market_acceptance": {
             "volume_ratio": volume_ratio,
-            "liquidity_proxy": volume,
+            "volume": volume,
+            "avg_volume": avg_volume,
+            "today_dollar_volume": today_dollar_volume,
+            "avg_dollar_volume": avg_dollar_volume,
+            "liquidity_proxy": avg_dollar_volume,
             "size_proxy": size_proxy,
             "coverage_pct": safe_num(m.get("coverage_pct"), None),
             "data_warning": m.get("data_warning"),
@@ -1045,7 +1116,8 @@ def compute_structure(feature: dict[str, Any]) -> dict[str, Any]:
             "structure_r2_logarithmic": None,
             "best_structure_r2": None,
             "best_structure_model": "insufficient_data",
-            "structure_score_method": "best_r2_of_linear_quadratic_logarithmic",
+            "structure_score_method": "best_allowed_r2_to_b3_curve",
+        "structure_allowed_models": allowed_models,
 
             "linear_slope": None,
             "quadratic_a": None,
@@ -1065,7 +1137,14 @@ def compute_structure(feature: dict[str, Any]) -> dict[str, Any]:
         "quadratic": quadratic.get("r2"),
         "logarithmic": logarithmic.get("r2"),
     }
-    valid_models = {k: v for k, v in model_r2.items() if v is not None}
+    structure_cfg = M7_PARAM_CONFIG.get("structure", {}) if isinstance(M7_PARAM_CONFIG, dict) else {}
+    allowed_models_cfg = structure_cfg.get("allowed_models", {}) if isinstance(structure_cfg, dict) else {}
+    allowed_models = {
+        "linear": bool(allowed_models_cfg.get("linear", True)),
+        "quadratic": bool(allowed_models_cfg.get("quadratic", True)),
+        "logarithmic": bool(allowed_models_cfg.get("logarithmic", True)),
+    }
+    valid_models = {k: v for k, v in model_r2.items() if v is not None and allowed_models.get(k, True)}
 
     if not valid_models:
         best_model = "insufficient_data"
@@ -1074,7 +1153,8 @@ def compute_structure(feature: dict[str, Any]) -> dict[str, Any]:
     else:
         best_model = max(valid_models, key=valid_models.get)
         best_r2 = valid_models[best_model]
-        structure_score = clamp(best_r2 * 10.0, 0.0, 10.0)
+        r2_curve = structure_cfg.get("r2_curve", {}) if isinstance(structure_cfg, dict) else {}
+        structure_score = curve_score(r2_curve, best_r2, clamp(best_r2 * 10.0, 0.0, 10.0))
 
     best_dispersion = {
         "linear": linear.get("dispersion"),
@@ -1166,20 +1246,66 @@ def compute_quality(feature: dict[str, Any]) -> dict[str, float]:
 
 
 def compute_market_acceptance(feature: dict[str, Any]) -> dict[str, float]:
+    """Money v2 = Liquidity + Flow."""
     m = feature["market_acceptance"]
+    money_cfg = M7_PARAM_CONFIG.get("money", {}) if isinstance(M7_PARAM_CONFIG, dict) else {}
+    module_name = str(money_cfg.get("active_module", "M7"))
+    preset = (money_cfg.get("module_presets", {}) or {}).get(module_name, {})
+    liquidity_weight = safe_num(preset.get("liquidity_weight"), 0.70)
+    flow_weight = safe_num(preset.get("flow_weight"), 0.30)
+
     vr = safe_num(m.get("volume_ratio"), 1.0)
-    lp = safe_num(m.get("liquidity_proxy"), 0.0)
-    sp = safe_num(m.get("size_proxy"), 0.0)
+    avg_dollar_volume = safe_num(m.get("avg_dollar_volume"), safe_num(m.get("liquidity_proxy"), 0.0))
+    today_dollar_volume = safe_num(m.get("today_dollar_volume"), safe_num(m.get("size_proxy"), 0.0))
 
-    c = curve_params["market_acceptance_curve"]
-    vr_score = piecewise(c["volume_ratio"]["points"], vr)
-    lp_score = piecewise(c["liquidity"]["points"], lp)
-    sp_score = piecewise(c["size_proxy"]["points"], sp)
+    liquidity_curve = money_cfg.get("liquidity_curve", {}) if isinstance(money_cfg, dict) else {}
+    mean_band_pct = safe_num(liquidity_curve.get("mean_band_pct"), 0.05)
+    pool_scores = liquidity_curve.get("pool30_scores", {"p25": 5.0, "mean": 8.0, "p75": 10.0})
+    universe_scores = liquidity_curve.get("universe_scores", {"p25": 3.0, "mean": 7.0, "p75": 10.0})
+    is_pool30 = bool(feature.get("is_pool30", True))
+    liquidity_scores = pool_scores if is_pool30 else universe_scores
+    liquidity_score = score_by_benchmark_linear(
+        avg_dollar_volume,
+        MONEY_LIQUIDITY_BENCHMARK,
+        liquidity_scores,
+        mean_band_pct,
+    )
 
-    bw = c["blend_weights"]
-    raw = bw["volume_ratio"] * vr_score + bw["liquidity"] * lp_score + bw["size_proxy"] * sp_score
-    return {"raw": raw, "score_10": clamp(raw, 0.0, 10.0)}
+    flow_curve = money_cfg.get("flow_curve", {}) if isinstance(money_cfg, dict) else {}
+    volume_ratio_score = curve_score(flow_curve, vr, piecewise(curve_params["market_acceptance_curve"]["volume_ratio"]["points"], vr))
 
+    mean_adv = safe_num(MONEY_LIQUIDITY_BENCHMARK.get("mean"), 0.0)
+    money_position = today_dollar_volume / mean_adv if mean_adv > 0 else 1.0
+    position_curve = money_cfg.get("money_position_curve", {}) if isinstance(money_cfg, dict) else {}
+    money_position_score = curve_score(position_curve, money_position, volume_ratio_score)
+
+    flow_blend = money_cfg.get("flow_blend_weights", {}) if isinstance(money_cfg, dict) else {}
+    w_vr = safe_num(flow_blend.get("volume_ratio"), 0.70)
+    w_pos = safe_num(flow_blend.get("money_position"), 0.30)
+    flow_weight_sum = max(1e-9, w_vr + w_pos)
+    flow_score = (w_vr * volume_ratio_score + w_pos * money_position_score) / flow_weight_sum
+
+    total_weight = max(1e-9, liquidity_weight + flow_weight)
+    raw = (liquidity_weight * liquidity_score + flow_weight * flow_score) / total_weight
+
+    return {
+        "raw": raw,
+        "score_10": clamp(raw, 0.0, 10.0),
+        "liquidity_score": clamp(liquidity_score, 0.0, 10.0),
+        "flow_score": clamp(flow_score, 0.0, 10.0),
+        "volume_ratio_score": clamp(volume_ratio_score, 0.0, 10.0),
+        "money_position_score": clamp(money_position_score, 0.0, 10.0),
+        "money_position": money_position,
+        "avg_dollar_volume": avg_dollar_volume,
+        "today_dollar_volume": today_dollar_volume,
+        "volume_ratio": vr,
+        "liquidity_weight": liquidity_weight,
+        "flow_weight": flow_weight,
+        "money_module_preset": module_name,
+        "benchmark_mean": MONEY_LIQUIDITY_BENCHMARK.get("mean"),
+        "benchmark_p25": MONEY_LIQUIDITY_BENCHMARK.get("p25"),
+        "benchmark_p75": MONEY_LIQUIDITY_BENCHMARK.get("p75"),
+    }
 
 def compute_exposure_penalty(feature: dict[str, Any]) -> dict[str, Any]:
     e = feature["exposure"]
@@ -1418,6 +1544,27 @@ def main() -> int:
     try:
         bundle = load_inputs()
         symbols = sorted(set(bundle.pool30_rows.keys()) | set(bundle.baseline_rows.keys()))
+
+        global MONEY_LIQUIDITY_BENCHMARK
+        benchmark_values: list[float] = []
+        for sym, row in bundle.market_runtime.items():
+            if not isinstance(row, dict):
+                continue
+            price_now = safe_num(row.get("price_now"), 0.0)
+            volume = safe_num(row.get("volume"), 0.0)
+            volume_ratio = safe_num(row.get("volume_ratio"), 0.0)
+            avg_volume = safe_num(row.get("avg_volume", row.get("average_volume", row.get("averageVolume", row.get("averageVolume3M")))), None)
+            if avg_volume is None or avg_volume <= 0:
+                avg_volume = volume / max(volume_ratio, 1e-9) if volume > 0 and volume_ratio > 0 else 0.0
+            adv = price_now * avg_volume
+            if adv > 0:
+                benchmark_values.append(adv)
+        if benchmark_values:
+            MONEY_LIQUIDITY_BENCHMARK = {
+                "mean": sum(benchmark_values) / len(benchmark_values),
+                "p25": percentile(benchmark_values, 0.25),
+                "p75": percentile(benchmark_values, 0.75),
+            }
         rows_out: list[dict[str, Any]] = []
 
         for sym in symbols:
@@ -1519,6 +1666,17 @@ def main() -> int:
                 "structure_score": round2(structure["score_10"]),
                 "timing_score": round2(timing["score_10"]),
                 "money_score": round2(money["score_10"]),
+                "money_liquidity_score": round2(money.get("liquidity_score")),
+                "money_flow_score": round2(money.get("flow_score")),
+                "money_volume_ratio_score": round2(money.get("volume_ratio_score")),
+                "money_position_score": round2(money.get("money_position_score")),
+                "money_position": round2(money.get("money_position")),
+                "avg_dollar_volume": round2(money.get("avg_dollar_volume")),
+                "today_dollar_volume": round2(money.get("today_dollar_volume")),
+                "volume_ratio": round2(money.get("volume_ratio")),
+                "money_liquidity_weight": round2(money.get("liquidity_weight")),
+                "money_flow_weight": round2(money.get("flow_weight")),
+                "money_module_preset": money.get("money_module_preset"),
                 "m1_score": round2(m1_score),
                 "m7_raw_score": round2(m7_raw_score),
                 "m7_v2_score": round2(m7_v2_score),
@@ -1539,6 +1697,7 @@ def main() -> int:
                     "returns": feature["returns"],
                     "weekly_prices": feature.get("weekly_prices", []),
                     "weekly_returns": feature.get("weekly_returns", []),
+                    "market_acceptance": feature.get("market_acceptance", {}),
                 },
             })
 
