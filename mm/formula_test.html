@@ -62,6 +62,7 @@
     table{width:100%;border-collapse:collapse;font-size:12px;} th,td{border-bottom:1px solid var(--line);padding:8px;text-align:right;} th:first-child,td:first-child{text-align:left;} th{color:var(--muted);font-weight:800;background:#fbfcff;}
     .table-scroll{overflow:auto;border:1px solid var(--line);border-radius:12px;}
     .impact-table{min-width:980px;}
+    .summary-table{min-width:760px;}
     .preview-table{min-width:1120px;}
     .tag{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:2px 7px;margin:1px;background:#fff;font-size:11px;}
     .small{font-size:12px;color:var(--muted);line-height:1.45;}
@@ -125,8 +126,13 @@
         <div class="card-b">
           <div id="ruleBox" class="ok">--</div>
 
-          <div class="metric head"><div>Score Layer</div><div class="num">Now</div><div class="num">New</div><div class="num">Delta</div></div>
-          <div id="scoreTable"></div>
+          <details open>
+            <summary>Raw Score Impact Summary / RAW SCORE 影響總表</summary>
+            <div class="detail-body">
+              <div class="small" style="margin-bottom:8px">主表只看 L2/L3 對各 factor score 與 RAW score 的影響，最後一欄用於快速判斷這個 factor 對 M7 final delta 的方向與貢獻。</div>
+              <div class="table-scroll"><table id="scoreTable" class="summary-table"></table></div>
+            </div>
+          </details>
 
           <details open>
             <summary>Factor Impact / 權重調整貢獻表</summary>
