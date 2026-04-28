@@ -422,6 +422,19 @@
     traceLines.push("  effective new normalized:");
     Object.entries(rawWeights).forEach(([k,v]) => traceLines.push(`    ${k} = ${v.toFixed(4)}`));
     traceLines.push("");
+    traceLines.push("VALUATION L2/L3:");
+    const valuationSnapshot = ctx.row && ctx.row.feature_snapshot && ctx.row.feature_snapshot.valuation ? ctx.row.feature_snapshot.valuation : null;
+    if (valuationSnapshot) {
+      ["forward_pe", "anchor_pe", "base_anchor", "category_sub", "market_regime", "market_multiplier", "industry_regime", "industry_multiplier", "valuation_archetype", "archetype_multiplier", "peg", "eps_growth", "quality_factor"].forEach(k => {
+        if (valuationSnapshot[k] !== undefined && valuationSnapshot[k] !== null) {
+          traceLines.push(`  ${k} = ${valuationSnapshot[k]}`);
+        }
+      });
+    } else {
+      traceLines.push("  feature_snapshot.valuation not found; valuation score uses current valuation_score as base");
+    }
+
+    traceLines.push("");
     traceLines.push("TREND:");
     traceLines.push(`  linear=${fmt(trend.parts.linear)} * w=${trend.parts.weights.trend_linear_weight.toFixed(4)}`);
     traceLines.push(`  ma_score=${fmt(trend.parts.ma)} * w=${trend.parts.weights.trend_ma_weight.toFixed(4)}`);
@@ -479,18 +492,76 @@
     $("paramTable").innerHTML = PARAM_DEFS.map(([key, label]) => paramMetricRow(label, DEFAULT_PARAMS[key], state.params[key])).join("");
   }
 
+  function rawLayerRows(result) {
+    const impactMap = new Map(factorImpactRows(result).map(r => [r.label, r]));
+    return [
+      { label: "valuation", now: result.scores.valuation.now, new: result.scores.valuation.new, impact: impactMap.get("valuation") },
+      { label: "trend", now: result.scores.trend.now, new: result.scores.trend.new, impact: impactMap.get("trend") },
+      { label: "structure", now: result.scores.structure.now, new: result.scores.structure.new, impact: impactMap.get("structure") },
+      { label: "timing", now: result.scores.timing.now, new: result.scores.timing.new, impact: impactMap.get("timing") },
+      { label: "money", now: result.scores.money.now, new: result.scores.money.new, impact: impactMap.get("money") }
+    ];
+  }
+
+  function m7ImpactPct(rawDelta, finalDelta) {
+    if (Math.abs(num(finalDelta, 0)) < 0.000001) return null;
+    return (rawDelta / finalDelta) * 100;
+  }
+
   function renderScoreTable(result) {
-    const s = result.scores;
-    $("scoreTable").innerHTML = [
-      metricRow("valuation score", s.valuation.now, s.valuation.new),
-      metricRow("trend score", s.trend.now, s.trend.new),
-      metricRow("structure score", s.structure.now, s.structure.new),
-      metricRow("timing score", s.timing.now, s.timing.new),
-      metricRow("money score", s.money.now, s.money.new),
-      metricRow("top score / adjustment", s.top.now, s.top.new),
-      metricRow("raw score", s.raw.now, s.raw.new),
-      metricRow("M7 final", s.m7.now, s.m7.new)
-    ].join("");
+    const el = $("scoreTable");
+    if (!el) return;
+    const finalDelta = result.scores.m7.new - result.scores.m7.now;
+    const rawDelta = result.scores.raw.new - result.scores.raw.now;
+    const rows = rawLayerRows(result);
+
+    el.innerHTML = `
+      <thead>
+        <tr>
+          <th>Score Layer</th>
+          <th>Now</th>
+          <th>New</th>
+          <th>Delta</th>
+          <th>Delta %</th>
+          <th>Impact to M7 Δ</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rows.map(r => {
+          const d = num(r.new, 0) - num(r.now, 0);
+          const dp = pctChange(r.now, r.new);
+          const impact = r.impact ? m7ImpactPct(r.impact.rawDelta, finalDelta) : null;
+          const impactText = impact === null ? "--" : fmtPct(impact);
+          const impactCls = r.impact ? deltaClass(r.impact.rawDelta) : "zero";
+          return `
+            <tr>
+              <td>${r.label}</td>
+              <td>${fmt(r.now)}</td>
+              <td>${fmt(r.new)}</td>
+              <td class="${deltaClass(d)}">${fmt(d)}</td>
+              <td class="${deltaClass(dp)}">${fmtPct(dp)}</td>
+              <td class="${impactCls}">${impactText}</td>
+            </tr>
+          `;
+        }).join("")}
+        <tr>
+          <th>Raw Score</th>
+          <th>${fmt(result.scores.raw.now)}</th>
+          <th>${fmt(result.scores.raw.new)}</th>
+          <th class="${deltaClass(rawDelta)}">${fmt(rawDelta)}</th>
+          <th class="${deltaClass(pctChange(result.scores.raw.now, result.scores.raw.new))}">${fmtPct(pctChange(result.scores.raw.now, result.scores.raw.new))}</th>
+          <th class="${deltaClass(rawDelta)}">raw layer</th>
+        </tr>
+        <tr>
+          <th>M7 Final</th>
+          <th>${fmt(result.scores.m7.now)}</th>
+          <th>${fmt(result.scores.m7.new)}</th>
+          <th class="${deltaClass(finalDelta)}">${fmt(finalDelta)}</th>
+          <th class="${deltaClass(pctChange(result.scores.m7.now, result.scores.m7.new))}">${fmtPct(pctChange(result.scores.m7.now, result.scores.m7.new))}</th>
+          <th class="${deltaClass(finalDelta)}">final layer</th>
+        </tr>
+      </tbody>
+    `;
   }
 
   function factorImpactRows(result) {
