@@ -4,9 +4,9 @@
 
   Purpose:
   - Independent formula debug page for M7 what-if calculation.
+  - Adds 28-category valuation baseline engine inside formula_test.html.
   - Does NOT modify data files.
   - Does NOT re-rank or re-normalize cross-stock distribution during what-if.
-  - Missing sub-factors use fallback rules and are explicitly shown in trace.
 */
 
 (function () {
@@ -17,12 +17,12 @@
     compare: "../data/m7_sandbox/m7_v2_ab_compare.json",
     manifest: "../data/m7_sandbox/m7_v2_run_manifest.json",
     runtime: "../data/market_runtime.json",
-    fundamentals: "../data/m7/m7_fundamental_data.json"
+    fundamentals: "../data/m7/m7_fundamental_data.json",
+    anchorConfig: "../configs/mm/dynamic_anchor_regime_v1.json"
   };
 
   const DEFAULT_PARAMS = Object.freeze({
     // Match current Python M7 v2 formula:
-    // 0.45*valuation + 0.25*trend + 0.20*structure + 0.00*timing + 0.10*money
     raw_valuation_weight: 0.45,
     raw_trend_weight: 0.25,
     raw_structure_weight: 0.20,
@@ -30,16 +30,17 @@
     raw_money_weight: 0.10,
 
     // Match current Python trend formula:
-    // 0.35*linear + 0.50*ma200/ma_window + 0.15*acceleration
-    // Important: trend sub-score is allowed to exceed 10 in Python output.
     trend_linear_weight: 0.35,
     trend_ma_weight: 0.50,
     trend_acceleration_weight: 0.15,
 
     // Match current Python money formula:
-    // liquidity * money_liquidity_weight + flow * money_flow_weight
     money_liquidity_weight: 0.70,
     money_flow_weight: 0.30,
+
+    // 28-sector baseline blend:
+    sector_peer_baseline_weight: 0.70,
+    sector_static_anchor_weight: 0.30,
 
     top_adjustment_weight: 1.00,
     top_adjustment_cap: 1.50
@@ -56,9 +57,43 @@
     ["trend_acceleration_weight", "Trend - Acceleration Weight", 0, 1, 0.01],
     ["money_liquidity_weight", "Money - Liquidity Weight", 0, 1, 0.01],
     ["money_flow_weight", "Money - Flow Weight", 0, 1, 0.01],
+    ["sector_peer_baseline_weight", "Valuation - Sector Peer Baseline Weight", 0, 1, 0.01],
+    ["sector_static_anchor_weight", "Valuation - Static Anchor Weight", 0, 1, 0.01],
     ["top_adjustment_weight", "Final - Top Adjustment Weight", 0, 2, 0.01],
     ["top_adjustment_cap", "Final - Top Adjustment Cap", 0, 3, 0.05]
   ];
+
+  const FALLBACK_STATIC_ANCHORS = {
+    CPU_GPU_COMPUTE_SEMI: 30,
+    ASIC_CUSTOM_SILICON: 28,
+    FOUNDRY_FAB_INFRA: 24,
+    MEMORY_CYCLICAL_SEMI: 14,
+    SEMI_EQUIPMENT: 22,
+    ANALOG_CASHFLOW_SEMI: 20,
+    SEMI_TURNAROUND_LEGACY: 15,
+    CLOUD_PLATFORM_MEGACAP: 26,
+    ENTERPRISE_SOFTWARE_SAAS: 22,
+    CYBERSECURITY_DATA_SOFTWARE: 24,
+    PLATFORM_ECOSYSTEM_CONSUMER_INTERNET: 25,
+    RERATING_TURNAROUND_GROWTH: 18,
+    CONSUMER_DEFENSIVE_RETAIL_STAPLES: 20,
+    TRAVEL_LEISURE_CYCLICAL: 14,
+    INDUSTRIAL_CAPITAL_GOODS_LOGISTICS: 18,
+    HEALTHCARE_DEFENSIVE_MANAGED: 17,
+    HEALTHCARE_GROWTH_BIOTECH: 23,
+    FINANCIAL_QUALITY_BANK_PAYMENTS: 18,
+    UTILITY_LOWVOL_DEFENSIVE: 16,
+    YIELD_REIT_BONDLIKE_INCOME: 14,
+    BROAD_MARKET_ETF: 21,
+    SECTOR_ETF: 20,
+    SEMI_THEMATIC_ETF: 24,
+    BOND_ETF: 16,
+    SPEC_THEMATIC_ETF: 26,
+    CRYPTO_EXCHANGE_MINERS: 20,
+    CRYPTO_EXCHANGE_PLATFORM: 20,
+    CRYPTO_MINERS: 20,
+    ENERGY_CASHFLOW_CYCLICAL: 14
+  };
 
   const state = {
     scores: [],
@@ -66,6 +101,7 @@
     manifest: null,
     runtime: [],
     fundamentals: [],
+    anchorConfig: null,
     selectedSymbol: null,
     params: { ...DEFAULT_PARAMS },
     decimals: 2
@@ -91,15 +127,14 @@
 
   function fmtPct(v, d = 1) {
     const x = num(v, null);
-    if (x === null || !Number.isFinite(x)) return "--";
-    return `${x.toFixed(d)}%`;
+    if (x === null) return "--";
+    return `${(x * 100).toFixed(d)}%`;
   }
 
-  function pctChange(now, newer) {
-    const a = num(now, null);
-    const b = num(newer, null);
-    if (a === null || b === null || Math.abs(a) < 0.000001) return null;
-    return ((b - a) / Math.abs(a)) * 100;
+  function fmtPctFromValue(v, d = 1) {
+    const x = num(v, null);
+    if (x === null) return "--";
+    return `${x.toFixed(d)}%`;
   }
 
   function deltaClass(v) {
@@ -108,10 +143,25 @@
     return x > 0 ? "pos" : "neg";
   }
 
+  function escapeHtml(s) {
+    return String(s ?? "").replace(/[&<>"]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[c]));
+  }
+
   function field(row, keys, fallback = null) {
     if (!row) return fallback;
     for (const k of keys) {
-      if (row[k] !== undefined && row[k] !== null && row[k] !== "") return row[k];
+      if (k.includes(".")) {
+        const parts = k.split(".");
+        let cur = row;
+        let ok = true;
+        for (const p of parts) {
+          if (!cur || cur[p] === undefined || cur[p] === null || cur[p] === "") { ok = false; break; }
+          cur = cur[p];
+        }
+        if (ok) return cur;
+      } else if (row[k] !== undefined && row[k] !== null && row[k] !== "") {
+        return row[k];
+      }
     }
     return fallback;
   }
@@ -121,12 +171,8 @@
   }
 
   function asArray(payload) {
-    // case 1: already array
     if (Array.isArray(payload)) return payload;
-
     if (!payload || typeof payload !== "object") return [];
-
-    // common wrapper keys
     if (Array.isArray(payload.data)) return payload.data;
     if (Array.isArray(payload.scores)) return payload.scores;
     if (Array.isArray(payload.items)) return payload.items;
@@ -134,16 +180,11 @@
     if (Array.isArray(payload.results)) return payload.results;
     if (Array.isArray(payload.records)) return payload.records;
     if (Array.isArray(payload.output)) return payload.output;
-
-    // fallback: if any first-level property is array → take first array
     const values = Object.values(payload);
     const firstArray = values.find(v => Array.isArray(v));
     if (firstArray) return firstArray;
-
-    // fallback: object map format, e.g. { NVDA:{...}, TSM:{...} }
     const objectValues = values.filter(v => v && typeof v === "object" && !Array.isArray(v));
     if (objectValues.length && objectValues.length === values.length) return objectValues;
-
     console.warn("Unknown JSON structure:", payload);
     return [];
   }
@@ -174,6 +215,16 @@
     }).filter(x => x.sym);
   }
 
+  function normalizeWeights(obj, keys) {
+    const vals = keys.map(k => Math.max(0, num(obj[k], 0)));
+    const sum = vals.reduce((a, b) => a + b, 0);
+    if (sum <= 0) {
+      const equal = 1 / keys.length;
+      return Object.fromEntries(keys.map(k => [k, equal]));
+    }
+    return Object.fromEntries(keys.map((k, i) => [k, vals[i] / sum]));
+  }
+
   function getBaseScores(ctx) {
     const { row, cmp } = ctx;
     const valuation = num(field(row, ["valuation_score", "valuation", "m7_valuation_score"], field(cmp, ["valuation_score"])), 0);
@@ -186,16 +237,6 @@
     return { valuation, trend, structure, timing, money, top, m7Now };
   }
 
-  function normalizeWeights(obj, keys) {
-    const vals = keys.map(k => Math.max(0, num(obj[k], 0)));
-    const sum = vals.reduce((a, b) => a + b, 0);
-    if (sum <= 0) {
-      const equal = 1 / keys.length;
-      return Object.fromEntries(keys.map(k => [k, equal]));
-    }
-    return Object.fromEntries(keys.map((k, i) => [k, vals[i] / sum]));
-  }
-
   function scoreFromRawFactor(value, fallbackScore, scale, center = 0) {
     const v = num(value, null);
     if (v === null) return { score: fallbackScore, usedFallback: true };
@@ -206,27 +247,9 @@
     const { row, rt } = ctx;
     const audit = [];
 
-    const linearDirect = num(field(row, [
-      "trend_linear_score",
-      "linear_trend_score",
-      "long_term_linear_score"
-    ], null), null);
-
-    const maDirect = num(field(row, [
-      "trend_ma_score",
-      "trend_ma200_score",
-      "trend_ma100_score",
-      "ma200_score",
-      "ma100_score",
-      "ma20w_score",
-      "ma_trend_score"
-    ], null), null);
-
-    const accelDirect = num(field(row, [
-      "trend_acceleration_score",
-      "acceleration_score",
-      "quadratic_acceleration_score"
-    ], null), null);
+    const linearDirect = num(field(row, ["trend_linear_score", "linear_trend_score", "long_term_linear_score"], null), null);
+    const maDirect = num(field(row, ["trend_ma_score", "trend_ma200_score", "trend_ma100_score", "ma200_score", "ma100_score", "ma20w_score", "ma_trend_score"], null), null);
+    const accelDirect = num(field(row, ["trend_acceleration_score", "acceleration_score", "quadratic_acceleration_score"], null), null);
 
     let linear = linearDirect;
     if (linear === null) {
@@ -262,14 +285,7 @@
     } else audit.push("trend.acceleration: direct trend_acceleration_score used");
 
     const w = normalizeWeights(params, ["trend_linear_weight", "trend_ma_weight", "trend_acceleration_weight"]);
-
-    // Important: do NOT clamp trend to 0~10 here.
-    // Python M7 v2 allows strong trend scores above 10, e.g. NVDA trend_score = 11.97.
-    const newScore =
-      linear * w.trend_linear_weight +
-      ma * w.trend_ma_weight +
-      accel * w.trend_acceleration_weight;
-
+    const newScore = linear * w.trend_linear_weight + ma * w.trend_ma_weight + accel * w.trend_acceleration_weight;
     return { now: base.trend, new: newScore, parts: { linear, ma, accel, weights: w }, audit };
   }
 
@@ -277,22 +293,10 @@
     const { row, rt } = ctx;
     const audit = [];
 
-    // Current Python M7 v2 output uses:
-    // money_score, money_liquidity_score, money_flow_score,
-    // money_volume_ratio_score, money_position_score,
-    // money_liquidity_weight, money_flow_weight.
-
-    let liquidityScore = num(field(row, [
-      "money_liquidity_score",
-      "liquidity_score",
-      "money_volume_score",
-      "volume_score"
-    ], null), null);
-
+    let liquidityScore = num(field(row, ["money_liquidity_score", "liquidity_score", "money_volume_score", "volume_score"], null), null);
     if (liquidityScore === null) {
-      const adv = num(field(row, ["avg_dollar_volume"], field(rt, ["avg_dollar_volume"], null)), null);
+      const adv = num(field(row, ["avg_dollar_volume", "market_acceptance.avg_dollar_volume", "market_acceptance.liquidity_proxy"], field(rt, ["avg_dollar_volume"], null)), null);
       if (adv !== null && adv > 0) {
-        // Conservative liquidity proxy. Large-cap names should approach 10.
         liquidityScore = clamp(Math.log10(Math.max(1, adv)) - 1.0, 0, 10);
         audit.push("money.liquidity: derived from avg_dollar_volume proxy");
       } else {
@@ -301,16 +305,9 @@
       }
     } else audit.push("money.liquidity: direct money_liquidity_score used");
 
-    let flowScore = num(field(row, [
-      "money_flow_score",
-      "flow_score",
-      "money_volume_ratio_score",
-      "volume_ratio_score",
-      "flow_volume_score"
-    ], null), null);
-
+    let flowScore = num(field(row, ["money_flow_score", "flow_score", "money_volume_ratio_score", "volume_ratio_score", "flow_volume_score"], null), null);
     if (flowScore === null) {
-      const vr = field(row, ["volume_ratio"], field(rt, ["volume_ratio"], null));
+      const vr = field(row, ["volume_ratio", "market_acceptance.volume_ratio"], field(rt, ["volume_ratio"], null));
       if (num(vr, null) === null) {
         flowScore = base.money;
         audit.push("money.flow: missing flow/volume_ratio factor; fallback to current money_score");
@@ -321,14 +318,10 @@
     } else audit.push("money.flow: direct money_flow_score / volume_ratio_score used");
 
     const positionScore = num(field(row, ["money_position_score", "position_score"], null), null);
-    if (positionScore !== null) {
-      audit.push("money.position: direct money_position_score detected; currently audit-only, not included in M7 money formula");
-    }
+    if (positionScore !== null) audit.push("money.position: direct money_position_score detected; audit-only");
 
-    // Prefer row-level weights from Python output when user has not changed sliders.
     const rowLiquidityWeight = num(field(row, ["money_liquidity_weight"], null), null);
     const rowFlowWeight = num(field(row, ["money_flow_weight"], null), null);
-
     const p = { ...params };
     const userStillDefault =
       Math.abs(num(params.money_liquidity_weight, 0) - DEFAULT_PARAMS.money_liquidity_weight) < 0.000001 &&
@@ -338,22 +331,12 @@
       p.money_liquidity_weight = rowLiquidityWeight;
       p.money_flow_weight = rowFlowWeight;
       audit.push("money.weights: row-level Python weights used because sliders remain at default");
-    } else {
-      audit.push("money.weights: UI slider weights used");
-    }
+    } else audit.push("money.weights: UI slider weights used");
 
     const w = normalizeWeights(p, ["money_liquidity_weight", "money_flow_weight"]);
+    const newScore = liquidityScore * w.money_liquidity_weight + flowScore * w.money_flow_weight;
 
-    const newScore =
-      liquidityScore * w.money_liquidity_weight +
-      flowScore * w.money_flow_weight;
-
-    return {
-      now: base.money,
-      new: newScore,
-      parts: { liquidityScore, flowScore, positionScore, weights: w },
-      audit
-    };
+    return { now: base.money, new: newScore, parts: { liquidityScore, flowScore, positionScore, weights: w }, audit };
   }
 
   function computeTop(base, params) {
@@ -362,41 +345,260 @@
     return { now: base.top, new: newTop, capped };
   }
 
+  // -------------------------------
+  // Valuation baseline engine
+  // -------------------------------
+
+  function getForwardPE(row) {
+    return num(field(row, [
+      "feature_snapshot.valuation.forward_pe",
+      "forward_pe",
+      "forwardPE",
+      "pe_forward",
+      "fwd_pe"
+    ], null), null);
+  }
+
+  function getCategorySub(row) {
+    return String(field(row, ["category_sub", "feature_snapshot.valuation.category_sub"], "UNKNOWN"));
+  }
+
+  function getStaticAnchor(categorySub, row = null) {
+    const cfg = state.anchorConfig || {};
+    const fromCfg = num(cfg?.base_anchor_by_category_sub?.[categorySub], null);
+    if (fromCfg !== null) return fromCfg;
+    const fromRow = num(field(row, ["feature_snapshot.valuation.base_anchor", "feature_snapshot.valuation.anchor_pe", "base_anchor", "anchor_pe"], null), null);
+    if (fromRow !== null) return fromRow;
+    return num(FALLBACK_STATIC_ANCHORS[categorySub], 20);
+  }
+
+  function getLiquidityWeight(row, rt = null) {
+    const v = num(field(row, [
+      "avg_dollar_volume",
+      "liquidity_proxy",
+      "market_acceptance.avg_dollar_volume",
+      "market_acceptance.liquidity_proxy",
+      "today_dollar_volume",
+      "market_acceptance.today_dollar_volume"
+    ], field(rt, ["avg_dollar_volume", "liquidity_proxy"], null)), null);
+    if (v !== null && v > 0) return v;
+    return 1;
+  }
+
+  function getIndividualFairPE(row) {
+    const direct = num(field(row, [
+      "mean_pe",
+      "trimmed_mean_pe",
+      "individual_fair_pe",
+      "regression_fair_pe",
+      "valuation_regression_fair_pe",
+      "historical_fair_pe",
+      "feature_snapshot.valuation.mean_pe",
+      "feature_snapshot.valuation.trimmed_mean_pe",
+      "feature_snapshot.valuation.regression_fair_pe",
+      "feature_snapshot.valuation.individual_fair_pe"
+    ], null), null);
+    if (direct !== null && direct > 0) return { value: direct, source: "direct_mean_or_regression_fair_pe" };
+
+    const currentPE = getForwardPE(row);
+    const currentMultiple = num(field(row, [
+      "current_regression_multiple",
+      "regression_current_multiple",
+      "price_to_regression_now",
+      "feature_snapshot.valuation.current_regression_multiple"
+    ], null), null);
+    const normalMultiple = num(field(row, [
+      "historical_trimmed_mean_multiple",
+      "regression_trimmed_mean_multiple",
+      "normal_regression_multiple",
+      "feature_snapshot.valuation.historical_trimmed_mean_multiple"
+    ], null), null);
+
+    if (currentPE !== null && currentPE > 0 && currentMultiple !== null && currentMultiple > 0 && normalMultiple !== null && normalMultiple > 0) {
+      return { value: currentPE * (normalMultiple / currentMultiple), source: "current_pe_x_normal_multiple_over_current_multiple" };
+    }
+
+    if (currentPE !== null && currentPE > 0) return { value: currentPE, source: "fallback_current_forward_pe" };
+    return { value: null, source: "missing_forward_pe" };
+  }
+
+  function getDynamicMultipliers(row) {
+    const cfg = state.anchorConfig || {};
+    const marketRegime = field(row, ["feature_snapshot.valuation.market_regime", "market_regime"], null);
+    const industryRegime = field(row, ["feature_snapshot.valuation.industry_regime", "industry_regime"], null);
+    const archetype = field(row, ["valuation_archetype", "feature_snapshot.valuation.valuation_archetype"], null);
+    const categorySub = getCategorySub(row);
+    const family = cfg?.category_family_map?.[categorySub] || null;
+
+    const marketMultiplier =
+      num(field(row, ["feature_snapshot.valuation.market_multiplier", "market_multiplier"], null), null) ??
+      num(cfg?.market_regimes?.[marketRegime]?.multiplier, 1);
+
+    let industryMultiplier = num(field(row, ["feature_snapshot.valuation.industry_multiplier", "industry_multiplier"], null), null);
+    if (industryMultiplier === null) {
+      const ir = cfg?.industry_regimes?.[industryRegime];
+      industryMultiplier = num(ir?.family_multipliers?.[family], num(ir?.default_multiplier, 1));
+    }
+
+    const archetypeMultiplier =
+      num(field(row, ["feature_snapshot.valuation.archetype_multiplier", "archetype_multiplier"], null), null) ??
+      num(cfg?.valuation_archetypes?.[archetype]?.multiplier, 1);
+
+    return {
+      marketRegime,
+      industryRegime,
+      archetype,
+      family,
+      marketMultiplier,
+      industryMultiplier,
+      archetypeMultiplier,
+      combined: marketMultiplier * industryMultiplier * archetypeMultiplier
+    };
+  }
+
+  function buildSectorBaselineEngine(params = state.params) {
+    const rows = getRows();
+    const groups = new Map();
+
+    rows.forEach(ctx => {
+      const row = ctx.row;
+      const categorySub = getCategorySub(row);
+      if (!categorySub || categorySub === "UNKNOWN") return;
+      const fair = getIndividualFairPE(row);
+      if (fair.value === null || fair.value <= 0 || !Number.isFinite(fair.value)) return;
+      const weight = getLiquidityWeight(row, ctx.rt);
+      if (!groups.has(categorySub)) groups.set(categorySub, []);
+      groups.get(categorySub).push({ ctx, fairPE: fair.value, source: fair.source, weight });
+    });
+
+    const blend = normalizeWeights(params, ["sector_peer_baseline_weight", "sector_static_anchor_weight"]);
+    const result = {};
+
+    Object.keys(FALLBACK_STATIC_ANCHORS).forEach(cat => {
+      if (!groups.has(cat)) groups.set(cat, []);
+    });
+
+    groups.forEach((items, categorySub) => {
+      const staticAnchor = getStaticAnchor(categorySub, items[0]?.ctx?.row || null);
+      let weightedPeerBaseline = null;
+      let totalWeight = 0;
+      let weightedSum = 0;
+      items.forEach(item => {
+        const w = Math.max(1, num(item.weight, 1));
+        totalWeight += w;
+        weightedSum += item.fairPE * w;
+      });
+      if (totalWeight > 0) weightedPeerBaseline = weightedSum / totalWeight;
+      const finalSectorBaseline =
+        weightedPeerBaseline === null
+          ? staticAnchor
+          : weightedPeerBaseline * blend.sector_peer_baseline_weight + staticAnchor * blend.sector_static_anchor_weight;
+
+      result[categorySub] = {
+        categorySub,
+        peerCount: items.length,
+        weightedPeerBaseline,
+        staticAnchor,
+        finalSectorBaseline,
+        peerWeight: blend.sector_peer_baseline_weight,
+        staticWeight: blend.sector_static_anchor_weight,
+        totalLiquidity: totalWeight,
+        members: items.map(item => ({
+          symbol: item.ctx.sym,
+          name: field(item.ctx.row, ["name", "company_name"], ""),
+          fairPE: item.fairPE,
+          source: item.source,
+          liquidity: item.weight,
+          share: totalWeight > 0 ? item.weight / totalWeight : null
+        })).sort((a, b) => b.share - a.share)
+      };
+    });
+
+    return result;
+  }
+
+  function computeValuationBaseline(ctx, params = state.params) {
+    const row = ctx.row;
+    const categorySub = getCategorySub(row);
+    const currentForwardPE = getForwardPE(row);
+    const individual = getIndividualFairPE(row);
+    const sectorMap = buildSectorBaselineEngine(params);
+    const sector = sectorMap[categorySub] || null;
+    const staticAnchor = getStaticAnchor(categorySub, row);
+    const dynamic = getDynamicMultipliers(row);
+    const sectorBaseline = sector?.finalSectorBaseline ?? staticAnchor;
+    const finalAnchorAfterDynamic = sectorBaseline * dynamic.combined;
+
+    return {
+      categorySub,
+      currentForwardPE,
+      individualFairPE: individual.value,
+      individualFairPESource: individual.source,
+      staticAnchor,
+      weightedPeerBaseline: sector?.weightedPeerBaseline ?? null,
+      peerCount: sector?.peerCount ?? 0,
+      sectorBaseline,
+      dynamic,
+      finalAnchorAfterDynamic,
+      sectorMembers: sector?.members || []
+    };
+  }
+
   function computeM7(ctx, params = state.params) {
     const base = getBaseScores(ctx);
     const trend = computeTrend(ctx, base, params);
     const money = computeMoney(ctx, base, params);
     const top = computeTop(base, params);
+    const valuationBaseline = computeValuationBaseline(ctx, params);
 
-    const rawKeys = [
+    const rawWeightsNow = normalizeWeights(DEFAULT_PARAMS, [
       "raw_valuation_weight", "raw_trend_weight", "raw_structure_weight", "raw_timing_weight", "raw_money_weight"
-    ];
-
-    // Three layers are intentionally kept separate for display/debug:
-    // 1) nowWeights: original formula weights from DEFAULT_PARAMS, normalized by system.
-    // 2) userRawWeights: user slider inputs, before system normalization.
-    // 3) rawWeights: effective new weights after system normalization.
-    const nowWeights = normalizeWeights(DEFAULT_PARAMS, rawKeys);
-    const userRawWeights = Object.fromEntries(rawKeys.map(k => [k, Math.max(0, num(params[k], 0))]));
-    const rawWeights = normalizeWeights(params, rawKeys);
+    ]);
+    const rawWeightsNew = normalizeWeights(params, [
+      "raw_valuation_weight", "raw_trend_weight", "raw_structure_weight", "raw_timing_weight", "raw_money_weight"
+    ]);
 
     const rawNow =
-      base.valuation * nowWeights.raw_valuation_weight +
-      base.trend * nowWeights.raw_trend_weight +
-      base.structure * nowWeights.raw_structure_weight +
-      base.timing * nowWeights.raw_timing_weight +
-      base.money * nowWeights.raw_money_weight;
+      base.valuation * rawWeightsNow.raw_valuation_weight +
+      base.trend * rawWeightsNow.raw_trend_weight +
+      base.structure * rawWeightsNow.raw_structure_weight +
+      base.timing * rawWeightsNow.raw_timing_weight +
+      base.money * rawWeightsNow.raw_money_weight;
 
     const rawNew =
-      base.valuation * rawWeights.raw_valuation_weight +
-      trend.new * rawWeights.raw_trend_weight +
-      base.structure * rawWeights.raw_structure_weight +
-      base.timing * rawWeights.raw_timing_weight +
-      money.new * rawWeights.raw_money_weight;
+      base.valuation * rawWeightsNew.raw_valuation_weight +
+      trend.new * rawWeightsNew.raw_trend_weight +
+      base.structure * rawWeightsNew.raw_structure_weight +
+      base.timing * rawWeightsNew.raw_timing_weight +
+      money.new * rawWeightsNew.raw_money_weight;
 
     const reconstructedNow = clamp(rawNow + top.now, 0, 10);
     const m7Now = base.m7Now === null ? reconstructedNow : base.m7Now;
     const newScore = clamp(rawNew + top.new, 0, 10);
+
+    const factorRows = [
+      ["valuation", base.valuation, base.valuation, rawWeightsNow.raw_valuation_weight, rawWeightsNew.raw_valuation_weight],
+      ["trend", base.trend, trend.new, rawWeightsNow.raw_trend_weight, rawWeightsNew.raw_trend_weight],
+      ["structure", base.structure, base.structure, rawWeightsNow.raw_structure_weight, rawWeightsNew.raw_structure_weight],
+      ["timing", base.timing, base.timing, rawWeightsNow.raw_timing_weight, rawWeightsNew.raw_timing_weight],
+      ["money", base.money, money.new, rawWeightsNow.raw_money_weight, rawWeightsNew.raw_money_weight]
+    ].map(([name, scoreNow, scoreNew, weightNow, weightNew]) => {
+      const contributionNow = scoreNow * weightNow;
+      const contributionNew = scoreNew * weightNew;
+      return {
+        name,
+        scoreNow,
+        scoreNew,
+        scoreDelta: scoreNew - scoreNow,
+        scoreDeltaPct: scoreNow ? (scoreNew - scoreNow) / scoreNow : null,
+        weightNow,
+        userWeightNew: params[`raw_${name}_weight`] ?? null,
+        effectiveWeightNew: weightNew,
+        contributionNow,
+        contributionNew,
+        contributionDelta: contributionNew - contributionNow
+      };
+    });
 
     const scores = {
       valuation: { now: base.valuation, new: base.valuation },
@@ -414,26 +616,18 @@
     traceLines.push(`SYMBOL = ${ctx.sym}`);
     traceLines.push(`M7 now source = ${base.m7Now === null ? "reconstructed raw+top" : "data field m7_v2_score/m7_final_score"}`);
     traceLines.push("");
-    traceLines.push("RAW WEIGHTS:");
-    traceLines.push("  now/default normalized:");
-    Object.entries(nowWeights).forEach(([k,v]) => traceLines.push(`    ${k} = ${v.toFixed(4)}`));
-    traceLines.push("  user slider raw input:");
-    Object.entries(userRawWeights).forEach(([k,v]) => traceLines.push(`    ${k} = ${v.toFixed(4)}`));
-    traceLines.push("  effective new normalized:");
-    Object.entries(rawWeights).forEach(([k,v]) => traceLines.push(`    ${k} = ${v.toFixed(4)}`));
+    traceLines.push("RAW WEIGHTS normalized:");
+    Object.entries(rawWeightsNew).forEach(([k,v]) => traceLines.push(`  ${k} = ${v.toFixed(4)}`));
     traceLines.push("");
-    traceLines.push("VALUATION L2/L3:");
-    const valuationSnapshot = ctx.row && ctx.row.feature_snapshot && ctx.row.feature_snapshot.valuation ? ctx.row.feature_snapshot.valuation : null;
-    if (valuationSnapshot) {
-      ["forward_pe", "anchor_pe", "base_anchor", "category_sub", "market_regime", "market_multiplier", "industry_regime", "industry_multiplier", "valuation_archetype", "archetype_multiplier", "peg", "eps_growth", "quality_factor"].forEach(k => {
-        if (valuationSnapshot[k] !== undefined && valuationSnapshot[k] !== null) {
-          traceLines.push(`  ${k} = ${valuationSnapshot[k]}`);
-        }
-      });
-    } else {
-      traceLines.push("  feature_snapshot.valuation not found; valuation score uses current valuation_score as base");
-    }
-
+    traceLines.push("VALUATION BASELINE ENGINE:");
+    traceLines.push(`  category_sub=${valuationBaseline.categorySub}`);
+    traceLines.push(`  current_forward_pe=${fmt(valuationBaseline.currentForwardPE)}`);
+    traceLines.push(`  individual_fair_pe=${fmt(valuationBaseline.individualFairPE)} / source=${valuationBaseline.individualFairPESource}`);
+    traceLines.push(`  weighted_peer_baseline=${fmt(valuationBaseline.weightedPeerBaseline)} / peer_count=${valuationBaseline.peerCount}`);
+    traceLines.push(`  static_anchor=${fmt(valuationBaseline.staticAnchor)}`);
+    traceLines.push(`  sector_baseline = peer*${fmt(normalizeWeights(params, ["sector_peer_baseline_weight", "sector_static_anchor_weight"]).sector_peer_baseline_weight)} + static*${fmt(normalizeWeights(params, ["sector_peer_baseline_weight", "sector_static_anchor_weight"]).sector_static_anchor_weight)} = ${fmt(valuationBaseline.sectorBaseline)}`);
+    traceLines.push(`  dynamic multipliers: market=${fmt(valuationBaseline.dynamic.marketMultiplier)} industry=${fmt(valuationBaseline.dynamic.industryMultiplier)} archetype=${fmt(valuationBaseline.dynamic.archetypeMultiplier)} combined=${fmt(valuationBaseline.dynamic.combined)}`);
+    traceLines.push(`  final_anchor_after_dynamic=${fmt(valuationBaseline.finalAnchorAfterDynamic)}`);
     traceLines.push("");
     traceLines.push("TREND:");
     traceLines.push(`  linear=${fmt(trend.parts.linear)} * w=${trend.parts.weights.trend_linear_weight.toFixed(4)}`);
@@ -448,17 +642,36 @@
     traceLines.push(`  money now=${fmt(base.money)} / money new=${fmt(money.new)} / delta=${fmt(money.new - base.money)}`);
     traceLines.push("");
     traceLines.push("FINAL:");
-    traceLines.push(`  rawNow = valuation*wv + trend*wt + structure*ws + timing*wi + money*wm = ${fmt(rawNow)}`);
-    traceLines.push(`  rawNew = valuation*wv + trendNew*wt + structure*ws + timing*wi + moneyNew*wm = ${fmt(rawNew)}`);
+    traceLines.push(`  rawNow = ${fmt(rawNow)}`);
+    traceLines.push(`  rawNew = ${fmt(rawNew)}`);
     traceLines.push(`  top now=${fmt(top.now)} / capped=${fmt(top.capped)} / top new=${fmt(top.new)}`);
     traceLines.push(`  M7 new = clamp(rawNew + topNew, 0, 10) = ${fmt(newScore)}`);
 
     const audit = [...trend.audit, ...money.audit];
+    audit.push(`valuation.baseline: 28-sector baseline uses avg_dollar_volume/liquidity weighted individual fair PE + static anchor blend`);
+    audit.push(`valuation.baseline: individual fair PE source = ${valuationBaseline.individualFairPESource}`);
     audit.push(`top: clamp top adjustment to ±${fmt(params.top_adjustment_cap)} then multiply by top_adjustment_weight`);
     audit.push("global: no cross-stock re-normalization in what-if mode");
 
-    return { ctx, base, scores, trend, money, top, nowWeights, userRawWeights, rawWeights, trace: traceLines.join("\n"), audit };
+    return {
+      ctx,
+      base,
+      scores,
+      trend,
+      money,
+      top,
+      rawWeightsNow,
+      rawWeightsNew,
+      factorRows,
+      valuationBaseline,
+      trace: traceLines.join("\n"),
+      audit
+    };
   }
+
+  // -------------------------------
+  // Rendering
+  // -------------------------------
 
   function renderParamControls() {
     const box = $("paramControls");
@@ -477,161 +690,116 @@
     });
   }
 
-  function metricRow(name, now, newer) {
+  function paramRow(name, now, newer) {
     const d = num(newer, 0) - num(now, 0);
-    return `<div class="metric"><div>${name}</div><div class="num">${fmt(now)}</div><div class="num">${fmt(newer)}</div><div class="num ${deltaClass(d)}">${fmt(d)}</div></div>`;
-  }
-
-  function paramMetricRow(name, now, newer) {
-    const d = num(newer, 0) - num(now, 0);
-    const dp = pctChange(now, newer);
-    return `<div class="paramMetric"><div>${name}</div><div class="num">${fmt(now)}</div><div class="num">${fmt(newer)}</div><div class="num ${deltaClass(d)}">${fmt(d)}</div><div class="num ${deltaClass(d)}">${fmtPct(dp)}</div></div>`;
+    const pct = num(now, 0) === 0 ? null : d / num(now, 0);
+    return `<div class="metric"><div>${escapeHtml(name)}</div><div class="num">${fmt(now)}</div><div class="num">${fmt(newer)}</div><div class="num ${deltaClass(d)}">${fmt(d)}</div><div class="num ${deltaClass(d)}">${fmtPct(pct)}</div></div>`;
   }
 
   function renderParamsTable() {
-    $("paramTable").innerHTML = PARAM_DEFS.map(([key, label]) => paramMetricRow(label, DEFAULT_PARAMS[key], state.params[key])).join("");
+    $("paramTable").innerHTML = PARAM_DEFS.map(([key, label]) => paramRow(label, DEFAULT_PARAMS[key], state.params[key])).join("");
   }
 
-  function rawLayerRows(result) {
-    const impactMap = new Map(factorImpactRows(result).map(r => [r.label, r]));
-    return [
-      { label: "valuation", now: result.scores.valuation.now, new: result.scores.valuation.new, impact: impactMap.get("valuation") },
-      { label: "trend", now: result.scores.trend.now, new: result.scores.trend.new, impact: impactMap.get("trend") },
-      { label: "structure", now: result.scores.structure.now, new: result.scores.structure.new, impact: impactMap.get("structure") },
-      { label: "timing", now: result.scores.timing.now, new: result.scores.timing.new, impact: impactMap.get("timing") },
-      { label: "money", now: result.scores.money.now, new: result.scores.money.new, impact: impactMap.get("money") }
-    ];
-  }
-
-  function m7ImpactPct(rawDelta, finalDelta) {
-    if (Math.abs(num(finalDelta, 0)) < 0.000001) return null;
-    return (rawDelta / finalDelta) * 100;
-  }
-
-  function renderScoreTable(result) {
-    const el = $("scoreTable");
-    if (!el) return;
-    const finalDelta = result.scores.m7.new - result.scores.m7.now;
+  function renderRawImpactTable(result) {
+    const rows = result.factorRows;
     const rawDelta = result.scores.raw.new - result.scores.raw.now;
-    const rows = rawLayerRows(result);
-
-    el.innerHTML = `
+    $("rawImpactTable").innerHTML = `
       <thead>
-        <tr>
-          <th>Score Layer</th>
-          <th>Now</th>
-          <th>New</th>
-          <th>Delta</th>
-          <th>Delta %</th>
-          <th>Impact to M7 Δ</th>
-        </tr>
+        <tr><th>Score Layer</th><th>Now</th><th>New</th><th>Delta</th><th>Delta %</th><th>Impact to Raw Δ</th></tr>
       </thead>
       <tbody>
         ${rows.map(r => {
-          const d = num(r.new, 0) - num(r.now, 0);
-          const dp = pctChange(r.now, r.new);
-          const impact = r.impact ? m7ImpactPct(r.impact.rawDelta, finalDelta) : null;
-          const impactText = impact === null ? "--" : fmtPct(impact);
-          const impactCls = r.impact ? deltaClass(r.impact.rawDelta) : "zero";
-          return `
-            <tr>
-              <td>${r.label}</td>
-              <td>${fmt(r.now)}</td>
-              <td>${fmt(r.new)}</td>
-              <td class="${deltaClass(d)}">${fmt(d)}</td>
-              <td class="${deltaClass(dp)}">${fmtPct(dp)}</td>
-              <td class="${impactCls}">${impactText}</td>
-            </tr>
-          `;
+          const impact = Math.abs(rawDelta) < 0.000001 ? null : r.contributionDelta / rawDelta;
+          return `<tr>
+            <td>${escapeHtml(r.name)}</td>
+            <td>${fmt(r.scoreNow)}</td>
+            <td>${fmt(r.scoreNew)}</td>
+            <td class="${deltaClass(r.scoreDelta)}">${fmt(r.scoreDelta)}</td>
+            <td class="${deltaClass(r.scoreDelta)}">${fmtPct(r.scoreDeltaPct)}</td>
+            <td class="${deltaClass(r.contributionDelta)}">${fmtPct(impact)}</td>
+          </tr>`;
         }).join("")}
-        <tr>
-          <th>Raw Score</th>
-          <th>${fmt(result.scores.raw.now)}</th>
-          <th>${fmt(result.scores.raw.new)}</th>
-          <th class="${deltaClass(rawDelta)}">${fmt(rawDelta)}</th>
-          <th class="${deltaClass(pctChange(result.scores.raw.now, result.scores.raw.new))}">${fmtPct(pctChange(result.scores.raw.now, result.scores.raw.new))}</th>
-          <th class="${deltaClass(rawDelta)}">raw layer</th>
-        </tr>
-        <tr>
-          <th>M7 Final</th>
-          <th>${fmt(result.scores.m7.now)}</th>
-          <th>${fmt(result.scores.m7.new)}</th>
-          <th class="${deltaClass(finalDelta)}">${fmt(finalDelta)}</th>
-          <th class="${deltaClass(pctChange(result.scores.m7.now, result.scores.m7.new))}">${fmtPct(pctChange(result.scores.m7.now, result.scores.m7.new))}</th>
-          <th class="${deltaClass(finalDelta)}">final layer</th>
-        </tr>
+        <tr><th>RAW TOTAL</th><th>${fmt(result.scores.raw.now)}</th><th>${fmt(result.scores.raw.new)}</th><th class="${deltaClass(rawDelta)}">${fmt(rawDelta)}</th><th>${fmtPct(result.scores.raw.now ? rawDelta / result.scores.raw.now : null)}</th><th>100.0%</th></tr>
+        <tr><th>M7 FINAL</th><th>${fmt(result.scores.m7.now)}</th><th>${fmt(result.scores.m7.new)}</th><th class="${deltaClass(result.scores.m7.new - result.scores.m7.now)}">${fmt(result.scores.m7.new - result.scores.m7.now)}</th><th>${fmtPct(result.scores.m7.now ? (result.scores.m7.new - result.scores.m7.now) / result.scores.m7.now : null)}</th><th>after top/clamp</th></tr>
       </tbody>
     `;
   }
 
-  function factorImpactRows(result) {
-    const finalDelta = result.scores.m7.new - result.scores.m7.now;
-    const rows = [
-      { label: "valuation", scoreNow: result.scores.valuation.now, scoreNew: result.scores.valuation.new, key: "raw_valuation_weight" },
-      { label: "trend", scoreNow: result.scores.trend.now, scoreNew: result.scores.trend.new, key: "raw_trend_weight" },
-      { label: "structure", scoreNow: result.scores.structure.now, scoreNew: result.scores.structure.new, key: "raw_structure_weight" },
-      { label: "timing", scoreNow: result.scores.timing.now, scoreNew: result.scores.timing.new, key: "raw_timing_weight" },
-      { label: "money", scoreNow: result.scores.money.now, scoreNew: result.scores.money.new, key: "raw_money_weight" }
-    ];
-
-    return rows.map(r => {
-      const nowWeight = result.nowWeights[r.key];
-      const userNewWeight = result.userRawWeights[r.key];
-      const effectiveNewWeight = result.rawWeights[r.key];
-      const rawNow = r.scoreNow * nowWeight;
-      const rawNew = r.scoreNew * effectiveNewWeight;
-      const rawDelta = rawNew - rawNow;
-      const weightDeltaPct = pctChange(nowWeight, effectiveNewWeight);
-      const contributionPct = Math.abs(finalDelta) < 0.000001 ? null : (rawDelta / finalDelta) * 100;
-      return { ...r, nowWeight, userNewWeight, effectiveNewWeight, rawNow, rawNew, rawDelta, weightDeltaPct, contributionPct };
-    });
-  }
-
   function renderFactorImpactTable(result) {
-    const el = $("factorImpactTable");
-    if (!el) return;
-    const rows = factorImpactRows(result);
-    const rawDelta = result.scores.raw.new - result.scores.raw.now;
-    const finalDelta = result.scores.m7.new - result.scores.m7.now;
-
-    el.innerHTML = `
+    $("factorImpactTable").innerHTML = `
       <thead>
         <tr>
-          <th>Score Layer</th>
-          <th>Raw Score Now</th>
-          <th>Raw Score New</th>
-          <th>Now Weight</th>
-          <th>User New Weight</th>
-          <th>Effective New Weight</th>
-          <th>Raw Now</th>
-          <th>Raw New</th>
-          <th>Raw Delta</th>
-          <th>Weight Δ%</th>
+          <th>Factor</th><th>Raw Score Now</th><th>Raw Score New</th><th>Now Weight</th><th>User New Weight</th><th>Effective New Weight</th><th>Contribution Now</th><th>Contribution New</th><th>Delta</th>
         </tr>
       </thead>
       <tbody>
-        ${rows.map(r => `
+        ${result.factorRows.map(r => `
           <tr>
-            <td>${r.label}</td>
+            <td>${escapeHtml(r.name)}</td>
             <td>${fmt(r.scoreNow)}</td>
             <td>${fmt(r.scoreNew)}</td>
-            <td>${fmt(r.nowWeight, 4)}</td>
-            <td>${fmt(r.userNewWeight, 4)}</td>
-            <td>${fmt(r.effectiveNewWeight, 4)}</td>
-            <td>${fmt(r.rawNow)}</td>
-            <td>${fmt(r.rawNew)}</td>
-            <td class="${deltaClass(r.rawDelta)}">${fmt(r.rawDelta)}</td>
-            <td class="${deltaClass(r.weightDeltaPct)}">${fmtPct(r.weightDeltaPct)}</td>
+            <td>${fmt(r.weightNow, 4)}</td>
+            <td>${r.userWeightNew === null ? "--" : fmt(r.userWeightNew, 4)}</td>
+            <td>${fmt(r.effectiveWeightNew, 4)}</td>
+            <td>${fmt(r.contributionNow)}</td>
+            <td>${fmt(r.contributionNew)}</td>
+            <td class="${deltaClass(r.contributionDelta)}">${fmt(r.contributionDelta)}</td>
+          </tr>`).join("")}
+      </tbody>
+    `;
+  }
+
+  function renderValuationBaseline(result) {
+    const v = result.valuationBaseline;
+    const memberRows = v.sectorMembers.slice(0, 10).map(m => `
+      <tr>
+        <td>${escapeHtml(m.symbol)}</td>
+        <td>${fmt(m.fairPE)}</td>
+        <td>${fmt(m.liquidity, 0)}</td>
+        <td>${fmtPct(m.share)}</td>
+        <td>${escapeHtml(m.source)}</td>
+      </tr>
+    `).join("");
+
+    $("valuationBaselineBox").innerHTML = `
+      <div class="mini-grid">
+        <div class="mini-card"><span>Category Sub</span><b style="font-size:12px">${escapeHtml(v.categorySub)}</b></div>
+        <div class="mini-card"><span>Current Forward PE</span><b>${fmt(v.currentForwardPE)}</b></div>
+        <div class="mini-card"><span>Individual Fair PE</span><b>${fmt(v.individualFairPE)}</b></div>
+        <div class="mini-card"><span>Peer Count</span><b>${v.peerCount}</b></div>
+        <div class="mini-card"><span>Weighted Peer Baseline</span><b>${fmt(v.weightedPeerBaseline)}</b></div>
+        <div class="mini-card"><span>Static Anchor</span><b>${fmt(v.staticAnchor)}</b></div>
+        <div class="mini-card"><span>Sector Baseline</span><b>${fmt(v.sectorBaseline)}</b></div>
+        <div class="mini-card"><span>Final Anchor After Dynamic</span><b>${fmt(v.finalAnchorAfterDynamic)}</b></div>
+      </div>
+      <div class="small">
+        <span class="tag">source: ${escapeHtml(v.individualFairPESource)}</span>
+        <span class="tag">market × industry × archetype = ${fmt(v.dynamic.combined)}</span>
+        <span class="tag">market: ${escapeHtml(v.dynamic.marketRegime || "--")}</span>
+        <span class="tag">industry: ${escapeHtml(v.dynamic.industryRegime || "--")}</span>
+        <span class="tag">archetype: ${escapeHtml(v.dynamic.archetype || "--")}</span>
+      </div>
+      <table style="margin-top:10px">
+        <thead><tr><th>Top Sector Members</th><th>Fair PE</th><th>Liquidity</th><th>Weight Share</th><th>Fair PE Source</th></tr></thead>
+        <tbody>${memberRows || `<tr><td colspan="5">No members</td></tr>`}</tbody>
+      </table>
+    `;
+
+    const sectorMap = buildSectorBaselineEngine(state.params);
+    const rows = Object.values(sectorMap)
+      .sort((a, b) => a.categorySub.localeCompare(b.categorySub));
+    $("sectorBaselineTable").innerHTML = `
+      <thead><tr><th>Category Sub</th><th>Peers</th><th>Weighted Peer PE</th><th>Static Anchor</th><th>Final Sector Baseline</th></tr></thead>
+      <tbody>
+        ${rows.map(r => `
+          <tr>
+            <td>${escapeHtml(r.categorySub)}</td>
+            <td>${r.peerCount}</td>
+            <td>${fmt(r.weightedPeerBaseline)}</td>
+            <td>${fmt(r.staticAnchor)}</td>
+            <td>${fmt(r.finalSectorBaseline)}</td>
           </tr>
         `).join("")}
-        <tr>
-          <th>Raw Total / Final</th>
-          <th></th><th></th><th></th><th></th><th></th>
-          <th>${fmt(result.scores.raw.now)}</th>
-          <th>${fmt(result.scores.raw.new)}</th>
-          <th class="${deltaClass(rawDelta)}">${fmt(rawDelta)}</th>
-          <th class="${deltaClass(finalDelta)}">Final Δ ${fmt(finalDelta)}</th>
-        </tr>
       </tbody>
     `;
   }
@@ -641,103 +809,59 @@
       <table>
         <thead><tr><th>Rule</th><th>Status</th></tr></thead>
         <tbody>
-          ${result.audit.map(x => `<tr><td>${escapeHtml(x)}</td><td>${x.includes("fallback") ? "fallback" : "ok"}</td></tr>`).join("")}
+          ${result.audit.map(x => `<tr><td>${escapeHtml(x)}</td><td>${x.includes("fallback") || x.includes("missing") ? "fallback" : "ok"}</td></tr>`).join("")}
         </tbody>
       </table>
     `;
   }
 
-  function escapeHtml(s) {
-    return String(s).replace(/[&<>"]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[c]));
-  }
-
-  function rankMap(items, key) {
-    const sorted = [...items].sort((a, b) => num(b[key], -999) - num(a[key], -999));
-    const map = new Map();
-    sorted.forEach((x, i) => map.set(x.sym, i + 1));
-    return map;
-  }
-
-  function getPrice(ctx) {
-    return num(field(ctx.row, ["price_now", "current_price", "last_price", "price"], field(ctx.rt, ["price_now", "current_price", "last_price", "price"], null)), null);
-  }
-
-  function getM1Score(ctx) {
-    return num(field(ctx.row, ["m1_score", "m1", "m1_final_score"], field(ctx.cmp, ["m1_score", "m1_final_score"], null)), null);
-  }
-
   function impactFactors(result) {
-    const rows = factorImpactRows(result)
-      .map(r => ({ label: r.label, delta: r.rawDelta }))
-      .filter(r => Math.abs(num(r.delta, 0)) > 0.0005)
+    const rows = result.factorRows
+      .map(r => ({ name: r.name, delta: r.contributionDelta }))
+      .filter(r => Math.abs(r.delta) > 0.005)
       .sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta))
-      .slice(0, 3);
-
-    if (!rows.length) return `<span class="tag zero">No major factor</span>`;
-
-    return rows.map(r => {
-      const arrow = r.delta > 0 ? "↑" : "↓";
-      const cls = r.delta > 0 ? "pos" : "neg";
-      return `<span class="tag ${cls}">${escapeHtml(r.label)} ${arrow} ${fmt(r.delta)}</span>`;
-    }).join(" ");
+      .slice(0, 2);
+    if (!rows.length) return "Stable";
+    return rows.map(r => `${r.name} ${r.delta >= 0 ? "↑" : "↓"}`).join(" / ");
   }
 
   function renderDeltaPreview() {
     const computed = getRows().map(ctx => {
-      const result = computeM7(ctx, state.params);
+      const r = computeM7(ctx, state.params);
+      const price = num(field(ctx.row, ["price_now", "market_acceptance.price_now"], field(ctx.rt, ["price_now"], null)), null);
+      const m1 = num(field(ctx.row, ["m1_score"], null), null);
       const name = field(ctx.row, ["name", "company_name"], "");
-      const m1 = getM1Score(ctx);
-      const m7Now = result.scores.m7.now;
-      const m7New = result.scores.m7.new;
-      const delta = m7New - m7Now;
-      const deltaPct = Math.abs(num(m7Now, 0)) < 0.000001 ? null : (delta / m7Now) * 100;
       return {
-        ctx, result, sym: ctx.sym, name, price: getPrice(ctx),
-        m1Now: m1, m1New: m1, m7Now, m7New, delta, deltaPct
+        sym: ctx.sym,
+        name,
+        price,
+        m1Now: m1,
+        m1New: m1,
+        m7Now: r.scores.m7.now,
+        m7New: r.scores.m7.new,
+        delta: r.scores.m7.new - r.scores.m7.now,
+        deltaPct: r.scores.m7.now ? (r.scores.m7.new - r.scores.m7.now) / r.scores.m7.now : null,
+        impact: impactFactors(r)
       };
     });
 
-    const nowRanks = rankMap(computed, "m7Now");
-    const newRanks = rankMap(computed, "m7New");
+    const nowRanked = [...computed].sort((a,b) => b.m7Now - a.m7Now);
+    const newRanked = [...computed].sort((a,b) => b.m7New - a.m7New);
+    const nowRank = new Map(nowRanked.map((x, i) => [x.sym, i + 1]));
+    const newRank = new Map(newRanked.map((x, i) => [x.sym, i + 1]));
 
     const rows = computed
-      .map(x => ({ ...x, rankNow: nowRanks.get(x.sym), rankNew: newRanks.get(x.sym) }))
-      .sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta))
-      .slice(0, 30);
+      .map(x => ({ ...x, rankNow: nowRank.get(x.sym), rankNew: newRank.get(x.sym) }))
+      .sort((a,b) => Math.abs(b.delta) - Math.abs(a.delta))
+      .slice(0,30);
 
     $("deltaPreview").innerHTML = `
-      <thead>
-        <tr>
-          <th>Rank Now</th>
-          <th>Rank New</th>
-          <th>Symbol</th>
-          <th>Name</th>
-          <th>Price</th>
-          <th>Delta %</th>
-          <th>M1 Now</th>
-          <th>M1 New</th>
-          <th>M7 Now</th>
-          <th>M7 New</th>
-          <th>Impact Factors</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${rows.map(r => `
-          <tr>
-            <td>${r.rankNow ?? "--"}</td>
-            <td class="${deltaClass((r.rankNow || 0) - (r.rankNew || 0))}">${r.rankNew ?? "--"}</td>
-            <td><strong>${escapeHtml(r.sym)}</strong></td>
-            <td>${escapeHtml(r.name || "")}</td>
-            <td>${fmt(r.price)}</td>
-            <td class="${deltaClass(r.deltaPct)}">${fmtPct(r.deltaPct)}</td>
-            <td>${fmt(r.m1Now)}</td>
-            <td>${fmt(r.m1New)}</td>
-            <td>${fmt(r.m7Now)}</td>
-            <td class="${deltaClass(r.delta)}">${fmt(r.m7New)}</td>
-            <td style="text-align:left">${impactFactors(r.result)}</td>
-          </tr>
-        `).join("")}
-      </tbody>
+      <thead><tr><th>Rank Now</th><th>Rank New</th><th>Symbol</th><th>Name</th><th>Price</th><th>Delta %</th><th>M1 Now</th><th>M1 New</th><th>M7 Now</th><th>M7 New</th><th>Impact Factors</th></tr></thead>
+      <tbody>${rows.map(r => `<tr>
+        <td>${r.rankNow}</td><td>${r.rankNew}</td><td>${r.sym}</td><td>${escapeHtml(r.name)}</td><td>${fmt(r.price)}</td>
+        <td class="${deltaClass(r.delta)}">${fmtPct(r.deltaPct)}</td>
+        <td>${fmt(r.m1Now)}</td><td>${fmt(r.m1New)}</td><td>${fmt(r.m7Now)}</td><td>${fmt(r.m7New)}</td><td>${escapeHtml(r.impact)}</td>
+      </tr>`).join("")}</tbody>
     `;
   }
 
@@ -773,9 +897,11 @@
 
     const name = field(ctx.row, ["name", "company_name"], "");
     $("selectedMeta").textContent = `${ctx.sym}${name ? " / " + name : ""}`;
-    $("ruleBox").innerHTML = `Debug rule：前端會重新計算公式，但必須對齊 Python M7 v2 欄位。trend 分數允許超過 10；money 使用 liquidity/flow 子因子。缺少子因子時才 fallback，並在 audit 明確顯示。`;
-    renderScoreTable(result);
+    $("ruleBox").innerHTML = `Debug rule：前端會重新計算公式，但必須對齊 Python M7 v2 欄位。新增 28產業 baseline engine：個股 fair PE → 以 avg_dollar_volume/liquidity 加權 → 70% peer baseline + 30% static anchor。`;
+
+    renderRawImpactTable(result);
     renderFactorImpactTable(result);
+    renderValuationBaseline(result);
     $("traceBox").textContent = result.trace;
     renderAudit(result);
     renderDeltaPreview();
@@ -796,17 +922,14 @@
     const ctx = getRows().find(x => x.sym === state.selectedSymbol) || getRows()[0];
     if (!ctx) return;
     const result = computeM7(ctx, state.params);
+    const sectorMap = buildSectorBaselineEngine(state.params);
     const payload = {
       generated_at: new Date().toISOString(),
       symbol: ctx.sym,
       params: state.params,
       scores: result.scores,
-      raw_weight_layers: {
-        now_weights: result.nowWeights,
-        user_new_weights: result.userRawWeights,
-        effective_new_weights: result.rawWeights
-      },
-      factor_impact: factorImpactRows(result),
+      valuation_baseline: result.valuationBaseline,
+      sector_baseline_map: sectorMap,
       audit: result.audit,
       trace: result.trace
     };
@@ -824,18 +947,20 @@
   async function init() {
     try {
       $("loadStatus").textContent = "Loading data...";
-      const [scores, compare, manifest, runtime, fundamentals] = await Promise.all([
+      const [scores, compare, manifest, runtime, fundamentals, anchorConfig] = await Promise.all([
         loadJson(DATA_PATHS.scores),
         loadJson(DATA_PATHS.compare, true),
         loadJson(DATA_PATHS.manifest, true),
         loadJson(DATA_PATHS.runtime, true),
-        loadJson(DATA_PATHS.fundamentals, true)
+        loadJson(DATA_PATHS.fundamentals, true),
+        loadJson(DATA_PATHS.anchorConfig, true)
       ]);
       state.scores = asArray(scores);
       state.compare = asArray(compare);
       state.manifest = manifest;
       state.runtime = asArray(runtime);
       state.fundamentals = asArray(fundamentals);
+      state.anchorConfig = anchorConfig || null;
 
       if (!state.scores.length) throw new Error("m7_v2_scores has no rows");
       state.selectedSymbol = symbolOf(state.scores[0]);
