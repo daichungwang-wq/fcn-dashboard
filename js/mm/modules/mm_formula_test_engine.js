@@ -21,18 +21,25 @@
   };
 
   const DEFAULT_PARAMS = Object.freeze({
-    raw_valuation_weight: 0.30,
+    // Match current Python M7 v2 formula:
+    // 0.45*valuation + 0.25*trend + 0.20*structure + 0.00*timing + 0.10*money
+    raw_valuation_weight: 0.45,
     raw_trend_weight: 0.25,
     raw_structure_weight: 0.20,
-    raw_timing_weight: 0.10,
+    raw_timing_weight: 0.00,
     raw_money_weight: 0.10,
 
-    trend_linear_weight: 0.50,
-    trend_acceleration_weight: 0.20,
-    trend_ma100_weight: 0.30,
+    // Match current Python trend formula:
+    // 0.35*linear + 0.50*ma200/ma_window + 0.15*acceleration
+    // Important: trend sub-score is allowed to exceed 10 in Python output.
+    trend_linear_weight: 0.35,
+    trend_ma_weight: 0.50,
+    trend_acceleration_weight: 0.15,
 
-    money_volume_weight: 0.70,
-    money_top_weight: 0.30,
+    // Match current Python money formula:
+    // liquidity * money_liquidity_weight + flow * money_flow_weight
+    money_liquidity_weight: 0.70,
+    money_flow_weight: 0.30,
 
     top_adjustment_weight: 1.00,
     top_adjustment_cap: 1.50
@@ -45,10 +52,10 @@
     ["raw_timing_weight", "M7 Raw - Timing Weight", 0, 0.40, 0.01],
     ["raw_money_weight", "M7 Raw - Money Weight", 0, 0.40, 0.01],
     ["trend_linear_weight", "Trend - Linear Slope Weight", 0, 1, 0.01],
+    ["trend_ma_weight", "Trend - MA / MA200 Weight", 0, 1, 0.01],
     ["trend_acceleration_weight", "Trend - Acceleration Weight", 0, 1, 0.01],
-    ["trend_ma100_weight", "Trend - MA100 / 20W Weight", 0, 1, 0.01],
-    ["money_volume_weight", "Money - Volume Flow Weight", 0, 1, 0.01],
-    ["money_top_weight", "Money - Top Signal Weight", 0, 1, 0.01],
+    ["money_liquidity_weight", "Money - Liquidity Weight", 0, 1, 0.01],
+    ["money_flow_weight", "Money - Flow Weight", 0, 1, 0.01],
     ["top_adjustment_weight", "Final - Top Adjustment Weight", 0, 2, 0.01],
     ["top_adjustment_cap", "Final - Top Adjustment Cap", 0, 3, 0.05]
   ];
@@ -101,31 +108,32 @@
   }
 
   function asArray(payload) {
-  if (Array.isArray(payload)) return payload;
+    // case 1: already array
+    if (Array.isArray(payload)) return payload;
 
-  if (payload && Array.isArray(payload.data)) return payload.data;
-  if (payload && Array.isArray(payload.scores)) return payload.scores;
-  if (payload && Array.isArray(payload.items)) return payload.items;
-  if (payload && Array.isArray(payload.rows)) return payload.rows;
-  if (payload && Array.isArray(payload.results)) return payload.results;
-  if (payload && Array.isArray(payload.records)) return payload.records;
+    if (!payload || typeof payload !== "object") return [];
 
-  if (payload && typeof payload === "object") {
+    // common wrapper keys
+    if (Array.isArray(payload.data)) return payload.data;
+    if (Array.isArray(payload.scores)) return payload.scores;
+    if (Array.isArray(payload.items)) return payload.items;
+    if (Array.isArray(payload.rows)) return payload.rows;
+    if (Array.isArray(payload.results)) return payload.results;
+    if (Array.isArray(payload.records)) return payload.records;
+    if (Array.isArray(payload.output)) return payload.output;
+
+    // fallback: if any first-level property is array → take first array
     const values = Object.values(payload);
-
     const firstArray = values.find(v => Array.isArray(v));
     if (firstArray) return firstArray;
 
-    if (
-      values.length &&
-      values.every(v => v && typeof v === "object" && !Array.isArray(v))
-    ) {
-      return values;
-    }
-  }
+    // fallback: object map format, e.g. { NVDA:{...}, TSM:{...} }
+    const objectValues = values.filter(v => v && typeof v === "object" && !Array.isArray(v));
+    if (objectValues.length && objectValues.length === values.length) return objectValues;
 
-  return [];
-}
+    console.warn("Unknown JSON structure:", payload);
+    return [];
+  }
 
   async function loadJson(path, optional = false) {
     try {
@@ -185,70 +193,154 @@
     const { row, rt } = ctx;
     const audit = [];
 
-    const linearDirect = num(field(row, ["trend_linear_score", "linear_trend_score", "long_term_linear_score"], null), null);
-    const accelDirect = num(field(row, ["trend_acceleration_score", "acceleration_score", "quadratic_acceleration_score"], null), null);
-    const maDirect = num(field(row, ["trend_ma100_score", "ma100_score", "ma20w_score", "ma_trend_score"], null), null);
+    const linearDirect = num(field(row, [
+      "trend_linear_score",
+      "linear_trend_score",
+      "long_term_linear_score"
+    ], null), null);
+
+    const maDirect = num(field(row, [
+      "trend_ma_score",
+      "trend_ma200_score",
+      "trend_ma100_score",
+      "ma200_score",
+      "ma100_score",
+      "ma20w_score",
+      "ma_trend_score"
+    ], null), null);
+
+    const accelDirect = num(field(row, [
+      "trend_acceleration_score",
+      "acceleration_score",
+      "quadratic_acceleration_score"
+    ], null), null);
 
     let linear = linearDirect;
     if (linear === null) {
-      const slope = field(row, ["linear_slope", "trend_linear_slope", "structure_slope"], null);
+      const slope = field(row, ["trend_linear_slope", "linear_slope", "structure_slope"], null);
       const res = scoreFromRawFactor(slope, base.trend, 500, 0);
       linear = res.score;
-      audit.push(res.usedFallback ? "trend.linear: missing raw slope; fallback to current trend_score" : "trend.linear: derived from slope");
-    } else audit.push("trend.linear: direct score field used");
-
-    let accel = accelDirect;
-    if (accel === null) {
-      const qa = field(row, ["quadratic_a", "trend_quadratic_a", "acceleration"], null);
-      const res = scoreFromRawFactor(qa, base.trend, 50000, 0);
-      accel = res.score;
-      audit.push(res.usedFallback ? "trend.acceleration: missing acceleration factor; fallback to current trend_score" : "trend.acceleration: derived from quadratic_a");
-    } else audit.push("trend.acceleration: direct score field used");
+      audit.push(res.usedFallback ? "trend.linear: missing direct score/slope; fallback to current trend_score" : "trend.linear: derived from slope");
+    } else audit.push("trend.linear: direct trend_linear_score used");
 
     let ma = maDirect;
     if (ma === null) {
-      const ret6m = field(row, ["ret_6m"], field(rt, ["ret_6m"], null));
-      const ret12m = field(row, ["ret_12m"], field(rt, ["ret_12m"], null));
-      const proxy = num(ret6m, null) !== null ? ret6m : ret12m;
-      const res = scoreFromRawFactor(proxy, base.trend, 18, 0);
-      ma = res.score;
-      audit.push(res.usedFallback ? "trend.ma100: missing MA/proxy return; fallback to current trend_score" : "trend.ma100: proxy from 6M/12M return");
-    } else audit.push("trend.ma100: direct score field used");
+      const maSlope = field(row, ["trend_ma_slope", "ma_slope", "ma200_slope", "ma100_slope"], null);
+      if (num(maSlope, null) !== null) {
+        const res = scoreFromRawFactor(maSlope, base.trend, 500, 0);
+        ma = res.score;
+        audit.push("trend.ma: derived from trend_ma_slope");
+      } else {
+        const ret6m = field(row, ["ret_6m"], field(rt, ["ret_6m"], null));
+        const ret12m = field(row, ["ret_12m"], field(rt, ["ret_12m"], null));
+        const proxy = num(ret6m, null) !== null ? ret6m : ret12m;
+        const res = scoreFromRawFactor(proxy, base.trend, 18, 0);
+        ma = res.score;
+        audit.push(res.usedFallback ? "trend.ma: missing MA/proxy return; fallback to current trend_score" : "trend.ma: proxy from 6M/12M return");
+      }
+    } else audit.push("trend.ma: direct trend_ma_score used");
 
-    const w = normalizeWeights(params, ["trend_linear_weight", "trend_acceleration_weight", "trend_ma100_weight"]);
-    const newScore = clamp(
+    let accel = accelDirect;
+    if (accel === null) {
+      const acc = field(row, ["trend_acceleration", "trend_acceleration_annualized_delta_pct", "quadratic_a", "trend_quadratic_a", "acceleration"], null);
+      const res = scoreFromRawFactor(acc, base.trend, 0.25, 0);
+      accel = res.score;
+      audit.push(res.usedFallback ? "trend.acceleration: missing acceleration factor; fallback to current trend_score" : "trend.acceleration: derived from acceleration factor");
+    } else audit.push("trend.acceleration: direct trend_acceleration_score used");
+
+    const w = normalizeWeights(params, ["trend_linear_weight", "trend_ma_weight", "trend_acceleration_weight"]);
+
+    // Important: do NOT clamp trend to 0~10 here.
+    // Python M7 v2 allows strong trend scores above 10, e.g. NVDA trend_score = 11.97.
+    const newScore =
       linear * w.trend_linear_weight +
-      accel * w.trend_acceleration_weight +
-      ma * w.trend_ma100_weight,
-     );
+      ma * w.trend_ma_weight +
+      accel * w.trend_acceleration_weight;
 
-    return { now: base.trend, new: newScore, parts: { linear, accel, ma, weights: w }, audit };
+    return { now: base.trend, new: newScore, parts: { linear, ma, accel, weights: w }, audit };
   }
 
   function computeMoney(ctx, base, params) {
     const { row, rt } = ctx;
     const audit = [];
-    let volumeScore = num(field(row, ["money_volume_score", "volume_score", "flow_volume_score"], null), null);
-    if (volumeScore === null) {
+
+    // Current Python M7 v2 output uses:
+    // money_score, money_liquidity_score, money_flow_score,
+    // money_volume_ratio_score, money_position_score,
+    // money_liquidity_weight, money_flow_weight.
+
+    let liquidityScore = num(field(row, [
+      "money_liquidity_score",
+      "liquidity_score",
+      "money_volume_score",
+      "volume_score"
+    ], null), null);
+
+    if (liquidityScore === null) {
+      const adv = num(field(row, ["avg_dollar_volume"], field(rt, ["avg_dollar_volume"], null)), null);
+      if (adv !== null && adv > 0) {
+        // Conservative liquidity proxy. Large-cap names should approach 10.
+        liquidityScore = clamp(Math.log10(Math.max(1, adv)) - 1.0, 0, 10);
+        audit.push("money.liquidity: derived from avg_dollar_volume proxy");
+      } else {
+        liquidityScore = base.money;
+        audit.push("money.liquidity: missing liquidity factor; fallback to current money_score");
+      }
+    } else audit.push("money.liquidity: direct money_liquidity_score used");
+
+    let flowScore = num(field(row, [
+      "money_flow_score",
+      "flow_score",
+      "money_volume_ratio_score",
+      "volume_ratio_score",
+      "flow_volume_score"
+    ], null), null);
+
+    if (flowScore === null) {
       const vr = field(row, ["volume_ratio"], field(rt, ["volume_ratio"], null));
       if (num(vr, null) === null) {
-        volumeScore = base.money;
-        audit.push("money.volume: missing volume_ratio; fallback to current money_score");
+        flowScore = base.money;
+        audit.push("money.flow: missing flow/volume_ratio factor; fallback to current money_score");
       } else {
-        volumeScore = clamp(5 + Math.log(Math.max(0.1, num(vr, 1))) * 2.2, 0, 10);
-        audit.push("money.volume: derived from log(volume_ratio)");
+        flowScore = clamp(5 + Math.log(Math.max(0.1, num(vr, 1))) * 2.2, 0, 10);
+        audit.push("money.flow: derived from log(volume_ratio)");
       }
-    } else audit.push("money.volume: direct score field used");
+    } else audit.push("money.flow: direct money_flow_score / volume_ratio_score used");
 
-    let topSignal = num(field(row, ["money_top_score", "top_money_score", "top_signal_score"], null), null);
-    if (topSignal === null) {
-      topSignal = base.money;
-      audit.push("money.top: missing top money factor; fallback to current money_score, so changing weight should not create fake collapse");
-    } else audit.push("money.top: direct score field used");
+    const positionScore = num(field(row, ["money_position_score", "position_score"], null), null);
+    if (positionScore !== null) {
+      audit.push("money.position: direct money_position_score detected; currently audit-only, not included in M7 money formula");
+    }
 
-    const w = normalizeWeights(params, ["money_volume_weight", "money_top_weight"]);
-    const newScore = clamp(volumeScore * w.money_volume_weight + topSignal * w.money_top_weight, 0, 10);
-    return { now: base.money, new: newScore, parts: { volumeScore, topSignal, weights: w }, audit };
+    // Prefer row-level weights from Python output when user has not changed sliders.
+    const rowLiquidityWeight = num(field(row, ["money_liquidity_weight"], null), null);
+    const rowFlowWeight = num(field(row, ["money_flow_weight"], null), null);
+
+    const p = { ...params };
+    const userStillDefault =
+      Math.abs(num(params.money_liquidity_weight, 0) - DEFAULT_PARAMS.money_liquidity_weight) < 0.000001 &&
+      Math.abs(num(params.money_flow_weight, 0) - DEFAULT_PARAMS.money_flow_weight) < 0.000001;
+
+    if (userStillDefault && rowLiquidityWeight !== null && rowFlowWeight !== null) {
+      p.money_liquidity_weight = rowLiquidityWeight;
+      p.money_flow_weight = rowFlowWeight;
+      audit.push("money.weights: row-level Python weights used because sliders remain at default");
+    } else {
+      audit.push("money.weights: UI slider weights used");
+    }
+
+    const w = normalizeWeights(p, ["money_liquidity_weight", "money_flow_weight"]);
+
+    const newScore =
+      liquidityScore * w.money_liquidity_weight +
+      flowScore * w.money_flow_weight;
+
+    return {
+      now: base.money,
+      new: newScore,
+      parts: { liquidityScore, flowScore, positionScore, weights: w },
+      audit
+    };
   }
 
   function computeTop(base, params) {
@@ -306,13 +398,14 @@
     traceLines.push("");
     traceLines.push("TREND:");
     traceLines.push(`  linear=${fmt(trend.parts.linear)} * w=${trend.parts.weights.trend_linear_weight.toFixed(4)}`);
+    traceLines.push(`  ma_score=${fmt(trend.parts.ma)} * w=${trend.parts.weights.trend_ma_weight.toFixed(4)}`);
     traceLines.push(`  acceleration=${fmt(trend.parts.accel)} * w=${trend.parts.weights.trend_acceleration_weight.toFixed(4)}`);
-    traceLines.push(`  ma100_proxy=${fmt(trend.parts.ma)} * w=${trend.parts.weights.trend_ma100_weight.toFixed(4)}`);
     traceLines.push(`  trend now=${fmt(base.trend)} / trend new=${fmt(trend.new)} / delta=${fmt(trend.new - base.trend)}`);
     traceLines.push("");
     traceLines.push("MONEY:");
-    traceLines.push(`  volumeScore=${fmt(money.parts.volumeScore)} * w=${money.parts.weights.money_volume_weight.toFixed(4)}`);
-    traceLines.push(`  topSignal=${fmt(money.parts.topSignal)} * w=${money.parts.weights.money_top_weight.toFixed(4)}`);
+    traceLines.push(`  liquidityScore=${fmt(money.parts.liquidityScore)} * w=${money.parts.weights.money_liquidity_weight.toFixed(4)}`);
+    traceLines.push(`  flowScore=${fmt(money.parts.flowScore)} * w=${money.parts.weights.money_flow_weight.toFixed(4)}`);
+    if (money.parts.positionScore !== null) traceLines.push(`  positionScore=${fmt(money.parts.positionScore)} audit-only`);
     traceLines.push(`  money now=${fmt(base.money)} / money new=${fmt(money.new)} / delta=${fmt(money.new - base.money)}`);
     traceLines.push("");
     traceLines.push("FINAL:");
@@ -426,7 +519,7 @@
 
     const name = field(ctx.row, ["name", "company_name"], "");
     $("selectedMeta").textContent = `${ctx.sym}${name ? " / " + name : ""}`;
-    $("ruleBox").innerHTML = `Fallback rule：缺少 trend/money 子因子時，該子項回到目前 score，不做硬推估；因此單純改 acceleration 或 money top weight 不應再造成 M7 delta 異常放大或異常崩跌。`;
+    $("ruleBox").innerHTML = `Debug rule：前端會重新計算公式，但必須對齊 Python M7 v2 欄位。trend 分數允許超過 10；money 使用 liquidity/flow 子因子。缺少子因子時才 fallback，並在 audit 明確顯示。`;
     renderScoreTable(result);
     $("traceBox").textContent = result.trace;
     renderAudit(result);
