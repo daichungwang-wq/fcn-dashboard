@@ -11,354 +11,201 @@
 # 8. 補入 sector / subsector 給 M8 使用
 # ==========================================
 
+#!/usr/bin/env python3
+"""Market runtime updater for MM / M7.
+
+Adds the Money v2 fields required by B2/B3:
+- volume
+- avg_volume / average_volume
+- today_dollar_volume
+- avg_dollar_volume
+- volume_ratio
+
+This script is intentionally conservative: if yfinance is unavailable or a symbol
+fails, it keeps the existing runtime row when possible and records warnings.
+"""
+from __future__ import annotations
+
 import json
-import math
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Any
 
-import yfinance as yf
+try:
+    import yfinance as yf
+except Exception:  # pragma: no cover
+    yf = None
 
-print("🔥 update_market_runtime.py V4.3 real-amplitude version loaded")
+ROOT = Path(".")
+POOL30_PATH = ROOT / "data/pool30.json"
+UNIVERSE_PATH = ROOT / "data/m1/universe_150.json"
+OUT_PATH = ROOT / "data/market_runtime.json"
+STAGING_OUT_PATH = ROOT / "data/runtime_staging/market_runtime_long_horizon.json"
 
-WINDOWS = {
-    "1d": 1,
-    "1w": 5,
-    "1m": 21,
-    "3m": 63,
-    "6m": 126,
-    "12m": 252
-}
 
-POOL_PATH = "data/pool30.json"
-OUTPUT_PATH = "data/market_runtime.json"
-M7_OUTPUT_PATH = "data/m7/m7_fundamental_data.json"
+def now_iso() -> str:
+    return datetime.now(timezone.utc).isoformat()
 
-M7_STATIC_PROFILE = {
-    "NVDA": {"name": "NVIDIA", "eps_now": 3.1, "eps_next": 4.2, "quality_level": "高", "risk_level": "中", "sector": "AI_SEMI", "subsector": "GPU"},
-    "TSM":  {"name": "TSMC", "eps_now": 8.2, "eps_next": 10.1, "quality_level": "高", "risk_level": "低", "sector": "AI_SEMI", "subsector": "FOUNDRY"},
-    "AVGO": {"name": "Broadcom", "eps_now": 5.9, "eps_next": 7.1, "quality_level": "高", "risk_level": "中", "sector": "AI_SEMI", "subsector": "ASIC"},
-    "AMAT": {"name": "Applied Materials", "eps_now": 8.4, "eps_next": 9.6, "quality_level": "高", "risk_level": "中", "sector": "AI_SEMI", "subsector": "SEMI_EQUIP"},
-    "MU":   {"name": "Micron", "eps_now": 6.1, "eps_next": 8.4, "quality_level": "中", "risk_level": "高", "sector": "AI_SEMI", "subsector": "MEMORY"},
-    "AMD":  {"name": "AMD", "eps_now": 3.6, "eps_next": 4.8, "quality_level": "中", "risk_level": "高", "sector": "AI_SEMI", "subsector": "CPU_GPU"},
-    "MRVL": {"name": "Marvell", "eps_now": 1.9, "eps_next": 2.6, "quality_level": "中", "risk_level": "高", "sector": "AI_SEMI", "subsector": "NETWORKING"},
-    "CRDO": {"name": "Credo", "eps_now": 1.2, "eps_next": 1.7, "quality_level": "低", "risk_level": "高", "sector": "AI_SEMI", "subsector": "CONNECTIVITY"},
-    "ALAB": {"name": "Astera Labs", "eps_now": 0.9, "eps_next": 1.4, "quality_level": "低", "risk_level": "高", "sector": "AI_SEMI", "subsector": "CONNECTIVITY"},
 
-    "MSFT": {"name": "Microsoft", "eps_now": 11.2, "eps_next": 12.8, "quality_level": "高", "risk_level": "低", "sector": "AI_PLATFORM", "subsector": "CLOUD"},
-    "GOOG": {"name": "Google", "eps_now": 9.1, "eps_next": 10.3, "quality_level": "高", "risk_level": "中", "sector": "AI_PLATFORM", "subsector": "SEARCH_CLOUD"},
-    "AMZN": {"name": "Amazon", "eps_now": 4.1, "eps_next": 5.0, "quality_level": "高", "risk_level": "中", "sector": "AI_PLATFORM", "subsector": "CLOUD_ECOM"},
-    "ORCL": {"name": "Oracle", "eps_now": 5.8, "eps_next": 6.4, "quality_level": "中", "risk_level": "中", "sector": "AI_PLATFORM", "subsector": "DATABASE_CLOUD"},
-    "PLTR": {"name": "Palantir", "eps_now": 1.2, "eps_next": 1.6, "quality_level": "中", "risk_level": "高", "sector": "AI_SOFTWARE", "subsector": "ANALYTICS"},
-    "ARM":  {"name": "ARM", "eps_now": 1.5, "eps_next": 2.0, "quality_level": "中", "risk_level": "高", "sector": "AI_SEMI", "subsector": "CPU_IP"},
-    "TSLA": {"name": "Tesla", "eps_now": 3.0, "eps_next": 3.7, "quality_level": "中", "risk_level": "高", "sector": "EV_AI", "subsector": "EV"},
-
-    "META": {"name": "Meta", "eps_now": 17.4, "eps_next": 19.2, "quality_level": "高", "risk_level": "中", "sector": "AI_PLATFORM", "subsector": "ADS_SOCIAL"},
-    "AAPL": {"name": "Apple", "eps_now": 7.3, "eps_next": 8.0, "quality_level": "高", "risk_level": "低", "sector": "TECH_DEF", "subsector": "DEVICE"},
-
-    "COST": {"name": "Costco", "eps_now": 16.5, "eps_next": 18.1, "quality_level": "高", "risk_level": "低", "sector": "DEFENSIVE", "subsector": "RETAIL"},
-    "TGT":  {"name": "Target", "eps_now": 8.1, "eps_next": 8.8, "quality_level": "中", "risk_level": "中", "sector": "DEFENSIVE", "subsector": "RETAIL"},
-    "EL":   {"name": "Estee Lauder", "eps_now": 2.6, "eps_next": 3.2, "quality_level": "中", "risk_level": "中", "sector": "CONSUMER", "subsector": "BEAUTY"},
-    "NKE":  {"name": "Nike", "eps_now": 2.9, "eps_next": 3.3, "quality_level": "低", "risk_level": "中", "sector": "CONSUMER", "subsector": "APPAREL"},
-
-    "COIN": {"name": "Coinbase", "eps_now": 5.1, "eps_next": 5.8, "quality_level": "低", "risk_level": "高", "sector": "CRYPTO", "subsector": "EXCHANGE"},
-    "SOFI": {"name": "SoFi", "eps_now": 0.6, "eps_next": 0.9, "quality_level": "低", "risk_level": "高", "sector": "FINTECH", "subsector": "LENDING"},
-
-    "UNH":  {"name": "UnitedHealth", "eps_now": 24.3, "eps_next": 26.1, "quality_level": "高", "risk_level": "低", "sector": "DEFENSIVE", "subsector": "HEALTHCARE"},
-    "REGN": {"name": "Regeneron", "eps_now": 36.5, "eps_next": 39.0, "quality_level": "中", "risk_level": "中", "sector": "DEFENSIVE", "subsector": "BIOPHARMA"},
-
-    "CCL":  {"name": "Carnival", "eps_now": 1.1, "eps_next": 1.5, "quality_level": "中", "risk_level": "高", "sector": "TRAVEL", "subsector": "CRUISE"},
-    "AAL":  {"name": "American Airlines", "eps_now": 0.9, "eps_next": 1.2, "quality_level": "低", "risk_level": "高", "sector": "TRAVEL", "subsector": "AIRLINE"},
-    "LVS":  {"name": "Las Vegas Sands", "eps_now": 2.4, "eps_next": 2.9, "quality_level": "中", "risk_level": "中", "sector": "TRAVEL", "subsector": "CASINO"},
-
-    "SMH":  {"name": "VanEck Semiconductor ETF", "eps_now": 0, "eps_next": 0, "quality_level": "高", "risk_level": "中", "sector": "ETF", "subsector": "SEMI_ETF"},
-    "QQQ":  {"name": "Invesco QQQ", "eps_now": 0, "eps_next": 0, "quality_level": "高", "risk_level": "中", "sector": "ETF", "subsector": "NASDAQ_ETF"},
-    "LQD":  {"name": "iShares iBoxx Investment Grade Corporate Bond ETF", "eps_now": 0, "eps_next": 0, "quality_level": "高", "risk_level": "低", "sector": "ETF", "subsector": "BOND_ETF"},
-
-    "INTC": {"name": "Intel", "eps_now": 1.8, "eps_next": 2.1, "quality_level": "中", "risk_level": "中", "sector": "AI_SEMI", "subsector": "CPU"},
-}
-
-def safe_number(v, default=0):
+def load_json(path: Path, default: Any) -> Any:
     try:
-        if v is None:
-            return default
-        n = float(v)
-        if math.isnan(n) or math.isinf(n):
-            return default
-        return n
+        if path.exists():
+            return json.loads(path.read_text(encoding="utf-8"))
     except Exception:
-        return default
+        pass
+    return default
 
-def safe_int(v, default=None):
+
+def save_json(path: Path, payload: Any) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+def n(v: Any, fallback: float | None = 0.0) -> float | None:
     try:
-        if v is None:
-            return default
-        n = float(v)
-        if math.isnan(n) or math.isinf(n):
-            return default
-        return int(n)
+        x = float(v)
+        if x != x or x in (float("inf"), float("-inf")):
+            return fallback
+        return x
     except Exception:
-        return default
+        return fallback
 
-def get_price_safe(series, idx):
+
+def pct_return(price_now: float | None, price_ref: float | None) -> float | None:
+    if price_now is None or price_ref is None or price_ref == 0:
+        return None
+    return (price_now / price_ref - 1.0) * 100.0
+
+
+def symbols_from_files() -> list[str]:
+    syms: set[str] = set()
+    for path in [POOL30_PATH, UNIVERSE_PATH]:
+        data = load_json(path, [])
+        if isinstance(data, list):
+            for row in data:
+                if isinstance(row, dict) and row.get("symbol"):
+                    syms.add(str(row["symbol"]).strip().upper())
+    return sorted(syms)
+
+
+def get_price_ref(hist, days_back: int) -> float | None:
     try:
-        if series is None or len(series) == 0:
+        if hist is None or hist.empty:
             return None
-        if abs(idx) >= len(series):
-            return safe_number(series.iloc[0], None)
-        return safe_number(series.iloc[idx], None)
+        if len(hist) <= days_back:
+            return n(hist["Close"].iloc[0], None)
+        return n(hist["Close"].iloc[-days_back], None)
     except Exception:
         return None
 
-def get_last_valid_close(series):
-    try:
-        if series is None or len(series) == 0:
-            return None
-        cleaned = []
-        for v in series:
-            n = safe_number(v, None)
-            if n is not None and n > 0:
-                cleaned.append(n)
-        if not cleaned:
-            return None
-        return cleaned[-1]
-    except Exception:
-        return None
 
-def get_current_price(ticker, close_series):
-    try:
-        fi = ticker.fast_info
-        if fi:
-            for key in ["lastPrice", "regularMarketPrice", "previousClose"]:
-                if key in fi:
-                    v = safe_number(fi[key], None)
-                    if v is not None and v > 0:
-                        return v
-    except Exception:
-        pass
+def build_row(symbol: str, old_row: dict[str, Any] | None = None) -> dict[str, Any]:
+    old_row = old_row or {}
+    if yf is None:
+        row = dict(old_row)
+        row["symbol"] = symbol
+        row["data_warning"] = "yfinance_not_available_keep_existing_row"
+        return row
 
     try:
-        info = ticker.info
-        for key in ["regularMarketPrice", "currentPrice", "previousClose"]:
-            v = safe_number(info.get(key), None)
-            if v is not None and v > 0:
-                return v
-    except Exception:
-        pass
+        ticker = yf.Ticker(symbol)
+        info = ticker.info or {}
+        hist = ticker.history(period="1y", interval="1d", auto_adjust=False)
 
-    return safe_number(get_last_valid_close(close_series), 0)
+        price_now = n(info.get("regularMarketPrice"), None)
+        if price_now is None and hist is not None and not hist.empty:
+            price_now = n(hist["Close"].iloc[-1], None)
 
-def calc_return(now, past):
-    now = safe_number(now, None)
-    past = safe_number(past, None)
-    if now is None or past is None or past == 0:
-        return 0
-    return round((now - past) / past, 6)
+        volume = n(info.get("regularMarketVolume"), None)
+        if volume is None and hist is not None and not hist.empty:
+            volume = n(hist["Volume"].iloc[-1], None)
 
-def calc_volume_ratio(volume_series):
-    try:
-        if volume_series is None or len(volume_series) < 21:
-            return 1.0
-        latest = safe_number(volume_series.iloc[-1], None)
-        avg20 = safe_number(volume_series.tail(20).mean(), None)
-        if latest is None or avg20 in (None, 0):
-            return 1.0
-        return round(latest / avg20, 2)
-    except Exception:
-        return 1.0
+        avg_volume = n(
+            info.get("averageVolume")
+            or info.get("averageDailyVolume3Month")
+            or info.get("averageVolume3months"),
+            None,
+        )
+        avg_volume_10d = n(info.get("averageVolume10days"), None)
 
-def pct_to_percent_number(v):
-    return round(safe_number(v, 0) * 100, 2)
+        if avg_volume is None and hist is not None and not hist.empty and "Volume" in hist:
+            avg_volume = n(hist["Volume"].tail(60).mean(), None)
+        if avg_volume_10d is None and hist is not None and not hist.empty and "Volume" in hist:
+            avg_volume_10d = n(hist["Volume"].tail(10).mean(), None)
 
-def calc_swing_days(hist):
-    """
-    改為收盤價變化（Momentum）：
-    delta = (Close_today - Close_yesterday) / Close_yesterday * 100
-    """
+        volume_ratio = None
+        if volume is not None and avg_volume not in (None, 0):
+            volume_ratio = volume / avg_volume
 
-    deltas = []
+        price_ref_1d = get_price_ref(hist, 2)
+        price_ref_1w = get_price_ref(hist, 6)
+        price_ref_1m = get_price_ref(hist, 22)
+        price_ref_3m = get_price_ref(hist, 66)
+        price_ref_6m = get_price_ref(hist, 132)
+        price_ref_12m = get_price_ref(hist, 252)
 
-    if hist is None or len(hist) == 0:
-        return [0, 0, 0, 0, 0, 0]
+        today_dollar_volume = (price_now or 0.0) * (volume or 0.0)
+        avg_dollar_volume = (price_now or 0.0) * (avg_volume or 0.0)
 
-    limit = min(6, len(hist))
-
-    for i in range(limit):
-        try:
-            idx = len(hist) - 1 - i
-
-            close_today = safe_number(hist.iloc[idx].get("Close"), None)
-
-            prev_close = None
-            if idx - 1 >= 0:
-                prev_close = safe_number(hist.iloc[idx - 1].get("Close"), None)
-
-            if close_today in (None, 0) or prev_close in (None, 0):
-                deltas.append(0)
-                continue
-
-            delta = (close_today - prev_close) / prev_close * 100
-
-            deltas.append(round(delta, 2))
-
-        except Exception:
-            deltas.append(0)
-
-    while len(deltas) < 6:
-        deltas.append(0)
-
-    return deltas
-
-def load_pool():
-    with open(POOL_PATH, "r", encoding="utf-8") as f:
-        pool = json.load(f)
-
-    symbols = [s["symbol"] for s in pool if s.get("symbol")]
-    extra_symbols = ["INTC"]
-
-    final = []
-    seen = set()
-    for sym in symbols + extra_symbols:
-        if sym and sym not in seen:
-            seen.add(sym)
-            final.append(sym)
-    return final
-
-def fetch_market_runtime(symbols):
-    result = {}
-
-    for symbol in symbols:
-        print(f"Fetching {symbol}...")
-
-        try:
-            ticker = yf.Ticker(symbol)
-            hist = ticker.history(period="1y", auto_adjust=False)
-
-            if hist is None or len(hist) < 10:
-                raise Exception("Not enough data")
-
-            close = hist["Close"]
-            volume_series = hist["Volume"] if "Volume" in hist.columns else None
-
-            price_now = safe_number(get_current_price(ticker, close), 0)
-
-            ref_prices = {}
-            for k, days in WINDOWS.items():
-                ref = get_price_safe(close, -1 - days)
-                ref = safe_number(ref, None)
-                if ref is None or ref <= 0:
-                    ref = safe_number(get_last_valid_close(close), 0)
-                ref_prices[k] = ref
-
-            swing_days = calc_swing_days(hist)
-
-            result[symbol] = {
-                "price_now": safe_number(price_now, 0),
-                "volume": safe_int(volume_series.iloc[-1], None) if volume_series is not None and len(volume_series) > 0 else None,
-                "volume_ratio": calc_volume_ratio(volume_series),
-                "last_update": datetime.now(timezone.utc).isoformat(),
-
-                "price_ref_1d": safe_number(ref_prices["1d"], 0),
-                "price_ref_1w": safe_number(ref_prices["1w"], 0),
-                "price_ref_1m": safe_number(ref_prices["1m"], 0),
-                "price_ref_3m": safe_number(ref_prices["3m"], 0),
-                "price_ref_6m": safe_number(ref_prices["6m"], 0),
-                "price_ref_12m": safe_number(ref_prices["12m"], 0),
-
-                "ret_1d": safe_number(calc_return(price_now, ref_prices["1d"]), 0),
-                "ret_1w": safe_number(calc_return(price_now, ref_prices["1w"]), 0),
-                "ret_1m": safe_number(calc_return(price_now, ref_prices["1m"]), 0),
-                "ret_3m": safe_number(calc_return(price_now, ref_prices["3m"]), 0),
-                "ret_6m": safe_number(calc_return(price_now, ref_prices["6m"]), 0),
-                "ret_12m": safe_number(calc_return(price_now, ref_prices["12m"]), 0),
-
-                "swing_days": swing_days,
-                "delta_1d": swing_days[0] if swing_days else 0
-            }
-
-        except Exception as e:
-            print(f"❌ Error {symbol}: {e}")
-            result[symbol] = {
-                "price_now": 0,
-                "volume": None,
-                "volume_ratio": 1.0,
-                "last_update": datetime.now(timezone.utc).isoformat(),
-
-                "price_ref_1d": 0,
-                "price_ref_1w": 0,
-                "price_ref_1m": 0,
-                "price_ref_3m": 0,
-                "price_ref_6m": 0,
-                "price_ref_12m": 0,
-
-                "ret_1d": 0,
-                "ret_1w": 0,
-                "ret_1m": 0,
-                "ret_3m": 0,
-                "ret_6m": 0,
-                "ret_12m": 0,
-
-                "swing_days": [0, 0, 0, 0, 0, 0],
-                "amp_1d": 0
-            }
-
-    return result
-
-def save_market_runtime(result):
-    output_path = Path(OUTPUT_PATH)
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-
-    with open(output_path, "w", encoding="utf-8") as f:
-        json.dump(result, f, indent=2, ensure_ascii=False)
-
-    print("✅ market_runtime.json updated")
-
-def build_m7_fundamental_data(market_runtime):
-    output = []
-
-    for symbol, static in M7_STATIC_PROFILE.items():
-        market = market_runtime.get(symbol)
-        if not market:
-            continue
-
-        output.append({
+        row = dict(old_row)
+        row.update({
             "symbol": symbol,
-            "name": static["name"],
-            "price": safe_number(market.get("price_now"), 0),
-            "eps_now": safe_number(static["eps_now"], 0),
-            "eps_next": safe_number(static["eps_next"], 0),
-            "quality_level": static["quality_level"],
-            "risk_level": static["risk_level"],
-            "sector": static.get("sector", "OTHER"),
-            "subsector": static.get("subsector", "OTHER"),
-            "ret_1w": pct_to_percent_number(market.get("ret_1w")),
-            "ret_1m": pct_to_percent_number(market.get("ret_1m")),
-            "ret_3m": pct_to_percent_number(market.get("ret_3m")),
-            "ret_6m": pct_to_percent_number(market.get("ret_6m")),
-            "ret_12m": pct_to_percent_number(market.get("ret_12m")),
-            "volume_ratio": safe_number(market.get("volume_ratio"), 1.0),
-            "swing_days": market.get("swing_days", [0, 0, 0, 0, 0, 0]),
-            "amp_1d": safe_number(market.get("amp_1d"), 0)
+            "price_now": price_now,
+            "volume": volume,
+            "avg_volume": avg_volume,
+            "avg_volume_10d": avg_volume_10d,
+            "average_volume": avg_volume,
+            "today_dollar_volume": today_dollar_volume,
+            "avg_dollar_volume": avg_dollar_volume,
+            "volume_ratio": volume_ratio,
+            "price_ref_1d": price_ref_1d,
+            "price_ref_1w": price_ref_1w,
+            "price_ref_1m": price_ref_1m,
+            "price_ref_3m": price_ref_3m,
+            "price_ref_6m": price_ref_6m,
+            "price_ref_12m": price_ref_12m,
+            "ret_1d": pct_return(price_now, price_ref_1d),
+            "ret_1w": pct_return(price_now, price_ref_1w),
+            "ret_1m": pct_return(price_now, price_ref_1m),
+            "ret_3m": pct_return(price_now, price_ref_3m),
+            "ret_6m": pct_return(price_now, price_ref_6m),
+            "ret_12m": pct_return(price_now, price_ref_12m),
+            "updated_at": now_iso(),
+            "data_warning": None,
         })
+        return row
+    except Exception as exc:
+        row = dict(old_row)
+        row["symbol"] = symbol
+        row["data_warning"] = f"fetch_failed:{exc}"
+        row["updated_at"] = now_iso()
+        return row
 
-    return output
 
-def save_m7_fundamental_data(market_runtime):
-    output_path = Path(M7_OUTPUT_PATH)
-    output_path.parent.mkdir(parents=True, exist_ok=True)
+def main() -> int:
+    symbols = symbols_from_files()
+    old_payload = load_json(STAGING_OUT_PATH, load_json(OUT_PATH, {}))
+    old_rows = old_payload.get("rows", old_payload) if isinstance(old_payload, dict) else {}
+    if not isinstance(old_rows, dict):
+        old_rows = {}
 
-    data = build_m7_fundamental_data(market_runtime)
+    rows: dict[str, dict[str, Any]] = {}
+    for sym in symbols:
+        rows[sym] = build_row(sym, old_rows.get(sym, {}))
 
-    with open(output_path, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
+    payload = {
+        "generated_at": now_iso(),
+        "source": "scripts/update_market_runtime.py",
+        "symbol_count": len(rows),
+        "rows": rows,
+    }
+    save_json(OUT_PATH, payload)
+    save_json(STAGING_OUT_PATH, payload)
+    print(f"✅ market runtime updated: {len(rows)} symbols")
+    print(f"✅ {OUT_PATH}")
+    print(f"✅ {STAGING_OUT_PATH}")
+    return 0
 
-    print(f"✅ m7_fundamental_data.json updated, total {len(data)} symbols")
-
-def main():
-    symbols = load_pool()
-    market_runtime = fetch_market_runtime(symbols)
-    save_market_runtime(market_runtime)
-    save_m7_fundamental_data(market_runtime)
-    print("✅ update_market_runtime.py finished")
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())
