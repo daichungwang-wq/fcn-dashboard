@@ -127,6 +127,178 @@ valuation curve trend curve acceleration curve B4 Raw Data 區（預設收合）
 例如 trend：
 
 10Y weekly prices MA200 source regression formula annualized formula data source C. Output Preview（右側核心）
+B2：Business Assumption Layer
+
+B2 放「可調假設」，也就是 MM brain 要能控制的商業判斷。
+
+Factor	B2 參數
+Valuation	base anchor、market multiplier、industry multiplier、archetype multiplier
+Trend	linear weight、MA weight、acceleration weight
+Structure	allowed models：linear / quadratic / logarithmic on-off
+Money	liquidity weight、flow weight、module preset：M1/M7 = 70/30，M6 = 20/80
+Timing	timing blend weight：1D / 1W / 1M，或 active scenario 用 d1~d5 short swing
+B3：Score Curve Layer
+
+B3 放「raw value 轉分數」的 curve。
+
+Factor	B3 curve
+Valuation	valuation gap → score curve
+Trend	linear annualized → score、MA annualized → score、acceleration delta → score
+Structure	best R² → score curve
+Money	liquidity value → score curve、volume ratio / flow position → score curve
+Timing	short-term return / swing → timing score curve
+各 factor 定稿
+1. Valuation
+
+B2：
+
+final_anchor =
+base_anchor
+× market_multiplier
+× industry_multiplier
+× archetype_multiplier
+
+B3：
+
+valuation_gap =
+forward_pe / final_anchor - 1
+valuation_gap → valuation_score
+
+用途：
+
+現在貴不貴
+2. Trend
+
+B2：
+
+trend =
+linear_weight × linear_score
++ ma_weight × ma_score
++ acceleration_weight × acceleration_score
+
+目前：
+
+linear 0.35
+MA 0.50
+acceleration 0.15
+
+B3：
+
+linear annualized % → score
+MA annualized % → score
+acceleration delta % → score
+
+用途：
+
+成長方向與速度
+3. Structure
+
+B2：
+
+allowed models:
+linear on/off
+quadratic on/off
+logarithmic on/off
+
+Engine：
+
+best_r2 =
+max(allowed model r²)
+
+B3 定稿：
+
+r² < 0.2 → 0
+r² = 0.2 → 1
+r² = 0.4 → 2
+r² = 0.8 → 8
+r² = 1.0 → 10
+
+用途：
+
+成長有沒有可辨識軌跡
+4. Money
+
+B2：
+
+money =
+liquidity_weight × liquidity_score
++ flow_weight × flow_score
+
+Module preset：
+
+M1/M7:
+liquidity 70%
+flow 30%
+
+M6:
+liquidity 20%
+flow 80%
+
+Liquidity：
+
+看接股後能不能出手
+
+Flow：
+
+看市場現在重不重視 / 有沒有追逐
+
+B3：
+
+Liquidity curve：
+
+value = avg_dollar_volume
+
+Universe version：
+
+value <= p25 → 3
+mean ×0.95 ~ mean ×1.05 → 7
+value >= p75 → 10
+
+Pool30 version：
+
+value <= p25 → 5
+mean ×0.95 ~ mean ×1.05 → 8
+value >= p75 → 10
+
+中間用線性插值。
+
+Flow curve：
+
+volume_ratio / money position → flow_score
+
+用途：
+
+能不能出手 + 市場是否重視
+5. Timing
+
+B2：
+
+timing blend weights
+
+正式 M7：
+
+0.45 × 1D
++0.35 × 1W
++0.20 × 1M
+
+Active / M6 可用：
+
+ShortSwing:
+d1~d5 weighted
+
+B3：
+
+timing raw return → timing score curve
+
+用途：
+
+現在位置甜不甜 / 是否過熱
+最終分層
+B2 = 我相信什麼假設
+B3 = raw value 怎麼變分數
+Engine = 怎麼算 raw value
+
+這樣就定稿。
 
 目的：
 
