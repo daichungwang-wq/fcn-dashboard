@@ -1,64 +1,494 @@
-// MM Formula Test Engine v1.0
-(function(){
-  const SCORES_PATH="../data/m7_sandbox/m7_v2_scores.json";
-  const CONFIG_PATH="../configs/mm/m7_v2_parameter_config.json";
-  let SCORES_DATA={},CONFIG_DATA={},ACTIVE_SYMBOL="NVDA";
-  const $=id=>document.getElementById(id);
-  const num=(v,f=null)=>{const n=Number(v);return Number.isFinite(n)?n:f};
-  const fmt=(v,d=2)=>{const n=num(v,null);return n===null?"--":n.toFixed(d)};
-  const esc=v=>String(v??"--").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
-  const deltaClass=v=>num(v,0)>0.000001?"delta-pos":num(v,0)<-0.000001?"delta-neg":"delta-flat";
-  function showError(msg){const b=$("error-box"); if(b){b.style.display="block";b.textContent=msg}}
-  function clearError(){const b=$("error-box"); if(b){b.style.display="none";b.textContent=""}}
-  const rows=()=>Array.isArray(SCORES_DATA?.rows)?SCORES_DATA.rows:[];
-  const findRow=symbol=>rows().find(r=>String(r.symbol||"").toUpperCase()===String(symbol||"").trim().toUpperCase())||null;
-  function getCfgWeights(){const w=CONFIG_DATA?.m7_v2_weights||{};return {valuation:num(w.valuation,0.45),trend:num(w.trend,0.25),structure:num(w.structure,0.20),timing:num(w.timing,0),money:num(w.money,0.10)}}
-  function getTrendWeights(){const w=CONFIG_DATA?.trend?.internal_weights||{};return {linear:num(w.linear,0.35),ma200:num(w.ma200,0.50),acceleration:num(w.acceleration,0.15)}}
-  function getMoneyWeights(){const m=CONFIG_DATA?.money?.module_presets?.M7||{};return {liquidity:num(m.liquidity_weight,0.70),flow:num(m.flow_weight,0.30)}}
-  const mmClamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,num(v,0)));
-  function mmPiecewise(points,x,fallback=0){const pts=Array.isArray(points)?points.map(p=>[num(p[0],0),num(p[1],0)]).sort((a,b)=>a[0]-b[0]):[];const xv=num(x,null);if(!pts.length||xv===null)return fallback;if(xv<=pts[0][0])return pts[0][1];if(xv>=pts[pts.length-1][0])return pts[pts.length-1][1];for(let i=1;i<pts.length;i++){const [x0,y0]=pts[i-1], [x1,y1]=pts[i];if(xv>=x0&&xv<=x1){const t=x1===x0?1:(xv-x0)/(x1-x0);return y0+t*(y1-y0)}}return fallback}
-  function scoreByCurve(curve,x,fallback=0){const raw=mmPiecewise(curve?.points,x,fallback),lo=num(curve?.cap_min,null),hi=num(curve?.cap_max,null);return lo!==null&&hi!==null?mmClamp(raw,lo,hi):raw}
-  const getValuationCurve=()=>CONFIG_DATA?.valuation?.gap_curve||{points:[[-1,10],[-0.4,10],[-0.2,9],[-0.05,7],[0.05,7],[0.2,6],[0.4,3],[0.8,2]],cap_min:2,cap_max:10};
-  const getStructureCurve=()=>CONFIG_DATA?.structure?.r2_curve||{points:[[0,0],[0.2,1],[0.4,2],[0.8,8],[1,10]],cap_min:0,cap_max:10};
-  function getParamValue(key){const el=document.querySelector(`[data-param="${key}"]`);if(!el)return null;if(el.type==="checkbox")return !!el.checked;return num(el.value,null)}
-  function hasChanged(key){const el=document.querySelector(`[data-param="${key}"]`);if(!el)return false;if(el.type==="checkbox")return String(el.checked)!==String(el.dataset.originalBool);const o=num(el.dataset.original,null),v=num(el.value,null);return o!==null&&v!==null&&Math.abs(o-v)>0.000001}
-  const hasAnyChanged=keys=>keys.some(k=>hasChanged(k));
-  function topWeightsFromDom(){const b=getCfgWeights();return {valuation:getParamValue("top_valuation")??b.valuation,trend:getParamValue("top_trend")??b.trend,structure:getParamValue("top_structure")??b.structure,timing:getParamValue("top_timing")??b.timing,money:getParamValue("top_money")??b.money}}
-  function trendWeightsFromDom(){const b=getTrendWeights();return {linear:getParamValue("trend_linear")??b.linear,ma200:getParamValue("trend_ma200")??b.ma200,acceleration:getParamValue("trend_acceleration")??b.acceleration}}
-  function moneyWeightsFromDom(){const b=getMoneyWeights();return {liquidity:getParamValue("money_liquidity")??b.liquidity,flow:getParamValue("money_flow")??b.flow}}
-  function valuationMultipliersFromDom(){return {market:getParamValue("valuation_market")??1,industry:getParamValue("valuation_industry")??1,archetype:getParamValue("valuation_archetype")??1}}
-  function structureAllowedFromDom(){return {linear:getParamValue("structure_linear")!==false,quadratic:getParamValue("structure_quadratic")!==false,logarithmic:getParamValue("structure_logarithmic")!==false}}
-  function weightedSum(w,f){return w.valuation*f.valuation+w.trend*f.trend+w.structure*f.structure+w.timing*f.timing+w.money*f.money}
-  const baselineFactors=row=>({valuation:num(row.valuation_score,0),trend:num(row.trend_score,0),structure:num(row.structure_score,0),timing:num(row.timing_score,0),money:num(row.money_score,0)});
-  function calcTrend(row,changed){const base=num(row.trend_score,0),wn=getTrendWeights(),ww=changed?trendWeightsFromDom():wn,linear=num(row.trend_linear_score,0),ma=num(row.trend_ma_score,0),accel=num(row.trend_acceleration_score,0);const dn=Math.max(.000001,wn.linear+wn.ma200+wn.acceleration),dw=Math.max(.000001,ww.linear+ww.ma200+ww.acceleration);const calcNow=(wn.linear*linear+wn.ma200*ma+wn.acceleration*accel)/dn,calcNew=(ww.linear*linear+ww.ma200*ma+ww.acceleration*accel)/dw;return {changed,scoreNow:base,scoreNew:changed?calcNew:base,delta:(changed?calcNew:base)-base,raw:{linear,ma,accel},weightsNow:wn,weightsNew:ww,denomNow:dn,denomNew:dw,calcNow,calcNew}}
-  function calcValuation(row,changed){const base=num(row.valuation_score,0),val=row?.feature_snapshot?.valuation||{},fpe=num(val.forward_pe,null),anchor=num(val.base_anchor??val.anchor_pe,null),m=valuationMultipliersFromDom();const finalAnchor=(anchor&&anchor>0)?anchor*m.market*m.industry*m.archetype:null;const gap=(fpe!==null&&finalAnchor!==null&&finalAnchor>0)?(fpe/finalAnchor-1):null;const scoreNew=changed&&gap!==null?scoreByCurve(getValuationCurve(),gap,base):base;return {changed,scoreNow:base,scoreNew,delta:scoreNew-base,forwardPe:fpe,baseAnchor:anchor,multipliers:m,finalAnchor,gap}}
-  function calcStructure(row,changed){const base=num(row.structure_score,0),allowed=structureAllowedFromDom();const candidates=[];if(allowed.linear)candidates.push({model:"linear",r2:num(row.structure_r2_linear,null)});if(allowed.quadratic)candidates.push({model:"quadratic",r2:num(row.structure_r2_quadratic,null)});if(allowed.logarithmic)candidates.push({model:"logarithmic",r2:num(row.structure_r2_logarithmic,null)});const valid=candidates.filter(x=>x.r2!==null);const best=valid.length?valid.sort((a,b)=>b.r2-a.r2)[0]:{model:row.best_structure_model||"--",r2:num(row.best_structure_r2,null)};const scoreNew=changed&&best.r2!==null?scoreByCurve(getStructureCurve(),best.r2,base):base;return {changed,scoreNow:base,scoreNew,delta:scoreNew-base,allowed,candidates,bestNow:{model:row.best_structure_model||"--",r2:num(row.best_structure_r2,null)},bestNew:best}}
-  function calcMoney(row,changed){const base=num(row.money_score,0),liq=num(row.money_liquidity_score,null),flow=num(row.money_flow_score,null),wn=getMoneyWeights(),ww=moneyWeightsFromDom();const dn=Math.max(.000001,wn.liquidity+wn.flow),dw=Math.max(.000001,ww.liquidity+ww.flow);const calcNow=(liq!==null&&flow!==null)?(wn.liquidity*liq+wn.flow*flow)/dn:base;const calcNew=(liq!==null&&flow!==null)?(ww.liquidity*liq+ww.flow*flow)/dw:base;const scoreNew=changed?calcNew:base;return {changed,scoreNow:base,scoreNew,delta:scoreNew-base,liquidity:liq,flow,weightsNow:wn,weightsNew:ww,denomNow:dn,denomNew:dw,calcNow,calcNew}}
-  function effectiveScore(row,v2){const fw=num(CONFIG_DATA?.legacy_raw_fallback?.fallback_history_weeks,156),hw=num(row.history_weeks,999999),use=hw<fw;return {useFallback:use,fallbackWeeks:fw,historyWeeks:hw,score:use?num(row.m7_raw_score,0):v2,source:use?"m7_raw_score":"m7_v2_score"}}
-  function calculate(row){const baseline=baselineFactors(row),topNow=getCfgWeights(),topNew=topWeightsFromDom();const changedGroups={top:hasAnyChanged(["top_valuation","top_trend","top_structure","top_timing","top_money"]),trend:hasAnyChanged(["trend_linear","trend_ma200","trend_acceleration"]),valuation:hasAnyChanged(["valuation_market","valuation_industry","valuation_archetype"]),structure:hasAnyChanged(["structure_linear","structure_quadratic","structure_logarithmic"]),money:hasAnyChanged(["money_liquidity","money_flow"])};const trend=calcTrend(row,changedGroups.trend),valuation=calcValuation(row,changedGroups.valuation),structure=calcStructure(row,changedGroups.structure),money=calcMoney(row,changedGroups.money);const factorsNew={valuation:valuation.scoreNew,trend:trend.scoreNew,structure:structure.scoreNew,timing:baseline.timing,money:money.scoreNew};const v2Now=num(row.m7_v2_score,weightedSum(topNow,baseline)),effNow=num(row.m7_effective_score,effectiveScore(row,v2Now).score);const v2New=weightedSum(topNew,factorsNew),effNewObj=effectiveScore(row,v2New),effNew=effNewObj.score;return {row,changedGroups,topNow,topNew,factorsNow:baseline,factorsNew,valuation,trend,structure,money,v2Now,v2New,effNow,effNew,delta:effNew-effNow,effectiveNew:effNewObj}}
-  function inputRow(key,label,nowVal,step="0.01"){return `<tr><td>${esc(label)}</td><td>${fmt(nowVal,4)}</td><td><input data-param="${key}" data-original="${nowVal}" type="number" step="${step}" value="${nowVal}" /></td><td id="${key}-delta" class="delta-flat">0.00</td></tr>`}
-  function checkboxRow(key,label,checked){return `<tr><td>${esc(label)}</td><td>${checked?"true":"false"}</td><td><input data-param="${key}" data-original-bool="${checked?"true":"false"}" type="checkbox" ${checked?"checked":""} /></td><td id="${key}-delta" class="delta-flat">0</td></tr>`}
-  function renderControls(){const top=getCfgWeights(),tw=getTrendWeights(),mw=getMoneyWeights();$("top-weight-tbody").innerHTML=[inputRow("top_valuation","valuation",top.valuation),inputRow("top_trend","trend",top.trend),inputRow("top_structure","structure",top.structure),inputRow("top_timing","timing",top.timing),inputRow("top_money","money",top.money)].join("");$("trend-param-tbody").innerHTML=[inputRow("trend_linear","linear",tw.linear),inputRow("trend_ma200","ma200",tw.ma200),inputRow("trend_acceleration","acceleration",tw.acceleration)].join("");$("valuation-param-tbody").innerHTML=[inputRow("valuation_market","valuation_market_multiplier",1),inputRow("valuation_industry","valuation_industry_multiplier",1),inputRow("valuation_archetype","valuation_archetype_multiplier",1)].join("");$("structure-param-tbody").innerHTML=[checkboxRow("structure_linear","linear",true),checkboxRow("structure_quadratic","quadratic",true),checkboxRow("structure_logarithmic","logarithmic",true)].join("");$("money-param-tbody").innerHTML=[inputRow("money_liquidity","money_liquidity_weight",mw.liquidity),inputRow("money_flow","money_flow_weight",mw.flow)].join("");document.querySelectorAll("[data-param]").forEach(el=>{el.addEventListener("input",recalc);el.addEventListener("change",recalc)})}
-  function updateParamDeltas(){document.querySelectorAll("[data-param]").forEach(el=>{const key=el.dataset.param,box=$(`${key}-delta`);if(!box)return;let d=0,t="0.00";if(el.type==="checkbox"){const o=el.dataset.originalBool==="true";d=el.checked===o?0:1;t=d===0?"0":"changed"}else{const o=num(el.dataset.original,0),v=num(el.value,o);d=v-o;t=Math.abs(d)<.000001?"0.00":(d>0?"+":"")+d.toFixed(4)}box.textContent=t;box.className=deltaClass(d)})}
-  function resultRow(label,nowV,newV,digits=2){const d=num(newV,0)-num(nowV,0);return `<tr><td>${esc(label)}</td><td>${fmt(nowV,digits)}</td><td>${fmt(newV,digits)}</td><td class="${deltaClass(d)}">${fmt(d,digits)}</td></tr>`}
-  function renderIdentity(row){$("identity-box").innerHTML=`<div class="metric-grid"><div class="metric"><div class="k">Symbol</div><div class="v">${esc(row.symbol)}</div></div><div class="metric"><div class="k">Name</div><div class="v" style="font-size:16px;">${esc(row.name)}</div></div><div class="metric"><div class="k">Category</div><div class="v" style="font-size:16px;">${esc(row.category)}</div></div></div>`}
-  function renderResults(c){$("m7-now").textContent=fmt(c.effNow);$("m7-new").textContent=fmt(c.effNew);$("m7-delta").textContent=fmt(c.delta);$("m7-delta").className="v "+deltaClass(c.delta);$("score-result-tbody").innerHTML=[resultRow("M7 Effective",c.effNow,c.effNew),resultRow("M7 V2",c.v2Now,c.v2New),resultRow("Valuation Score",c.factorsNow.valuation,c.factorsNew.valuation),resultRow("Trend Score",c.factorsNow.trend,c.factorsNew.trend),resultRow("Structure Score",c.factorsNow.structure,c.factorsNew.structure),resultRow("Timing Score",c.factorsNow.timing,c.factorsNew.timing),resultRow("Money Score",c.factorsNow.money,c.factorsNew.money)].join("")}
-  function renderTrace(c){const r=c.row,pill=x=>x?`<span class="pill warn">changed</span>`:`<span class="pill ok">baseline</span>`;$("trace-box").innerHTML=`
-<details class="section" open><summary>0. Baseline / è³æä¾æº</summary><div class="section-body"><table><tbody>${resultRow("m7_effective_score JSON",c.effNow,c.effNow)}${resultRow("m7_v2_score JSON",c.v2Now,c.v2Now)}${resultRow("m7_raw_score JSON",r.m7_raw_score,r.m7_raw_score)}${resultRow("history_weeks",r.history_weeks,r.history_weeks,0)}</tbody></table><div class="formula">Rule: Now æ°¸é åªåè® Python JSON baselineï¼ä¸ç¨åç«¯éç®è¦èã</div></div></details>
-<details class="section" open><summary>1. Valuation Score ${pill(c.changedGroups.valuation)}</summary><div class="section-body"><table><tbody>${resultRow("Forward PE",c.valuation.forwardPe,c.valuation.forwardPe)}${resultRow("Base Anchor",c.valuation.baseAnchor,c.valuation.baseAnchor)}${resultRow("Market Multiplier",1,c.valuation.multipliers.market)}${resultRow("Industry Multiplier",1,c.valuation.multipliers.industry)}${resultRow("Archetype Multiplier",1,c.valuation.multipliers.archetype)}${resultRow("Final Anchor",c.valuation.baseAnchor,c.valuation.finalAnchor)}${resultRow("Valuation Gap",0,c.valuation.gap,4)}${resultRow("Valuation Score",c.valuation.scoreNow,c.valuation.scoreNew)}</tbody></table><div class="formula">Rule: if valuation params changed -> final_anchor = base_anchor Ã market Ã industry Ã archetype; gap = forward_pe / final_anchor - 1; valuation_new = scoreByCurve(gap_curve, gap). Else JSON valuation_score.</div></div></details>
-<details class="section" open><summary>2. Trend Score ${pill(c.changedGroups.trend)}</summary><div class="section-body"><table><tbody>${resultRow("Linear Score",c.trend.raw.linear,c.trend.raw.linear)}${resultRow("MA Score",c.trend.raw.ma,c.trend.raw.ma)}${resultRow("Acceleration Score",c.trend.raw.accel,c.trend.raw.accel)}${resultRow("Linear Weight",c.trend.weightsNow.linear,c.trend.weightsNew.linear,4)}${resultRow("MA Weight",c.trend.weightsNow.ma200,c.trend.weightsNew.ma200,4)}${resultRow("Acceleration Weight",c.trend.weightsNow.acceleration,c.trend.weightsNew.acceleration,4)}${resultRow("Weight Sum",c.trend.denomNow,c.trend.denomNew,4)}${resultRow("Audit Formula Score",c.trend.calcNow,c.trend.calcNew)}${resultRow("Trend Score Used",c.trend.scoreNow,c.trend.scoreNew)}</tbody></table><div class="formula">Rule: trend_new = (linear_wÃlinear_score + ma_wÃma_score + accel_wÃaccel_score) / (linear_w+ma_w+accel_w). å¦ææ²ææ¹ Trend å§é¨æ¬éï¼trend_new = JSON trend_scoreã</div></div></details>
-<details class="section" open><summary>3. Structure Score ${pill(c.changedGroups.structure)}</summary><div class="section-body"><table><tbody>${resultRow("Linear RÂ²",r.structure_r2_linear,r.structure_r2_linear)}${resultRow("Quadratic RÂ²",r.structure_r2_quadratic,r.structure_r2_quadratic)}${resultRow("Logarithmic RÂ²",r.structure_r2_logarithmic,r.structure_r2_logarithmic)}${resultRow("Best RÂ² Now",c.structure.bestNow.r2,c.structure.bestNow.r2)}${resultRow("Best RÂ² New",c.structure.bestNow.r2,c.structure.bestNew.r2)}${resultRow("Structure Score",c.structure.scoreNow,c.structure.scoreNew)}</tbody></table><div class="formula">Rule: if allowed model params changed -> best_r2 = max(allowed model rÂ²); structure_new = rÂ² curve score. Else JSON structure_score.</div></div></details>
-<details class="section" open><summary>4. Money Score ${pill(c.changedGroups.money)}</summary><div class="section-body"><table><tbody>${resultRow("Liquidity Score",c.money.liquidity,c.money.liquidity)}${resultRow("Flow Score",c.money.flow,c.money.flow)}${resultRow("Liquidity Weight",c.money.weightsNow.liquidity,c.money.weightsNew.liquidity,4)}${resultRow("Flow Weight",c.money.weightsNow.flow,c.money.weightsNew.flow,4)}${resultRow("Weight Sum",c.money.denomNow,c.money.denomNew,4)}${resultRow("Audit Formula Score",c.money.calcNow,c.money.calcNew)}${resultRow("Money Score Used",c.money.scoreNow,c.money.scoreNew)}</tbody></table><div class="formula">Rule: money_new = (liquidity_wÃliquidity_score + flow_wÃflow_score) / (liquidity_w+flow_w). å¦ææ²ææ¹ Money å§é¨æ¬éï¼money_new = JSON money_scoreã</div></div></details>
-<details class="section" open><summary>5. Top Level M7 Score ${pill(c.changedGroups.top)}</summary><div class="section-body"><table><tbody>${resultRow("Top valuation weight",c.topNow.valuation,c.topNew.valuation,4)}${resultRow("Top trend weight",c.topNow.trend,c.topNew.trend,4)}${resultRow("Top structure weight",c.topNow.structure,c.topNew.structure,4)}${resultRow("Top timing weight",c.topNow.timing,c.topNew.timing,4)}${resultRow("Top money weight",c.topNow.money,c.topNew.money,4)}${resultRow("M7 V2",c.v2Now,c.v2New)}${resultRow("M7 Effective",c.effNow,c.effNew)}</tbody></table><div class="formula">V2_new = valuation_wÃvaluation + trend_wÃtrend + structure_wÃstructure + timing_wÃtiming + money_wÃmoney
-= ${fmt(c.topNew.valuation)}Ã${fmt(c.factorsNew.valuation)} + ${fmt(c.topNew.trend)}Ã${fmt(c.factorsNew.trend)} + ${fmt(c.topNew.structure)}Ã${fmt(c.factorsNew.structure)} + ${fmt(c.topNew.timing)}Ã${fmt(c.factorsNew.timing)} + ${fmt(c.topNew.money)}Ã${fmt(c.factorsNew.money)}
-= ${fmt(c.v2New)}</div></div></details>
-<details class="section" open><summary>6. Fallback Rule</summary><div class="section-body"><table><tbody>${resultRow("history_weeks",c.effectiveNew.historyWeeks,c.effectiveNew.historyWeeks,0)}${resultRow("fallback_weeks",c.effectiveNew.fallbackWeeks,c.effectiveNew.fallbackWeeks,0)}<tr><td>Use Fallback?</td><td>${c.effectiveNew.useFallback?"YES":"NO"}</td><td>${c.effectiveNew.useFallback?"YES":"NO"}</td><td>--</td></tr><tr><td>Effective Source</td><td>${esc(r.m7_effective_score_source||"JSON")}</td><td>${esc(c.effectiveNew.source)}</td><td>--</td></tr></tbody></table></div></details>`}
-  function recalc(){clearError();updateParamDeltas();const symbol=$("symbol-input")?.value||ACTIVE_SYMBOL;ACTIVE_SYMBOL=symbol;const row=findRow(symbol);if(!row){showError(`æ¾ä¸å°è¡ç¥¨ï¼${symbol}`);return}renderIdentity(row);const c=calculate(row);renderResults(c);renderTrace(c)}
-  function updateParamDeltas(){document.querySelectorAll("[data-param]").forEach(el=>{const key=el.dataset.param,box=$(`${key}-delta`);if(!box)return;let d=0,t="0.00";if(el.type==="checkbox"){const o=el.dataset.originalBool==="true";d=el.checked===o?0:1;t=d===0?"0":"changed"}else{const o=num(el.dataset.original,0),v=num(el.value,o);d=v-o;t=Math.abs(d)<.000001?"0.00":(d>0?"+":"")+d.toFixed(4)}box.textContent=t;box.className=deltaClass(d)})}
-  async function loadData(){clearError();$("data-status").textContent="loading...";const [sr,cr]=await Promise.all([fetch(SCORES_PATH,{cache:"no-store"}),fetch(CONFIG_PATH,{cache:"no-store"})]);if(!sr.ok)throw new Error(`scores load failed: ${sr.status}`);SCORES_DATA=await sr.json();CONFIG_DATA=cr.ok?await cr.json():{};$("data-status").textContent=`loaded rows=${rows().length}`;renderControls();recalc()}
-  function resetParams(){document.querySelectorAll("[data-param]").forEach(el=>{if(el.type==="checkbox")el.checked=el.dataset.originalBool==="true";else el.value=el.dataset.original});recalc()}
-  function expandAll(open){document.querySelectorAll("details.section").forEach(d=>d.open=open)}
-  $("query-btn")?.addEventListener("click",recalc);$("symbol-input")?.addEventListener("keypress",e=>{if(e.key==="Enter")recalc()});$("reload-btn")?.addEventListener("click",loadData);$("reset-btn")?.addEventListener("click",resetParams);$("expand-btn")?.addEventListener("click",()=>expandAll(true));$("collapse-btn")?.addEventListener("click",()=>expandAll(false));
-  loadData().catch(err=>showError(err.message));
-})();
+/*
+  M7 Formula Test Engine
+  Path in repo: js/mm/modules/mm_formula_test_engine.js
 
+  Purpose:
+  - Independent formula debug page for M7 what-if calculation.
+  - Does NOT modify data files.
+  - Does NOT re-rank or re-normalize cross-stock distribution during what-if.
+  - Missing sub-factors use fallback rules and are explicitly shown in trace.
+*/
+
+(function () {
+  "use strict";
+
+  const DATA_PATHS = {
+    scores: "../data/m7_sandbox/m7_v2_scores.json",
+    compare: "../data/m7_sandbox/m7_v2_ab_compare.json",
+    manifest: "../data/m7_sandbox/m7_v2_run_manifest.json",
+    runtime: "../data/market_runtime.json",
+    fundamentals: "../data/m7/m7_fundamental_data.json"
+  };
+
+  const DEFAULT_PARAMS = Object.freeze({
+    raw_valuation_weight: 0.30,
+    raw_trend_weight: 0.25,
+    raw_structure_weight: 0.20,
+    raw_timing_weight: 0.10,
+    raw_money_weight: 0.10,
+
+    trend_linear_weight: 0.50,
+    trend_acceleration_weight: 0.20,
+    trend_ma100_weight: 0.30,
+
+    money_volume_weight: 0.70,
+    money_top_weight: 0.30,
+
+    top_adjustment_weight: 1.00,
+    top_adjustment_cap: 1.50
+  });
+
+  const PARAM_DEFS = [
+    ["raw_valuation_weight", "M7 Raw - Valuation Weight", 0, 0.60, 0.01],
+    ["raw_trend_weight", "M7 Raw - Trend Weight", 0, 0.60, 0.01],
+    ["raw_structure_weight", "M7 Raw - Structure Weight", 0, 0.60, 0.01],
+    ["raw_timing_weight", "M7 Raw - Timing Weight", 0, 0.40, 0.01],
+    ["raw_money_weight", "M7 Raw - Money Weight", 0, 0.40, 0.01],
+    ["trend_linear_weight", "Trend - Linear Slope Weight", 0, 1, 0.01],
+    ["trend_acceleration_weight", "Trend - Acceleration Weight", 0, 1, 0.01],
+    ["trend_ma100_weight", "Trend - MA100 / 20W Weight", 0, 1, 0.01],
+    ["money_volume_weight", "Money - Volume Flow Weight", 0, 1, 0.01],
+    ["money_top_weight", "Money - Top Signal Weight", 0, 1, 0.01],
+    ["top_adjustment_weight", "Final - Top Adjustment Weight", 0, 2, 0.01],
+    ["top_adjustment_cap", "Final - Top Adjustment Cap", 0, 3, 0.05]
+  ];
+
+  const state = {
+    scores: [],
+    compare: [],
+    manifest: null,
+    runtime: [],
+    fundamentals: [],
+    selectedSymbol: null,
+    params: { ...DEFAULT_PARAMS },
+    decimals: 2
+  };
+
+  const $ = (id) => document.getElementById(id);
+
+  function num(v, fallback = null) {
+    const x = Number(v);
+    return Number.isFinite(x) ? x : fallback;
+  }
+
+  function clamp(x, lo, hi) {
+    const n = num(x, 0);
+    return Math.max(lo, Math.min(hi, n));
+  }
+
+  function fmt(v, d = state.decimals) {
+    const x = num(v, null);
+    if (x === null) return "--";
+    return x.toFixed(d);
+  }
+
+  function deltaClass(v) {
+    const x = num(v, 0);
+    if (Math.abs(x) < 0.00001) return "zero";
+    return x > 0 ? "pos" : "neg";
+  }
+
+  function field(row, keys, fallback = null) {
+    if (!row) return fallback;
+    for (const k of keys) {
+      if (row[k] !== undefined && row[k] !== null && row[k] !== "") return row[k];
+    }
+    return fallback;
+  }
+
+  function symbolOf(row) {
+    return String(field(row, ["symbol", "ticker", "Symbol"], "")).toUpperCase();
+  }
+
+  function asArray(payload) {
+    if (Array.isArray(payload)) return payload;
+    if (payload && Array.isArray(payload.data)) return payload.data;
+    if (payload && Array.isArray(payload.scores)) return payload.scores;
+    if (payload && Array.isArray(payload.items)) return payload.items;
+    if (payload && typeof payload === "object") {
+      const values = Object.values(payload);
+      if (values.length && values.every(v => v && typeof v === "object" && !Array.isArray(v))) return values;
+    }
+    return [];
+  }
+
+  async function loadJson(path, optional = false) {
+    try {
+      const res = await fetch(path, { cache: "no-store" });
+      if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+      return await res.json();
+    } catch (err) {
+      if (optional) return null;
+      throw new Error(`Load failed: ${path} / ${err.message}`);
+    }
+  }
+
+  function findBySymbol(arr, sym) {
+    const s = String(sym || "").toUpperCase();
+    return arr.find(x => symbolOf(x) === s) || null;
+  }
+
+  function getRows() {
+    return state.scores.map(row => {
+      const sym = symbolOf(row);
+      const cmp = findBySymbol(state.compare, sym);
+      const rt = findBySymbol(state.runtime, sym);
+      const fd = findBySymbol(state.fundamentals, sym);
+      return { row, cmp, rt, fd, sym };
+    }).filter(x => x.sym);
+  }
+
+  function getBaseScores(ctx) {
+    const { row, cmp } = ctx;
+    const valuation = num(field(row, ["valuation_score", "valuation", "m7_valuation_score"], field(cmp, ["valuation_score"])), 0);
+    const trend = num(field(row, ["trend_score", "trend", "m7_trend_score"], field(cmp, ["trend_score"])), 0);
+    const structure = num(field(row, ["structure_score", "structure", "m7_structure_score"], field(cmp, ["structure_score"])), 0);
+    const timing = num(field(row, ["timing_score", "timing", "event_score", "short_swing_score"], field(cmp, ["timing_score"])), 0);
+    const money = num(field(row, ["money_score", "money", "flow_score"], field(cmp, ["money_score"])), 0);
+    const top = num(field(row, ["top_score", "top_adjustment", "compare_adjustment", "zscore_adjustment"], field(cmp, ["top_score", "top_adjustment", "compare_adjustment"])), 0);
+    const m7Now = num(field(row, ["m7_v2_score", "m7_final_score", "final_score", "score"], field(cmp, ["m7_v2_score", "m7_final_score", "score"])), null);
+    return { valuation, trend, structure, timing, money, top, m7Now };
+  }
+
+  function normalizeWeights(obj, keys) {
+    const vals = keys.map(k => Math.max(0, num(obj[k], 0)));
+    const sum = vals.reduce((a, b) => a + b, 0);
+    if (sum <= 0) {
+      const equal = 1 / keys.length;
+      return Object.fromEntries(keys.map(k => [k, equal]));
+    }
+    return Object.fromEntries(keys.map((k, i) => [k, vals[i] / sum]));
+  }
+
+  function scoreFromRawFactor(value, fallbackScore, scale, center = 0) {
+    const v = num(value, null);
+    if (v === null) return { score: fallbackScore, usedFallback: true };
+    return { score: clamp((v - center) * scale + 5, 0, 10), usedFallback: false };
+  }
+
+  function computeTrend(ctx, base, params) {
+    const { row, rt } = ctx;
+    const audit = [];
+
+    const linearDirect = num(field(row, ["trend_linear_score", "linear_trend_score", "long_term_linear_score"], null), null);
+    const accelDirect = num(field(row, ["trend_acceleration_score", "acceleration_score", "quadratic_acceleration_score"], null), null);
+    const maDirect = num(field(row, ["trend_ma100_score", "ma100_score", "ma20w_score", "ma_trend_score"], null), null);
+
+    let linear = linearDirect;
+    if (linear === null) {
+      const slope = field(row, ["linear_slope", "trend_linear_slope", "structure_slope"], null);
+      const res = scoreFromRawFactor(slope, base.trend, 500, 0);
+      linear = res.score;
+      audit.push(res.usedFallback ? "trend.linear: missing raw slope; fallback to current trend_score" : "trend.linear: derived from slope");
+    } else audit.push("trend.linear: direct score field used");
+
+    let accel = accelDirect;
+    if (accel === null) {
+      const qa = field(row, ["quadratic_a", "trend_quadratic_a", "acceleration"], null);
+      const res = scoreFromRawFactor(qa, base.trend, 50000, 0);
+      accel = res.score;
+      audit.push(res.usedFallback ? "trend.acceleration: missing acceleration factor; fallback to current trend_score" : "trend.acceleration: derived from quadratic_a");
+    } else audit.push("trend.acceleration: direct score field used");
+
+    let ma = maDirect;
+    if (ma === null) {
+      const ret6m = field(row, ["ret_6m"], field(rt, ["ret_6m"], null));
+      const ret12m = field(row, ["ret_12m"], field(rt, ["ret_12m"], null));
+      const proxy = num(ret6m, null) !== null ? ret6m : ret12m;
+      const res = scoreFromRawFactor(proxy, base.trend, 18, 0);
+      ma = res.score;
+      audit.push(res.usedFallback ? "trend.ma100: missing MA/proxy return; fallback to current trend_score" : "trend.ma100: proxy from 6M/12M return");
+    } else audit.push("trend.ma100: direct score field used");
+
+    const w = normalizeWeights(params, ["trend_linear_weight", "trend_acceleration_weight", "trend_ma100_weight"]);
+    const newScore = clamp(
+      linear * w.trend_linear_weight +
+      accel * w.trend_acceleration_weight +
+      ma * w.trend_ma100_weight,
+      0, 10
+    );
+
+    return { now: base.trend, new: newScore, parts: { linear, accel, ma, weights: w }, audit };
+  }
+
+  function computeMoney(ctx, base, params) {
+    const { row, rt } = ctx;
+    const audit = [];
+    let volumeScore = num(field(row, ["money_volume_score", "volume_score", "flow_volume_score"], null), null);
+    if (volumeScore === null) {
+      const vr = field(row, ["volume_ratio"], field(rt, ["volume_ratio"], null));
+      if (num(vr, null) === null) {
+        volumeScore = base.money;
+        audit.push("money.volume: missing volume_ratio; fallback to current money_score");
+      } else {
+        volumeScore = clamp(5 + Math.log(Math.max(0.1, num(vr, 1))) * 2.2, 0, 10);
+        audit.push("money.volume: derived from log(volume_ratio)");
+      }
+    } else audit.push("money.volume: direct score field used");
+
+    let topSignal = num(field(row, ["money_top_score", "top_money_score", "top_signal_score"], null), null);
+    if (topSignal === null) {
+      topSignal = base.money;
+      audit.push("money.top: missing top money factor; fallback to current money_score, so changing weight should not create fake collapse");
+    } else audit.push("money.top: direct score field used");
+
+    const w = normalizeWeights(params, ["money_volume_weight", "money_top_weight"]);
+    const newScore = clamp(volumeScore * w.money_volume_weight + topSignal * w.money_top_weight, 0, 10);
+    return { now: base.money, new: newScore, parts: { volumeScore, topSignal, weights: w }, audit };
+  }
+
+  function computeTop(base, params) {
+    const capped = clamp(base.top, -Math.abs(params.top_adjustment_cap), Math.abs(params.top_adjustment_cap));
+    const newTop = clamp(capped * params.top_adjustment_weight, -Math.abs(params.top_adjustment_cap), Math.abs(params.top_adjustment_cap));
+    return { now: base.top, new: newTop, capped };
+  }
+
+  function computeM7(ctx, params = state.params) {
+    const base = getBaseScores(ctx);
+    const trend = computeTrend(ctx, base, params);
+    const money = computeMoney(ctx, base, params);
+    const top = computeTop(base, params);
+
+    const rawWeights = normalizeWeights(params, [
+      "raw_valuation_weight", "raw_trend_weight", "raw_structure_weight", "raw_timing_weight", "raw_money_weight"
+    ]);
+
+    const rawNow =
+      base.valuation * rawWeights.raw_valuation_weight +
+      base.trend * rawWeights.raw_trend_weight +
+      base.structure * rawWeights.raw_structure_weight +
+      base.timing * rawWeights.raw_timing_weight +
+      base.money * rawWeights.raw_money_weight;
+
+    const rawNew =
+      base.valuation * rawWeights.raw_valuation_weight +
+      trend.new * rawWeights.raw_trend_weight +
+      base.structure * rawWeights.raw_structure_weight +
+      base.timing * rawWeights.raw_timing_weight +
+      money.new * rawWeights.raw_money_weight;
+
+    const reconstructedNow = clamp(rawNow + top.now, 0, 10);
+    const m7Now = base.m7Now === null ? reconstructedNow : base.m7Now;
+    const newScore = clamp(rawNew + top.new, 0, 10);
+
+    const scores = {
+      valuation: { now: base.valuation, new: base.valuation },
+      trend: { now: base.trend, new: trend.new },
+      structure: { now: base.structure, new: base.structure },
+      timing: { now: base.timing, new: base.timing },
+      money: { now: base.money, new: money.new },
+      top: { now: top.now, new: top.new },
+      raw: { now: rawNow, new: rawNew },
+      m7: { now: m7Now, new: newScore },
+      reconstructedNow: { now: reconstructedNow, new: reconstructedNow }
+    };
+
+    const traceLines = [];
+    traceLines.push(`SYMBOL = ${ctx.sym}`);
+    traceLines.push(`M7 now source = ${base.m7Now === null ? "reconstructed raw+top" : "data field m7_v2_score/m7_final_score"}`);
+    traceLines.push("");
+    traceLines.push("RAW WEIGHTS normalized:");
+    Object.entries(rawWeights).forEach(([k,v]) => traceLines.push(`  ${k} = ${v.toFixed(4)}`));
+    traceLines.push("");
+    traceLines.push("TREND:");
+    traceLines.push(`  linear=${fmt(trend.parts.linear)} * w=${trend.parts.weights.trend_linear_weight.toFixed(4)}`);
+    traceLines.push(`  acceleration=${fmt(trend.parts.accel)} * w=${trend.parts.weights.trend_acceleration_weight.toFixed(4)}`);
+    traceLines.push(`  ma100_proxy=${fmt(trend.parts.ma)} * w=${trend.parts.weights.trend_ma100_weight.toFixed(4)}`);
+    traceLines.push(`  trend now=${fmt(base.trend)} / trend new=${fmt(trend.new)} / delta=${fmt(trend.new - base.trend)}`);
+    traceLines.push("");
+    traceLines.push("MONEY:");
+    traceLines.push(`  volumeScore=${fmt(money.parts.volumeScore)} * w=${money.parts.weights.money_volume_weight.toFixed(4)}`);
+    traceLines.push(`  topSignal=${fmt(money.parts.topSignal)} * w=${money.parts.weights.money_top_weight.toFixed(4)}`);
+    traceLines.push(`  money now=${fmt(base.money)} / money new=${fmt(money.new)} / delta=${fmt(money.new - base.money)}`);
+    traceLines.push("");
+    traceLines.push("FINAL:");
+    traceLines.push(`  rawNow = valuation*wv + trend*wt + structure*ws + timing*wi + money*wm = ${fmt(rawNow)}`);
+    traceLines.push(`  rawNew = valuation*wv + trendNew*wt + structure*ws + timing*wi + moneyNew*wm = ${fmt(rawNew)}`);
+    traceLines.push(`  top now=${fmt(top.now)} / capped=${fmt(top.capped)} / top new=${fmt(top.new)}`);
+    traceLines.push(`  M7 new = clamp(rawNew + topNew, 0, 10) = ${fmt(newScore)}`);
+
+    const audit = [...trend.audit, ...money.audit];
+    audit.push(`top: clamp top adjustment to ±${fmt(params.top_adjustment_cap)} then multiply by top_adjustment_weight`);
+    audit.push("global: no cross-stock re-normalization in what-if mode");
+
+    return { ctx, base, scores, trend, money, top, rawWeights, trace: traceLines.join("\n"), audit };
+  }
+
+  function renderParamControls() {
+    const box = $("paramControls");
+    box.innerHTML = PARAM_DEFS.map(([key, label, min, max, step]) => `
+      <div class="param">
+        <div class="param-top"><span class="param-name">${label}</span><span class="param-val" id="pv_${key}">${fmt(state.params[key], 2)}</span></div>
+        <input id="p_${key}" type="range" min="${min}" max="${max}" step="${step}" value="${state.params[key]}">
+      </div>
+    `).join("");
+    PARAM_DEFS.forEach(([key]) => {
+      $("p_" + key).addEventListener("input", (e) => {
+        state.params[key] = num(e.target.value, DEFAULT_PARAMS[key]);
+        $("pv_" + key).textContent = fmt(state.params[key], 2);
+        render();
+      });
+    });
+  }
+
+  function metricRow(name, now, newer) {
+    const d = num(newer, 0) - num(now, 0);
+    return `<div class="metric"><div>${name}</div><div class="num">${fmt(now)}</div><div class="num">${fmt(newer)}</div><div class="num ${deltaClass(d)}">${fmt(d)}</div></div>`;
+  }
+
+  function renderParamsTable() {
+    $("paramTable").innerHTML = PARAM_DEFS.map(([key, label]) => metricRow(label, DEFAULT_PARAMS[key], state.params[key])).join("");
+  }
+
+  function renderScoreTable(result) {
+    const s = result.scores;
+    $("scoreTable").innerHTML = [
+      metricRow("valuation score", s.valuation.now, s.valuation.new),
+      metricRow("trend score", s.trend.now, s.trend.new),
+      metricRow("structure score", s.structure.now, s.structure.new),
+      metricRow("timing score", s.timing.now, s.timing.new),
+      metricRow("money score", s.money.now, s.money.new),
+      metricRow("top score / adjustment", s.top.now, s.top.new),
+      metricRow("raw score", s.raw.now, s.raw.new),
+      metricRow("M7 final", s.m7.now, s.m7.new)
+    ].join("");
+  }
+
+  function renderAudit(result) {
+    $("auditBox").innerHTML = `
+      <table>
+        <thead><tr><th>Rule</th><th>Status</th></tr></thead>
+        <tbody>
+          ${result.audit.map(x => `<tr><td>${escapeHtml(x)}</td><td>${x.includes("fallback") ? "fallback" : "ok"}</td></tr>`).join("")}
+        </tbody>
+      </table>
+    `;
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[c]));
+  }
+
+  function renderDeltaPreview() {
+    const rows = getRows().map(ctx => {
+      const r = computeM7(ctx, state.params);
+      return { sym: ctx.sym, now: r.scores.m7.now, newer: r.scores.m7.new, delta: r.scores.m7.new - r.scores.m7.now };
+    }).sort((a,b) => Math.abs(b.delta) - Math.abs(a.delta)).slice(0,30);
+    $("deltaPreview").innerHTML = `
+      <thead><tr><th>Symbol</th><th>Now</th><th>New</th><th>Delta</th></tr></thead>
+      <tbody>${rows.map(r => `<tr><td>${r.sym}</td><td>${fmt(r.now)}</td><td>${fmt(r.newer)}</td><td class="${deltaClass(r.delta)}">${fmt(r.delta)}</td></tr>`).join("")}</tbody>
+    `;
+  }
+
+  function renderSymbolOptions() {
+    const q = String($("searchBox").value || "").trim().toUpperCase();
+    const rows = getRows().filter(x => {
+      if (!q) return true;
+      const name = String(field(x.row, ["name", "company_name"], "")).toUpperCase();
+      return x.sym.includes(q) || name.includes(q);
+    });
+    const sel = $("symbolSelect");
+    const current = state.selectedSymbol;
+    sel.innerHTML = rows.map(x => {
+      const name = field(x.row, ["name", "company_name"], "");
+      return `<option value="${x.sym}">${x.sym}${name ? " - " + escapeHtml(name) : ""}</option>`;
+    }).join("");
+    if (current && rows.some(x => x.sym === current)) sel.value = current;
+    else if (rows[0]) state.selectedSymbol = rows[0].sym;
+  }
+
+  function render() {
+    renderParamsTable();
+    const ctx = getRows().find(x => x.sym === state.selectedSymbol) || getRows()[0];
+    if (!ctx) return;
+    state.selectedSymbol = ctx.sym;
+    const result = computeM7(ctx, state.params);
+    const d = result.scores.m7.new - result.scores.m7.now;
+
+    $("kpiNow").textContent = fmt(result.scores.m7.now);
+    $("kpiNew").textContent = fmt(result.scores.m7.new);
+    $("kpiDelta").textContent = fmt(d);
+    $("kpiDelta").className = deltaClass(d);
+
+    const name = field(ctx.row, ["name", "company_name"], "");
+    $("selectedMeta").textContent = `${ctx.sym}${name ? " / " + name : ""}`;
+    $("ruleBox").innerHTML = `Fallback rule：缺少 trend/money 子因子時，該子項回到目前 score，不做硬推估；因此單純改 acceleration 或 money top weight 不應再造成 M7 delta 異常放大或異常崩跌。`;
+    renderScoreTable(result);
+    $("traceBox").textContent = result.trace;
+    renderAudit(result);
+    renderDeltaPreview();
+  }
+
+  function resetParams() {
+    state.params = { ...DEFAULT_PARAMS };
+    PARAM_DEFS.forEach(([key]) => {
+      const el = $("p_" + key);
+      const pv = $("pv_" + key);
+      if (el) el.value = state.params[key];
+      if (pv) pv.textContent = fmt(state.params[key], 2);
+    });
+    render();
+  }
+
+  function exportTrace() {
+    const ctx = getRows().find(x => x.sym === state.selectedSymbol) || getRows()[0];
+    if (!ctx) return;
+    const result = computeM7(ctx, state.params);
+    const payload = {
+      generated_at: new Date().toISOString(),
+      symbol: ctx.sym,
+      params: state.params,
+      scores: result.scores,
+      audit: result.audit,
+      trace: result.trace
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `m7_formula_trace_${ctx.sym}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  async function init() {
+    try {
+      $("loadStatus").textContent = "Loading data...";
+      const [scores, compare, manifest, runtime, fundamentals] = await Promise.all([
+        loadJson(DATA_PATHS.scores),
+        loadJson(DATA_PATHS.compare, true),
+        loadJson(DATA_PATHS.manifest, true),
+        loadJson(DATA_PATHS.runtime, true),
+        loadJson(DATA_PATHS.fundamentals, true)
+      ]);
+      state.scores = asArray(scores);
+      state.compare = asArray(compare);
+      state.manifest = manifest;
+      state.runtime = asArray(runtime);
+      state.fundamentals = asArray(fundamentals);
+
+      if (!state.scores.length) throw new Error("m7_v2_scores has no rows");
+      state.selectedSymbol = symbolOf(state.scores[0]);
+      $("loadStatus").textContent = `Loaded ${state.scores.length} M7 rows`;
+
+      renderSymbolOptions();
+      renderParamControls();
+      render();
+
+      $("symbolSelect").addEventListener("change", (e) => { state.selectedSymbol = e.target.value; render(); });
+      $("searchBox").addEventListener("input", () => { renderSymbolOptions(); render(); });
+      $("decimalInput").addEventListener("change", (e) => { state.decimals = clamp(num(e.target.value, 2), 1, 4); render(); });
+      $("btnReset").addEventListener("click", resetParams);
+      $("btnExport").addEventListener("click", exportTrace);
+    } catch (err) {
+      console.error(err);
+      $("loadStatus").textContent = "Load failed";
+      $("ruleBox").className = "warn";
+      $("ruleBox").textContent = err.message;
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", init);
+})();
