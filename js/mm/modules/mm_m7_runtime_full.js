@@ -1,3 +1,7 @@
+// MM M7 Runtime Full - no-shrink compatibility runtime
+// This file intentionally keeps the original full dashboard logic intact.
+window.__MM_M7_RUNTIME_LOADED__ = true;
+
 (function () {
   const DATA_PATH = "../data/mm/engine_progress_dashboard.json";
   const SCORES_PATH = "../data/m7_sandbox/m7_v2_scores.json";
@@ -1120,6 +1124,78 @@ const resultBox = document.getElementById("m7-what-if-results");
   }
 
 
+
+  function mmClamp(v, lo, hi) {
+    return Math.max(lo, Math.min(hi, num(v, 0)));
+  }
+
+  function mmPiecewise(points, x, fallback = 0) {
+    const pts = Array.isArray(points) ? points.map(p => [num(p[0], 0), num(p[1], 0)]).sort((a,b)=>a[0]-b[0]) : [];
+    const xv = num(x, null);
+    if (!pts.length || xv === null) return fallback;
+    if (xv <= pts[0][0]) return pts[0][1];
+    if (xv >= pts[pts.length - 1][0]) return pts[pts.length - 1][1];
+    for (let i = 1; i < pts.length; i++) {
+      const [x0, y0] = pts[i - 1];
+      const [x1, y1] = pts[i];
+      if (xv >= x0 && xv <= x1) {
+        if (x1 === x0) return y1;
+        const t = (xv - x0) / (x1 - x0);
+        return y0 + t * (y1 - y0);
+      }
+    }
+    return fallback;
+  }
+
+  function scoreByCurve(curve, x, fallback = 0) {
+    const raw = mmPiecewise(curve?.points, x, fallback);
+    const lo = num(curve?.cap_min, null);
+    const hi = num(curve?.cap_max, null);
+    return (lo !== null && hi !== null) ? mmClamp(raw, lo, hi) : raw;
+  }
+
+  function getValuationGapCurve() {
+    return M7_PARAM_CONFIG?.valuation?.gap_curve || {
+      points: [[-1,10],[-0.4,10],[-0.2,9],[-0.05,7],[0.05,7],[0.2,6],[0.4,3],[0.8,2]],
+      cap_min: 2,
+      cap_max: 10
+    };
+  }
+
+  function calcValuationWhatIf(row, params) {
+    const val = row?.feature_snapshot?.valuation || {};
+    const fpe = num(val.forward_pe, null);
+    const baseAnchor = num(val.base_anchor ?? val.anchor_pe, null);
+    if (fpe === null || baseAnchor === null || baseAnchor <= 0) return num(row.valuation_score, 0);
+    const market = num(params.valuation_market_multiplier, num(val.market_multiplier, 1));
+    const industry = num(params.valuation_industry_multiplier, num(val.industry_multiplier, 1));
+    const archetype = num(params.valuation_archetype_multiplier, num(val.archetype_multiplier, 1));
+    const finalAnchor = baseAnchor * market * industry * archetype;
+    const gap = finalAnchor > 0 ? (fpe / finalAnchor - 1) : 0;
+    return scoreByCurve(getValuationGapCurve(), gap, num(row.valuation_score, 0));
+  }
+
+  function calcStructureWhatIf(row, params) {
+    const candidates = [];
+    if (params.structure_allow_linear) candidates.push(num(row.structure_r2_linear, null));
+    if (params.structure_allow_quadratic) candidates.push(num(row.structure_r2_quadratic, null));
+    if (params.structure_allow_logarithmic) candidates.push(num(row.structure_r2_logarithmic, null));
+    const valid = candidates.filter(v => v !== null);
+    const best = valid.length ? Math.max(...valid) : num(row.best_structure_r2, null);
+    if (best === null) return num(row.structure_score, 0);
+    const curve = M7_PARAM_CONFIG?.structure?.r2_curve || {points:[[0,0],[0.2,1],[0.4,2],[0.8,8],[1,10]], cap_min:0, cap_max:10};
+    return scoreByCurve(curve, best, best * 10);
+  }
+
+  function calcMoneyWhatIf(row, params) {
+    const liquidity = num(row.money_liquidity_score, num(row.money_score, 0));
+    const flow = num(row.money_flow_score, num(row.money_score, 0));
+    const lw = num(params.money_liquidity_weight, 0.70);
+    const fw = num(params.money_flow_weight, 0.30);
+    const denom = Math.max(0.000001, lw + fw);
+    return mmClamp((lw * liquidity + fw * flow) / denom, 0, 10);
+  }
+
   function defaultWhatIfParams() {
     const w = M7_PARAM_CONFIG?.m7_v2_weights || {};
     const tw = M7_PARAM_CONFIG?.trend?.internal_weights || {};
@@ -1133,7 +1209,15 @@ const resultBox = document.getElementById("m7-what-if-results");
       linear: num(tw.linear, 0.35),
       ma200: num(tw.ma200, 0.50),
       acceleration: num(tw.acceleration, 0.15),
-      fallbackWeeks: num(fb.fallback_history_weeks, 156)
+      fallbackWeeks: num(fb.fallback_history_weeks, 156),
+      valuation_market_multiplier: 1.00,
+      valuation_industry_multiplier: 1.00,
+      valuation_archetype_multiplier: 1.00,
+      structure_allow_linear: true,
+      structure_allow_quadratic: true,
+      structure_allow_logarithmic: true,
+      money_liquidity_weight: num(M7_PARAM_CONFIG?.money?.module_presets?.M7?.liquidity_weight, 0.70),
+      money_flow_weight: num(M7_PARAM_CONFIG?.money?.module_presets?.M7?.flow_weight, 0.30)
     };
   }
 
@@ -1203,6 +1287,10 @@ const resultBox = document.getElementById("m7-what-if-results");
       .forEach(input => {
         const key = input.dataset.key;
         if (!key) return;
+        if (input.type === "checkbox") {
+          base[key] = !!input.checked;
+          return;
+        }
         const n = num(input.value, null);
         if (n !== null) base[key] = n;
       });
@@ -1223,12 +1311,16 @@ const resultBox = document.getElementById("m7-what-if-results");
         params.ma200 * num(r.trend_ma_score, 0) +
         params.acceleration * num(r.trend_acceleration_score, 0);
 
+      const changedValuation = calcValuationWhatIf(r, params);
+      const changedStructure = calcStructureWhatIf(r, params);
+      const changedMoney = calcMoneyWhatIf(r, params);
+
       const changedV2Unclamped =
-        params.valuation * num(r.valuation_score, 0) +
+        params.valuation * changedValuation +
         params.trend * changedTrend +
-        params.structure * num(r.structure_score, 0) +
+        params.structure * changedStructure +
         params.timing * num(r.timing_score, 0) +
-        params.money * num(r.money_score, 0);
+        params.money * changedMoney;
 
       const fallback = num(r.history_weeks, 999999) < params.fallbackWeeks;
       const changedEffective = fallback ? num(r.m7_raw_score, 0) : changedV2Unclamped;
@@ -1236,7 +1328,10 @@ const resultBox = document.getElementById("m7-what-if-results");
 
       return {
         ...r,
+        whatif_valuation_score: changedValuation,
         whatif_trend_score: changedTrend,
+        whatif_structure_score: changedStructure,
+        whatif_money_score: changedMoney,
         whatif_v2_score: changedV2Unclamped,
         whatif_effective_score: changedEffective,
         whatif_fallback_to_raw: fallback,
@@ -1276,7 +1371,7 @@ const resultBox = document.getElementById("m7-what-if-results");
           <tr>
             <th>Symbol</th><th>Old Rank</th><th>New Rank</th><th>Δ Rank</th>
             <th>Old Eff</th><th>New Eff</th><th>Δ Score</th>
-            <th>New Trend</th><th>New V2</th><th>Fallback?</th>
+            <th>New Val</th><th>New Trend</th><th>New Struct</th><th>New Money</th><th>New V2</th><th>Fallback?</th>
           </tr>
         </thead>
         <tbody>
@@ -1289,7 +1384,10 @@ const resultBox = document.getElementById("m7-what-if-results");
               <td>${formatNum(r.m7_effective_score ?? r.m7_v2_score)}</td>
               <td>${formatNum(r.whatif_effective_score)}</td>
               <td>${formatNum(r.whatif_score_delta, 3)}</td>
+              <td>${formatNum(r.whatif_valuation_score)}</td>
               <td>${formatNum(r.whatif_trend_score)}</td>
+              <td>${formatNum(r.whatif_structure_score)}</td>
+              <td>${formatNum(r.whatif_money_score)}</td>
               <td>${formatNum(r.whatif_v2_score)}</td>
               <td>${r.whatif_fallback_to_raw ? 'YES' : 'NO'}</td>
             </tr>
@@ -1589,10 +1687,23 @@ const resultBox = document.getElementById("m7-what-if-results");
       trendBox.innerHTML = keys.map(key => row(key, p[key] ?? 0)).join("");
     }
 
+
+    if (window.MMParameterBrain && typeof window.MMParameterBrain.renderB2B3Controls === "function") {
+      window.MMParameterBrain.renderB2B3Controls({
+        M7_PARAM_CONFIG,
+        row,
+        num
+      });
+    }
+
     document.querySelectorAll(".mm-brain-input").forEach(input => {
       input.oninput = () => {
         const key = input.dataset.key;
         const rowEl = input.closest(".mm-brain-row");
+        if (input.type === "checkbox") {
+          refreshImpactOnly();
+          return;
+        }
         const original = num(rowEl?.dataset.original, 0);
         const changed = num(input.value, original);
         const deltaEl = rowEl?.querySelector(".mm-brain-delta");
@@ -2047,19 +2158,7 @@ function bindStockQuery() {
     }
   };
 }
-
-  window.MMFullRuntime = {
-    init,
-    refreshImpactOnly,
-    renderParameterBrainDirectControls,
-    renderStandardStockCard,
-    renderStocksDisplayTable,
-    renderM7Readiness,
-    renderOutputDemo,
-    renderOverview,
-    renderActiveBuildContext,
-    renderHandoffMemory,
-    renderRisks,
-    renderMilestones
-  };
+  init();
 })();
+
+
