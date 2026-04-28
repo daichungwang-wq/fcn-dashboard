@@ -89,6 +89,19 @@
     return x.toFixed(d);
   }
 
+  function fmtPct(v, d = 1) {
+    const x = num(v, null);
+    if (x === null || !Number.isFinite(x)) return "--";
+    return `${x.toFixed(d)}%`;
+  }
+
+  function pctChange(now, newer) {
+    const a = num(now, null);
+    const b = num(newer, null);
+    if (a === null || b === null || Math.abs(a) < 0.000001) return null;
+    return ((b - a) / Math.abs(a)) * 100;
+  }
+
   function deltaClass(v) {
     const x = num(v, 0);
     if (Math.abs(x) < 0.00001) return "zero";
@@ -355,16 +368,24 @@
     const money = computeMoney(ctx, base, params);
     const top = computeTop(base, params);
 
-    const rawWeights = normalizeWeights(params, [
+    const rawKeys = [
       "raw_valuation_weight", "raw_trend_weight", "raw_structure_weight", "raw_timing_weight", "raw_money_weight"
-    ]);
+    ];
+
+    // Three layers are intentionally kept separate for display/debug:
+    // 1) nowWeights: original formula weights from DEFAULT_PARAMS, normalized by system.
+    // 2) userRawWeights: user slider inputs, before system normalization.
+    // 3) rawWeights: effective new weights after system normalization.
+    const nowWeights = normalizeWeights(DEFAULT_PARAMS, rawKeys);
+    const userRawWeights = Object.fromEntries(rawKeys.map(k => [k, Math.max(0, num(params[k], 0))]));
+    const rawWeights = normalizeWeights(params, rawKeys);
 
     const rawNow =
-      base.valuation * rawWeights.raw_valuation_weight +
-      base.trend * rawWeights.raw_trend_weight +
-      base.structure * rawWeights.raw_structure_weight +
-      base.timing * rawWeights.raw_timing_weight +
-      base.money * rawWeights.raw_money_weight;
+      base.valuation * nowWeights.raw_valuation_weight +
+      base.trend * nowWeights.raw_trend_weight +
+      base.structure * nowWeights.raw_structure_weight +
+      base.timing * nowWeights.raw_timing_weight +
+      base.money * nowWeights.raw_money_weight;
 
     const rawNew =
       base.valuation * rawWeights.raw_valuation_weight +
@@ -393,8 +414,13 @@
     traceLines.push(`SYMBOL = ${ctx.sym}`);
     traceLines.push(`M7 now source = ${base.m7Now === null ? "reconstructed raw+top" : "data field m7_v2_score/m7_final_score"}`);
     traceLines.push("");
-    traceLines.push("RAW WEIGHTS normalized:");
-    Object.entries(rawWeights).forEach(([k,v]) => traceLines.push(`  ${k} = ${v.toFixed(4)}`));
+    traceLines.push("RAW WEIGHTS:");
+    traceLines.push("  now/default normalized:");
+    Object.entries(nowWeights).forEach(([k,v]) => traceLines.push(`    ${k} = ${v.toFixed(4)}`));
+    traceLines.push("  user slider raw input:");
+    Object.entries(userRawWeights).forEach(([k,v]) => traceLines.push(`    ${k} = ${v.toFixed(4)}`));
+    traceLines.push("  effective new normalized:");
+    Object.entries(rawWeights).forEach(([k,v]) => traceLines.push(`    ${k} = ${v.toFixed(4)}`));
     traceLines.push("");
     traceLines.push("TREND:");
     traceLines.push(`  linear=${fmt(trend.parts.linear)} * w=${trend.parts.weights.trend_linear_weight.toFixed(4)}`);
@@ -418,7 +444,7 @@
     audit.push(`top: clamp top adjustment to ±${fmt(params.top_adjustment_cap)} then multiply by top_adjustment_weight`);
     audit.push("global: no cross-stock re-normalization in what-if mode");
 
-    return { ctx, base, scores, trend, money, top, rawWeights, trace: traceLines.join("\n"), audit };
+    return { ctx, base, scores, trend, money, top, nowWeights, userRawWeights, rawWeights, trace: traceLines.join("\n"), audit };
   }
 
   function renderParamControls() {
@@ -443,8 +469,14 @@
     return `<div class="metric"><div>${name}</div><div class="num">${fmt(now)}</div><div class="num">${fmt(newer)}</div><div class="num ${deltaClass(d)}">${fmt(d)}</div></div>`;
   }
 
+  function paramMetricRow(name, now, newer) {
+    const d = num(newer, 0) - num(now, 0);
+    const dp = pctChange(now, newer);
+    return `<div class="paramMetric"><div>${name}</div><div class="num">${fmt(now)}</div><div class="num">${fmt(newer)}</div><div class="num ${deltaClass(d)}">${fmt(d)}</div><div class="num ${deltaClass(d)}">${fmtPct(dp)}</div></div>`;
+  }
+
   function renderParamsTable() {
-    $("paramTable").innerHTML = PARAM_DEFS.map(([key, label]) => metricRow(label, DEFAULT_PARAMS[key], state.params[key])).join("");
+    $("paramTable").innerHTML = PARAM_DEFS.map(([key, label]) => paramMetricRow(label, DEFAULT_PARAMS[key], state.params[key])).join("");
   }
 
   function renderScoreTable(result) {
@@ -459,6 +491,78 @@
       metricRow("raw score", s.raw.now, s.raw.new),
       metricRow("M7 final", s.m7.now, s.m7.new)
     ].join("");
+  }
+
+  function factorImpactRows(result) {
+    const finalDelta = result.scores.m7.new - result.scores.m7.now;
+    const rows = [
+      { label: "valuation", scoreNow: result.scores.valuation.now, scoreNew: result.scores.valuation.new, key: "raw_valuation_weight" },
+      { label: "trend", scoreNow: result.scores.trend.now, scoreNew: result.scores.trend.new, key: "raw_trend_weight" },
+      { label: "structure", scoreNow: result.scores.structure.now, scoreNew: result.scores.structure.new, key: "raw_structure_weight" },
+      { label: "timing", scoreNow: result.scores.timing.now, scoreNew: result.scores.timing.new, key: "raw_timing_weight" },
+      { label: "money", scoreNow: result.scores.money.now, scoreNew: result.scores.money.new, key: "raw_money_weight" }
+    ];
+
+    return rows.map(r => {
+      const nowWeight = result.nowWeights[r.key];
+      const userNewWeight = result.userRawWeights[r.key];
+      const effectiveNewWeight = result.rawWeights[r.key];
+      const rawNow = r.scoreNow * nowWeight;
+      const rawNew = r.scoreNew * effectiveNewWeight;
+      const rawDelta = rawNew - rawNow;
+      const weightDeltaPct = pctChange(nowWeight, effectiveNewWeight);
+      const contributionPct = Math.abs(finalDelta) < 0.000001 ? null : (rawDelta / finalDelta) * 100;
+      return { ...r, nowWeight, userNewWeight, effectiveNewWeight, rawNow, rawNew, rawDelta, weightDeltaPct, contributionPct };
+    });
+  }
+
+  function renderFactorImpactTable(result) {
+    const el = $("factorImpactTable");
+    if (!el) return;
+    const rows = factorImpactRows(result);
+    const rawDelta = result.scores.raw.new - result.scores.raw.now;
+    const finalDelta = result.scores.m7.new - result.scores.m7.now;
+
+    el.innerHTML = `
+      <thead>
+        <tr>
+          <th>Score Layer</th>
+          <th>Raw Score Now</th>
+          <th>Raw Score New</th>
+          <th>Now Weight</th>
+          <th>User New Weight</th>
+          <th>Effective New Weight</th>
+          <th>Raw Now</th>
+          <th>Raw New</th>
+          <th>Raw Delta</th>
+          <th>Weight Δ%</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rows.map(r => `
+          <tr>
+            <td>${r.label}</td>
+            <td>${fmt(r.scoreNow)}</td>
+            <td>${fmt(r.scoreNew)}</td>
+            <td>${fmt(r.nowWeight, 4)}</td>
+            <td>${fmt(r.userNewWeight, 4)}</td>
+            <td>${fmt(r.effectiveNewWeight, 4)}</td>
+            <td>${fmt(r.rawNow)}</td>
+            <td>${fmt(r.rawNew)}</td>
+            <td class="${deltaClass(r.rawDelta)}">${fmt(r.rawDelta)}</td>
+            <td class="${deltaClass(r.weightDeltaPct)}">${fmtPct(r.weightDeltaPct)}</td>
+          </tr>
+        `).join("")}
+        <tr>
+          <th>Raw Total / Final</th>
+          <th></th><th></th><th></th><th></th><th></th>
+          <th>${fmt(result.scores.raw.now)}</th>
+          <th>${fmt(result.scores.raw.new)}</th>
+          <th class="${deltaClass(rawDelta)}">${fmt(rawDelta)}</th>
+          <th class="${deltaClass(finalDelta)}">Final Δ ${fmt(finalDelta)}</th>
+        </tr>
+      </tbody>
+    `;
   }
 
   function renderAudit(result) {
@@ -476,14 +580,93 @@
     return String(s).replace(/[&<>"]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[c]));
   }
 
+  function rankMap(items, key) {
+    const sorted = [...items].sort((a, b) => num(b[key], -999) - num(a[key], -999));
+    const map = new Map();
+    sorted.forEach((x, i) => map.set(x.sym, i + 1));
+    return map;
+  }
+
+  function getPrice(ctx) {
+    return num(field(ctx.row, ["price_now", "current_price", "last_price", "price"], field(ctx.rt, ["price_now", "current_price", "last_price", "price"], null)), null);
+  }
+
+  function getM1Score(ctx) {
+    return num(field(ctx.row, ["m1_score", "m1", "m1_final_score"], field(ctx.cmp, ["m1_score", "m1_final_score"], null)), null);
+  }
+
+  function impactFactors(result) {
+    const rows = factorImpactRows(result)
+      .map(r => ({ label: r.label, delta: r.rawDelta }))
+      .filter(r => Math.abs(num(r.delta, 0)) > 0.0005)
+      .sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta))
+      .slice(0, 3);
+
+    if (!rows.length) return `<span class="tag zero">No major factor</span>`;
+
+    return rows.map(r => {
+      const arrow = r.delta > 0 ? "↑" : "↓";
+      const cls = r.delta > 0 ? "pos" : "neg";
+      return `<span class="tag ${cls}">${escapeHtml(r.label)} ${arrow} ${fmt(r.delta)}</span>`;
+    }).join(" ");
+  }
+
   function renderDeltaPreview() {
-    const rows = getRows().map(ctx => {
-      const r = computeM7(ctx, state.params);
-      return { sym: ctx.sym, now: r.scores.m7.now, newer: r.scores.m7.new, delta: r.scores.m7.new - r.scores.m7.now };
-    }).sort((a,b) => Math.abs(b.delta) - Math.abs(a.delta)).slice(0,30);
+    const computed = getRows().map(ctx => {
+      const result = computeM7(ctx, state.params);
+      const name = field(ctx.row, ["name", "company_name"], "");
+      const m1 = getM1Score(ctx);
+      const m7Now = result.scores.m7.now;
+      const m7New = result.scores.m7.new;
+      const delta = m7New - m7Now;
+      const deltaPct = Math.abs(num(m7Now, 0)) < 0.000001 ? null : (delta / m7Now) * 100;
+      return {
+        ctx, result, sym: ctx.sym, name, price: getPrice(ctx),
+        m1Now: m1, m1New: m1, m7Now, m7New, delta, deltaPct
+      };
+    });
+
+    const nowRanks = rankMap(computed, "m7Now");
+    const newRanks = rankMap(computed, "m7New");
+
+    const rows = computed
+      .map(x => ({ ...x, rankNow: nowRanks.get(x.sym), rankNew: newRanks.get(x.sym) }))
+      .sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta))
+      .slice(0, 30);
+
     $("deltaPreview").innerHTML = `
-      <thead><tr><th>Symbol</th><th>Now</th><th>New</th><th>Delta</th></tr></thead>
-      <tbody>${rows.map(r => `<tr><td>${r.sym}</td><td>${fmt(r.now)}</td><td>${fmt(r.newer)}</td><td class="${deltaClass(r.delta)}">${fmt(r.delta)}</td></tr>`).join("")}</tbody>
+      <thead>
+        <tr>
+          <th>Rank Now</th>
+          <th>Rank New</th>
+          <th>Symbol</th>
+          <th>Name</th>
+          <th>Price</th>
+          <th>Delta %</th>
+          <th>M1 Now</th>
+          <th>M1 New</th>
+          <th>M7 Now</th>
+          <th>M7 New</th>
+          <th>Impact Factors</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rows.map(r => `
+          <tr>
+            <td>${r.rankNow ?? "--"}</td>
+            <td class="${deltaClass((r.rankNow || 0) - (r.rankNew || 0))}">${r.rankNew ?? "--"}</td>
+            <td><strong>${escapeHtml(r.sym)}</strong></td>
+            <td>${escapeHtml(r.name || "")}</td>
+            <td>${fmt(r.price)}</td>
+            <td class="${deltaClass(r.deltaPct)}">${fmtPct(r.deltaPct)}</td>
+            <td>${fmt(r.m1Now)}</td>
+            <td>${fmt(r.m1New)}</td>
+            <td>${fmt(r.m7Now)}</td>
+            <td class="${deltaClass(r.delta)}">${fmt(r.m7New)}</td>
+            <td style="text-align:left">${impactFactors(r.result)}</td>
+          </tr>
+        `).join("")}
+      </tbody>
     `;
   }
 
@@ -521,6 +704,7 @@
     $("selectedMeta").textContent = `${ctx.sym}${name ? " / " + name : ""}`;
     $("ruleBox").innerHTML = `Debug rule：前端會重新計算公式，但必須對齊 Python M7 v2 欄位。trend 分數允許超過 10；money 使用 liquidity/flow 子因子。缺少子因子時才 fallback，並在 audit 明確顯示。`;
     renderScoreTable(result);
+    renderFactorImpactTable(result);
     $("traceBox").textContent = result.trace;
     renderAudit(result);
     renderDeltaPreview();
@@ -546,6 +730,12 @@
       symbol: ctx.sym,
       params: state.params,
       scores: result.scores,
+      raw_weight_layers: {
+        now_weights: result.nowWeights,
+        user_new_weights: result.userRawWeights,
+        effective_new_weights: result.rawWeights
+      },
+      factor_impact: factorImpactRows(result),
       audit: result.audit,
       trace: result.trace
     };
