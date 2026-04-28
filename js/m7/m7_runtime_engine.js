@@ -1,1224 +1,2162 @@
-// ==========================================
-// M7 Runtime Engine FINAL NORMALIZED + U7 PRO
-// 保留原本評分 / 估值 / 曝險 / scoreboard
-// 新增：
-// 1. 四池 today_highlight_pool / watch_pool / simulation_pool / reject_pool
-// 2. pool_rules
-// 3. pool_summary
-// 4. reject_type / reject_reasons / pool_reason
-// 5. trendRaw / snapshot / growth / growthScore 透明欄位
-// 6. 不動原本 aggressive_recommend / watch_list / remove_list / all
-// ==========================================
-// 振宇 FCN 系統
-// Proprietary System - All Rights Reserved
-// Unauthorized copying or commercial use is prohibited
-// All rights reserved by Gaya.Wang
-// ==========================================
-// ==========================================
+// MM M7 Runtime Full - no-shrink compatibility runtime
+// This file intentionally keeps the original full dashboard logic intact.
+window.__MM_M7_RUNTIME_LOADED__ = true;
 
-import fs from "fs";
-import path from "path";
+(function () {
+  const DATA_PATH = "../data/mm/engine_progress_dashboard.json";
+  const SCORES_PATH = "../data/m7_sandbox/m7_v2_scores.json";
+  const AUDIT_PATH = "../data/m7_sandbox/m7_formula_input_audit.json";
+  const RUNTIME_PATH = "../data/runtime_staging/market_runtime_long_horizon.json";
+  const M7_PARAM_CONFIG_PATH = "../configs/mm/m7_v2_parameter_config.json";
+  const CONFIG_STORAGE_KEY = "mm_parameter_config_v1";
 
-const INPUT_FILE = path.resolve("./data/m7/m7_fundamental_data.json");
-const M2_FILE = path.resolve("./data/m7/m2_stock_exposure.json");
-const OUTPUT_FILE = path.resolve("./data/m7/m7_new_stock_today.json");
-const SCOREBOARD_FILE = path.resolve("./data/m7/m7_scoreboard.json");
+  let DASHBOARD_DATA = {};
+  let SCORES_DATA = {};
+  let AUDIT_DATA = {};
+  let RUNTIME_DATA = {};
+  let M7_PARAM_CONFIG = {};
+  let PARAM_META = [];
 
-// ------------------------------------------
-// 工具
-// ------------------------------------------
-function toArray(raw) {
-  if (Array.isArray(raw)) return raw;
-  if (raw?.data && Array.isArray(raw.data)) return raw.data;
-  if (raw?.data && typeof raw.data === "object") return Object.values(raw.data);
-  return [];
-}
-
-function safeNum(v, fallback = null) {
-  const n = Number(v);
-  return Number.isFinite(n) ? n : fallback;
-}
-
-function round2(v) {
-  const n = Number(v);
-  return Number.isFinite(n) ? Math.round(n * 100) / 100 : null;
-}
-
-function clamp(v, min, max) {
-  return Math.max(min, Math.min(v, max));
-}
-
-function getArrow(v) {
-  if (v === null || v === undefined) return "未知";
-  return v >= 0 ? "↑" : "↓";
-}
-
-// ------------------------------------------
-// 讀取 M2 曝險資料
-// ------------------------------------------
-function loadM2Exposure() {
-  if (!fs.existsSync(M2_FILE)) {
-    return {
-      generated_at: null,
-      total_invested: 0,
-      stocks: {}
-    };
+  function statusPill(status) {
+    if (status === "PRODUCTION") return '<span class="pill ok">PRODUCTION</span>';
+    if (status === "SANDBOX" || status === "STAGING") return `<span class="pill warn">${status}</span>`;
+    return `<span class="pill bad">${status}</span>`;
   }
 
-  const raw = JSON.parse(fs.readFileSync(M2_FILE, "utf-8"));
-  return {
-    generated_at: raw.generated_at || null,
-    total_invested: safeNum(raw.total_invested, 0),
-    stocks: raw.stocks || {}
-  };
-}
-
-// ------------------------------------------
-// 類別 / valuation class / anchor
-// ------------------------------------------
-const VALUATION_OVERRIDE = {
-  MSFT: { valuation_class: "AI_PLATFORM_CORE", anchor_pe: 34 },
-  META: { valuation_class: "AI_PLATFORM_CORE", anchor_pe: 34 },
-  GOOG: { valuation_class: "AI_PLATFORM_CORE", anchor_pe: 35 },
-  AMZN: { valuation_class: "PLATFORM_MIXED", anchor_pe: 28 },
-  AAPL: { valuation_class: "CONSUMER_PLATFORM", anchor_pe: 34 },
-
-  NVDA: { valuation_class: "AI_SEMI_LEADER", anchor_pe: 27 },
-  AVGO: { valuation_class: "AI_SEMI_LEADER", anchor_pe: 35 },
-  ARM: { valuation_class: "AI_SEMI_LEADER", anchor_pe: 30 },
-
-  TSM: { valuation_class: "AI_SEMI_CYCLICAL", anchor_pe: 30 },
-  AMAT: { valuation_class: "AI_SEMI_CYCLICAL", anchor_pe: 26 },
-  AMD: { valuation_class: "AI_SEMI_CYCLICAL", anchor_pe: 22 },
-  MU: { valuation_class: "AI_SEMI_CYCLICAL", anchor_pe: 20 },
-  MRVL: { valuation_class: "AI_SEMI_CYCLICAL", anchor_pe: 22 },
-
-  BAC: { valuation_class: "FINANCIAL", anchor_pe: 10 },
-  LQD: { valuation_class: "ETF_INCOME", anchor_pe: 22 },
-  QQQ: { valuation_class: "ETF_GROWTH", anchor_pe: 26 },
-
-  AAL: { valuation_class: "CYCLICAL", anchor_pe: 12 },
-  CCL: { valuation_class: "CYCLICAL", anchor_pe: 12 },
-  LVS: { valuation_class: "CYCLICAL", anchor_pe: 15 },
-
-  COIN: { valuation_class: "SPECULATIVE", anchor_pe: 18 },
-  SOFI: { valuation_class: "SPECULATIVE", anchor_pe: 18 },
-  ALAB: { valuation_class: "SPECULATIVE", anchor_pe: 18 },
-  CRDO: { valuation_class: "SPECULATIVE", anchor_pe: 18 },
-  TGT: { valuation_class: "INCOME", anchor_pe: 13 },
-  COST: { valuation_class: "INCOME", anchor_pe: 18 },
-  TSLA: { valuation_class: "SPECULATIVE", anchor_pe: 20 },
-  PLTR: { valuation_class: "SPECULATIVE", anchor_pe: 22 }
-};
-
-function inferCategory(row) {
-  const symbol = row.symbol || "";
-  const sector = row.sector || "";
-  const subsector = row.subsector || "";
-
-  if (["COIN", "SOFI", "ALAB", "CRDO", "TSLA", "PLTR"].includes(symbol)) {
-    return "speculative";
+  function yn(v) {
+    return v ? "✅" : "—";
   }
 
-  if (["AAL", "CCL", "LVS", "MGM"].includes(symbol)) {
-    return "cyclical_high_beta";
+  function safe(v, fallback = "--") {
+    return v === null || v === undefined || v === "" ? fallback : v;
   }
 
-  if (sector === "FINANCIAL") return "income";
-  if (sector === "ETF") return "income";
-  if (sector === "DEFENSIVE") return "defensive";
-  if (
-    sector === "TRAVEL" ||
-    subsector === "AIRLINE" ||
-    subsector === "CRUISE" ||
-    subsector === "CASINO"
-  ) {
-    return "cyclical_high_beta";
+  function num(v, fallback = null) {
+    const n = Number(v);
+    return Number.isFinite(n) ? n : fallback;
   }
 
-  return "core";
-}
-
-function inferValuationClass(row, category) {
-  const symbol = row.symbol || "";
-  const sector = row.sector || "";
-  const subsector = row.subsector || "";
-
-  if (VALUATION_OVERRIDE[symbol]?.valuation_class) {
-    return VALUATION_OVERRIDE[symbol].valuation_class;
+  function setError(msg) {
+    const box = document.getElementById("dashboard-error");
+    if (!box) return;
+    box.style.display = "block";
+    box.textContent = msg;
   }
 
-  if (category === "speculative") return "SPECULATIVE";
-  if (category === "cyclical_high_beta") return "CYCLICAL";
-  if (category === "defensive") return "DEFENSIVE";
-  if (category === "income") {
-    if (sector === "FINANCIAL") return "FINANCIAL";
-    return "ETF_INCOME";
+  function clearError() {
+    const box = document.getElementById("dashboard-error");
+    if (!box) return;
+    box.style.display = "none";
+    box.textContent = "";
   }
 
-  if (sector === "AI_APPLICATION") return "AI_PLATFORM_CORE";
-  if (sector === "PLATFORM") return "CONSUMER_PLATFORM";
-
-  if (sector === "AI_SEMI") {
-    if (subsector === "GPU" || subsector === "ASIC" || subsector === "HBM") {
-      return "AI_SEMI_LEADER";
-    }
-    return "AI_SEMI_CYCLICAL";
+  function card(k, v) {
+    return `<div class="card"><div class="k">${k}</div><div class="v">${v}</div></div>`;
   }
 
-  return "CORE_GENERIC";
-}
-
-function getAnchorPE(row, category) {
-  const symbol = row.symbol || "";
-  const vClass = inferValuationClass(row, category);
-
-  if (VALUATION_OVERRIDE[symbol]?.anchor_pe) {
-    return VALUATION_OVERRIDE[symbol].anchor_pe;
-  }
-
-  const anchorMap = {
-    AI_PLATFORM_CORE: 32,
-    CONSUMER_PLATFORM: 26,
-    PLATFORM_MIXED: 28,
-    AI_SEMI_LEADER: 25,
-    AI_SEMI_CYCLICAL: 22,
-    DEFENSIVE: 22,
-    FINANCIAL: 10,
-    CYCLICAL: 12,
-    SPECULATIVE: 18,
-    ETF_INCOME: 20,
-    ETF_GROWTH: 25,
-    CORE_GENERIC: 20
-  };
-
-  return anchorMap[vClass] || 20;
-}
-
-function calcCategoryBonus(category) {
-  if (category === "core") return 2;
-  if (category === "defensive") return 1;
-  if (category === "income") return 0.5;
-  if (category === "cyclical_high_beta") return -0.2;
-  if (category === "speculative") return -0.5;
-  return 0;
-}
-
-// ------------------------------------------
-// 品質 bonus / quality factor
-// ------------------------------------------
-function calcQualityBonus(qualityLevel, riskLevel) {
-  let bonus = 0;
-
-  if (qualityLevel === "高") bonus += 2;
-  else if (qualityLevel === "中") bonus += 1;
-  else bonus -= 1;
-
-  if (riskLevel === "高") bonus -= 1;
-  else if (riskLevel === "低") bonus += 0.5;
-
-  return clamp(bonus, -2, 2);
-}
-
-function calcQualityMomentum(r1m, r3m, r6m, r12m) {
-  return (
-    0.1 * (r1m ?? 0) +
-    0.15 * (r3m ?? 0) +
-    0.25 * (r6m ?? 0) +
-    0.5 * (r12m ?? 0)
-  );
-}
-
-function calcQualityFactor(q) {
-  if (q >= 30) return 1.20;
-  if (q >= 20) return 1.00 + (q - 20) * 0.02;
-  if (q >= 10) return 0.80 + (q - 10) * 0.02;
-  return 0.80;
-}
-
-// ------------------------------------------
-// 估值
-// ------------------------------------------
-function inferValuationModel(row) {
-  const sector = row.sector || "";
-  if (sector === "ETF") return "ETF";
-
-  const price = safeNum(row.price, null);
-  const epsNow = safeNum(row.eps_now, null);
-  const epsNext = safeNum(row.eps_next, null);
-
-  if (price !== null && epsNow !== null && epsNext !== null && epsNow > 0 && epsNext > 0) {
-    const growth = ((epsNext / epsNow) - 1) * 100;
-    if (growth > 0) return "PEG";
-    return "PE";
-  }
-
-  return "NON_PEG";
-}
-
-function peScoreFromRatio(peRatio) {
-  if (peRatio === null || peRatio === undefined) return 20;
-
-  if (peRatio <= 0.7) return 34;
-  if (peRatio <= 0.8) return 32 + (0.8 - peRatio) * 20;
-  if (peRatio <= 0.9) return 28 + (0.9 - peRatio) * 40;
-  if (peRatio <= 1.1) return 20 - (peRatio - 1.0) * 80;
-  if (peRatio <= 1.2) return 12 - (peRatio - 1.1) * 40;
-  if (peRatio <= 1.3) return 8 - (peRatio - 1.2) * 20;
-  return 6;
-}
-
-function growthScoreBase(growth) {
-  if (growth === null || growth === undefined) return 3;
-
-  if (growth <= -30) return 0;
-
-  if (growth <= -20) return 1 + (growth + 20) * 0.1;
-  if (growth <= -10) return 2 + (growth + 10) * 0.1;
-  if (growth <= 0) return 3 + growth * 0.1;
-
-  if (growth <= 10) return 3 + 0.3 * growth;
-
-  if (growth <= 20) {
-    const x = growth - 10;
-    return 6 + 6.5 * Math.pow(x / 10, 1.2);
-  }
-
-  if (growth <= 27) {
-    const x = growth - 20;
-    return 14 + 5 * Math.pow((x * 1.1) / 10, 1.6);
-  }
-
-  return Math.min(25, 19.4 + 0.8 * Math.sqrt(growth - 27));
-}
-
-function growthScoreFinal(growth) {
-  const base = 3;
-  const oldScore = growthScoreBase(growth);
-
-  if (growth === null || growth === undefined) return base;
-  if (growth >= 0) return oldScore;
-
-  return base + 0.5 * (oldScore - base);
-}
-
-function buildValuationData(row, category) {
-  const model = inferValuationModel(row);
-  const price = safeNum(row.price, null);
-  const epsNow = safeNum(row.eps_now, null);
-  const epsNext = safeNum(row.eps_next, null);
-  const r1m = safeNum(row.ret_1m, 0);
-  const r3m = safeNum(row.ret_3m, 0);
-  const r6m = safeNum(row.ret_6m, 0);
-  const r12m = safeNum(row.ret_12m, 0);
-
-  let peForward = null;
-  let growth = null;
-  let peg = null;
-  let peRatio = null;
-
-  const anchorPE = getAnchorPE(row, category);
-
-  if (price !== null && epsNext !== null && epsNext > 0) {
-    peForward = price / epsNext;
-    peRatio = peForward / anchorPE;
-  }
-
-  if (epsNow !== null && epsNext !== null && epsNow > 0 && epsNext > 0) {
-    growth = ((epsNext / epsNow) - 1) * 100;
-    if (growth > 0 && peForward !== null) {
-      peg = peForward / growth;
+  function loadSavedConfig() {
+    try {
+      return JSON.parse(localStorage.getItem(CONFIG_STORAGE_KEY) || "{}");
+    } catch (e) {
+      return {};
     }
   }
 
-  const peScore = peScoreFromRatio(peRatio);
-  const growthScore = growthScoreFinal(growth);
-  const growthScoreAdj = growthScore * 0.6;
-
-  const qualityMomentum = calcQualityMomentum(r1m, r3m, r6m, r12m);
-  const qualityFactor = calcQualityFactor(qualityMomentum);
-
-  const valuationRaw = 4 * (0.7 * peScore + 0.3 * growthScoreAdj) * qualityFactor;
-  const valuationNorm = clamp(valuationRaw, 0, 65);
-
-  let level = "中性";
-  if (valuationNorm >= 8) level = "合理偏低";
-  else if (valuationNorm >= 6.5) level = "合理";
-  else if (valuationNorm >= 5) level = "中性";
-  else if (valuationNorm >= 3) level = "偏高";
-  else level = "高估";
-
-  const vClass = inferValuationClass(row, category);
-
-  const text =
-    `ValuationClass ${vClass}` +
-    `，AnchorPE ${anchorPE}` +
-    (peForward !== null ? `，Forward PE ${peForward.toFixed(2)}` : "") +
-    (peRatio !== null ? `，PE Ratio ${peRatio.toFixed(2)}` : "") +
-    (growth !== null ? `，EPS成長 ${growth.toFixed(2)}%` : "") +
-    (peg !== null ? `，PEG ${peg.toFixed(2)}` : "") +
-    `，QualityMomentum ${qualityMomentum.toFixed(2)}%` +
-    `，QualityFactor ${qualityFactor.toFixed(2)}` +
-    `，ValuationRaw ${valuationRaw.toFixed(2)}` +
-    `，估值判定：${level}`;
-
-  return {
-    model,
-    valuation_class: vClass,
-    peg: round2(peg),
-    pe_forward: round2(peForward),
-    anchor_pe: round2(anchorPE),
-    pe_ratio: round2(peRatio),
-    growth: round2(growth),
-    pe_score: round2(peScore),
-    growth_score: round2(growthScore),
-    growth_score_adj: round2(growthScoreAdj),
-    quality_momentum: round2(qualityMomentum),
-    quality_factor: round2(qualityFactor),
-    raw_score: round2(valuationRaw),
-    norm_score: round2(valuationNorm),
-    level,
-    text
-  };
-}
-
-// ------------------------------------------
-// 趨勢 / 結構 / Timing / Money
-// ------------------------------------------
-function calcTrendRaw(r1m, r3m, r6m, r12m) {
-  return (
-    0.25 * (r1m ?? 0) +
-    0.25 * (r3m ?? 0) +
-    0.25 * (r6m ?? 0) +
-    0.25 * (r12m ?? 0)
-  );
-}
-
-function trendScoreFromRawNormalized(trendRaw) {
-  if (trendRaw >= 30) return 10;
-  if (trendRaw >= 20) return 9;
-  if (trendRaw >= 10) return 8;
-  if (trendRaw >= 0) return 6;
-  if (trendRaw >= -10) return 4;
-  if (trendRaw >= -20) return 2;
-  return 0;
-}
-
-function inferTrendState(trendRaw) {
-  if (trendRaw >= 20) return "up_strong";
-  if (trendRaw >= 5) return "up_mild";
-  if (trendRaw > -10) return "neutral";
-  if (trendRaw > -25) return "weak";
-  return "down";
-}
-
-function calcShortSwing(swingDays, amp1d) {
-  const days = Array.isArray(swingDays) ? swingDays : [];
-  const d0 = safeNum(days[0], safeNum(amp1d, 0));
-  const d1 = safeNum(days[1], 0);
-  const d2 = safeNum(days[2], 0);
-  const d3 = safeNum(days[3], 0);
-  const d4 = safeNum(days[4], 0);
-  const d5 = safeNum(days[5], 0);
-
-  return (
-    0.2 * d0 +
-    0.2 * d1 +
-    0.1 * d2 +
-    0.1 * d3 +
-    0.2 * d4 +
-    0.2 * d5
-  );
-}
-
-function structureScoreFromShortSwing(shortSwing) {
-  if (shortSwing < -1) return 0;
-  if (shortSwing <= 0) return 3;
-  if (shortSwing <= 5) return 1 + 8 * Math.pow(shortSwing / 5, 1.2);
-  if (shortSwing <= 10) return 8 + (shortSwing - 5) * 0.4;
-  return 10;
-}
-
-function inferStructureState(shortSwing) {
-  if (shortSwing >= 10) return "sweet_max";
-  if (shortSwing >= 5) return "sweet";
-  if (shortSwing >= 2) return "building";
-  return "flat";
-}
-
-function calcSnapshot(r1d, r1w, r1m) {
-  return (
-    0.45 * (r1d ?? 0) +
-    0.35 * (r1w ?? 0) +
-    0.2 * (r1m ?? 0)
-  );
-}
-
-function timingScoreFromSnapshot(snapshot) {
-  const score = snapshot * 2;
-  return clamp(score, 3, 10);
-}
-
-function inferTimingState(snapshot) {
-  if (snapshot <= -10) return "very_cold";
-  if (snapshot <= -3) return "cold";
-  if (snapshot < 3) return "neutral";
-  if (snapshot < 10) return "warm";
-  return "hot";
-}
-
-function calcMoneyScoreNormalized(volumeRatio) {
-  const v = safeNum(volumeRatio, 1);
-  if (v === null) return 4;
-  if (v >= 1.5) return 10;
-  if (v >= 1.3) return 9;
-  if (v >= 1.2) return 8.5;
-  if (v >= 1) return 8;
-  if (v >= 0.9) return 7.5;
-  if (v >= 0.8) return 7;
-  if (v >= 0.6) return 6;
-  if (v >= 0.5) return 5;
-  if (v >= 0.4) return 4;
-  return 2;
-}
-
-// ------------------------------------------
-// M2 曝險
-// ------------------------------------------
-function buildExposure(m2Node) {
-  const empty = {
-    fcn_count: 0,
-    invested_amount: 0,
-    invested_ratio: 0,
-    danger: 0,
-    watch: 0,
-    healthy: 0,
-    avg_score_pure: null,
-    avg_score_event: null
-  };
-
-  if (!m2Node) return empty;
-
-  return {
-    fcn_count: safeNum(m2Node.fcn_count, 0),
-    invested_amount: safeNum(m2Node.invested_amount, 0),
-    invested_ratio: safeNum(m2Node.invested_ratio, 0),
-    danger: safeNum(m2Node.danger, 0),
-    watch: safeNum(m2Node.watch, 0),
-    healthy: safeNum(m2Node.healthy, 0),
-    avg_score_pure: safeNum(m2Node.avg_score_pure, null),
-    avg_score_event: safeNum(m2Node.avg_score_event, null)
-  };
-}
-
-function getExposureBaseline(category) {
-  if (category === "core") return { safe: 40, warning: 50 };
-  if (category === "defensive") return { safe: 35, warning: 45 };
-  if (category === "income") return { safe: 25, warning: 35 };
-  return { safe: 20, warning: 30 };
-}
-
-function buildExposureWarning(exposure, category) {
-  const baseline = getExposureBaseline(category);
-  const ratio = safeNum(exposure.invested_ratio, 0);
-
-  let level = "normal";
-  let text = `投入比 ${round2(ratio)}%（安全）。`;
-
-  if (ratio > baseline.warning) {
-    level = "high";
-    text = `投入比 ${round2(ratio)}%（過高），高於 ${category} 類 baseline，建議停止新增並控制集中度。`;
-  } else if (ratio > baseline.safe) {
-    level = "medium";
-    text = `投入比 ${round2(ratio)}%（偏高），已高於 ${category} 類安全 baseline，建議保守處理。`;
+  function saveConfig(config) {
+    localStorage.setItem(CONFIG_STORAGE_KEY, JSON.stringify(config, null, 2));
   }
 
-  if (exposure.danger > 0) {
-    level = "high";
-    text = `目前已有 Danger 持倉 ${exposure.danger} 檔，且投入比 ${round2(ratio)}%，應先風控。`;
+  function getCurrentConfigValue(key, originalValue) {
+    const saved = loadSavedConfig();
+    return saved[key] !== undefined ? saved[key] : originalValue;
   }
 
-  return { level, text, baseline };
-}
+  function deltaText(original, changed) {
+    const o = num(original, null);
+    const c = num(changed, null);
+    if (o === null || c === null) return "--";
+    const d = c - o;
+    if (Math.abs(d) < 0.000001) return "0";
+    return d > 0 ? `+${d.toFixed(4)}` : d.toFixed(4);
+  }
 
-// ------------------------------------------
-// 最終總分
-// ------------------------------------------
-function buildFinalScore({
-  valuationNorm,
-  trendNorm,
-  structureNorm,
-  timingNorm,
-  moneyNorm,
-  qualityBonus,
-  categoryBonus
-}) {
-  const total =
-    valuationNorm +
-    0.8 * trendNorm +
-    0.8 * structureNorm +
-    timingNorm +
-    moneyNorm +
-    qualityBonus +
-    categoryBonus;
+  function formatNum(v, digits = 2) {
+    const n = num(v, null);
+    if (n === null || Number.isNaN(n)) return "--";
+    return n.toFixed(digits);
+  }
 
-  return round2(total);
-}
+  function f(v, digits = 2) {
+    return formatNum(v, digits);
+  }
 
-// ------------------------------------------
-// 動作 / highlight / 說明
-// ------------------------------------------
-function buildAction(row, metrics) {
-  const category = row.category || inferCategory(row);
+  function percent(v) {
+    const n = num(v, null);
+    return n === null ? "--" : `${n.toFixed(1)}%`;
+  }
 
-  const trendState = metrics.trendState;
-  const timingState = metrics.timingState;
-  const exposureWarning = metrics.exposureWarning || { level: "normal" };
-  const exposure = metrics.exposure || {};
+  function getScoreRows() {
+    return Array.isArray(SCORES_DATA?.rows) ? SCORES_DATA.rows : [];
+  }
 
-  const total = safeNum(metrics.total, 0);
-  const valuationScore = safeNum(metrics.valuationScore, 0);
-  const trendScore = safeNum(metrics.trendScore, 0);
-  const structureScore = safeNum(metrics.structureScore, 0);
-  const timingScore = safeNum(metrics.timingScore, 0);
-  const moneyScore = safeNum(metrics.moneyScore, 0);
+  function getAuditRows() {
+    return Array.isArray(AUDIT_DATA?.rows) ? AUDIT_DATA.rows : [];
+  }
 
-  const dangerCount = safeNum(exposure.danger, 0);
-  const exposureLevel = exposureWarning.level || "normal";
+  function getRuntimeRows() {
+    return RUNTIME_DATA?.rows || {};
+  }
 
-  if (category === "speculative") return "移除";
-  if (trendState === "down") return "移除";
-  if (exposureLevel === "high" && dangerCount > 0) return "移除";
-  if (structureScore < 5 && timingState === "hot") return "移除";
-  if (valuationScore < 4.5) return "移除";
-  if (structureScore < 4.5) return "移除";
-  if (total < 6.2) return "移除";
+  function getOriginalM7Weights() {
+    const cfg = M7_PARAM_CONFIG?.m7_v2_weights || {};
+    return {
+      valuation: num(cfg.valuation, 0.45),
+      trend: num(cfg.trend, 0.25),
+      structure: num(cfg.structure, 0.20),
+      timing: num(cfg.timing, 0.00),
+      money: num(cfg.money, 0.10)
+    };
+  }
 
-  const passAggressive =
-    total >= 8.5 &&
-    valuationScore >= 6 &&
-    trendScore >= 6 &&
-    structureScore >= 6.5 &&
-    timingScore >= 5.5 &&
-    moneyScore >= 6 &&
-    exposureLevel !== "high";
+  function inferWeightKey(paramKey, label) {
+    const s = `${paramKey || ""} ${label || ""}`.toLowerCase();
 
-  if (passAggressive) return "加入";
+    if (s.includes("valuation") || s.includes("估值")) return "valuation";
+    if (s.includes("trend") || s.includes("趨勢")) return "trend";
+    if (s.includes("structure") || s.includes("結構")) return "structure";
+    if (s.includes("money") || s.includes("market_acceptance") || s.includes("資金")) return "money";
 
-  const passWatch =
-    total >= 6.2 &&
-    trendState !== "down";
+    return null;
+  }
 
-  if (passWatch) return "觀察";
+  function getChangedM7Weights() {
+    const base = getOriginalM7Weights();
+    const weights = { ...base };
+    const saved = loadSavedConfig();
 
-  return "移除";
-}
+    PARAM_META.forEach(meta => {
+      const wKey = inferWeightKey(meta.key, meta.label);
+      if (!wKey) return;
 
-function buildUIBucket(action) {
-  if (action === "加入") return "積極推薦";
-  if (action === "觀察") return "觀察名單";
-  return "建議剔除";
-}
+      const val = saved[meta.key];
+      const n = num(val, null);
 
-function evaluateTodayHighlight(candidate) {
-  const reasons = [];
-  const trend = candidate["趨勢判讀"] || {};
-
-  const notDown = trend["趨勢狀態"] !== "down";
-  const structureGood =
-    trend["結構狀態"] === "sweet" ||
-    trend["結構狀態"] === "sweet_max";
-  const timingGood = safeNum(candidate["timing_score"], 0) >= 6;
-  const exposureOk = (candidate["曝險警示"]?.level || "normal") !== "high";
-  const valuationOk = safeNum(candidate["valuation_score"], 0) >= 5.5;
-
-  if (notDown) reasons.push("趨勢未轉空");
-  if (structureGood) reasons.push("結構夠甜");
-  if (timingGood) reasons.push("時機偏正");
-  if (valuationOk) reasons.push("估值合理");
-  if (exposureOk) reasons.push("曝險可控");
-
-  const highlight =
-    notDown &&
-    structureGood &&
-    timingGood &&
-    valuationOk &&
-    exposureOk;
-
-  return {
-    is_today_highlight: highlight,
-    today_highlight_reason: reasons.join(" / ")
-  };
-}
-
-function buildWhyYes(row, valuation, trendState, structureState, timingScore, moneyScore, qualityBonus) {
-  const arr = [];
-  if ((row.category || inferCategory(row)) === "core") arr.push("核心股");
-  if (qualityBonus >= 1.5) arr.push("品質佳");
-  if (valuation.norm_score >= 6.5) arr.push("估值合理");
-  if (trendState === "up_strong" || trendState === "up_mild") arr.push("中期趨勢健康");
-  if (structureState === "sweet" || structureState === "sweet_max") arr.push("價格已有甜度");
-  if (timingScore >= 6) arr.push("短線節奏偏佳");
-  if (moneyScore >= 8) arr.push("資金支持");
-  return arr;
-}
-
-function buildWhyNo(row, valuation, trendState, structureState, timingState, moneyScore, exposureWarning) {
-  const arr = [];
-  if (valuation.pe_ratio !== null && valuation.pe_ratio > 1.2) arr.push("PE 相對偏貴");
-  if (valuation.growth !== null && valuation.growth < 0) arr.push("EPS 預估衰退");
-  if (trendState === "down") arr.push("趨勢轉弱");
-  if (trendState === "weak") arr.push("中期偏弱");
-  if (structureState === "flat") arr.push("結構不甜");
-  if (timingState === "hot") arr.push("短期偏熱");
-  if (moneyScore <= 2) arr.push(`量比 ${row.volume_ratio ?? "--"} 偏低`);
-  if ((row.category || inferCategory(row)) === "speculative") arr.push("投機股不適合 FCN");
-  if (exposureWarning.level === "high") arr.push("現有曝險偏高");
-  return arr;
-}
-
-function buildFinalComment(action, valuation, trendRaw, trendState, shortSwing, snapshot, moneyScore, exposureWarning) {
-  const parts = [];
-
-  parts.push(`趨勢面：TrendRaw ${round2(trendRaw)}，狀態 ${trendState}。`);
-  parts.push(`結構面：ShortSwing ${round2(shortSwing)}，甜度已反映。`);
-  parts.push(`時機面：Snapshot ${round2(snapshot)}。`);
-  parts.push(`估值面：${valuation.text}。`);
-
-  if (moneyScore <= 2) parts.push("資金面偏弱。");
-  else if (moneyScore >= 8) parts.push("資金面尚可。");
-
-  if (exposureWarning?.text) parts.push(`持倉面：${exposureWarning.text}`);
-
-  if (action === "加入") parts.push("整體條件支持，可列入 FCN 候選。");
-  else if (action === "觀察") parts.push("條件部分符合，但仍需等待更佳位置。");
-  else parts.push("目前不適合做 FCN。");
-
-  return parts.join("");
-}
-
-// ------------------------------------------
-// U7：四池規則
-// ------------------------------------------
-function buildPoolRules() {
-  return {
-    reject_pool: {
-      purpose: "真的不做，不進 FCN simulation",
-      formula: {
-        attributeReject: 'category === "speculative"',
-        badCount: "Number(trendTerrible) + Number(snapshotTerrible) + Number(growthTerrible)",
-        quantReject: "badCount >= 2"
-      },
-      params: {
-        trendTerrible: "trendRaw <= -15 OR trendScore <= 2",
-        snapshotTerrible: "snapshot <= -3",
-        growthTerrible: "growthScore <= 2"
+      if (n !== null && n >= 0 && n <= 1) {
+        weights[wKey] = n;
       }
-    },
-    simulation_pool: {
-      purpose: "M8 / U8 原料池",
-      formula: {
-        simulationPool: "非 reject 股票，依 today_score 排序"
-      },
-      params: {
-        floor: 12,
-        cap: 18,
-        currentCap: 15
-      }
-    },
-    today_highlight_pool: {
-      purpose: "今日優先看、優先配 basket",
-      formula: {
-        todayHighlight:
-          'inSimulationPool && structureState !== "flat" && timingState !== "hot" && exposureLevel !== "high"'
-      },
-      params: {
-        topN: 5
-      }
-    },
-    watch_pool: {
-      purpose: "可做、可追蹤，但今天不優先",
-      formula: {
-        watchPool: "simulationPool - todayHighlightPool"
-      },
-      params: {}
+    });
+
+    return weights;
+  }
+
+  function calcM7V2Score(row, weights) {
+    const valuation = num(row.valuation_score, 0);
+    const trend = num(row.trend_score, 0);
+    const structure = num(row.structure_score, 0);
+    const timing = num(row.timing_score, 0);
+    const money = num(row.money_score, 0);
+
+    return (
+      weights.valuation * valuation +
+      weights.trend * trend +
+      weights.structure * structure +
+      weights.timing * timing +
+      weights.money * money
+    );
+  }
+
+  function enrichImpactRows(rows) {
+    const originalWeights = getOriginalM7Weights();
+    const changedWeights = getChangedM7Weights();
+
+    return (rows || []).map(row => {
+      const original = num(row.m7_v2_score, null);
+      const recalculatedOriginal = calcM7V2Score(row, originalWeights);
+      const changed = calcM7V2Score(row, changedWeights);
+      const baseline = original !== null ? original : recalculatedOriginal;
+
+      return {
+        ...row,
+        mm_original_score: baseline,
+        mm_changed_score: changed,
+        mm_delta_score: changed - baseline
+      };
+    });
+  }
+
+  function stats(values) {
+    const arr = values.map(v => num(v, null)).filter(v => v !== null);
+    if (!arr.length) return null;
+
+    const sorted = [...arr].sort((a, b) => a - b);
+    const sum = arr.reduce((a, b) => a + b, 0);
+    const mean = sum / arr.length;
+    const min = sorted[0];
+    const max = sorted[sorted.length - 1];
+
+    const q = p => {
+      const idx = Math.floor((sorted.length - 1) * p);
+      return sorted[idx];
+    };
+
+    return {
+      n: arr.length,
+      mean,
+      min,
+      max,
+      p25: q(0.25),
+      p50: q(0.50),
+      p75: q(0.75)
+    };
+  }
+
+  function groupBy(rows, keyFn) {
+    const map = {};
+    rows.forEach(r => {
+      const k = keyFn(r) || "UNKNOWN";
+      if (!map[k]) map[k] = [];
+      map[k].push(r);
+    });
+    return map;
+  }
+
+  function compactMissing(missingInputs) {
+    if (!missingInputs || typeof missingInputs !== "object") return [];
+    return Object.entries(missingInputs).flatMap(([factor, fields]) =>
+      (fields || []).map(field => `${factor}.${field}`)
+    );
+  }
+
+  function renderOverview(overview) {
+    const el = document.getElementById("overview");
+    if (!el) return;
+
+    const rows = getScoreRows();
+    const impacted = enrichImpactRows(rows);
+    const finalStats = stats(impacted.map(r => r.m7_final_score));
+    const changedStats = stats(impacted.map(r => r.mm_changed_score));
+    const deltaStats = stats(impacted.map(r => r.mm_delta_score));
+
+    el.innerHTML = [
+      card("Overall Progress", `${overview?.overall_progress_pct ?? "--"}%`),
+      card("Production Stability", overview?.production_stability || "--"),
+      card("Critical Blockers", String(overview?.critical_blockers_count ?? "--")),
+      card("Active Milestones", String((overview?.active_milestones || []).length)),
+      card("M7 Rows", String(rows.length)),
+      card("Final Avg", finalStats ? finalStats.mean.toFixed(2) : "--"),
+      card("Changed Avg", changedStats ? changedStats.mean.toFixed(2) : "--"),
+      card("Delta Avg", deltaStats ? deltaStats.mean.toFixed(3) : "--")
+    ].join("");
+  }
+
+  function renderModuleSwitch(items) {
+    const box = document.getElementById("module-switch");
+    if (!box) return;
+
+    const allowed = new Set(["M1", "M3", "M7", "M8", "M9"]);
+
+    box.innerHTML = (items || [])
+      .filter(x => allowed.has(x?.module_id))
+      .map(x => {
+        const isM7 = x?.module_id === "M7";
+        const enabled = isM7 ? true : !!x?.enabled;
+        const path = isM7 ? "./m7.html" : (x?.path || "#");
+
+        if (enabled) {
+          return `<a class="module-btn" href="${path}">${x.label || x.module_id || "--"}</a>`;
+        }
+
+        return `<span class="module-btn disabled">${x.label || x.module_id || "--"}（coming soon）</span>`;
+      })
+      .join("");
+  }
+
+  function renderParameterController(data) {
+    const box = document.getElementById("param-controller");
+    if (!box) return;
+
+    PARAM_META = [];
+
+    const savedConfig = loadSavedConfig();
+
+    const controlBlock = (title, items) => `
+      <details class="collapsible-section">
+        <summary>${title}</summary>
+        <div class="group-box">
+          <div class="control-grid">
+            ${(items || []).map(x => {
+              const key = x.key || x.label || "unknown";
+              const originalValue = x.value ?? "";
+              const currentValue = savedConfig[key] !== undefined ? savedConfig[key] : originalValue;
+
+              PARAM_META.push({
+                key,
+                label: x.label || key,
+                value: originalValue,
+                note: x.note || ""
+              });
+
+              const originalEsc = String(originalValue).replace(/"/g, "&quot;");
+              const currentEsc = String(currentValue).replace(/"/g, "&quot;");
+
+              return `
+                <div class="control-item">
+                  <label>${x.label || "--"}</label>
+                  <input class="mm-param-input" data-key="${key}" data-original="${originalEsc}" value="${currentEsc}" />
+                  <input disabled class="mm-param-original" value="original = ${originalEsc}" style="margin-top:6px;" />
+                  <input disabled class="mm-param-changed" value="changed = ${currentEsc}" style="margin-top:6px;" />
+                  <input disabled class="mm-param-delta" value="delta = ${deltaText(originalValue, currentValue)}" style="margin-top:6px;" />
+                  <div class="mini" style="margin-top:6px;">${x.note || ""}</div>
+                  <div class="mini impact-hint" style="margin-top:4px;">impact target：${inferWeightKey(key, x.label) || "metadata / display only"}</div>
+                </div>
+              `;
+            }).join("")}
+          </div>
+
+          <div class="top-actions" style="margin-top:12px;">
+            <button id="save-mm-config">Save Config</button>
+            <button id="reset-mm-config">Reset Config</button>
+            <button id="export-mm-config">Export Config</button>
+            <button id="refresh-mm-preview">Refresh Preview</button>
+          </div>
+
+          <div class="mini">
+            Save 會寫入 localStorage：${CONFIG_STORAGE_KEY}。目前為前端 preview，不會直接改 Python source。
+          </div>
+        </div>
+      </details>
+    `;
+
+    const blueprint = data?.blueprint || {};
+
+    const bpSection = (title, rows) => `
+      <div class="group-box">
+        <div class="group-title">${title}</div>
+        <div>${(rows || []).map(x => `• ${x}`).join("<br>") || "--"}</div>
+      </div>
+    `;
+
+    box.innerHTML = [
+      `<div><b>目前 MM 參數檔（Current Config）：</b> ${data?.config_file || "--"}</div>`,
+      `<details class="collapsible-section">
+        <summary>Blueprint / 藍圖說明（click to expand）</summary>
+        ${bpSection("A. MM 模組規則", blueprint.mm_module_rule)}
+        ${bpSection("B. MM ↔ M7 功能定義", blueprint.mm_m7_definition)}
+        ${bpSection("C. Full M7 定義（single-stock score engine）", blueprint.m7_full_definition)}
+        ${bpSection("D. M7 因子/公式/術語/計算定義", blueprint.m7_formula_terminology)}
+        ${bpSection("E. 參數影響力分級", blueprint.parameter_impact_ranking)}
+      </details>`,
+      controlBlock("A. 核心估值控制（Core Valuation Controls）", data?.groups?.core_valuation_controls),
+      controlBlock("B. 分數架構控制（Score Architecture Controls）", data?.groups?.score_architecture_controls),
+      controlBlock("C. 執行控制（Runtime / Execution Controls）", data?.groups?.runtime_execution_controls)
+    ].join("");
+
+    bindParameterActions();
+  }
+
+  function bindParameterActions() {
+    document.querySelectorAll(".mm-param-input").forEach(input => {
+      input.addEventListener("input", () => {
+        const card = input.closest(".control-item");
+        if (!card) return;
+
+        const original = input.dataset.original;
+        const changed = input.value;
+
+        const changedBox = card.querySelector(".mm-param-changed");
+        const deltaBox = card.querySelector(".mm-param-delta");
+
+        if (changedBox) changedBox.value = `changed = ${changed}`;
+        if (deltaBox) deltaBox.value = `delta = ${deltaText(original, changed)}`;
+
+        refreshImpactOnly();
+      });
+    });
+
+    const saveBtn = document.getElementById("save-mm-config");
+    const resetBtn = document.getElementById("reset-mm-config");
+    const exportBtn = document.getElementById("export-mm-config");
+    const refreshBtn = document.getElementById("refresh-mm-preview");
+
+    if (saveBtn) {
+      saveBtn.addEventListener("click", () => {
+        const config = {};
+        document.querySelectorAll(".mm-param-input").forEach(input => {
+          const key = input.dataset.key;
+          const n = num(input.value, null);
+          config[key] = n !== null ? n : input.value;
+        });
+
+        saveConfig(config);
+        refreshImpactOnly();
+        alert("MM config saved.");
+      });
     }
+
+    if (resetBtn) {
+      resetBtn.addEventListener("click", () => {
+        localStorage.removeItem(CONFIG_STORAGE_KEY);
+        alert("MM config reset.");
+        init();
+      });
+    }
+
+    if (exportBtn) {
+      exportBtn.addEventListener("click", () => {
+        const config = loadSavedConfig();
+        console.log("MM CONFIG EXPORT:", config);
+        alert("Config exported to browser console.");
+      });
+    }
+
+    if (refreshBtn) {
+      refreshBtn.addEventListener("click", () => {
+        const config = {};
+        document.querySelectorAll(".mm-param-input").forEach(input => {
+          const key = input.dataset.key;
+          const n = num(input.value, null);
+          config[key] = n !== null ? n : input.value;
+        });
+
+        saveConfig(config);
+        refreshImpactOnly();
+      });
+    }
+  }
+
+  function refreshImpactOnly() {
+    const scoreRows = getScoreRows();
+    const params = readWhatIfParamsFromDom();
+
+    renderOutputDemo(
+      DASHBOARD_DATA.output_demo || {},
+      buildExplainContext()
+    );
+
+    renderM7Readiness(
+      DASHBOARD_DATA.m7_complete_readiness_check || {},
+      DASHBOARD_DATA.compare_governance || {}
+    );
+
+    renderOverview(
+      DASHBOARD_DATA.overview || {}
+    );
+
+    const currentSymbol =
+      document.getElementById("stock-query-input")?.value || "NVDA";
+
+    renderStandardStockCard(currentSymbol);
+
+    
+    renderStocksDisplayTable();
+const resultBox = document.getElementById("m7-what-if-results");
+    if (resultBox) {
+      resultBox.innerHTML = renderWhatIfResultsTable(scoreRows, params);
+    }
+
+    const rankingBox = document.getElementById("ranking-impact");
+    if (rankingBox) {
+      rankingBox.innerHTML = renderWhatIfResultsTable(scoreRows, params);
+    }
+  }
+
+  function buildExplainContext() {
+    const prototypeSymbol = DASHBOARD_DATA?.output_demo?.prototype_symbol_snapshot?.symbol || "NVDA";
+    const scoreRows = getScoreRows();
+    const auditRows = getAuditRows();
+    const runtimeRows = getRuntimeRows();
+
+    const scoreRow =
+      scoreRows.find(r => r.symbol === prototypeSymbol) ||
+      scoreRows.find(r => r.symbol === "NVDA") ||
+      scoreRows[0] ||
+      {};
+
+    const auditRow = auditRows.find(r => r.symbol === scoreRow.symbol) || {};
+    const runtimeRow = runtimeRows[scoreRow.symbol] || {};
+
+    return { scoreRow, auditRow, runtimeRow };
+  }
+
+  function renderEngineActions(rows) {
+    const box = document.getElementById("engine-actions");
+    if (!box) return;
+
+    box.innerHTML = `<div class="actions-grid">${(rows || []).map(x => `
+      <div class="action-card">
+        <div style="font-weight:700;">${x.name || "--"}</div>
+        <div style="font-size:12px; color:#667085; margin-top:4px;">${x.description || "--"}</div>
+        <button class="action-btn" disabled>${x.button_label || "Run"}</button>
+      </div>
+    `).join("")}</div>`;
+  }
+
+   function renderPrototypeSnapshot(data, explain = {}) {
+  const stock = {
+    ...(data?.prototype_symbol_snapshot || {}),
+    ...(explain.scoreRow || {})
   };
+
+  const impacted = enrichImpactRows([stock])[0] || stock;
+  const runtime = explain.runtimeRow || {};
+
+  const oldScore = impacted.mm_original_score || stock.m7_v2_score || 0;
+  const newScore = impacted.mm_changed_score || oldScore;
+  const deltaScore = newScore - oldScore;
+
+  function fmt(v, d = 2) {
+    const n = Number(v);
+    if (!Number.isFinite(n)) return "--";
+    return n.toFixed(d);
+  }
+
+  function deltaClass(v) {
+    if (v > 0) return "color:green;font-weight:bold;";
+    if (v < 0) return "color:red;font-weight:bold;";
+    return "";
+  }
+
+  return `
+  
+  <details class="collapsible-section" open>
+    <summary>C1 股票查詢區（預設 NVDA standard stock）</summary>
+
+    <div class="group-box">
+
+      <!-- Layer 1 -->
+      <div class="group-title">1. 股票身份卡</div>
+      <table class="preview-table">
+        <tbody>
+          <tr>
+            <td>Symbol</td>
+            <td>${stock.symbol || "--"}</td>
+            <td>Name</td>
+            <td>${stock.name || "--"}</td>
+          </tr>
+          <tr>
+            <td>Price</td>
+            <td>${fmt(runtime.price_now)}</td>
+            <td>1D Delta</td>
+            <td>${fmt(runtime.ret_1d)}%</td>
+          </tr>
+          <tr>
+            <td>Category</td>
+            <td>${stock.category || "--"}</td>
+            <td>Subsector</td>
+            <td>${stock.subsector || "--"}</td>
+          </tr>
+          <tr>
+            <td>Category Sub</td>
+            <td>${stock.category_sub || "--"}</td>
+            <td>Archetype</td>
+            <td>${stock.valuation_archetype || "--"}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <br>
+
+      <!-- Layer 2 -->
+      <div class="group-title">2. 核心分數（Now / New / Delta）</div>
+      <table class="preview-table">
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Now</th>
+            <th>New</th>
+            <th>Delta</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>M1 Score</td>
+            <td>${fmt(stock.m1_score)}</td>
+            <td>${fmt(stock.m1_score)}</td>
+            <td>--</td>
+          </tr>
+          <tr>
+            <td>M7 Raw</td>
+            <td>${fmt(stock.m7_raw_score)}</td>
+            <td>${fmt(stock.m7_raw_score)}</td>
+            <td>--</td>
+          </tr>
+          <tr>
+            <td>M7 V2</td>
+            <td>${fmt(oldScore)}</td>
+            <td>${fmt(newScore)}</td>
+            <td style="${deltaClass(deltaScore)}">${fmt(deltaScore)}</td>
+          </tr>
+          <tr>
+            <td>Effective</td>
+            <td>${fmt(stock.m7_effective_score)}</td>
+            <td>${fmt(newScore)}</td>
+            <td style="${deltaClass(deltaScore)}">${fmt(deltaScore)}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <br>
+
+      <!-- Layer 3 -->
+      <div class="group-title">3. 主因子（Now）</div>
+      <table class="preview-table">
+        <thead>
+          <tr>
+            <th>Factor</th>
+            <th>Score</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Valuation</td><td>${fmt(stock.valuation_score)}</td></tr>
+          <tr><td>Trend</td><td>${fmt(stock.trend_score)}</td></tr>
+          <tr><td>Structure</td><td>${fmt(stock.structure_score)}</td></tr>
+          <tr><td>Timing</td><td>${fmt(stock.timing_score)}</td></tr>
+          <tr><td>Money</td><td>${fmt(stock.money_score)}</td></tr>
+        </tbody>
+      </table>
+
+      <br>
+
+      <!-- Layer 4 -->
+      <details class="collapsible-section">
+        <summary>Trend Detail</summary>
+        <div class="mini">
+          Linear Score: ${fmt(stock.trend_linear_score)}<br>
+          MA Score: ${fmt(stock.trend_ma_score)}<br>
+          Acceleration Score: ${fmt(stock.trend_acceleration_score)}<br>
+          Linear Annualized: ${fmt(stock.trend_linear_annualized_pct)}%<br>
+          MA Annualized: ${fmt(stock.trend_ma_annualized_pct)}%<br>
+          Recent 3Y: ${fmt(stock.trend_recent_3y_annualized_pct)}%<br>
+        </div>
+      </details>
+
+      <details class="collapsible-section">
+        <summary>Valuation Detail</summary>
+        <div class="mini">
+          Forward PE: ${fmt(stock.feature_snapshot?.valuation?.forward_pe)}<br>
+          Anchor PE: ${fmt(stock.feature_snapshot?.valuation?.anchor_pe)}<br>
+          PEG: ${fmt(stock.feature_snapshot?.valuation?.peg)}<br>
+          EPS Growth: ${fmt(stock.feature_snapshot?.valuation?.eps_growth)}%
+        </div>
+      </details>
+
+      <details class="collapsible-section">
+        <summary>Structure Detail</summary>
+        <div class="mini">
+          Best Model: ${stock.best_structure_model || "--"}<br>
+          Best R²: ${fmt(stock.best_structure_r2)}<br>
+          Dispersion: ${fmt(stock.structure_dispersion)}<br>
+          Stability: ${fmt(stock.structure_stability)}
+        </div>
+      </details>
+
+      <details class="collapsible-section">
+        <summary>Data Health</summary>
+        <div class="mini">
+          Coverage: ${fmt(stock.coverage_pct)}%<br>
+          Warning: ${stock.warning_flag ? "YES" : "NO"}<br>
+          History Weeks: ${stock.history_weeks || "--"}<br>
+          Horizon: ${stock.history_horizon_used || "--"}
+        </div>
+      </details>
+
+    </div>
+  </details>
+  `;
 }
+  function renderTopCompareGroups() {
+    const rows = enrichImpactRows(getScoreRows());
 
-function evaluateRejectMeta(candidate) {
-  const category = candidate["分類"];
-  const trendRaw = safeNum(candidate["trendRaw"], 0);
-  const trendScore = safeNum(candidate["trend_score"], 0);
-  const snapshot = safeNum(candidate["snapshot"], 0);
-  const growthScore = safeNum(candidate["growthScore"], 0);
+    const symbols = ["NVDA", "TSM", "COIN", "TSLA", "LQD", "UNH", "AAPL", "GOOG"];
+    const picked = symbols
+      .map(s => rows.find(r => r.symbol === s))
+      .filter(Boolean);
 
-  const trendTerrible = trendRaw <= -15 || trendScore <= 2;
-  const snapshotTerrible = snapshot <= -3;
-  const growthTerrible = growthScore <= 2;
-  const badCount =
-    Number(trendTerrible) +
-    Number(snapshotTerrible) +
-    Number(growthTerrible);
+    const fallback = [...rows]
+      .sort((a, b) => (b.m7_final_score || 0) - (a.m7_final_score || 0))
+      .slice(0, 8);
 
-  const attributeReject = category === "speculative";
-  const quantReject = badCount >= 2;
+    const finalRows = picked.length >= 6 ? picked : fallback;
 
-  if (attributeReject) {
-    return {
-      reject_type: "attribute",
-      reject_reasons: ["speculative，不符合 FCN 可接原則"],
-      badCount,
-      trendTerrible,
-      snapshotTerrible,
-      growthTerrible,
-      attributeReject,
-      quantReject
-    };
+    return `
+      <details class="collapsible-section">
+        <summary>6~8 組對照組（Extreme / Representative Compare Group）</summary>
+        <div class="group-box">
+          <table class="preview-table">
+            <thead>
+              <tr>
+                <th>Symbol</th>
+                <th>Category</th>
+                <th>Sub</th>
+                <th>Valuation</th>
+                <th>Trend</th>
+                <th>Structure</th>
+                <th>Money</th>
+                <th>Original</th>
+                <th>Changed</th>
+                <th>Delta</th>
+                <th>Final</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${finalRows.map(x => `
+                <tr>
+                  <td>${x.symbol || "--"}</td>
+                  <td>${x.category || "--"}</td>
+                  <td>${x.category_sub || x.subsector || "--"}</td>
+                  <td>${x.valuation_score ?? "--"}</td>
+                  <td>${x.trend_score ?? "--"}</td>
+                  <td>${x.structure_score ?? "--"}</td>
+                  <td>${x.money_score ?? "--"}</td>
+                  <td>${formatNum(x.mm_original_score)}</td>
+                  <td>${formatNum(x.mm_changed_score)}</td>
+                  <td>${formatNum(x.mm_delta_score, 4)}</td>
+                  <td>${x.m7_final_score ?? "--"}</td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+        </div>
+      </details>
+    `;
   }
 
-  if (quantReject) {
-    const reasons = [];
-    if (trendTerrible) reasons.push("Trend terrible");
-    if (snapshotTerrible) reasons.push("Snapshot terrible");
-    if (growthTerrible) reasons.push("GrowthScore terrible");
+  function renderAllStocksByCategory() {
+    const rows = enrichImpactRows(getScoreRows());
+    const byCat = groupBy(rows, r => r.category || "UNKNOWN");
 
-    return {
-      reject_type: "quant",
-      reject_reasons: reasons,
-      badCount,
-      trendTerrible,
-      snapshotTerrible,
-      growthTerrible,
-      attributeReject,
-      quantReject
-    };
+    return `
+      <details class="collapsible-section">
+        <summary>All Stocks by 五大類 / 小類（click to expand）</summary>
+        <div class="group-box">
+          ${Object.entries(byCat).map(([cat, catRows]) => {
+            const bySub = groupBy(catRows, r => r.category_sub || r.subsector || "UNKNOWN");
+            return `
+              <details class="collapsible-section">
+                <summary>${cat}（${catRows.length}）</summary>
+                <div class="group-box">
+                  ${Object.entries(bySub).map(([sub, subRows]) => `
+                    <details class="collapsible-section">
+                      <summary>${sub}（${subRows.length}）</summary>
+                      <table class="preview-table">
+                        <thead>
+                          <tr>
+                            <th>Symbol</th>
+                            <th>Name</th>
+                            <th>Val</th>
+                            <th>Trend</th>
+                            <th>Structure</th>
+                            <th>Timing</th>
+                            <th>Money</th>
+                            <th>Original</th>
+                            <th>Changed</th>
+                            <th>Delta</th>
+                            <th>Final</th>
+                            <th>Status</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          ${subRows
+                            .sort((a, b) => (b.m7_final_score || 0) - (a.m7_final_score || 0))
+                            .map(x => `
+                              <tr>
+                                <td>${x.symbol || "--"}</td>
+                                <td>${x.name || "--"}</td>
+                                <td>${x.valuation_score ?? "--"}</td>
+                                <td>${x.trend_score ?? "--"}</td>
+                                <td>${x.structure_score ?? "--"}</td>
+                                <td>${x.timing_score ?? "--"}</td>
+                                <td>${x.money_score ?? "--"}</td>
+                                <td>${formatNum(x.mm_original_score)}</td>
+                                <td>${formatNum(x.mm_changed_score)}</td>
+                                <td>${formatNum(x.mm_delta_score, 4)}</td>
+                                <td>${x.m7_final_score ?? "--"}</td>
+                                <td>${x.today_fcn_pool_status || "--"}</td>
+                              </tr>
+                            `).join("")}
+                        </tbody>
+                      </table>
+                    </details>
+                  `).join("")}
+                </div>
+              </details>
+            `;
+          }).join("")}
+        </div>
+      </details>
+    `;
   }
 
-  return {
-    reject_type: null,
-    reject_reasons: [],
-    badCount,
-    trendTerrible,
-    snapshotTerrible,
-    growthTerrible,
-    attributeReject,
-    quantReject
-  };
-}
+  function renderOutputDemo(data, explain = {}) {
+    const box = document.getElementById("output-demo");
+    if (!box) return;
 
-function buildPoolReason(candidate, simulationSymbols, highlightSymbols) {
-  const symbol = candidate["股號"];
-  const rejectType = candidate["reject_type"];
-  const rejectReasons = candidate["reject_reasons"] || [];
+    const summaryRows = (data?.representative_groups || [])
+      .map(g => `• ${g.group_name}：${g.summary || ""}`)
+      .join("<br>");
 
-  if (rejectType) {
-    return {
-      pool: "reject_pool",
-      reason_summary:
-        rejectType === "attribute"
-          ? "屬性型 Reject：本質不適合 FCN"
-          : "數值型 Reject：中期 / 短線 / 成長風險過多",
-      detail: rejectReasons
-    };
+    box.innerHTML = [
+      `<div class="mini">Parameter → item → score；輸入參數後會即時 preview original / changed / delta。</div>`,
+      renderTopCompareGroups(),
+      renderAllStocksByCategory(),
+      `<div class="group-box"><div class="group-title">代表組摘要（Representative Summary）</div><div>${summaryRows || "無"}</div></div>`,
+      ...(data?.representative_groups || []).map(g => {
+        const rows = (g.items || []).map(x => `
+          <tr>
+            <td>${x.symbol || "--"}</td>
+            <td>${x.status || "--"}</td>
+            <td>${x.category_sub || "--"}</td>
+            <td>${x.valuation_archetype || "--"}</td>
+            <td>${x.base_anchor ?? "--"}</td>
+            <td>${x.market_regime || "--"}</td>
+            <td>${x.industry_regime || "--"}</td>
+            <td>${x.final_anchor ?? "--"}</td>
+            <td>${x.valuation_gap ?? "--"}</td>
+            <td>${x.valuation_score ?? "--"}</td>
+          </tr>
+        `).join("");
+
+        return `
+          <details class="collapsible-section">
+            <summary>${g.group_name || "--"}（click to expand）</summary>
+            <div class="group-box">
+              <div class="group-title">${g.group_name || "--"}</div>
+              <div class="mini">${g.summary || ""}</div>
+              <table class="preview-table">
+                <thead>
+                  <tr>
+                    <th>Symbol</th><th>Status</th><th>category_sub</th><th>archetype</th><th>base</th>
+                    <th>market</th><th>industry</th><th>final</th><th>gap</th><th>score</th>
+                  </tr>
+                </thead>
+                <tbody>${rows || "<tr><td colspan='10'>無</td></tr>"}</tbody>
+              </table>
+            </div>
+          </details>
+        `;
+      }).join(""),
+      `<details class="collapsible-section">
+        <summary>Abnormal Movers（代表）</summary>
+        <div class="group-box">
+          <div>${(data?.abnormal_movers || []).map(x => `• ${x}`).join("<br>") || "無"}</div>
+        </div>
+      </details>`
+    ].join("");
   }
 
-  if (highlightSymbols.has(symbol)) {
-    return {
-      pool: "today_highlight_pool",
-      reason_summary: "Simulation 前段 + 結構非 flat + timing 非 hot + 曝險非高",
-      detail: [
-        'structureState !== "flat"',
-        'timingState !== "hot"',
-        'exposureLevel !== "high"',
-        "today_score 排名前段"
-      ]
+  function renderM7Readiness(data, compareGov) {
+    const box = document.getElementById("m7-readiness");
+    if (!box) return;
+
+    const rows = enrichImpactRows(getScoreRows());
+    const originalStats = stats(rows.map(r => r.mm_original_score));
+    const changedStats = stats(rows.map(r => r.mm_changed_score));
+    const deltaStats = stats(rows.map(r => r.mm_delta_score));
+
+    const factorStats = factor => stats(rows.map(r => r[factor]));
+
+    const sec = (title, rows) => `
+      <div class="group-box">
+        <div class="group-title">${title}</div>
+        <div>${(rows || []).map(x => `• ${x}`).join("<br>") || "--"}</div>
+      </div>
+    `;
+
+    const gov = compareGov || {};
+    const contract = gov.output_contract || {};
+    const weights = getChangedM7Weights();
+
+    const completeItems = [
+      "long horizon runtime pipeline",
+      "d2~d5 timing input connection",
+      "3y/5y/10y trend input connection",
+      "structure regression engine",
+      "formula input audit",
+      "M7 Statistical Analysis Center",
+      "right-panel explainability"
+    ];
+
+    const remainingItems = [
+      "calibration of score curves",
+      "compare layer governance",
+      "M7 → M8/M3 handoff",
+      "production scheduler integration"
+    ];
+
+    const statLine = s => {
+      if (!s) return "--";
+      return `n=${s.n}, mean=${s.mean.toFixed(2)}, p25=${s.p25.toFixed(2)}, p50=${s.p50.toFixed(2)}, p75=${s.p75.toFixed(2)}, min=${s.min.toFixed(2)}, max=${s.max.toFixed(2)}`;
     };
+
+    box.innerHTML = `
+      <details class="collapsible-section">
+        <summary>Readiness 明細（click to expand）</summary>
+        ${sec("A. 已完成（Complete）", completeItems)}
+        ${sec("B. 未完成（Remaining）", remainingItems)}
+        ${sec("C. 缺失欄位/計算/輸出定義（Missing）", data?.missing_inputs)}
+        ${sec("D. 明日可交付判定（Tomorrow Readiness）", data?.tomorrow_readiness || ["M7 analysis complete; still pending production integration gates"])}
+
+        <div class="group-box">
+          <div class="group-title">3.1 公式 / Current M7 v2 Formula</div>
+          <div class="formula-box">
+            m7_v2_score = ${weights.valuation.toFixed(2)} × valuation
+            + ${weights.trend.toFixed(2)} × trend
+            + ${weights.structure.toFixed(2)} × structure
+            + ${weights.timing.toFixed(2)} × timing
+            + ${weights.money.toFixed(2)} × money
+          </div>
+          <div class="mini">原公式：0.45 × valuation + 0.25 × trend + 0.20 × structure + 0.00 × timing + 0.10 × money</div>
+        </div>
+
+        <div class="group-box">
+          <div class="group-title">3.2 公式各組變化 / Component Distribution</div>
+          <table class="preview-table">
+            <thead><tr><th>Component</th><th>Stats</th></tr></thead>
+            <tbody>
+              <tr><td>valuation_score</td><td>${statLine(factorStats("valuation_score"))}</td></tr>
+              <tr><td>trend_score</td><td>${statLine(factorStats("trend_score"))}</td></tr>
+              <tr><td>structure_score</td><td>${statLine(factorStats("structure_score"))}</td></tr>
+              <tr><td>timing_score</td><td>${statLine(factorStats("timing_score"))}</td></tr>
+              <tr><td>money_score</td><td>${statLine(factorStats("money_score"))}</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="group-box">
+          <div class="group-title">3.3 整體分數變化 / Score Impact Preview</div>
+          <table class="preview-table">
+            <tbody>
+              <tr><td>Original M7 v2 Score</td><td>${statLine(originalStats)}</td></tr>
+              <tr><td>Changed M7 v2 Score</td><td>${statLine(changedStats)}</td></tr>
+              <tr><td>Delta</td><td>${statLine(deltaStats)}</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="group-box">
+          <div class="group-title">Compare Formula Governance（正式核准）</div>
+          <div class="mini">m7_final_score：${gov.approved_formula || "--"}</div>
+          <div class="mini" style="margin-top:6px;">zscore：${gov.zscore_definition || "--"}</div>
+          <div class="mini" style="margin-top:6px;">historical：${gov.historical_definition || "--"}</div>
+          <div class="mini" style="margin-top:6px;">historical_score：${gov.historical_score_definition || "--"}</div>
+          <div class="mini" style="margin-top:6px;">Today FCN gate：${gov.today_fcn_pool_gate || "--"}</div>
+        </div>
+
+        <div class="group-box">
+          <div class="group-title">Output Contract（prototype）</div>
+          <pre style="white-space:pre-wrap; font-size:12px; margin:0;">${JSON.stringify(contract, null, 2)}</pre>
+        </div>
+
+        <div class="group-box">
+          <div class="group-title">Deprecated Legacy Compare Semantics</div>
+          <div>${(gov.deprecated_legacy_compare_semantics || []).map(x => `• ${x}`).join("<br>") || "--"}</div>
+        </div>
+      </details>
+    `;
   }
 
-  if (simulationSymbols.has(symbol)) {
-    return {
-      pool: "watch_pool",
-      reason_summary: "已進 simulation，但今日不是最優先",
-      detail: [
-        "可做但今天不一定最甜",
-        "或結構 / timing / 曝險條件未達 highlight"
-      ]
+
+  function renderM7ParameterSnapshot() {
+    const cfg = M7_PARAM_CONFIG || {};
+    const w = cfg.m7_v2_weights || {};
+    const trend = cfg.trend || {};
+    const tw = trend.internal_weights || {};
+    const legacy = cfg.legacy_raw_fallback || {};
+    const val = cfg.valuation || {};
+    const money = cfg.money || {};
+
+    const pct = x => {
+      const n = num(x, null);
+      return n === null ? "--" : `${(n * 100).toFixed(1)}%`;
     };
+
+    return `
+      <details class="collapsible-section" open>
+        <summary>Current M7 Parameter Snapshot / 目前 M7 v2 參數快照</summary>
+        <div class="group-box">
+          <div class="group-title">M7 v2 weights（總分權重）</div>
+          <table class="preview-table">
+            <tbody>
+              <tr><td>valuation</td><td>${pct(w.valuation)}</td><td>trend</td><td>${pct(w.trend)}</td></tr>
+              <tr><td>structure</td><td>${pct(w.structure)}</td><td>timing</td><td>${pct(w.timing)}</td></tr>
+              <tr><td>money</td><td>${pct(w.money)}</td><td>formula</td><td>0.45 valuation + 0.25 trend + 0.20 structure + 0 timing + 0.10 money</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="group-box">
+          <div class="group-title">Trend internal weights（趨勢內部權重）</div>
+          <table class="preview-table">
+            <tbody>
+              <tr><td>linear</td><td>${pct(tw.linear)}</td><td>MA200</td><td>${pct(tw.ma200)}</td></tr>
+              <tr><td>acceleration</td><td>${pct(tw.acceleration)}</td><td>annualization</td><td>${trend.annualization_formula || "annualized = exp(weekly_slope * 52) - 1"}</td></tr>
+              <tr><td>acceleration period</td><td>${trend.periods?.acceleration_recent_weeks || "--"} weeks</td><td>compare</td><td>${trend.periods?.acceleration_compare || "--"}</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="group-box">
+          <div class="group-title">Fallback Rule（歷史資料不足規則）</div>
+          <div class="mini">${legacy.rule || "if history_weeks < 156 then use m7_raw_score; else use m7_v2_score"}</div>
+          <div class="mini" style="margin-top:6px;">Reason: ${legacy.reason || "--"}</div>
+        </div>
+        <div class="group-box">
+          <div class="group-title">Valuation / Money status</div>
+          <div class="mini">Valuation: ${val.formula || "--"}</div>
+          <div class="mini" style="margin-top:6px;">Money: ${money.status || "--"} ｜ inputs: ${(money.current_inputs || []).join(", ") || "--"}</div>
+        </div>
+      </details>
+    `;
   }
 
-  return {
-    pool: "other",
-    reason_summary: "未進 simulation 前段",
-    detail: ["today_score 未進 simulation 排名前段"]
-  };
-}
+  function renderTrendDiagnosticsLeaderboard(scoreRows) {
+    const rows = [...(scoreRows || [])]
+      .filter(r => r && r.symbol)
+      .sort((a, b) => num(b.trend_score, -999) - num(a.trend_score, -999))
+      .slice(0, 18);
 
-// ------------------------------------------
-// score board
-// ------------------------------------------
-function buildScoreboard(sortedRows) {
-  const makeTable = (key) =>
-    [...sortedRows]
-      .sort((a, b) => (b["分數拆解"]?.[key] ?? 0) - (a["分數拆解"]?.[key] ?? 0))
-      .map((x, i) => ({
-        rank: i + 1,
-        symbol: x["股號"],
-        name: x["股名"],
-        score: x["分數拆解"]?.[key] ?? 0
+    return `
+      <details class="collapsible-section" open>
+        <summary>Trend Diagnostics Leaderboard / 趨勢診斷排行</summary>
+        <div class="group-box">
+          <table class="preview-table">
+            <thead>
+              <tr>
+                <th>Symbol</th><th>Trend</th><th>Linear %</th><th>MA %</th><th>Recent 3Y %</th><th>Accel Δ%</th>
+                <th>Linear Score</th><th>MA Score</th><th>Accel Score</th><th>Mode</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rows.map(r => `
+                <tr>
+                  <td>${r.symbol || "--"}</td>
+                  <td>${formatNum(r.trend_score)}</td>
+                  <td>${formatNum(r.trend_linear_annualized_pct)}</td>
+                  <td>${formatNum(r.trend_ma_annualized_pct)}</td>
+                  <td>${formatNum(r.trend_recent_3y_annualized_pct)}</td>
+                  <td>${formatNum(r.trend_acceleration_annualized_delta_pct)}</td>
+                  <td>${formatNum(r.trend_linear_score)}</td>
+                  <td>${formatNum(r.trend_ma_score)}</td>
+                  <td>${formatNum(r.trend_acceleration_score)}</td>
+                  <td>${r.trend_mode || "--"}</td>
+                </tr>
+              `).join("") || "<tr><td colspan='10'>No rows</td></tr>"}
+            </tbody>
+          </table>
+          <div class="mini" style="margin-top:8px;">Trend 新公式：linear / MA 都以 weekly slope × 52 年化；acceleration = recent 3Y annualized - full annualized。</div>
+        </div>
+      </details>
+    `;
+  }
+
+  function renderFallbackMonitor(scoreRows) {
+    const rows = (scoreRows || []).filter(r => r?.m7_v2_fallback_to_raw || r?.trend_fallback_to_raw || num(r?.history_weeks, 9999) < 156);
+    return `
+      <details class="collapsible-section">
+        <summary>Fallback Monitor / 歷史資料不足監控（${rows.length}）</summary>
+        <div class="group-box">
+          <table class="preview-table">
+            <thead>
+              <tr><th>Symbol</th><th>History Weeks</th><th>Horizon</th><th>Effective Score</th><th>Source</th><th>Reason</th></tr>
+            </thead>
+            <tbody>
+              ${rows.map(r => `
+                <tr>
+                  <td>${r.symbol || "--"}</td>
+                  <td>${r.history_weeks ?? "--"}</td>
+                  <td>${r.history_horizon_used || "--"}</td>
+                  <td>${formatNum(r.m7_effective_score ?? r.m7_v2_score ?? r.m7_raw_score)}</td>
+                  <td>${r.m7_effective_score_source || (r.m7_v2_fallback_to_raw ? "m7_raw_score" : "m7_v2_score")}</td>
+                  <td>${r.trend_fallback_reason || "history_weeks < 156"}</td>
+                </tr>
+              `).join("") || "<tr><td colspan='6'>No fallback rows. All rows have enough history.</td></tr>"}
+            </tbody>
+          </table>
+        </div>
+      </details>
+    `;
+  }
+
+  function renderRankingDelta(scoreRows) {
+    const rows = [...(scoreRows || [])].filter(r => r && r.symbol);
+    const oldRank = [...rows]
+      .sort((a, b) => num(b.m7_raw_score, -999) - num(a.m7_raw_score, -999))
+      .reduce((m, r, i) => (m[r.symbol] = i + 1, m), {});
+
+    const newRanked = [...rows]
+      .sort((a, b) => num(b.m7_effective_score ?? b.m7_v2_score, -999) - num(a.m7_effective_score ?? a.m7_v2_score, -999))
+      .map((r, i) => ({
+        ...r,
+        raw_rank: oldRank[r.symbol] || null,
+        effective_rank: i + 1,
+        rank_delta: (oldRank[r.symbol] || i + 1) - (i + 1)
       }));
 
-  return {
-    generated_at: new Date().toISOString(),
-    formula: {
-      valuation: "Valuation = (0.6 * peScore + 0.4 * growthScore_adj) * qualityFactor ",
-      trend: "trendRaw = 0.25*1M + 0.25*3M + 0.25*6M + 0.25*12M ; bucket normalize to 0~10",
-      structure: "ShortSwing = 0.2*d0 + 0.2*d1 + 0.1*d2 + 0.1*d3 + 0.2*d4 + 0.2*d5 ; map to 0~10",
-      timing: "snapshot = 0.45*r1d + 0.35*r1w + 0.2*r1m",
-      money: "volume_ratio -> 0~10",
-      final: "valuation + 0.8*trend + 0.8*structure + timing + money + quality_bonus + category_bonus"
-    },
-    examples: {
-      valuation_demo_1: "AAPL 31.2 = (0.6*30 + 0.4*20) * 1.2 // 示意",
-      valuation_demo_2: "MSFT 28.2 = (0.6*28 + 0.4*18) * 1.17 // 示意"
-    },
-    tables: {
-      valuation: makeTable("估值分"),
-      trend: makeTable("趨勢分"),
-      structure: makeTable("結構分"),
-      timing: makeTable("時機分"),
-      money: makeTable("資金分"),
-      final: makeTable("總分")
+    const movers = newRanked
+      .filter(r => Math.abs(num(r.rank_delta, 0)) > 0)
+      .sort((a, b) => Math.abs(num(b.rank_delta, 0)) - Math.abs(num(a.rank_delta, 0)))
+      .slice(0, 20);
+
+    return `
+      <details class="collapsible-section">
+        <summary>Ranking Delta / Raw vs Effective 排名變化</summary>
+        <div class="group-box">
+          <table class="preview-table">
+            <thead>
+              <tr><th>Symbol</th><th>Raw Rank</th><th>Effective Rank</th><th>Δ Rank</th><th>Raw</th><th>V2</th><th>Effective</th><th>Source</th></tr>
+            </thead>
+            <tbody>
+              ${movers.map(r => `
+                <tr>
+                  <td>${r.symbol || "--"}</td>
+                  <td>${r.raw_rank ?? "--"}</td>
+                  <td>${r.effective_rank ?? "--"}</td>
+                  <td>${r.rank_delta > 0 ? "+" : ""}${r.rank_delta}</td>
+                  <td>${formatNum(r.m7_raw_score)}</td>
+                  <td>${formatNum(r.m7_v2_score)}</td>
+                  <td>${formatNum(r.m7_effective_score ?? r.m7_v2_score)}</td>
+                  <td>${r.m7_effective_score_source || "--"}</td>
+                </tr>
+              `).join("") || "<tr><td colspan='8'>No rank delta rows.</td></tr>"}
+            </tbody>
+          </table>
+        </div>
+      </details>
+    `;
+  }
+
+
+
+  function mmClamp(v, lo, hi) {
+    return Math.max(lo, Math.min(hi, num(v, 0)));
+  }
+
+  function mmPiecewise(points, x, fallback = 0) {
+    const pts = Array.isArray(points) ? points.map(p => [num(p[0], 0), num(p[1], 0)]).sort((a,b)=>a[0]-b[0]) : [];
+    const xv = num(x, null);
+    if (!pts.length || xv === null) return fallback;
+    if (xv <= pts[0][0]) return pts[0][1];
+    if (xv >= pts[pts.length - 1][0]) return pts[pts.length - 1][1];
+    for (let i = 1; i < pts.length; i++) {
+      const [x0, y0] = pts[i - 1];
+      const [x1, y1] = pts[i];
+      if (xv >= x0 && xv <= x1) {
+        if (x1 === x0) return y1;
+        const t = (xv - x0) / (x1 - x0);
+        return y0 + t * (y1 - y0);
+      }
+    }
+    return fallback;
+  }
+
+  function scoreByCurve(curve, x, fallback = 0) {
+    const raw = mmPiecewise(curve?.points, x, fallback);
+    const lo = num(curve?.cap_min, null);
+    const hi = num(curve?.cap_max, null);
+    return (lo !== null && hi !== null) ? mmClamp(raw, lo, hi) : raw;
+  }
+
+  function getValuationGapCurve() {
+    return M7_PARAM_CONFIG?.valuation?.gap_curve || {
+      points: [[-1,10],[-0.4,10],[-0.2,9],[-0.05,7],[0.05,7],[0.2,6],[0.4,3],[0.8,2]],
+      cap_min: 2,
+      cap_max: 10
+    };
+  }
+
+  function calcValuationWhatIf(row, params) {
+    const val = row?.feature_snapshot?.valuation || {};
+    const fpe = num(val.forward_pe, null);
+    const baseAnchor = num(val.base_anchor ?? val.anchor_pe, null);
+    if (fpe === null || baseAnchor === null || baseAnchor <= 0) return num(row.valuation_score, 0);
+    const market = num(params.valuation_market_multiplier, num(val.market_multiplier, 1));
+    const industry = num(params.valuation_industry_multiplier, num(val.industry_multiplier, 1));
+    const archetype = num(params.valuation_archetype_multiplier, num(val.archetype_multiplier, 1));
+    const finalAnchor = baseAnchor * market * industry * archetype;
+    const gap = finalAnchor > 0 ? (fpe / finalAnchor - 1) : 0;
+    return scoreByCurve(getValuationGapCurve(), gap, num(row.valuation_score, 0));
+  }
+
+  function calcStructureWhatIf(row, params) {
+    const candidates = [];
+    if (params.structure_allow_linear) candidates.push(num(row.structure_r2_linear, null));
+    if (params.structure_allow_quadratic) candidates.push(num(row.structure_r2_quadratic, null));
+    if (params.structure_allow_logarithmic) candidates.push(num(row.structure_r2_logarithmic, null));
+    const valid = candidates.filter(v => v !== null);
+    const best = valid.length ? Math.max(...valid) : num(row.best_structure_r2, null);
+    if (best === null) return num(row.structure_score, 0);
+    const curve = M7_PARAM_CONFIG?.structure?.r2_curve || {points:[[0,0],[0.2,1],[0.4,2],[0.8,8],[1,10]], cap_min:0, cap_max:10};
+    return scoreByCurve(curve, best, best * 10);
+  }
+
+  function calcMoneyWhatIf(row, params) {
+    const liquidity = num(row.money_liquidity_score, num(row.money_score, 0));
+    const flow = num(row.money_flow_score, num(row.money_score, 0));
+    const lw = num(params.money_liquidity_weight, 0.70);
+    const fw = num(params.money_flow_weight, 0.30);
+    const denom = Math.max(0.000001, lw + fw);
+    return mmClamp((lw * liquidity + fw * flow) / denom, 0, 10);
+  }
+
+  function defaultWhatIfParams() {
+    const w = M7_PARAM_CONFIG?.m7_v2_weights || {};
+    const tw = M7_PARAM_CONFIG?.trend?.internal_weights || {};
+    const fb = M7_PARAM_CONFIG?.legacy_raw_fallback || {};
+    return {
+      valuation: num(w.valuation, 0.45),
+      trend: num(w.trend, 0.25),
+      structure: num(w.structure, 0.20),
+      timing: num(w.timing, 0.00),
+      money: num(w.money, 0.10),
+      linear: num(tw.linear, 0.35),
+      ma200: num(tw.ma200, 0.50),
+      acceleration: num(tw.acceleration, 0.15),
+      fallbackWeeks: num(fb.fallback_history_weeks, 156),
+      valuation_market_multiplier: 1.00,
+      valuation_industry_multiplier: 1.00,
+      valuation_archetype_multiplier: 1.00,
+      structure_allow_linear: true,
+      structure_allow_quadratic: true,
+      structure_allow_logarithmic: true,
+      money_liquidity_weight: num(M7_PARAM_CONFIG?.money?.module_presets?.M7?.liquidity_weight, 0.70),
+      money_flow_weight: num(M7_PARAM_CONFIG?.money?.module_presets?.M7?.flow_weight, 0.30)
+    };
+  }
+
+  function renderWhatIfSimulator(scoreRows) {
+    const p = defaultWhatIfParams();
+    const input = (key, label, value, step = '0.01') => `
+      <div class="control-item">
+        <label>${label}</label>
+        <input class="m7-sim-input" data-key="${key}" type="number" step="${step}" value="${value}" />
+      </div>
+    `;
+
+    return `
+      <details class="collapsible-section" open>
+        <summary>MM v1.6 What-if Simulator / 前端即時參數模擬</summary>
+        <div class="group-box">
+          <div class="group-title">A. M7 v2 top weights（總分權重）</div>
+          <div class="control-grid">
+            ${input('valuation', 'valuation weight', p.valuation)}
+            ${input('trend', 'trend weight', p.trend)}
+            ${input('structure', 'structure weight', p.structure)}
+            ${input('timing', 'timing weight', p.timing)}
+            ${input('money', 'money weight', p.money)}
+          </div>
+          <div class="mini" id="m7-sim-top-sum" style="margin-top:8px;"></div>
+        </div>
+
+        <div class="group-box">
+          <div class="group-title">B. Trend internal weights（趨勢內部權重）</div>
+          <div class="control-grid">
+            ${input('linear', 'linear weight', p.linear)}
+            ${input('ma200', 'MA200 weight', p.ma200)}
+            ${input('acceleration', 'acceleration weight', p.acceleration)}
+            ${input('fallbackWeeks', 'fallback weeks', p.fallbackWeeks, '1')}
+          </div>
+          <div class="mini" id="m7-sim-trend-sum" style="margin-top:8px;"></div>
+        </div>
+
+        <div class="top-actions" style="margin:12px 0;">
+          <button id="m7-sim-recalc" type="button">Recalculate What-if</button>
+          <button id="m7-sim-reset" type="button">Reset to Config</button>
+        </div>
+
+        <div class="group-box">
+          <div class="group-title">C. Ranking Impact（前端重算，不寫回 config）</div>
+          <div id="m7-what-if-results">${renderWhatIfResultsTable(scoreRows, p)}</div>
+        </div>
+        <div class="mini">說明：此區只用目前 m7_v2_scores.json 的 factor output 前端重算，方便建立參數手感；不改 Python、不寫回 JSON、不影響 production。</div>
+      </details>
+    `;
+  }
+
+  function readWhatIfParamsFromDom() {
+    const base = defaultWhatIfParams();
+
+    // 先讀所有 what-if inputs
+    document.querySelectorAll(".m7-sim-input").forEach(input => {
+      const key = input.dataset.key;
+      if (!key) return;
+      const n = num(input.value, null);
+      if (n !== null) base[key] = n;
+    });
+
+    // 再讀左側 Parameter Brain，讓左側 B1/B2 成為最高優先控制器
+    document
+      .querySelectorAll("#m7-main-weight-controls .m7-sim-input, #trend-internal-weight-controls .m7-sim-input")
+      .forEach(input => {
+        const key = input.dataset.key;
+        if (!key) return;
+        if (input.type === "checkbox") {
+          base[key] = !!input.checked;
+          return;
+        }
+        const n = num(input.value, null);
+        if (n !== null) base[key] = n;
+      });
+
+    return base;
+  }
+
+  function whatIfRows(scoreRows, params) {
+    const rows = [...(scoreRows || [])].filter(r => r && r.symbol);
+
+    const originalRank = [...rows]
+      .sort((a, b) => num(b.m7_effective_score ?? b.m7_v2_score, -999) - num(a.m7_effective_score ?? a.m7_v2_score, -999))
+      .reduce((m, r, i) => (m[r.symbol] = i + 1, m), {});
+
+    const changedRows = rows.map(r => {
+      const changedTrend =
+        params.linear * num(r.trend_linear_score, 0) +
+        params.ma200 * num(r.trend_ma_score, 0) +
+        params.acceleration * num(r.trend_acceleration_score, 0);
+
+      const changedValuation = calcValuationWhatIf(r, params);
+      const changedStructure = calcStructureWhatIf(r, params);
+      const changedMoney = calcMoneyWhatIf(r, params);
+
+      const changedV2Unclamped =
+        params.valuation * changedValuation +
+        params.trend * changedTrend +
+        params.structure * changedStructure +
+        params.timing * num(r.timing_score, 0) +
+        params.money * changedMoney;
+
+      const fallback = num(r.history_weeks, 999999) < params.fallbackWeeks;
+      const changedEffective = fallback ? num(r.m7_raw_score, 0) : changedV2Unclamped;
+      const originalEffective = num(r.m7_effective_score ?? r.m7_v2_score, 0);
+
+      return {
+        ...r,
+        whatif_valuation_score: changedValuation,
+        whatif_trend_score: changedTrend,
+        whatif_structure_score: changedStructure,
+        whatif_money_score: changedMoney,
+        whatif_v2_score: changedV2Unclamped,
+        whatif_effective_score: changedEffective,
+        whatif_fallback_to_raw: fallback,
+        whatif_score_delta: changedEffective - originalEffective,
+        original_rank: originalRank[r.symbol] || null
+      };
+    });
+
+    return [...changedRows]
+      .sort((a, b) => num(b.whatif_effective_score, -999) - num(a.whatif_effective_score, -999))
+      .map((r, i) => ({
+        ...r,
+        whatif_rank: i + 1,
+        whatif_rank_delta: (r.original_rank || i + 1) - (i + 1)
+      }));
+  }
+
+  function renderWhatIfResultsTable(scoreRows, params) {
+    const ranked = whatIfRows(scoreRows, params);
+    const movers = ranked
+      .sort((a, b) => {
+        const ad = Math.abs(num(a.whatif_rank_delta, 0)) * 10 + Math.abs(num(a.whatif_score_delta, 0));
+        const bd = Math.abs(num(b.whatif_rank_delta, 0)) * 10 + Math.abs(num(b.whatif_score_delta, 0));
+        return bd - ad;
+      })
+      .slice(0, 24);
+
+    const topSum = params.valuation + params.trend + params.structure + params.timing + params.money;
+    const trendSum = params.linear + params.ma200 + params.acceleration;
+
+    return `
+      <div class="mini" style="margin-bottom:8px;">
+        top weight sum=${topSum.toFixed(3)} ｜ trend internal sum=${trendSum.toFixed(3)} ｜ fallback weeks=${params.fallbackWeeks}
+      </div>
+      <table class="preview-table">
+        <thead>
+          <tr>
+            <th>Symbol</th><th>Old Rank</th><th>New Rank</th><th>Δ Rank</th>
+            <th>Old Eff</th><th>New Eff</th><th>Δ Score</th>
+            <th>New Val</th><th>New Trend</th><th>New Struct</th><th>New Money</th><th>New V2</th><th>Fallback?</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${movers.map(r => `
+            <tr>
+              <td>${r.symbol || '--'}</td>
+              <td>${r.original_rank ?? '--'}</td>
+              <td>${r.whatif_rank ?? '--'}</td>
+              <td>${r.whatif_rank_delta > 0 ? '+' : ''}${r.whatif_rank_delta}</td>
+              <td>${formatNum(r.m7_effective_score ?? r.m7_v2_score)}</td>
+              <td>${formatNum(r.whatif_effective_score)}</td>
+              <td>${formatNum(r.whatif_score_delta, 3)}</td>
+              <td>${formatNum(r.whatif_valuation_score)}</td>
+              <td>${formatNum(r.whatif_trend_score)}</td>
+              <td>${formatNum(r.whatif_structure_score)}</td>
+              <td>${formatNum(r.whatif_money_score)}</td>
+              <td>${formatNum(r.whatif_v2_score)}</td>
+              <td>${r.whatif_fallback_to_raw ? 'YES' : 'NO'}</td>
+            </tr>
+          `).join('') || "<tr><td colspan='10'>No rows</td></tr>"}
+        </tbody>
+      </table>
+    `;
+  }
+
+  function updateWhatIfSummary(params) {
+    const topBox = document.getElementById('m7-sim-top-sum');
+    const trendBox = document.getElementById('m7-sim-trend-sum');
+    const topSum = params.valuation + params.trend + params.structure + params.timing + params.money;
+    const trendSum = params.linear + params.ma200 + params.acceleration;
+    if (topBox) topBox.textContent = `Top weights sum = ${topSum.toFixed(3)}（建議接近 1.000；這裡先允許 what-if 不強制 normalize）`;
+    if (trendBox) trendBox.textContent = `Trend internal weights sum = ${trendSum.toFixed(3)}（建議接近 1.000）`;
+  }
+
+  function bindWhatIfSimulator(scoreRows) {
+    const recalc = () => {
+      const params = readWhatIfParamsFromDom();
+      updateWhatIfSummary(params);
+      const resultBox = document.getElementById('m7-what-if-results');
+      if (resultBox) resultBox.innerHTML = renderWhatIfResultsTable(scoreRows, params);
+    };
+
+    const recalcBtn = document.getElementById('m7-sim-recalc');
+    const resetBtn = document.getElementById('m7-sim-reset');
+    if (recalcBtn) recalcBtn.addEventListener('click', recalc);
+    document.querySelectorAll('.m7-sim-input').forEach(input => input.addEventListener('input', recalc));
+    if (resetBtn) {
+      resetBtn.addEventListener('click', () => {
+        const p = defaultWhatIfParams();
+        document.querySelectorAll('.m7-sim-input').forEach(input => {
+          const key = input.dataset.key;
+          if (key && p[key] !== undefined) input.value = p[key];
+        });
+        recalc();
+      });
+    }
+    recalc();
+  }
+
+  function renderControlCenterAutomationPanel(dashboardData, scoreRows, runtimeRows) {
+    const box = document.getElementById("control-center-automation");
+    if (!box) return;
+
+    const rows = scoreRows || [];
+    const runtimeKeys = Object.keys(runtimeRows || {});
+    const warningRows = rows.filter(r => !!r?.data_warning);
+    const lowCoverageRows = rows.filter(r => typeof r?.coverage_pct === "number" && r.coverage_pct < 80);
+    const missingPriceRefRows = rows.filter(r => Array.isArray(r?.missing_price_refs) && r.missing_price_refs.length > 0);
+    const confidenceNums = rows.map(r => Number(r?.confidence)).filter(Number.isFinite);
+    const avgConfidence = confidenceNums.length
+      ? (confidenceNums.reduce((a, b) => a + b, 0) / confidenceNums.length).toFixed(1)
+      : "--";
+
+    const fallbackRows = rows.filter(r => r?.m7_v2_fallback_to_raw || r?.trend_fallback_to_raw || num(r?.history_weeks, 9999) < 156);
+    const trendRows = rows.filter(r => r?.trend_linear_annualized_pct !== undefined || r?.trend_ma_annualized_pct !== undefined);
+
+    const automationActions = [
+      "Step 1: edit configs/mm/m7_v2_parameter_config.json",
+      "Step 2: run python scripts/new/build_m7_v2_scores.py",
+      "Step 3: validate m7_v2_scores.json output fields",
+      "Step 4: inspect ranking delta / fallback monitor / trend diagnostics in MM dashboard"
+    ];
+
+    const taskNotes = dashboardData?.active_build_context?.current_task || "--";
+
+    box.innerHTML = `
+      <div class="group-box">
+        <div class="group-title">Automation Status</div>
+        <div class="mini">Current Task: ${taskNotes}</div>
+        <table class="preview-table">
+          <tbody>
+            <tr><td>M7 analysis entry</td><td><a href="./m7.html">Open mm/m7.html</a></td><td>mode</td><td>config-driven sandbox</td></tr>
+            <tr><td>score rows</td><td>${rows.length}</td><td>runtime symbols</td><td>${runtimeKeys.length}</td></tr>
+            <tr><td>avg confidence</td><td>${avgConfidence}</td><td>data warnings</td><td>${warningRows.length}</td></tr>
+            <tr><td>coverage &lt; 80</td><td>${lowCoverageRows.length}</td><td>missing_price_refs</td><td>${missingPriceRefRows.length}</td></tr>
+            <tr><td>trend annualized fields</td><td>${trendRows.length}</td><td>fallback rows</td><td>${fallbackRows.length}</td></tr>
+          </tbody>
+        </table>
+      </div>
+      ${renderWhatIfSimulator(rows)}
+      ${renderM7ParameterSnapshot()}
+      ${renderTrendDiagnosticsLeaderboard(rows)}
+      ${renderFallbackMonitor(rows)}
+      ${renderRankingDelta(rows)}
+      <details class="collapsible-section">
+        <summary>Automation Sequence / 控制中心自動化序列</summary>
+        <div class="group-box mini">${automationActions.map(x => `• ${x}`).join("<br>")}</div>
+      </details>
+      <details class="collapsible-section">
+        <summary>Operator Notes / 操作說明</summary>
+        <div class="group-box mini">
+          • 此區塊用來確認 MM config → Python engine → M7 sandbox output 已接通。<br>
+          • 目前 dashboard 讀取 config 與 score output，但不直接執行 Python；調完 config 後仍需在本機跑 engine。<br>
+          • trend_score 可大於 10，因為我們已把 trend 視為 raw alpha signal；m7_v2_score 仍會依總分公式聚合。<br>
+          • timing factor 不刪除，但 M7 v2 weight = 0；M6 可用同一 engine 改不同權重。
+        </div>
+      </details>
+    `;
+    bindWhatIfSimulator(rows);
+  }
+
+  function setupGlobalExpandCollapse() {
+    const expandBtn = document.getElementById("expand-all-btn");
+    const collapseBtn = document.getElementById("collapse-all-btn");
+    const all = () => Array.from(document.querySelectorAll(".collapsible-section, #system-reporting"));
+
+    if (expandBtn) {
+      expandBtn.addEventListener("click", () => all().forEach(el => { el.open = true; }));
+    }
+
+    if (collapseBtn) {
+      collapseBtn.addEventListener("click", () => all().forEach(el => { el.open = false; }));
+    }
+
+    all().forEach(el => { el.open = false; });
+  }
+
+  function renderActiveBuildContext(ctx) {
+    const box = document.getElementById("active-build-context");
+    if (!box) return;
+
+    const line = (v) => {
+      if (Array.isArray(v)) return v.length ? v.join(", ") : "--";
+      if (typeof v === "string") return v.trim() || "--";
+      return v ?? "--";
+    };
+
+    box.innerHTML = [
+      "目前任務 Current Task：",
+      line(ctx?.current_task),
+      "",
+      "本輪重點 Current Focus：",
+      line(ctx?.current_focus),
+      "",
+      "正式版已鎖定模組 Production Locked：",
+      line(ctx?.production_modules_locked),
+      "",
+      "目前 Sandbox：",
+      line(ctx?.sandbox_modules_active),
+      "",
+      "本輪可做 Allowed Scope：",
+      line(ctx?.allowed_scope),
+      "",
+      "本輪禁止 Forbidden Scope：",
+      line(ctx?.forbidden_scope)
+    ].join("<br>");
+  }
+
+  function renderEngines(rows) {
+    const tbody = document.getElementById("engine-table");
+    if (!tbody) return;
+
+    tbody.innerHTML = (rows || []).map(r => `
+      <tr>
+        <td>${r.name || r.engine_id || "--"}</td>
+        <td>${statusPill(r.status || "--")}</td>
+        <td>${r.readiness_score ?? "--"}</td>
+        <td>${r.formula_externalized_pct ?? "--"}%</td>
+        <td>${r.next_gate || "--"}</td>
+        <td>${r.notes || "--"}</td>
+      </tr>
+    `).join("");
+  }
+
+  function renderDataReadiness(rows) {
+    const tbody = document.getElementById("data-table");
+    if (!tbody) return;
+
+    tbody.innerHTML = (rows || []).map(r => `
+      <tr>
+        <td>${r.artifact_id || "--"}</td>
+        <td>${statusPill(r.status || "--")}</td>
+        <td>${r.coverage_pct ?? "--"}%</td>
+        <td>${r.missing_rate ?? "--"}</td>
+        <td>${r.freshness || "--"}</td>
+        <td>${r.validator_status || "--"}</td>
+      </tr>
+    `).join("");
+  }
+
+  function renderFormulas(rows) {
+    const tbody = document.getElementById("formula-table");
+    if (!tbody) return;
+
+    tbody.innerHTML = (rows || []).map(r => `
+      <tr>
+        <td>${r.domain || "--"}</td>
+        <td>${r.total_formulas ?? "--"}</td>
+        <td>${r.registered_formulas ?? "--"}</td>
+        <td>${r.hardcoded_formulas ?? "--"}</td>
+        <td>${r.normalization_pct ?? "--"}%</td>
+        <td>${yn(r.policy_linked)}</td>
+      </tr>
+    `).join("");
+  }
+
+  function renderModules(rows) {
+    const tbody = document.getElementById("module-table");
+    if (!tbody) return;
+
+    tbody.innerHTML = (rows || []).map(r => `
+      <tr>
+        <td>${r.module_id || "--"}</td>
+        <td>${statusPill(r.status || "--")}</td>
+        <td>${r.module_readiness_score ?? "--"}</td>
+        <td>${yn(r.runtime_dependency_ready)}</td>
+        <td>${yn(r.adapter_dependency_ready)}</td>
+        <td>${yn(r.go_live_gate_passed)}</td>
+      </tr>
+    `).join("");
+  }
+
+  function renderRisks(rows) {
+    const box = document.getElementById("risk-list");
+    if (!box) return;
+
+    const list = (rows || [])
+      .map(r => `• [${r.severity || "--"}] ${r.title || "--"}（${r.status || "--"}）`)
+      .join("<br>");
+
+    box.innerHTML = list || "無";
+  }
+
+  function renderMilestones(rows) {
+    const box = document.getElementById("milestone-list");
+    if (!box) return;
+
+    const list = (rows || [])
+      .map(r => `• ${r.name || "--"} / ${r.phase || "--"} / ${r.status || "--"}`)
+      .join("<br>");
+
+    box.innerHTML = list || "無";
+  }
+
+  function renderHandoffMemory(mem) {
+    const box = document.getElementById("handoff-memory");
+    if (!box) return;
+
+    const created = (mem?.recently_created_files || []).length
+      ? (mem.recently_created_files || []).map(x => `  - ${x}`).join("<br>")
+      : "  - 無";
+
+    const modified = (mem?.recently_modified_files || []).length
+      ? (mem.recently_modified_files || []).map(x => `  - ${x}`).join("<br>")
+      : "  - 無";
+
+    const risks = (mem?.known_risks || []).length
+      ? (mem.known_risks || []).map(x => `  - ${x}`).join("<br>")
+      : "  - 無";
+
+    box.innerHTML = [
+      "• 最近新增檔案：",
+      created,
+      "• 最近修改檔案：",
+      modified,
+      `• 上一個完成任務：${mem?.last_completed_task || "--"}`,
+      `• 下一步：${mem?.next_task || "--"}`,
+      "• 目前風險提醒：",
+      risks
+    ].join("<br>");
+  }
+
+
+  function renderParameterBrainDirectControls() {
+    const mainBox = document.getElementById("m7-main-weight-controls");
+    const trendBox = document.getElementById("trend-internal-weight-controls");
+    const p = defaultWhatIfParams();
+
+    const row = (key, nowVal) => `
+      <div class="form-row mm-brain-row" data-key="${key}" data-original="${Number(nowVal).toFixed(2)}">
+        <div>${key}</div>
+        <div>${Number(nowVal).toFixed(2)}</div>
+        <div>
+          <input
+            class="m7-sim-input mm-brain-input"
+            data-key="${key}"
+            type="number"
+            step="0.01"
+            value="${Number(nowVal).toFixed(2)}"
+          />
+        </div>
+        <div class="mm-brain-delta">0.00</div>
+      </div>
+    `;
+
+    if (mainBox) {
+      const keys = ["valuation", "trend", "structure", "timing", "money"];
+      mainBox.innerHTML = keys.map(key => row(key, p[key] ?? 0)).join("");
+    }
+
+    if (trendBox) {
+      const keys = ["linear", "ma200", "acceleration"];
+      trendBox.innerHTML = keys.map(key => row(key, p[key] ?? 0)).join("");
+    }
+
+
+    if (window.MMParameterBrain && typeof window.MMParameterBrain.renderB2B3Controls === "function") {
+      window.MMParameterBrain.renderB2B3Controls({
+        M7_PARAM_CONFIG,
+        row,
+        num
+      });
+    }
+
+    document.querySelectorAll(".mm-brain-input").forEach(input => {
+      input.oninput = () => {
+        const key = input.dataset.key;
+        const rowEl = input.closest(".mm-brain-row");
+        if (input.type === "checkbox") {
+          refreshImpactOnly();
+          return;
+        }
+        const original = num(rowEl?.dataset.original, 0);
+        const changed = num(input.value, original);
+        const deltaEl = rowEl?.querySelector(".mm-brain-delta");
+
+        if (deltaEl) {
+          const d = changed - original;
+          deltaEl.textContent = Math.abs(d) < 0.000001 ? "0.00" : (d > 0 ? "+" : "") + d.toFixed(2);
+          deltaEl.className = "mm-brain-delta " + (d > 0 ? "delta-pos" : d < 0 ? "delta-neg" : "delta-flat");
+        }
+
+        // 同步同 key 的 hidden what-if simulator input，避免 hidden inputs 覆蓋左側參數
+        document.querySelectorAll(`.m7-sim-input[data-key="${key}"]`).forEach(other => {
+          if (other !== input) other.value = input.value;
+        });
+
+        refreshImpactOnly();
+      };
+    });
+  }
+
+
+  function renderStocksDisplayTable() {
+    const tbody = document.getElementById("stocks-display-tbody");
+    if (!tbody) return;
+
+    const searchInput = document.getElementById("stock-table-search");
+    const sortSelect = document.getElementById("stock-table-sort");
+    const categorySelect = document.getElementById("stock-table-category");
+
+    const runtimeRows = getRuntimeRows();
+    const params = readWhatIfParamsFromDom();
+    let rows = whatIfRows(getScoreRows(), params);
+
+    // populate category dropdown once
+    if (categorySelect && categorySelect.options.length <= 1) {
+      const cats = Array.from(new Set(rows.map(r => r.category).filter(Boolean))).sort();
+      cats.forEach(cat => {
+        const opt = document.createElement("option");
+        opt.value = cat;
+        opt.textContent = cat;
+        categorySelect.appendChild(opt);
+      });
+    }
+
+    const keyword = String(searchInput?.value || "").trim().toUpperCase();
+    const category = String(categorySelect?.value || "").trim();
+    const sortKey = sortSelect?.value || "rank_delta";
+
+    if (keyword) {
+      rows = rows.filter(r =>
+        String(r.symbol || "").toUpperCase().includes(keyword) ||
+        String(r.name || "").toUpperCase().includes(keyword)
+      );
+    }
+
+    if (category) {
+      rows = rows.filter(r => String(r.category || "") === category);
+    }
+
+    rows.sort((a, b) => {
+      if (sortKey === "new_score") return num(b.whatif_effective_score, -999) - num(a.whatif_effective_score, -999);
+      if (sortKey === "score_delta") return num(b.whatif_score_delta, -999) - num(a.whatif_score_delta, -999);
+      if (sortKey === "symbol") return String(a.symbol || "").localeCompare(String(b.symbol || ""));
+      return Math.abs(num(b.whatif_rank_delta, 0)) - Math.abs(num(a.whatif_rank_delta, 0));
+    });
+
+    const statusText = (r) => {
+      const parts = [];
+      if (r.today_fcn_pool_status) parts.push(r.today_fcn_pool_status);
+      if (r.pool30 || r.in_pool30) parts.push("pool30");
+      if (r.recommendation) parts.push(r.recommendation);
+      if (!parts.length) {
+        const s = num(r.whatif_effective_score ?? r.m7_effective_score ?? r.m7_v2_score, 0);
+        if (s >= 8) parts.push("推薦");
+        else if (s >= 7) parts.push("候選");
+        else parts.push("觀察");
+      }
+      return parts.join(" / ");
+    };
+
+    const deltaClass = (v) => v > 0 ? "delta-pos" : v < 0 ? "delta-neg" : "delta-flat";
+
+    if (!rows.length) {
+      tbody.innerHTML = `<tr><td colspan="13">No rows</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = rows.map(r => {
+      const rt = runtimeRows[r.symbol] || {};
+      const price = rt.price_now ?? r.price_now ?? r.price;
+      const dayDelta = rt.ret_1d ?? r.ret_1d;
+      const oldRank = r.original_rank ?? "--";
+      const newRank = r.whatif_rank ?? "--";
+      const m1Now = r.m1_score;
+      const m7Now = r.m7_effective_score ?? r.m7_v2_score ?? r.m7_raw_score;
+      const m7New = r.whatif_effective_score ?? m7Now;
+      const expandHtml = `
+        <details class="subsection" style="margin:6px 0;">
+          <summary>Detail</summary>
+          <div class="subsection-body">
+            <b>L1 M1</b> ｜ M1 Score: ${formatNum(r.m1_score)}<br>
+            <b>L2 M2</b> ｜ status: ${r.today_fcn_pool_status || "--"}<br>
+            <b>L3 M7</b> ｜ valuation ${formatNum(r.valuation_score)}, trend ${formatNum(r.trend_score)}, structure ${formatNum(r.structure_score)}, timing ${formatNum(r.timing_score)}, money ${formatNum(r.money_score)}<br>
+            <b>L4 M8</b> ｜ reserved for fair rate / basket linkage<br>
+            <b>L5 M6</b> ｜ reserved for stock execution / market comment
+          </div>
+        </details>
+      `;
+
+      return `
+        <tr>
+          <td>${expandHtml}</td>
+          <td>${oldRank}</td>
+          <td>${newRank}</td>
+          <td><b>${r.symbol || "--"}</b><br><span class="muted">${r.name || "--"}</span></td>
+          <td>${formatNum(price)}</td>
+          <td class="${deltaClass(num(dayDelta, 0))}">${formatNum(dayDelta)}%</td>
+          <td>${formatNum(m1Now)}</td>
+          <td>${formatNum(m1Now)}</td>
+          <td>${formatNum(m7Now)}</td>
+          <td class="${deltaClass(num(m7New,0)-num(m7Now,0))}">${formatNum(m7New)}</td>
+          <td>${r.category || "--"}</td>
+          <td>${r.category_sub || r.subsector || "--"}</td>
+          <td>${statusText(r)}</td>
+        </tr>
+      `;
+    }).join("");
+  }
+
+  function bindStocksDisplayTable() {
+    const searchInput = document.getElementById("stock-table-search");
+    const sortSelect = document.getElementById("stock-table-sort");
+    const categorySelect = document.getElementById("stock-table-category");
+    const refreshBtn = document.getElementById("stock-table-refresh");
+
+    if (searchInput) searchInput.oninput = renderStocksDisplayTable;
+    if (sortSelect) sortSelect.onchange = renderStocksDisplayTable;
+    if (categorySelect) categorySelect.onchange = renderStocksDisplayTable;
+    if (refreshBtn) refreshBtn.onclick = renderStocksDisplayTable;
+  }
+
+
+  async function init() {
+    try {
+      clearError();
+
+      const [dashboardRes, scoresRes, auditRes, runtimeRes, m7ParamConfigRes] = await Promise.all([
+        fetch(DATA_PATH, { cache: "no-store" }),
+        fetch(SCORES_PATH, { cache: "no-store" }),
+        fetch(AUDIT_PATH, { cache: "no-store" }),
+        fetch(RUNTIME_PATH, { cache: "no-store" }),
+        fetch(M7_PARAM_CONFIG_PATH, { cache: "no-store" })
+      ]);
+
+      if (!dashboardRes.ok) throw new Error(`讀取失敗：${dashboardRes.status}`);
+
+      DASHBOARD_DATA = await dashboardRes.json();
+      SCORES_DATA = scoresRes.ok ? await scoresRes.json() : {};
+      AUDIT_DATA = auditRes.ok ? await auditRes.json() : {};
+      RUNTIME_DATA = runtimeRes.ok ? await runtimeRes.json() : {};
+      M7_PARAM_CONFIG = m7ParamConfigRes.ok ? await m7ParamConfigRes.json() : {};
+
+      const scoreRows = getScoreRows();
+      const runtimeRows = getRuntimeRows();
+      const explain = buildExplainContext();
+
+      const gen = document.getElementById("generatedAt");
+      if (gen) {
+        gen.textContent = `資料時間：${DASHBOARD_DATA.generated_at || "--"} ｜ 版本：${DASHBOARD_DATA.version || "--"}`;
+      }
+
+      renderModuleSwitch(DASHBOARD_DATA.module_switch || []);
+      renderParameterController(DASHBOARD_DATA.parameter_controller || {});
+      renderEngineActions(DASHBOARD_DATA.engine_actions || []);
+      renderOutputDemo(DASHBOARD_DATA.output_demo || {}, explain);
+      renderM7Readiness(DASHBOARD_DATA.m7_complete_readiness_check || {}, DASHBOARD_DATA.compare_governance || {});
+      renderControlCenterAutomationPanel(DASHBOARD_DATA, scoreRows, runtimeRows);
+      renderParameterBrainDirectControls();
+      renderActiveBuildContext(DASHBOARD_DATA.active_build_context || {});
+      renderOverview(DASHBOARD_DATA.overview || {});
+      renderEngines(DASHBOARD_DATA.engines || []);
+      renderDataReadiness(DASHBOARD_DATA.data_artifacts || []);
+      renderFormulas(DASHBOARD_DATA.formula_domains || []);
+      renderModules(DASHBOARD_DATA.modules || []);
+      renderRisks(DASHBOARD_DATA.blockers || []);
+      renderMilestones(DASHBOARD_DATA.milestones || []);
+      renderHandoffMemory(DASHBOARD_DATA.handoff_memory || {});
+      setupGlobalExpandCollapse();
+
+      const currentSymbol =
+        document.getElementById("stock-query-input")?.value || "NVDA";
+      renderStandardStockCard(currentSymbol);
+      bindStockQuery();
+      bindStocksDisplayTable();
+      renderStocksDisplayTable();
+      refreshImpactOnly();
+
+    } catch (err) {
+      setError(`Engine Progress Dashboard 載入失敗：${err.message}`);
+    }
+  }
+function findStockBySymbol(symbol) {
+  const rows = getScoreRows();
+  if (!rows.length) return null;
+
+  const s = String(symbol || "").trim().toUpperCase();
+
+  return rows.find(r => r.symbol === s) || null;
+}
+
+function renderStandardStockCard(symbol = "NVDA") {
+  const stock = findStockBySymbol(symbol);
+
+  const container = document.getElementById("standard-stock-card");
+  if (!container) return;
+
+  if (!stock) {
+    container.innerHTML = `
+      <div class="panel">
+        <h3>Stock Not Found</h3>
+        <div class="muted">${symbol}</div>
+      </div>
+    `;
+    return;
+  }
+
+  const runtime = getRuntimeRows()[stock.symbol] || {};
+
+  const oldScore =
+    stock.m7_effective_score ??
+    stock.m7_v2_score ??
+    stock.m7_raw_score ??
+    0;
+
+  const changedRows = whatIfRows(getScoreRows(), readWhatIfParamsFromDom());
+  const changedStock =
+    changedRows.find(x => x.symbol === stock.symbol) || {};
+
+  const newScore =
+    changedStock.whatif_effective_score ??
+    oldScore;
+
+  const scoreDelta = newScore - oldScore;
+
+  function fmt(v, d=2){
+    const n = Number(v);
+    if(!Number.isFinite(n)) return "--";
+    return n.toFixed(d);
+  }
+
+  function deltaClass(v){
+    if(v>0) return "delta-pos";
+    if(v<0) return "delta-neg";
+    return "delta-flat";
+  }
+
+  container.innerHTML = `
+  
+  <!-- Layer 1 -->
+  <div class="panel" style="margin-bottom:12px;">
+    <h3>${stock.symbol} | ${stock.name}</h3>
+
+    <div class="grid-3">
+      <div class="mini-card">
+        <div class="muted">Price</div>
+        <b>${fmt(runtime.price_now)}</b>
+      </div>
+
+      <div class="mini-card">
+        <div class="muted">1D Delta</div>
+        <b class="${deltaClass(runtime.ret_1d)}">
+          ${fmt(runtime.ret_1d)}%
+        </b>
+      </div>
+
+      <div class="mini-card">
+        <div class="muted">Category</div>
+        <b>${stock.category || "--"}</b>
+      </div>
+    </div>
+
+    <div class="grid-3" style="margin-top:10px;">
+      <div class="mini-card">
+        <div class="muted">Subsector</div>
+        <b>${stock.subsector || "--"}</b>
+      </div>
+
+      <div class="mini-card">
+        <div class="muted">Category Sub</div>
+        <b>${stock.category_sub || "--"}</b>
+      </div>
+
+      <div class="mini-card">
+        <div class="muted">Archetype</div>
+        <b>${stock.valuation_archetype || "--"}</b>
+      </div>
+    </div>
+  </div>
+
+  <!-- Layer 2 -->
+  <div class="panel" style="margin-bottom:12px;">
+    <h3>Core Scores (Now / New / Delta)</h3>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Now</th>
+            <th>New</th>
+            <th>Delta</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>M1</td>
+            <td>${fmt(stock.m1_score)}</td>
+            <td>${fmt(stock.m1_score)}</td>
+            <td>--</td>
+          </tr>
+
+          <tr>
+            <td>M7 Raw</td>
+            <td>${fmt(stock.m7_raw_score)}</td>
+            <td>${fmt(stock.m7_raw_score)}</td>
+            <td>--</td>
+          </tr>
+
+          <tr>
+            <td>M7 Effective</td>
+            <td>${fmt(oldScore)}</td>
+            <td>${fmt(newScore)}</td>
+            <td class="${deltaClass(scoreDelta)}">
+              ${fmt(scoreDelta)}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Layer 3 -->
+  <div class="panel">
+    <h3>Main Factors</h3>
+
+    <div class="grid-5">
+      <div class="mini-card">
+        <div class="muted">Valuation</div>
+        <b>${fmt(stock.valuation_score)}</b>
+      </div>
+
+      <div class="mini-card">
+        <div class="muted">Trend</div>
+        <b>${fmt(stock.trend_score)}</b>
+      </div>
+
+      <div class="mini-card">
+        <div class="muted">Structure</div>
+        <b>${fmt(stock.structure_score)}</b>
+      </div>
+
+      <div class="mini-card">
+        <div class="muted">Timing</div>
+        <b>${fmt(stock.timing_score)}</b>
+      </div>
+
+      <div class="mini-card">
+        <div class="muted">Money</div>
+        <b>${fmt(stock.money_score)}</b>
+      </div>
+    </div>
+  </div>
+
+  <!-- Layer 4 -->
+  <details class="subsection">
+    <summary>Trend Detail</summary>
+    <div class="subsection-body">
+      linear annualized:
+      ${fmt(stock.trend_linear_annualized_pct)}%
+      <br>
+      MA annualized:
+      ${fmt(stock.trend_ma_annualized_pct)}%
+      <br>
+      recent 3Y:
+      ${fmt(stock.trend_recent_3y_annualized_pct)}%
+      <br>
+      acceleration:
+      ${fmt(stock.trend_acceleration_annualized_delta_pct)}%
+    </div>
+  </details>
+
+  <details class="subsection">
+    <summary>Valuation Detail</summary>
+    <div class="subsection-body">
+      PE:
+      ${fmt(stock.feature_snapshot?.valuation?.forward_pe)}
+      <br>
+      Anchor:
+      ${fmt(stock.feature_snapshot?.valuation?.anchor_pe)}
+      <br>
+      PEG:
+      ${fmt(stock.feature_snapshot?.valuation?.peg)}
+      <br>
+      EPS Growth:
+      ${fmt(stock.feature_snapshot?.valuation?.eps_growth)}%
+    </div>
+  </details>
+
+  <details class="subsection">
+    <summary>Structure Detail</summary>
+    <div class="subsection-body">
+      Best Model:
+      ${stock.best_structure_model}
+      <br>
+      R²:
+      ${fmt(stock.best_structure_r2)}
+      <br>
+      Stability:
+      ${fmt(stock.structure_stability)}
+    </div>
+  </details>
+
+  <details class="subsection">
+    <summary>Data Health</summary>
+    <div class="subsection-body">
+      Coverage:
+      ${fmt(stock.coverage_pct)}%
+      <br>
+      History Weeks:
+      ${stock.history_weeks}
+      <br>
+      Horizon:
+      ${stock.history_horizon_used}
+    </div>
+  </details>
+  `;
+}
+
+function bindStockQuery() {
+  const btn = document.getElementById("stock-query-btn");
+  const input = document.getElementById("stock-query-input");
+
+  if (!btn || !input) return;
+
+  btn.onclick = () => {
+    renderStandardStockCard(input.value);
+  };
+
+  input.onkeypress = (e) => {
+    if (e.key === "Enter") {
+      renderStandardStockCard(input.value);
     }
   };
 }
-
-// ------------------------------------------
-// 主流程
-// ------------------------------------------
-function run() {
-  if (!fs.existsSync(INPUT_FILE)) {
-    throw new Error("找不到 m7_fundamental_data.json");
-  }
-
-  const raw = JSON.parse(fs.readFileSync(INPUT_FILE, "utf-8"));
-  const rows = toArray(raw);
-  const m2 = loadM2Exposure();
-
-  const result = rows.map((row) => {
-    const r1d = safeNum(row.ret_1d, safeNum(row.amp_1d, 0));
-    const r1w = safeNum(row.ret_1w, null);
-    const r1m = safeNum(row.ret_1m, null);
-    const r3m = safeNum(row.ret_3m, null);
-    const r6m = safeNum(row.ret_6m, null);
-    const r12m = safeNum(row.ret_12m, null);
-    const vol = safeNum(row.volume_ratio, null);
-
-    const category = row.category || inferCategory(row);
-    row.category = category;
-
-    const qualityBonus = calcQualityBonus(row.quality_level, row.risk_level);
-    const categoryBonus = calcCategoryBonus(category);
-
-    const valuation = buildValuationData(row, category);
-
-    const trendRaw = calcTrendRaw(r1m ?? 0, r3m ?? 0, r6m ?? 0, r12m ?? 0);
-    const trendNorm = trendScoreFromRawNormalized(trendRaw);
-    const trendState = inferTrendState(trendRaw);
-
-    const shortSwing = calcShortSwing(row.swing_days, row.amp_1d);
-    const structureNorm = structureScoreFromShortSwing(shortSwing);
-    const structureState = inferStructureState(shortSwing);
-
-    const snapshot = calcSnapshot(r1d ?? 0, r1w ?? 0, r1m ?? 0);
-    const timingNorm = timingScoreFromSnapshot(snapshot);
-    const timingState = inferTimingState(snapshot);
-
-    const moneyNorm = calcMoneyScoreNormalized(vol);
-
-    const total = buildFinalScore({
-      valuationNorm: valuation.norm_score,
-      trendNorm,
-      structureNorm,
-      timingNorm,
-      moneyNorm,
-      qualityBonus,
-      categoryBonus
-    });
-
-    const exposure = buildExposure(m2.stocks?.[row.symbol]);
-    const exposureWarning = buildExposureWarning(exposure, category);
-
-    const action = buildAction(row, {
-      total,
-      valuationScore: valuation.norm_score,
-      trendScore: trendNorm,
-      structureScore: structureNorm,
-      timingScore: timingNorm,
-      moneyScore: moneyNorm,
-      trendState,
-      timingState,
-      exposureWarning,
-      exposure
-    });
-
-    const candidate = {
-      "股號": row.symbol,
-      "股名": row.name,
-      "產業": row.sector,
-      "子產業": row.subsector,
-      "分類": category,
-      "估值模型": valuation.model,
-      "風險等級": row.risk_level,
-
-      "股價": round2(row.price),
-      "PEG": round2(valuation.peg),
-      "1日漲跌幅": round2(r1d),
-      "1週漲跌幅": round2(r1w),
-      "1月漲跌幅": round2(r1m),
-      "3月漲跌幅": round2(r3m),
-      "6月漲跌幅": round2(r6m),
-      "12月漲跌幅": round2(r12m),
-      "量比": round2(vol),
-
-      "valuation_score": round2(valuation.norm_score),
-      "trend_score": round2(trendNorm),
-      "structure_score": round2(structureNorm),
-      "timing_score": round2(timingNorm),
-      "money_score": round2(moneyNorm),
-      "quality_score": round2(qualityBonus),
-      "category_adjust": round2(categoryBonus),
-
-      "today_score": round2(total),
-
-      "trendRaw": round2(trendRaw),
-      "snapshot": round2(snapshot),
-      "growth": round2(valuation.growth),
-      "growthScore": round2(valuation.growth_score),
-
-      "趨勢判讀": {
-        "年線": getArrow(r12m),
-        "6月線": getArrow(r6m),
-        "3月線": getArrow(r3m),
-        "月線": getArrow(r1m),
-        "趨勢狀態": trendState,
-        "結構狀態": structureState,
-        "時機狀態": timingState
-      },
-
-      "估值資料": {
-        "ValuationClass": valuation.valuation_class,
-        "PEG": valuation.peg,
-        "ForwardPE": valuation.pe_forward,
-        "AnchorPE": valuation.anchor_pe,
-        "PERatio": valuation.pe_ratio,
-        "EPS成長率": valuation.growth,
-        "PEScore": valuation.pe_score,
-        "GrowthScore": valuation.growth_score,
-        "GrowthScoreAdj": valuation.growth_score_adj,
-        "QualityMomentum": valuation.quality_momentum,
-        "QualityFactor": valuation.quality_factor,
-        "ValuationRaw": valuation.raw_score
-      },
-
-      "結構資料": {
-        "swing_days": Array.isArray(row.swing_days) ? row.swing_days : [],
-        "amp_1d": round2(row.amp_1d),
-        "ShortSwing": round2(shortSwing)
-      },
-
-      "時機資料": {
-        "Snapshot": round2(snapshot)
-      },
-
-      "分數拆解": {
-        "估值原始分": round2(valuation.raw_score),
-        "估值分": round2(valuation.norm_score),
-        "趨勢分": round2(trendNorm),
-        "結構分": round2(structureNorm),
-        "時機分": round2(timingNorm),
-        "資金分": round2(moneyNorm),
-        "品質分": round2(qualityBonus),
-        "類別調整": round2(categoryBonus),
-        "總分": round2(total)
-      },
-
-      "持倉曝險": {
-        "FCN數量": exposure.fcn_count,
-        "投入金額": exposure.invested_amount,
-        "投入資金比": round2(exposure.invested_ratio),
-        "Danger": exposure.danger,
-        "Watch": exposure.watch,
-        "Healthy": exposure.healthy,
-        "Pure平均": exposure.avg_score_pure,
-        "Event平均": exposure.avg_score_event
-      },
-
-      "曝險警示": exposureWarning,
-
-      "建議動作": action,
-      "ui_bucket": buildUIBucket(action)
-    };
-
-    const rejectMeta = evaluateRejectMeta(candidate);
-    candidate.reject_type = rejectMeta.reject_type;
-    candidate.reject_reasons = rejectMeta.reject_reasons;
-    candidate.badCount = rejectMeta.badCount;
-    candidate.trendTerrible = rejectMeta.trendTerrible;
-    candidate.snapshotTerrible = rejectMeta.snapshotTerrible;
-    candidate.growthTerrible = rejectMeta.growthTerrible;
-    candidate.attributeReject = rejectMeta.attributeReject;
-    candidate.quantReject = rejectMeta.quantReject;
-
-    const highlight = evaluateTodayHighlight(candidate);
-    candidate.is_today_highlight = highlight.is_today_highlight;
-    candidate.today_highlight_reason = highlight.today_highlight_reason;
-
-    candidate.why_yes = buildWhyYes(
-      row,
-      valuation,
-      trendState,
-      structureState,
-      timingNorm,
-      moneyNorm,
-      qualityBonus
-    );
-
-    candidate.why_no = buildWhyNo(
-      row,
-      valuation,
-      trendState,
-      structureState,
-      timingState,
-      moneyNorm,
-      exposureWarning
-    );
-
-    candidate["估值說明"] = valuation.text;
-    candidate["最終說明"] = buildFinalComment(
-      action,
-      valuation,
-      trendRaw,
-      trendState,
-      shortSwing,
-      snapshot,
-      moneyNorm,
-      exposureWarning
-    );
-
-    return candidate;
-  });
-
-  const sorted = result
-    .filter((x) => x["股號"])
-    .sort((a, b) => {
-      return (b.is_today_highlight === true) - (a.is_today_highlight === true)
-        || b.today_score - a.today_score;
-    })
-    .map((x, i) => ({
-      "排名": i + 1,
-      ...x
-    }));
-
-  const aggressiveRecommend = sorted.filter(x => x.ui_bucket === "積極推薦");
-  const watchBucket = sorted.filter(x => x.ui_bucket === "觀察名單");
-  const removeBucket = sorted.filter(x => x.ui_bucket === "建議剔除");
-
-  const rejectPool = sorted.filter(x => !!x.reject_type);
-
-  const simulationPool = sorted
-    .filter(x => !x.reject_type)
-    .sort((a, b) => b.today_score - a.today_score)
-    .slice(0, 15);
-
-  const todayHighlightPool = simulationPool
-    .filter(x =>
-      x["趨勢判讀"]?.["結構狀態"] !== "flat" &&
-      x["趨勢判讀"]?.["時機狀態"] !== "hot" &&
-      (x["曝險警示"]?.level || "normal") !== "high"
-    )
-    .sort((a, b) => b.today_score - a.today_score)
-    .slice(0, 5);
-
-  const highlightSymbols = new Set(todayHighlightPool.map(x => x["股號"]));
-  const simulationSymbols = new Set(simulationPool.map(x => x["股號"]));
-
-  const watchPool = simulationPool.filter(x => !highlightSymbols.has(x["股號"]));
-
-  const decoratedAll = sorted.map((x) => {
-    return {
-      ...x,
-      pool_reason: buildPoolReason(x, simulationSymbols, highlightSymbols)
-    };
-  });
-
-  const poolRules = buildPoolRules();
-
-  const output = {
-    generated_at: new Date().toISOString(),
-    m2_generated_at: m2.generated_at,
-    total_count: decoratedAll.length,
-
-    sweet_count: decoratedAll.filter(x =>
-      x["趨勢判讀"]?.["結構狀態"] === "sweet" ||
-      x["趨勢判讀"]?.["結構狀態"] === "sweet_max"
-    ).length,
-    hot_timing_count: decoratedAll.filter(x => x["趨勢判讀"]?.["時機狀態"] === "hot").length,
-    downtrend_count: decoratedAll.filter(x => x["趨勢判讀"]?.["趨勢狀態"] === "down").length,
-
-    high_exposure: decoratedAll.filter(x => x["曝險警示"]?.level === "high").length,
-    mid_exposure: decoratedAll.filter(x => x["曝險警示"]?.level === "medium").length,
-
-    market_comment:
-      `甜點結構 ${decoratedAll.filter(x =>
-        x["趨勢判讀"]?.["結構狀態"] === "sweet" ||
-        x["趨勢判讀"]?.["結構狀態"] === "sweet_max"
-      ).length} 檔，` +
-      `下行趨勢 ${decoratedAll.filter(x =>
-        x["趨勢判讀"]?.["趨勢狀態"] === "down"
-      ).length} 檔，` +
-      `今日宜重估值、重甜點、輕追價。`,
-
-    pool_rules: poolRules,
-    pool_summary: {
-      today_highlight_count: todayHighlightPool.length,
-      watch_count: watchPool.length,
-      simulation_count: simulationPool.length,
-      reject_count: rejectPool.length
-    },
-
-    today_highlight_pool: todayHighlightPool.map(x => ({
-      ...x,
-      pool_reason: buildPoolReason(x, simulationSymbols, highlightSymbols)
-    })),
-    watch_pool: watchPool.map(x => ({
-      ...x,
-      pool_reason: buildPoolReason(x, simulationSymbols, highlightSymbols)
-    })),
-    simulation_pool: simulationPool.map(x => ({
-      ...x,
-      pool_reason: buildPoolReason(x, simulationSymbols, highlightSymbols)
-    })),
-    reject_pool: rejectPool.map(x => ({
-      ...x,
-      pool_reason: buildPoolReason(x, simulationSymbols, highlightSymbols)
-    })),
-
-    aggressive_recommend: aggressiveRecommend,
-    watch_list: watchBucket,
-    remove_list: removeBucket,
-
-    all: decoratedAll
-  };
-
-  const scoreboard = buildScoreboard(decoratedAll);
-
-  fs.writeFileSync(OUTPUT_FILE, JSON.stringify(output, null, 2), "utf-8");
-  fs.writeFileSync(SCOREBOARD_FILE, JSON.stringify(scoreboard, null, 2), "utf-8");
-
-  console.log(`✅ m7_new_stock_today.json 已產出，共 ${decoratedAll.length} 檔`);
-  console.log(`✅ m7_scoreboard.json 已產出`);
-  console.log(`✅ U7 四池已加入：highlight ${todayHighlightPool.length} / watch ${watchPool.length} / sim ${simulationPool.length} / reject ${rejectPool.length}`);
-}
-
-run();
+  init();
+})();
