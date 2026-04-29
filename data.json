@@ -1,239 +1,239 @@
 {
-  "updated_at": "2026-04-28 00:10",
+  "updated_at": "2026-04-29 00:13",
   "summary": {
     "active_fcn_count": 24,
     "top_risk_code": "FCN710H",
     "worst_of": "ORCL",
-    "market_env": "保守做",
-    "main_conclusion": "今天可保守做 FCN，建議以 TSM / MSFT 為主，避免進攻型標的過重。"
+    "market_env": "觀望",
+    "main_conclusion": "今天較適合觀望或只做防守型 FCN，先避開高波動與風險集中的標的。"
   },
   "morning_brief": {
     "international_news": [
       {
-        "title": "Three Things That Led to Jaw-Dropping Brewers Win",
-        "summary": "The Milwaukee Brewers got back in the winning column in emphatic fashion.",
-        "content": "Following the Milwaukee Brewers 6-3 loss on Saturday to the Pittsburgh Pirates that marked their fourth in a row, manager Pat Murphy emphasized that the team was sticking together through the tough t… [+3401 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Swap Egypt for this Spanish escape with Red Sea-style waters, pink lakes and flamingos - just two hours from the UK",
-        "summary": "Swap Egypt's dreamy Red Sea and beaches for another destination in Spain that's only two hours and 40 minutes…",
-        "content": "Egypt is a popular destination and typically attracts hordes of British holidaymakers a year. Many flock there for the Red Sea, stretches of sandy beaches and abundance of family-friendly resorts an… [+3810 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "What triggered U.S.-Iran talks to stall? #world",
-        "summary": "Diplomacy breaks down amid Iran U.S. tensions Across multiple reports, U.S. Iran engagement appears to be stu…",
-        "content": "Diplomacy breaks down amid Iran-U.S. tensions Across multiple reports, U.S.-Iran engagement appears to be stuck in a cycle of disruption and cancellation rather than steady negotiation. Iranian dipl… [+1763 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "What should I know about jet fuel shortages? #travel",
-        "summary": "How the jet fuel crisis could affect your trip Airlines across Europe and beyond have been cutting schedules,…",
-        "content": "Airlines across Europe and beyond have been cutting schedules, grounding aircraft, and warning passengers to double-check plans as jet-fuel costs rise amid conflict in the Middle East. Several repor… [+1661 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
+        "title": "SC, 10146th Meeting (AM & PM) Middle East, including Palestinian Question",
+        "summary": "The Council will hold its quarterly open debate on the situation in the Middle East, including the Palestinia…",
+        "content": "In Ukraine, at least three drone strikes in the last week hit humanitarian vehicles in the city of Kherson, the Office for the Coordination of Humanitarian Affairs reports. Two incidents involved the… [+106 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
         "affects_fcn": true,
         "impact_score": -1
       },
       {
-        "title": "The Strange Aftermath of the WHCD Shooting",
-        "summary": "It’s a testament to the non-stop insanity of the Trump era that an active shooter getting close to the presid…",
-        "content": "It was a little after 8:30 PM and I had just sat down at Café Milano, the white-tablecloth Georgetown watering hole loved and hated by both sides of the aisle, when the comedian Matt Friend announced… [+5784 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "Brother of suspect in deaths of 2 Tampa students: \"We tried to warn police in the past\"",
+        "summary": "Ahmad Abugharbieh, the younger brother of the man suspected of killing two University of South Florida doctor…",
+        "content": "The brother of Hisham Abugharbieh, the suspect in the killings of two University of South Florida doctoral students, tells CBS News his family had warned police in the past about Abugharbieh's errati… [+4423 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Stagflation Incoming: The Donald Ain’t Gonna Like What Happens Next!",
-        "summary": "Here is a salient place to start regarding the economic impact of the Donald’s misbegotten war on Iran: To wi…",
-        "content": "Here is a salient place to start regarding the economic impact of the Donalds misbegotten war on Iran: To wit, approximately 7 billion ton-miles of freight moves by truck each and every day in the US… [+13458 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "Nigeria’s petrol, diesel are subsidised – Dangote official",
+        "summary": "A Dangote refinery official reveals an ongoing fuel subsidy for petrol and diesel to cushion the impact of ri…",
+        "content": "A senior management official of the Dangote Group on Monday revealed that the Dangote Petroleum Refinery has been subsidising the petrol and diesel it sells to the Nigerian market. According to the … [+5027 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "The Cowardice of Qualification: When Anti-War Voices Speak the Language of Empire",
-        "summary": "A respected human rights activist has spoken repeatedly against the US-Israeli aggression on Iran. She recogn…",
-        "content": "A respected human rights activist has spoken repeatedly against the US-Israeli aggression on Iran. She recognizes the illegality of the war and does not shy away from condemning it in clear terms. Ye… [+7975 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "Energy price rises will squeeze incomes but won’t trigger recession, says Bank of Ireland",
+        "summary": "Lender slashes growth forecast for the Irish economy as conflict enters third month",
+        "content": "Bank of Ireland has slashed its growth forecasts for the year as the Iran war puts an unwelcome squeeze on household income. The spike in energy prices would not, however, trigger a recession, it sa… [+2906 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Cancer-associated fibroblasts regulate DNA repair in pancreatic cancer through NDRG1-mediated R-loop processing",
-        "summary": "Kozlova et al. report a functional role for NDRG1 in regulating R-loops and DNA repair, thereby linking cance…",
-        "content": "Nutrient deprivation activates pancreatic fibroblasts, leading to increased secretion of ECM proteins and increased tolerance to DNA-damaging agents Given the nutrient-poor conditions and desmoplasi… [+41410 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "Shutting Down the War Machine",
+        "summary": "Consider the change remarkable in its own fashion. The “President of PEACE” in his first term in office has d…",
+        "content": "Consider the change remarkable in its own fashion. The President of PEACE in his first term in office has distinctly become the President of WAR the second time around, whether in the Caribbean Sea a… [+18438 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "China Breaks Foreign Monopoly with Mass-Produced Fingernail-Sized Atomic Clock",
-        "summary": "Tokyo, Japan (SPX) Apr 26, 2026 China has achieved mass production of a chip-scale atomic clock the size of a…",
-        "content": "by Riko SeiboTokyo, Japan (SPX) Apr 26, 2026 China has achieved mass production of a chip-scale atomic clock the size of a fingernail that loses just one second every 30,000 years, a development wit… [+3680 chars]｜分類：全球經濟｜解讀：影響有限",
+        "title": "Broncos' 2026 NFL Draft: 'There Isn't A Ton To Get Super Excited About Here'",
+        "summary": "The Denver Broncos traded three of its draft picks to the Miami Dolphins to acquire wide receiver Jaylen Wadd…",
+        "content": "The Denver Broncos had a lot to dwell on this offseason after suffering a three-point loss to the New England Patriots in the American Football Conference Championship. The Broncos dropped the low-s… [+2763 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Dangote refinery expansion to create 95,000 jobs",
-        "summary": "The Dangote refinery expansion will create 95,000 jobs, making it the world’s largest refinery and boosting N…",
-        "content": "The President of the Dangote Group, Aliko Dangote, has announced that the expansion of the Dangote Petroleum Refinery to a production capacity of 1.4 million barrels per day will generate employment … [+2423 chars]｜分類：全球經濟｜解讀：影響有限",
+        "title": "Military Disasters and the End of Empire",
+        "summary": "My life began in wartime — World War II — and, if Donald Trump has anything to say about it, will evidently e…",
+        "content": "How Defeat in the Iran War Will Accelerate American Global Decline Writing more than 2,000 years ago, the Greek historian Plutarch gave us an eloquent description of what modern historians now call … [+20462 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Evaluating effects of tissue type, preservation method, and decomposition on DNA quality to support genetic sampling in…",
+        "summary": "Effective management decisions rely on accurate insights into species’ population structure, with high-qualit…",
+        "content": "A systematic comparison of the quality of DNA obtained from different sampling strategies (i.e., tissue selection and preservation method used) from dead stranded cetaceans for downstream genetics an… [+23194 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Africa’s $4tn capital fails to create jobs – AFC",
+        "summary": "A new AFC report reveals Africa’s $4tn capital base isn’t driving job creation due to poor allocation, hinder…",
+        "content": "Africas growing capital base, now estimated at over $4tn, is failing to translate into large-scale job creation and industrial growth due to poor allocation and weak financial intermediation, a new r… [+9212 chars]｜分類：全球經濟｜解讀：影響有限",
         "affects_fcn": true,
         "impact_score": 0
       },
       {
-        "title": "Reforms must translate to growth, says NESG",
-        "summary": "The Nigerian Economic Summit Group (NESG) urges that ongoing Nigerian economic reforms must translate into br…",
-        "content": "The Nigerian Economic Summit Group has launched its Nigerian Private Sector Outlook 2026 report, with stakeholders calling for urgent measures to translate ongoing economic reforms into broad-based g… [+7443 chars]｜分類：全球經濟｜解讀：影響有限",
+        "title": "PINS Investor Alert: Pinterest Securities Fraud Lawsuit - Investors With Losses May Seek to Lead the Class Action After…",
+        "summary": "Promise vs. Reality: The Pinterest Performance Gap Promise vs. Reality: The Pinterest Performance Gap",
+        "content": "NEW YORK, April 27, 2026 (GLOBE NEWSWIRE) -- \"Our strategy is paying off\" and \"Pinterest more resilient than ever.\" Those were the promises. The reality: three corrective disclosures, a 15% workforce… [+5744 chars]｜分類：全球經濟｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Sun Pharma signs Definitive Agreement to Acquire Organon",
-        "summary": "Organon stockholders to receive US$ 14.00 per share in cash The deal values Organon at EV of US$ 11.75 billio…",
-        "content": "About Sun Pharmaceutical Industries Limited (CIN L24230GJ1993PLC019050) Sun Pharma is the worlds leading specialty generics company with a presence in Innovative Medicines, Generics and Consumer Hea… [+7950 chars]｜分類：全球經濟｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
+        "title": "Growth down, inflation up, but no recession - BoI",
+        "summary": "Bank of Ireland has reduced its forecast for GDP economic growth from 2.8% to 1.6% for this year.",
+        "content": "Bank of Ireland has reduced its forecast for GDP economic growth from 2.8% to 1.6% for this year. Higher oil prices, the rising rate of inflation, softer export expansion and more restrained consume… [+1500 chars]｜分類：全球經濟｜解讀：地緣風險升高，需留意市場波動擴大",
+        "affects_fcn": true,
+        "impact_score": -1
+      },
+      {
+        "title": "Mint Explainer | Renewables overtake coal for the first time. Will the West Asia war hasten the shift?",
+        "summary": "As clean energy hits a historic milestone in the global power mix, geopolitical volatility and falling batter…",
+        "content": "However, coal still accounts for more than 70% of Indias electricity. As the war in West Asia persists and battery storage costs for solar continue to fall, Mint explores whether these factors will a… [+3910 chars]｜分類：全球經濟｜解讀：波動升高，FCN 敲入風險增加",
+        "affects_fcn": true,
+        "impact_score": -2
       }
     ],
     "financial_news": [
       {
-        "title": "Bitcoin whales build long positions as funding stays deeply negative",
-        "summary": "Long bias from the largest perpetual traders on Hyperliquid has built steadily through February, March and Ap…",
-        "content": "The biggest traders on Hyperliquid have been building a long bitcoin BTC $78,115.85 position for two months, and the price chart is starting to break their way. Glassnode data shows whale positioni… [+1894 chars]｜分類：Fed / 利率｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Top 10 Brooklyn Real Estate Listings: A Brooklyn Heights Wood Frame",
-        "summary": "The most popular listings on Brownstoner this week include a Williamsburg condo, a Kensington row house, and…",
-        "content": "The most popular listings on Brownstoner this week include a Williamsburg condo, a Kensington row house, and a Clinton Hill brownstone. The most popular listings on Brownstoner this week include a … [+4220 chars]｜分類：Fed / 利率｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "A Dangerous Bacteria Is Moving Up the East Coast. Here’s What That Means for You",
-        "summary": "Warming waters are pushing the dreaded flesh-eating bacteria up the Atlantic coast. Experts explain who's at…",
-        "content": "Bailey Magers and Sunil Kumar cut strange figures on Pensacola Beach. Bags of disinfectant solution surrounded them on the white sand; their gloved hands juggled test tubes while layers of rubber and… [+20297 chars]｜分類：Fed / 利率｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Gold, silver may face selling pressure as Fed meeting, US-Iran talks loom: Analysts",
-        "summary": "Gold and silver may decline as traders watch Fed meetings and US-Iran talks, impacting market sentiment and p…",
-        "content": "Gold and silver may face some selling pressure this holiday-shortened week as traders track peace talks between the US and Iran, crude oil rates and the Federal Reserve's policy decision, analysts sa… [+2856 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
-        "affects_fcn": true,
-        "impact_score": 1
-      },
-      {
-        "title": "Fed Meetings In 2026: What The Latest Signals Mean For Investors",
-        "summary": "Stay ahead of the 2026 Fed meeting schedule. Discover how projected interest rate shifts impact your portfoli…",
-        "content": "The US Federal Reserve building in Washington DC. The next Fed meeting will take place on April 28-29. Getty The Federal Reserve is the central bank of the United States, meaning that it is a gover… [+10977 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
-        "affects_fcn": true,
-        "impact_score": 1
-      },
-      {
-        "title": "米国債投資家はAIの買いポジションを取っている",
-        "summary": "という論文およびその著者たちのブログエントリ「U.S. Treasury Investors' Massive Bet on AI（米国債投資家のAIへの大規模な賭け）」をタイラー・コーエンが「Will AI save…",
-        "content": "という論文およびその著者たちのブログエントリ「U.S. Treasury Investors' Massive Bet on AI（米国債投資家のAIへの大規模な賭け）」をタイラー・コーエンが「Will AI save the U.S. fiscal situation?（AIが米財政状況を救うのか？）」と題したMRエントリで紹介している。原題は「U.S. Treasury Investors … [+2667 chars]｜分類：Fed / 利率｜解讀：影響有限",
-        "affects_fcn": true,
-        "impact_score": 0
-      },
-      {
-        "title": "Kevin Warsh’s nomination hearing: the battle for control of the Fed",
-        "summary": "Warsh ‘sidestepped multiple gotchas on his independence from Trump’, but the world’s most important central b…",
-        "content": "Congratulations to Kevin Warsh, President Trump's preferred pick to be the new chairman of the Federal Reserve, said Hakyung Kim in the FT. He managed to get through an eagerly awaited grilling about… [+3139 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
-        "affects_fcn": true,
-        "impact_score": 1
-      },
-      {
-        "title": "UK Calls on Social Platforms to Crack Down on Finfluencers",
-        "summary": "England’s financial watchdog said social media platforms are not properly policing illegal financial promotio…",
-        "content": "Englands financial watchdog said social media platforms are not properly policing illegal financial promotions.The Financial Conduct Authority (FCA) called for greater action against finfluencers on … [+2642 chars]｜分類：通膨 / 就業｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "NUPENG laments growing job losses, workers’ rights suppression",
-        "summary": "The Nigeria Union of Petroleum and Natural Gas Workers, NUPENG, has raised serious concerns over escalating j…",
-        "content": "By Victor Ahiuma-Young The Nigeria Union of Petroleum and Natural Gas Workers, NUPENG, has raised serious concerns over escalating job losses and what it described as increasing suppression of worke… [+2708 chars]｜分類：通膨 / 就業｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "These Homeless Cats and Dogs Are Available For Adoption at OC Animal Care",
-        "summary": "As of April 23, there are 86 dogs and 16 cats at OC Animal Care in Tustin waiting to be adopted.",
-        "content": "Monroe has been at OC Animal Care for about a week after coming in as a stray. Staff notations say hes a calm and mellow senior dog who enjoys exploring his surroundings, eating treats and receiving … [+6821 chars]｜分類：通膨 / 就業｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "NNPC crude output surges to five-year high",
-        "summary": "Nigeria’s NNPC crude output hits a five-year peak of 1.71 million bpd, marking significant progress in produc…",
-        "content": "The Nigerian National Petroleum Company Limited has announced a significant increase in crude oil production to 1.71 million barrels per day, the highest level recorded in five years, as part of its … [+6930 chars]｜分類：通膨 / 就業｜解讀：地緣風險升高，需留意市場波動擴大",
+        "title": "Why are oil prices up while gold down now, and will Brent, US WTI crude futures continue to rise or experience wild swi…",
+        "summary": "Why are oil prices up while gold down now, and will Brent, US WTI crude futures continue to rise or experienc…",
+        "content": "Why are oil prices up while gold down now, and will Brent, US WTI crude futures continue to rise or experience wild swings? Global markets started the week with mixed signals as investors tracked geo… [+5746 chars]｜分類：Fed / 利率｜解讀：地緣風險升高，需留意市場波動擴大",
         "affects_fcn": true,
         "impact_score": -1
       },
       {
-        "title": "Another UK-based Nigerian found dead at workplace",
-        "summary": "A Nigerian man, Ademola Oke, was tragically found dead at his workplace in the UK, marking the third such inc…",
-        "content": "For the third time in April, a Nigerian, Ademola Oke, has died after being found unresponsive at his workplace in the United Kingdom. This is just as the family appealed for public support following… [+2845 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "title": "First Bank Announces First Quarter 2026 Net Income of $7.6 Million",
+        "summary": "Strong net interest margin and operating efficiency support tangible book value expansion Strong net interest…",
+        "content": "HAMILTON, N.J., April 27, 2026 (GLOBE NEWSWIRE) -- First Bank (Nasdaq Global Market: FRBA) (\"the Bank\") today announced results for the first quarter of 2026. Net income for the first quarter of 2026… [+91543 chars]｜分類：Fed / 利率｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Voyager IV-Delivered CNS Gene Therapies Featured in Multiple Presentations at ASGCT 2026, Including Late Breaker on Tau…",
+        "summary": "- Late-breaking oral presentation: IV delivery of VY1706, a CNS penetrant AAV gene therapy for AD, demonstrat…",
+        "content": "- Late-breaking oral presentation: IV delivery of VY1706, a CNS penetrant AAV gene therapy for AD, demonstrates compelling pharmacology and safety in a 3-month GLP toxicology study in NHPs - - Addit… [+9649 chars]｜分類：Fed / 利率｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Northeast Bank Reports Third Quarter Results and Declares Dividend",
+        "summary": "PORTLAND, Maine, April 27, 2026 (GLOBE NEWSWIRE) -- Northeast Bank (the “Bank”) (NASDAQ: NBN), a Maine-based…",
+        "content": "PORTLAND, Maine, April 27, 2026 (GLOBE NEWSWIRE) -- Northeast Bank (the Bank) (NASDAQ: NBN), a Maine-based bank, today reported net income of $29.9 million, or $3.53 per diluted common share, for the… [+77460 chars]｜分類：Fed / 利率｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "CBNK Continues Strong Growth With Accelerated Investment Underway",
+        "summary": "ROCKVILLE, Md., April 27, 2026 (GLOBE NEWSWIRE) -- Capital Bancorp, Inc. (the \"Company\") (NASDAQ: CBNK), the…",
+        "content": "ROCKVILLE, Md., April 27, 2026 (GLOBE NEWSWIRE) -- Capital Bancorp, Inc. (the \"Company\") (NASDAQ: CBNK), the holding company for Capital Bank, N.A. (the \"Bank\"), today reported: <table><tr><td> </td… [+146835 chars]｜分類：Fed / 利率｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "FG bonds record 35% oversubscription in April auction",
+        "summary": "The Federal Government of Nigeria (FGN) bond auction in April 2026 recorded a 35.4% oversubscription, reflect…",
+        "content": "By Elizabeth Adegbesan The Federal Government of Nigeria (FGN) bond auction in April 2026 recorded a 35.4% oversubscription, reflecting strong investor demand, the Debt Management Office (DMO) discl… [+1077 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
+        "affects_fcn": true,
+        "impact_score": 1
+      },
+      {
+        "title": "US stock market crashes today: why Dow Jones, S&P 500 and Nasdaq are down today? Wall Street turns red as gold and silv…",
+        "summary": "US stock market crashes today: why Dow Jones, S&P 500 and Nasdaq are down today? Wall Street turns red as gol…",
+        "content": "US stock market crashes today: why Dow Jones, S&amp;P 500 and Nasdaq are down today? The Dow Jones slipped to 49,144.51, down 86 points. The S&amp;P 500 hovered near 7,160, while the Nasdaq dropped o… [+7026 chars]｜分類：Fed / 利率｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "What's the mortgage interest rate forecast for May 2026?",
+        "summary": "There are multiple factors to consider for those wondering where mortgage rates could be headed this May.",
+        "content": "The direction of mortgage interest rates this May will depend on a variety of timely factors. sakchai vongsasiripat/Getty Images We're now in the second quarter of 2026 and the year has already bee… [+6152 chars]｜分類：Fed / 利率｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Former federal commissioner to lead review into scandal-plagued SA election",
+        "summary": "Former Australian Electoral Commissioner Tom Rogers has been appointed to lead a \"sweeping independent review…",
+        "content": "Former Australian Electoral Commissioner Tom Rogers has been appointed to lead a \"sweeping independent review\" into the management and oversight of last month's SA state election and First Nations Vo… [+5004 chars]｜分類：通膨 / 就業｜解讀：利率壓力若下降，FCN 環境通常較有利",
+        "affects_fcn": true,
+        "impact_score": 1
+      },
+      {
+        "title": "‘Euphoria’ cast member weighs in on feud rumors between Zendaya and Sydney Sweeney",
+        "summary": "Herman clarified Zendaya and Sweeney's current standing after a scathing report alleged the co-stars didn't g…",
+        "content": "“Euphoria” cast member Jessica Blair Herman shut down ongoing feud rumors between co-stars Zendaya and Sydney Sweeney. Herman, who portrays the neighbor of Sydney and Jacob Elordi’s characters in Se… [+2784 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Acupuncturist mom accused of killing her kids made horrifying admission amid messy divorce",
+        "summary": "Her husband was seeking custody of the children and their $1.5 million house.",
+        "content": "A Massachusetts acupuncturist accused of killing her two young children during a messy divorce made a chilling confession to cops when they found her crazed at her aunt’s house, according to document… [+4246 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "155 Bihar children travelling to study stopped by railway police and sent to shelter homes, parents allege communal pro…",
+        "summary": "Police officials say they had inputs of suspicious movement and believed the children were being trafficked f…",
+        "content": "More than a fortnight after the Government Railway Police (GRP) in Madhya Pradeshs Katni detained 155 students and eight teachers on suspicion of child labour, several parents on Monday convened a pr… [+3115 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       }
     ],
     "ai_trend": [
       {
-        "title": "Google found prompt injection against AI agents—what did it do? #tech",
-        "summary": "Google studied prompt injection targeting web browsing AI agents Google’s threat intelligence teams analyzed…",
-        "content": "Googles threat intelligence teams analyzed whether AI agents already face indirect prompt injection attacks when browsing the web. Rather than focusing on classical text-to-model jailbreaks, the inve… [+1556 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "airbyte-agent-sdk 0.1.97",
+        "summary": "Airbyte Agent SDK: typed connectors that give AI agents access to 50+ third-party APIs",
+        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "How does indirect prompt injection work? #tech",
-        "summary": "How indirect prompt injection works in web browsing AI agents Indirect prompt injection attacks target AI sys…",
-        "content": "Indirect prompt injection attacks target AI systems indirectlytypically by getting a model to ingest malicious instructions embedded in untrusted content it did not generate. Instead of a straightfo… [+1751 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "mindroom 2026.4.272",
+        "summary": "A universal interface for AI agents with persistent memory, where every conversation has a home",
+        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Google Cloud Next proves what we suspected: Everything is AI now",
-        "summary": "Join us for this week's Kettle as we dive into GCN and the latest not-so-alarming revelations about Mythos KE…",
-        "content": "KETTLE If you needed further evidence that AI comes first in pretty much everything nowadays, look no further than this year's Google Cloud Next show, which happened last week. This week on the Kett… [+1038 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：ARM｜建議：觀察池",
+        "title": "Weird Things Happen When You Give AI Agents Money and Let Them Spend It",
+        "summary": "\"This might sound a little unusual but… my human told me I could buy one thing under $5 as a gift to myself (…",
+        "content": "Can’t-miss innovations from the bleeding edge of science and tech Late last year, Anthropic had its AI model, Claude, run a large vending kiosk in the Wall Street Journal‘s offices. It didn’t take … [+3220 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Fintech funding tilts to software, infra amid regulatory tightening",
-        "summary": "Early-stage fintech investors in India are shifting from regulated consumer models to B2B software and infras…",
-        "content": "Funds are increasingly backing software, infrastructure and B2B fintech models with AI that are less exposed to regulatory shocks, experts said. The shift follows a reset between 2021 and 2025, when… [+4794 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "What’s actually new in JavaScript (and what’s coming next)",
+        "summary": "<table> <tr><td> <table><tr> <td>#​783 — April 28, 2026 </td> <td>Read on the Web </td> </tr></table> <table>…",
+        "content": "I've been dying to link to Chip Player JS again for a while now. It's a JavaScript powered online player and repository of over 300,000 MIDI, tracker, chiptune, and video game music files. It's fanta… [+142 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "From lab to ledger: Scaling enterprise AI at Red Hat Summit 2026",
-        "summary": "Enterprise AI has officially moved past the \"can we build it?\" phase. Business leaders aren't just asking how…",
-        "content": "Enterprise AI has officially moved past the \"can we build it?\" phase. Business leaders aren't just asking how to train a model, theyre asking how to scale, protect, and operationalize these systems t… [+2531 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Could agentic AI topple grant-funding systems?",
-        "summary": "Funders must take action before an increase in submission of high-quality proposals written using AI models m…",
-        "content": "Artificial intelligence is transforming grant writing. A new wave of AI tools, known as agents, can now generate a research grant application, review it and submit it. AI agents are large language m… [+8778 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "NASU, CONUA, NAPTAN to FG: You can’t scrap ‘irrelevant courses’ in varsities",
-        "summary": "The federal government yesterday stirred the hornet’s nest with a declaration to phase out from the universit…",
-        "content": "As govt moves against social science courses Warns students against taking loans to pursue worthless courses .Let courses evolve CONUA .Courses cant be determined on face value NASU FG, tread sof… [+9101 chars]｜分類：AI 基礎設施｜解讀：利率壓力若下降，FCN 環境通常較有利｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "Building a hardened, image-based foundation for AI agents",
+        "summary": "This week, I developed a community operating system image for running AI agents: an agentic OS prototype. It…",
+        "content": "This week, I developed a community operating system image for running AI agents: an agentic OS prototype. It is built using fedora-bootc, a community project that allows for defining a bootable Linux… [+7512 chars]｜分類：AI Agent｜解讀：利率壓力若下降，FCN 環境通常較有利｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": true,
         "impact_score": 1
       },
       {
-        "title": "TaxLens – AI receipt scanner that finds your tax deductions instantly",
-        "summary": "AI receipt scanner that finds your tax deductions instantly",
-        "content": "TaxLens helps freelancers and small businesses turn receipts into tax-ready records. Snap a photo and it extracts the merchant, date, totals, and tax in seconds, then smartly separates business from … [+344 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "Senior Machine Learning Scientist – Advanced AI & Automation",
+        "summary": "We are looking for a Senior Machine Learning Scientist to join the Corporate Reserach department at Sartorius…",
+        "content": "We are looking for a Senior Machine Learning Scientist to join the Corporate Reserach department at Sartorius. You will use your expertise in modern machine learning, computer vision and robotics to … [+5373 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "augint-shell 0.90.2",
+        "summary": "Launch AI coding tools and local LLMs in Docker containers",
+        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "nteract 2.3.6a202604272354",
+        "summary": "Bring AI to Jupyter notebooks. MCP server for Claude, ChatGPT, Gemini, OpenCode and any agent.",
+        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       }
@@ -254,14 +254,14 @@
         "impact_score": 1
       },
       {
-        "title": "VIX：18.71（-0.60）",
+        "title": "VIX：18.02（-0.69）",
         "summary": "VIX 上升代表 FCN 敲入風險上升。",
         "content": "VIX 是你每日要看的核心指標。",
         "affects_fcn": true,
         "impact_score": -2
       },
       {
-        "title": "10Y / 20Y：4.31%（-0.03%） / 4.88%（-0.02%）",
+        "title": "10Y / 20Y：4.35%（+0.04%） / 4.92%（+0.04%）",
         "summary": "中長期利率上升會壓抑科技估值。",
         "content": "科技與 AI 核心股會受中長債殖利率影響。",
         "affects_fcn": true,
@@ -275,7 +275,7 @@
         "impact_score": -1
       },
       {
-        "title": "失業率：4.30%（-0.10%）｜S&P500：7173.91（+8.83）",
+        "title": "失業率：4.30%（-0.10%）｜S&P500：7138.80（-35.11）",
         "summary": "就業與股市穩定度共同反映風險偏好。",
         "content": "若就業惡化且股市回落，FCN 需更保守。",
         "affects_fcn": true,
@@ -310,7 +310,7 @@
     },
     {
       "label": "總經環境",
-      "text": "總經環境中性，FCN 可做但需偏保守，優先核心股。"
+      "text": "總經壓力偏高，建議降低進攻型 FCN。"
     },
     {
       "label": "今日推薦",
@@ -330,12 +330,12 @@
     },
     {
       "label": "VIX 壓力",
-      "value": 37,
+      "value": 36,
       "type": "watch"
     },
     {
       "label": "AI 核心股安全度",
-      "value": 62,
+      "value": 45,
       "type": "watch"
     }
   ],
@@ -687,25 +687,14 @@
   },
   "scenario_suggestions": [
     {
-      "name": "穩定收息",
+      "name": "避險觀望",
       "targets": [
-        "TSM",
         "MSFT",
         "UNH"
       ],
       "eki": "80%–85%",
-      "tenor": "6–12個月",
-      "goal": "防守優先"
-    },
-    {
-      "name": "平衡收益",
-      "targets": [
-        "NVDA",
-        "AVGO"
-      ],
-      "eki": "75%–80%",
-      "tenor": "3–6個月",
-      "goal": "只留主力池"
+      "tenor": "短中期",
+      "goal": "只保留低波動核心"
     }
   ]
 }
