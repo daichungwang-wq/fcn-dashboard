@@ -9,6 +9,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: daily-runtime-refresh
+  cancel-in-progress: false
+
 jobs:
   daily-runtime-refresh:
     runs-on: ubuntu-latest
@@ -16,6 +20,8 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -35,23 +41,53 @@ jobs:
           set -euo pipefail
           failure_point="none"
 
-          if ! python scripts/update_market_runtime.py; then
-            failure_point="scripts/update_market_runtime.py"
-            echo "failure_point=${failure_point}" >> "$GITHUB_ENV"
-            exit 1
-          fi
+          run_required() {
+            local script="$1"
+            echo "============================================================"
+            echo "Running required script: ${script}"
+            echo "============================================================"
+            if ! python "${script}"; then
+              failure_point="${script}"
+              echo "failure_point=${failure_point}" >> "$GITHUB_ENV"
+              exit 1
+            fi
+          }
 
-          if ! python scripts/update_data.py; then
-            failure_point="scripts/update_data.py"
-            echo "failure_point=${failure_point}" >> "$GITHUB_ENV"
-            exit 1
-          fi
+          run_optional() {
+            local script="$1"
+            if [ -f "${script}" ]; then
+              echo "============================================================"
+              echo "Running optional script: ${script}"
+              echo "============================================================"
+              if ! python "${script}"; then
+                failure_point="${script}"
+                echo "failure_point=${failure_point}" >> "$GITHUB_ENV"
+                exit 1
+              fi
+            else
+              echo "Skip optional script, not found: ${script}"
+            fi
+          }
 
-          if ! python scripts/update_m1_universe_runtime.py; then
-            failure_point="scripts/update_m1_universe_runtime.py"
-            echo "failure_point=${failure_point}" >> "$GITHUB_ENV"
-            exit 1
-          fi
+          # Core daily data: M2 / M7 / M8 / MM shared market runtime
+          run_required "scripts/update_market_runtime.py"
+
+          # Existing daily updater, keep for current system compatibility
+          run_required "scripts/update_data.py"
+
+          # M1 universe runtime, keep for current system compatibility
+          run_required "scripts/update_m1_universe_runtime.py"
+
+          # Optional engines: run automatically once these scripts exist in repo.
+          # This prevents manual JSON pasting for MM / M7 sandbox outputs.
+          run_optional "scripts/build_market_runtime_long_horizon.py"
+          run_optional "scripts/run_m7_v2_sandbox.py"
+          run_optional "scripts/build_m7_v2_scores.py"
+          run_optional "scripts/update_mm_runtime.py"
+          run_optional "scripts/build_mm_runtime.py"
+          run_optional "scripts/update_mm_formula_outputs.py"
+          run_optional "scripts/build_formula_test_runtime.py"
+          run_optional "scripts/update_engine_progress_dashboard.py"
 
           echo "failure_point=${failure_point}" >> "$GITHUB_ENV"
 
@@ -61,23 +97,48 @@ jobs:
           set -euo pipefail
           python - <<'PY'
           import glob
+          import json
           import os
           import sys
 
-          expected = [
+          required = [
               "data/market_runtime.json",
               "data.json",
               "data/m1/m1_market_runtime.json",
           ]
 
-          missing = [p for p in expected if not os.path.exists(p)]
-          json_files = glob.glob("data/**/*.json", recursive=True)
+          recommended = [
+              "data/runtime_staging/market_runtime_long_horizon.json",
+              "data/m7/m7_fundamental_data.json",
+          ]
 
-          print(f"total_updated_files={len(json_files)}")
-          print("missing_outputs=" + (", ".join(missing) if missing else "none"))
+          missing_required = [p for p in required if not os.path.exists(p)]
+          missing_recommended = [p for p in recommended if not os.path.exists(p)]
+
+          json_files = glob.glob("data/**/*.json", recursive=True)
+          mm_files = glob.glob("data/mm/*.json")
+          m7_sandbox_files = glob.glob("data/m7_sandbox/*.json")
+
+          print(f"total_data_json_files={len(json_files)}")
+          print(f"mm_json_files={len(mm_files)}")
+          print(f"m7_sandbox_json_files={len(m7_sandbox_files)}")
+          print("missing_required=" + (", ".join(missing_required) if missing_required else "none"))
+          print("missing_recommended=" + (", ".join(missing_recommended) if missing_recommended else "none"))
           print("abnormal_failure_point=" + os.getenv("failure_point", "none"))
 
-          if missing:
+          # Market runtime schema check: accept both flat and rows format.
+          try:
+              with open("data/market_runtime.json", "r", encoding="utf-8") as f:
+                  m = json.load(f)
+              has_rows = isinstance(m, dict) and isinstance(m.get("rows"), dict)
+              symbol_count = m.get("symbol_count") if isinstance(m, dict) else None
+              print(f"market_runtime_has_rows={has_rows}")
+              print(f"market_runtime_symbol_count={symbol_count}")
+          except Exception as exc:
+              print(f"market_runtime_schema_check_failed={exc}")
+              missing_required.append("data/market_runtime.json_schema")
+
+          if missing_required:
               sys.exit(1)
           PY
 
@@ -87,6 +148,7 @@ jobs:
           git config user.name "github-actions"
           git config user.email "actions@github.com"
 
+          # Include all generated JSON outputs under data/, plus legacy data.json.
           git add data.json ":(glob)data/**/*.json"
 
           if git diff --cached --quiet; then
@@ -95,4 +157,6 @@ jobs:
           fi
 
           git commit -m "daily runtime refresh"
-          git push
+          git pull --rebase origin main
+          git push origin main
+
