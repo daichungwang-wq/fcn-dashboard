@@ -1212,54 +1212,62 @@ def trimmed_mean(values: list[float], trim_pct: float = 0.10) -> float | None:
 
 def compute_regression_valuation_band(feature: dict[str, Any], structure: dict[str, Any] | None = None) -> dict[str, Any]:
     """
-    Historical self-band valuation proxy.
+    Historical self-band valuation proxy with valuation heat brake.
 
-    Core idea:
+    Finalized logic:
       1) Use weekly price regression fair curve as the stock's standard price path.
       2) weekly_multiple = actual_price / fitted_fair_price.
       3) historical_trimmed_mean_multiple = trimmed mean of weekly_multiple series.
       4) current_regression_multiple = current_price / current_fitted_fair_price.
-      5) individual_fair_pe = current_forward_pe * historical_trimmed_mean_multiple / current_regression_multiple.
+      5) adjustment = historical_trimmed_mean_multiple / sqrt(current_regression_multiple)
+         - sqrt() makes the timing adjustment sub-linear, so the model does not fully pass through
+           a short-term regression deviation into fair PE.
+      6) valuation heat brake:
+         valuation_heat = current_forward_pe / heat_baseline_pe
+         where heat_baseline_pe is base_anchor first, then anchor_pe fallback.
+         If current PE is already very high versus baseline, upward expansion is capped.
+      7) individual_fair_pe = current_forward_pe * capped_adjustment.
 
-    This does NOT need historical EPS. It converts historical price premium/discount vs regression curve
-    into a fair PE adjustment for the current forward PE.
+    This does NOT need historical EPS.
+    This is an individual valuation timing adjustment, not the final sector baseline.
+    formula_test.html can still build the 28-sector baseline using these individual_fair_pe values.
     """
     val = feature.get("valuation", {}) if isinstance(feature.get("valuation"), dict) else {}
     current_forward_pe = safe_num(val.get("forward_pe"), None)
+    heat_baseline_pe = safe_num(val.get("base_anchor"), safe_num(val.get("anchor_pe"), None))
 
     weekly_prices = [safe_num(x, None) for x in feature.get("weekly_prices", [])]
     weekly_prices = [x for x in weekly_prices if x is not None and x > 0]
     history_weeks = len(weekly_prices)
 
-    if current_forward_pe is None or current_forward_pe <= 0:
+    def _fallback_payload(source: str, quality: str, fair_pe_value: float | None = None) -> dict[str, Any]:
+        fair_value = fair_pe_value if fair_pe_value is not None else current_forward_pe
         return {
-            "individual_fair_pe": None,
-            "regression_fair_pe": None,
+            "individual_fair_pe": round2(fair_value) if fair_value is not None and fair_value > 0 else None,
+            "regression_fair_pe": round2(fair_value) if fair_value is not None and fair_value > 0 else None,
             "current_regression_multiple": None,
             "historical_trimmed_mean_multiple": None,
             "historical_median_multiple": None,
             "historical_p25_multiple": None,
             "historical_p75_multiple": None,
+            "regression_adjustment_raw": None,
+            "regression_adjustment_capped": None,
+            "regression_adjustment_floor": 0.90,
+            "regression_adjustment_cap": None,
+            "valuation_heat": None,
+            "valuation_heat_baseline_pe": round2(heat_baseline_pe) if heat_baseline_pe is not None and heat_baseline_pe > 0 else None,
+            "valuation_heat_brake_rule": None,
             "regression_fair_price_now": None,
             "regression_actual_price_now": weekly_prices[-1] if weekly_prices else None,
-            "regression_valuation_source": "missing_current_forward_pe",
-            "regression_valuation_quality": "missing",
+            "regression_valuation_source": source,
+            "regression_valuation_quality": quality,
         }
 
+    if current_forward_pe is None or current_forward_pe <= 0:
+        return _fallback_payload("missing_current_forward_pe", "missing", None)
+
     if history_weeks < 52:
-        return {
-            "individual_fair_pe": round2(current_forward_pe),
-            "regression_fair_pe": round2(current_forward_pe),
-            "current_regression_multiple": None,
-            "historical_trimmed_mean_multiple": None,
-            "historical_median_multiple": None,
-            "historical_p25_multiple": None,
-            "historical_p75_multiple": None,
-            "regression_fair_price_now": None,
-            "regression_actual_price_now": weekly_prices[-1] if weekly_prices else None,
-            "regression_valuation_source": "fallback_current_forward_pe_insufficient_history",
-            "regression_valuation_quality": "low",
-        }
+        return _fallback_payload("fallback_current_forward_pe_insufficient_history", "low", current_forward_pe)
 
     y = [math.log(p) for p in weekly_prices]
     x = list(range(len(y)))
@@ -1323,36 +1331,12 @@ def compute_regression_valuation_band(feature: dict[str, Any], structure: dict[s
         preferred = max(valid, key=lambda k: valid[k]["r2"]) if valid else None
 
     if not preferred:
-        return {
-            "individual_fair_pe": round2(current_forward_pe),
-            "regression_fair_pe": round2(current_forward_pe),
-            "current_regression_multiple": None,
-            "historical_trimmed_mean_multiple": None,
-            "historical_median_multiple": None,
-            "historical_p25_multiple": None,
-            "historical_p75_multiple": None,
-            "regression_fair_price_now": None,
-            "regression_actual_price_now": weekly_prices[-1] if weekly_prices else None,
-            "regression_valuation_source": "fallback_current_forward_pe_regression_fit_failed",
-            "regression_valuation_quality": "low",
-        }
+        return _fallback_payload("fallback_current_forward_pe_regression_fit_failed", "low", current_forward_pe)
 
     fitted_log = models[preferred].get("fitted", [])
     fitted_prices = [math.exp(v) for v in fitted_log if v is not None]
     if len(fitted_prices) != len(weekly_prices):
-        return {
-            "individual_fair_pe": round2(current_forward_pe),
-            "regression_fair_pe": round2(current_forward_pe),
-            "current_regression_multiple": None,
-            "historical_trimmed_mean_multiple": None,
-            "historical_median_multiple": None,
-            "historical_p25_multiple": None,
-            "historical_p75_multiple": None,
-            "regression_fair_price_now": None,
-            "regression_actual_price_now": weekly_prices[-1] if weekly_prices else None,
-            "regression_valuation_source": "fallback_current_forward_pe_bad_fitted_series",
-            "regression_valuation_quality": "low",
-        }
+        return _fallback_payload("fallback_current_forward_pe_bad_fitted_series", "low", current_forward_pe)
 
     multiples = []
     for actual, fair in zip(weekly_prices, fitted_prices):
@@ -1371,11 +1355,42 @@ def compute_regression_valuation_band(feature: dict[str, Any], structure: dict[s
 
     if normal_multiple is None or current_multiple is None or current_multiple <= 0:
         fair_pe = current_forward_pe
+        adjustment_raw = None
+        adjustment_capped = None
+        adjustment_cap = None
+        valuation_heat = None
+        heat_rule = "fallback_no_multiple"
         source = "fallback_current_forward_pe_missing_multiples"
         quality = "low"
     else:
-        fair_pe = current_forward_pe * (normal_multiple / current_multiple)
-        source = "current_pe_x_trimmed_mean_multiple_over_current_multiple"
+        # finalized: sub-linear regression adjustment
+        adjustment_raw = normal_multiple / math.sqrt(current_multiple)
+
+        # valuation heat brake: prevent high-PE bubbles from expanding further.
+        if heat_baseline_pe is not None and heat_baseline_pe > 0:
+            valuation_heat = current_forward_pe / heat_baseline_pe
+        else:
+            valuation_heat = None
+
+        if valuation_heat is None:
+            adjustment_cap = 1.15
+            heat_rule = "missing_heat_baseline_cap_1.15"
+        elif valuation_heat <= 1.20:
+            adjustment_cap = 1.20
+            heat_rule = "heat<=1.20_cap_1.20"
+        elif valuation_heat <= 1.50:
+            adjustment_cap = 1.12
+            heat_rule = "heat<=1.50_cap_1.12"
+        elif valuation_heat <= 1.80:
+            adjustment_cap = 1.08
+            heat_rule = "heat<=1.80_cap_1.08"
+        else:
+            adjustment_cap = 1.02
+            heat_rule = "heat>1.80_cap_1.02"
+
+        adjustment_capped = clamp(adjustment_raw, 0.90, adjustment_cap)
+        fair_pe = current_forward_pe * adjustment_capped
+        source = "current_pe_x_trimmed_mean_over_sqrt_current_multiple_with_heat_brake"
         r2 = safe_num(models[preferred].get("r2"), 0.0)
         if history_weeks >= 260 and r2 >= 0.70:
             quality = "high"
@@ -1395,6 +1410,13 @@ def compute_regression_valuation_band(feature: dict[str, Any], structure: dict[s
         "historical_median_multiple": round(safe_num(median_multiple, 0.0), 4) if median_multiple is not None else None,
         "historical_p25_multiple": round(safe_num(p25_multiple, 0.0), 4) if p25_multiple is not None else None,
         "historical_p75_multiple": round(safe_num(p75_multiple, 0.0), 4) if p75_multiple is not None else None,
+        "regression_adjustment_raw": round(safe_num(adjustment_raw, 0.0), 4) if adjustment_raw is not None else None,
+        "regression_adjustment_capped": round(safe_num(adjustment_capped, 0.0), 4) if adjustment_capped is not None else None,
+        "regression_adjustment_floor": 0.90,
+        "regression_adjustment_cap": round(safe_num(adjustment_cap, 0.0), 4) if adjustment_cap is not None else None,
+        "valuation_heat": round(safe_num(valuation_heat, 0.0), 4) if valuation_heat is not None else None,
+        "valuation_heat_baseline_pe": round2(heat_baseline_pe) if heat_baseline_pe is not None and heat_baseline_pe > 0 else None,
+        "valuation_heat_brake_rule": heat_rule,
         "regression_fair_price_now": round2(current_fair_price) if current_fair_price is not None else None,
         "regression_actual_price_now": round2(current_price) if current_price is not None else None,
         "regression_valuation_model": preferred,
