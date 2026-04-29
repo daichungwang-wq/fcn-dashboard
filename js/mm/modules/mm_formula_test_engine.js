@@ -825,22 +825,39 @@
     return rows.map(r => `${r.name} ${r.delta >= 0 ? "↑" : "↓"}`).join(" / ");
   }
 
+  function getMainFactorValues(result) {
+    return {
+      valuation: result.scores.valuation.new,
+      trend: result.scores.trend.new,
+      structure: result.scores.structure.new,
+      timing: result.scores.timing.new,
+      money: result.scores.money.new
+    };
+  }
+
   function renderDeltaPreview() {
     const computed = getRows().map(ctx => {
       const r = computeM7(ctx, state.params);
       const price = num(field(ctx.row, ["price_now", "market_acceptance.price_now"], field(ctx.rt, ["price_now"], null)), null);
       const m1 = num(field(ctx.row, ["m1_score"], null), null);
       const name = field(ctx.row, ["name", "company_name"], "");
+      const f = getMainFactorValues(r);
       return {
         sym: ctx.sym,
         name,
         price,
+        categorySub: getCategorySub(ctx.row),
         m1Now: m1,
         m1New: m1,
         m7Now: r.scores.m7.now,
         m7New: r.scores.m7.new,
         delta: r.scores.m7.new - r.scores.m7.now,
         deltaPct: r.scores.m7.now ? (r.scores.m7.new - r.scores.m7.now) / r.scores.m7.now : null,
+        valuation: f.valuation,
+        trend: f.trend,
+        structure: f.structure,
+        timing: f.timing,
+        money: f.money,
         impact: impactFactors(r)
       };
     });
@@ -856,11 +873,186 @@
       .slice(0,30);
 
     $("deltaPreview").innerHTML = `
-      <thead><tr><th>Rank Now</th><th>Rank New</th><th>Symbol</th><th>Name</th><th>Price</th><th>Delta %</th><th>M1 Now</th><th>M1 New</th><th>M7 Now</th><th>M7 New</th><th>Impact Factors</th></tr></thead>
+      <thead><tr>
+        <th>Rank Now</th><th>Rank New</th><th>Symbol</th><th>Name</th><th>Price</th><th>Delta %</th>
+        <th>M1 Now</th><th>M1 New</th><th>M7 Now</th><th>M7 New</th>
+        <th>Val</th><th>Trend</th><th>Struct</th><th>Timing</th><th>Money</th><th>Impact Factors</th>
+      </tr></thead>
       <tbody>${rows.map(r => `<tr>
         <td>${r.rankNow}</td><td>${r.rankNew}</td><td>${r.sym}</td><td>${escapeHtml(r.name)}</td><td>${fmt(r.price)}</td>
         <td class="${deltaClass(r.delta)}">${fmtPct(r.deltaPct)}</td>
-        <td>${fmt(r.m1Now)}</td><td>${fmt(r.m1New)}</td><td>${fmt(r.m7Now)}</td><td>${fmt(r.m7New)}</td><td>${escapeHtml(r.impact)}</td>
+        <td>${fmt(r.m1Now)}</td><td>${fmt(r.m1New)}</td><td>${fmt(r.m7Now)}</td><td>${fmt(r.m7New)}</td>
+        <td>${fmt(r.valuation)}</td><td>${fmt(r.trend)}</td><td>${fmt(r.structure)}</td><td>${fmt(r.timing)}</td><td>${fmt(r.money)}</td>
+        <td>${escapeHtml(r.impact)}</td>
+      </tr>`).join("")}</tbody>
+    `;
+  }
+
+  function percentile(sortedNums, p) {
+    if (!sortedNums.length) return null;
+    const idx = (sortedNums.length - 1) * p;
+    const lo = Math.floor(idx);
+    const hi = Math.ceil(idx);
+    if (lo === hi) return sortedNums[lo];
+    const w = idx - lo;
+    return sortedNums[lo] * (1 - w) + sortedNums[hi] * w;
+  }
+
+  function renderFactorDistribution() {
+    const rows = getRows().map(ctx => {
+      const r = computeM7(ctx, state.params);
+      return {
+        sym: ctx.sym,
+        name: field(ctx.row, ["name", "company_name"], ""),
+        categorySub: getCategorySub(ctx.row),
+        valuation: r.scores.valuation.new,
+        trend: r.scores.trend.new,
+        structure: r.scores.structure.new,
+        timing: r.scores.timing.new,
+        money: r.scores.money.new,
+        m7: r.scores.m7.new
+      };
+    });
+
+    const factors = [
+      ["valuation", "Valuation"],
+      ["trend", "Trend"],
+      ["structure", "Structure"],
+      ["timing", "Timing"],
+      ["money", "Money"]
+    ];
+
+    const factorHtml = factors.map(([key, label]) => {
+      const valid = rows.filter(r => num(r[key], null) !== null);
+      const sortedAsc = [...valid].sort((a,b) => a[key] - b[key]);
+      const sortedDesc = [...valid].sort((a,b) => b[key] - a[key]);
+      const nums = sortedAsc.map(r => r[key]);
+      const avg = nums.length ? nums.reduce((a,b) => a+b, 0) / nums.length : null;
+      const low = sortedAsc.slice(0,5).map(r => `${r.sym} ${fmt(r[key])}`).join(" / ");
+      const high = sortedDesc.slice(0,5).map(r => `${r.sym} ${fmt(r[key])}`).join(" / ");
+      return `
+        <tr>
+          <td>${label}</td>
+          <td>${fmt(avg)}</td>
+          <td>${fmt(percentile(nums, 0.25))}</td>
+          <td>${fmt(percentile(nums, 0.50))}</td>
+          <td>${fmt(percentile(nums, 0.75))}</td>
+          <td style="text-align:left">${escapeHtml(high)}</td>
+          <td style="text-align:left">${escapeHtml(low)}</td>
+        </tr>
+      `;
+    }).join("");
+
+    const catMap = new Map();
+    rows.forEach(r => {
+      if (!catMap.has(r.categorySub)) catMap.set(r.categorySub, { categorySub: r.categorySub, n: 0, valuation:0, trend:0, structure:0, timing:0, money:0, m7:0 });
+      const c = catMap.get(r.categorySub);
+      c.n += 1;
+      ["valuation","trend","structure","timing","money","m7"].forEach(k => c[k] += num(r[k], 0));
+    });
+    const catRows = [...catMap.values()].map(c => {
+      ["valuation","trend","structure","timing","money","m7"].forEach(k => c[k] = c.n ? c[k]/c.n : null);
+      return c;
+    }).sort((a,b) => b.m7 - a.m7);
+
+    $("factorDistributionBox").innerHTML = `
+      <div class="section-note">上表回答：哪個 factor 分數高、哪個低；下表回答：各 category_sub 的平均 factor profile。</div>
+      <table class="table-tight">
+        <thead><tr><th>Factor</th><th>Avg</th><th>P25</th><th>Median</th><th>P75</th><th>Top High Stocks</th><th>Top Low Stocks</th></tr></thead>
+        <tbody>${factorHtml}</tbody>
+      </table>
+      <table class="table-tight" style="margin-top:12px">
+        <thead><tr><th>Category Sub</th><th>N</th><th>Val</th><th>Trend</th><th>Struct</th><th>Timing</th><th>Money</th><th>M7 Avg</th></tr></thead>
+        <tbody>${catRows.map(c => `<tr>
+          <td>${escapeHtml(c.categorySub)}</td><td>${c.n}</td><td>${fmt(c.valuation)}</td><td>${fmt(c.trend)}</td><td>${fmt(c.structure)}</td><td>${fmt(c.timing)}</td><td>${fmt(c.money)}</td><td>${fmt(c.m7)}</td>
+        </tr>`).join("")}</tbody>
+      </table>
+    `;
+  }
+
+  function paramBumpFor(def) {
+    const [key, , min, max, step] = def;
+    const current = num(state.params[key], DEFAULT_PARAMS[key]);
+    const defaultBump = key.includes("top_adjustment_cap") ? 0.10 : 0.05;
+    let bump = Math.max(num(step, 0.01), defaultBump);
+    if (current + bump > max) bump = -Math.max(num(step, 0.01), defaultBump);
+    if (current + bump < min) bump = Math.max(num(step, 0.01), defaultBump);
+    return bump;
+  }
+
+  function parameterImpactLabel(key) {
+    if (key.includes("valuation") || key.includes("sector")) return "valuation";
+    if (key.includes("trend")) return "trend";
+    if (key.includes("structure")) return "structure";
+    if (key.includes("timing")) return "timing";
+    if (key.includes("money")) return "money";
+    if (key.includes("top")) return "top/final";
+    return "mixed";
+  }
+
+  function renderSensitivityAnalysis() {
+    const selectedCtx = getRows().find(x => x.sym === state.selectedSymbol) || getRows()[0];
+    if (!selectedCtx) return;
+
+    const baseSelected = computeM7(selectedCtx, state.params);
+    const allRows = getRows();
+    const outputRows = PARAM_DEFS.map(def => {
+      const [key, label, min, max] = def;
+      const bump = paramBumpFor(def);
+      const bumped = { ...state.params, [key]: clamp(num(state.params[key], DEFAULT_PARAMS[key]) + bump, min, max) };
+
+      const selectedNew = computeM7(selectedCtx, bumped);
+      const selectedDelta = selectedNew.scores.m7.new - baseSelected.scores.m7.new;
+
+      const categoryImpact = new Map();
+      let totalAbs = 0;
+      let maxAbs = -1;
+      let maxStock = null;
+
+      allRows.forEach(ctx => {
+        const base = computeM7(ctx, state.params);
+        const changed = computeM7(ctx, bumped);
+        const delta = changed.scores.m7.new - base.scores.m7.new;
+        const abs = Math.abs(delta);
+        totalAbs += abs;
+        if (abs > maxAbs) {
+          maxAbs = abs;
+          maxStock = { sym: ctx.sym, delta };
+        }
+        const cat = getCategorySub(ctx.row);
+        if (!categoryImpact.has(cat)) categoryImpact.set(cat, { cat, n: 0, absSum: 0 });
+        const c = categoryImpact.get(cat);
+        c.n += 1;
+        c.absSum += abs;
+      });
+
+      const catRows = [...categoryImpact.values()].map(c => ({ ...c, avgAbs: c.n ? c.absSum / c.n : 0 })).sort((a,b) => b.avgAbs - a.avgAbs);
+      const topCat = catRows[0] || null;
+
+      return {
+        key,
+        label,
+        bump,
+        selectedDelta,
+        avgAbs: allRows.length ? totalAbs / allRows.length : null,
+        maxStock,
+        topCat,
+        impactLayer: parameterImpactLabel(key)
+      };
+    }).sort((a,b) => Math.abs(b.selectedDelta) - Math.abs(a.selectedDelta));
+
+    $("sensitivityTable").innerHTML = `
+      <thead><tr>
+        <th>Parameter</th><th>Test Δ</th><th>Linked Factor</th><th>Selected Stock Δ</th><th>All Avg |Δ|</th><th>Max Stock</th><th>Most Sensitive Category</th>
+      </tr></thead>
+      <tbody>${outputRows.map(r => `<tr>
+        <td>${escapeHtml(r.label)}</td>
+        <td class="${deltaClass(r.bump)}">${fmt(r.bump)}</td>
+        <td>${escapeHtml(r.impactLayer)}</td>
+        <td class="${deltaClass(r.selectedDelta)}">${fmt(r.selectedDelta)}</td>
+        <td>${fmt(r.avgAbs)}</td>
+        <td>${r.maxStock ? `${escapeHtml(r.maxStock.sym)} <span class="${deltaClass(r.maxStock.delta)}">${fmt(r.maxStock.delta)}</span>` : "--"}</td>
+        <td>${r.topCat ? `${escapeHtml(r.topCat.cat)} / avg |Δ| ${fmt(r.topCat.avgAbs)}` : "--"}</td>
       </tr>`).join("")}</tbody>
     `;
   }
@@ -902,9 +1094,11 @@
     renderRawImpactTable(result);
     renderFactorImpactTable(result);
     renderValuationBaseline(result);
+    renderDeltaPreview();
+    renderFactorDistribution();
+    renderSensitivityAnalysis();
     $("traceBox").textContent = result.trace;
     renderAudit(result);
-    renderDeltaPreview();
   }
 
   function resetParams() {
