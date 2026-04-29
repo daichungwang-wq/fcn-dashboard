@@ -899,12 +899,12 @@
       <div class="mini-grid">
         <div class="mini-card"><span>Category Sub</span><b style="font-size:12px">${escapeHtml(v.categorySub)}</b></div>
         <div class="mini-card"><span>Current Forward PE</span><b>${fmt(v.currentForwardPE)}</b></div>
-        <div class="mini-card"><span>Individual Fair PE</span><b>${fmt(v.individualFairPE)}</b></div>
+        <div class="mini-card"><span>Final Individual Fair PE</span><b>${fmt(v.individualFairPE)}</b></div>
         <div class="mini-card"><span>Peer Count</span><b>${v.peerCount}</b></div>
         <div class="mini-card"><span>Weighted Peer Baseline</span><b>${fmt(v.weightedPeerBaseline)}</b></div>
         <div class="mini-card"><span>Static Anchor</span><b>${fmt(v.staticAnchor)}</b></div>
         <div class="mini-card"><span>Sector Baseline</span><b>${fmt(v.sectorBaseline)}</b></div>
-        <div class="mini-card"><span>Final Anchor After Dynamic</span><b>${fmt(v.finalAnchorAfterDynamic)}</b></div>
+        <div class="mini-card"><span>Regime Adjusted Anchor</span><b>${fmt(v.finalAnchorAfterDynamic)}</b></div>
       </div>
       <div class="small">
         <span class="tag">source: ${escapeHtml(v.individualFairPESource)}</span>
@@ -941,6 +941,7 @@
     const sectorMap = buildSectorBaselineEngine(state.params);
     const rows = Object.values(sectorMap)
       .sort((a, b) => a.categorySub.localeCompare(b.categorySub));
+    $("sectorBaselineTable").className = "sector-table";
     $("sectorBaselineTable").innerHTML = `
       <thead><tr><th>Category Sub</th><th>Companies</th><th>Peers</th><th>Weighted Peer PE</th><th>Static Anchor</th><th>Final Sector Baseline</th></tr></thead>
       <tbody>
