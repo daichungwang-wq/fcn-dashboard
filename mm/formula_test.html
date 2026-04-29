@@ -33,6 +33,9 @@
     .card-h{padding:14px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px;}
     .card-h strong{font-size:15px;}
     .card-b{padding:14px 16px;}
+    .collapse-btn{font-size:12px;padding:6px 9px;border-radius:9px;background:#f8fafc;}
+    .collapsible.collapsed .card-b{display:none;}
+    .collapsible.collapsed{align-self:start;}
     label{font-size:12px;color:var(--muted);display:block;margin-bottom:5px;}
     select,input[type="number"],input[type="text"]{width:100%;height:36px;border:1px solid var(--line);border-radius:10px;background:#fff;padding:0 10px;color:var(--ink);}
     input[type="range"]{width:100%;}
@@ -40,7 +43,7 @@
     button.primary{background:var(--blue);border-color:var(--blue);color:#fff;}
     button:hover{filter:brightness(.98);}
     .btns{display:flex;gap:8px;flex-wrap:wrap;}
-    .metric{display:grid;grid-template-columns:1fr 78px 78px 78px 78px;gap:8px;align-items:center;border-bottom:1px dashed var(--line);padding:8px 0;font-size:13px;}
+    .metric{display:grid;grid-template-columns:1fr 64px 64px 64px 64px;gap:6px;align-items:center;border-bottom:1px dashed var(--line);padding:7px 0;font-size:12px;}
     .metric.head{font-size:12px;color:var(--muted);font-weight:800;border-bottom:1px solid var(--line);}
     .num{text-align:right;font-variant-numeric:tabular-nums;}
     .pos{color:var(--good);font-weight:800;}.neg{color:var(--bad);font-weight:800;}.zero{color:var(--muted);}
@@ -59,6 +62,11 @@
     .warn{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:12px;padding:10px;font-size:12px;line-height:1.5;margin-bottom:10px;}
     .ok{background:#ecfdf3;border:1px solid #abefc6;color:#067647;border-radius:12px;padding:10px;font-size:12px;line-height:1.5;margin-bottom:10px;}
     table{width:100%;border-collapse:collapse;font-size:12px;min-width:760px;} th,td{border-bottom:1px solid var(--line);padding:8px;text-align:right;vertical-align:top;} th:first-child,td:first-child{text-align:left;} th{color:var(--muted);font-weight:800;background:#fbfcff;}
+    .sector-table{table-layout:fixed;min-width:900px;}
+    .sector-table th:nth-child(1),.sector-table td:nth-child(1){width:28%;}
+    .sector-table th:nth-child(2),.sector-table td:nth-child(2){width:22%;white-space:normal;word-break:break-word;}
+    .sector-table th:nth-child(3),.sector-table td:nth-child(3){width:8%;}
+    .sector-table th:nth-child(4),.sector-table td:nth-child(4),.sector-table th:nth-child(5),.sector-table td:nth-child(5),.sector-table th:nth-child(6),.sector-table td:nth-child(6){width:14%;}
     .small{font-size:12px;color:var(--muted);line-height:1.45;}
     .tag{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:3px 7px;background:#fff;font-size:11px;color:var(--muted);margin:2px;}
     .mini-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:8px 0 12px;}
@@ -84,10 +92,11 @@
 
   <main class="wrap">
     <div class="top-grid">
-      <section class="card">
+      <section class="card collapsible" id="resultCard">
         <div class="card-h">
           <strong>參數變化與 M7 結果</strong>
           <div class="btns">
+            <button id="btnToggleResult" class="collapse-btn" type="button">收合</button>
             <button id="btnReset">Reset</button>
             <button id="btnExport" class="primary">Export Trace</button>
           </div>
@@ -137,7 +146,7 @@
         <div class="card-b">
           <div id="ruleBox" class="ok">--</div>
 
-          <details open>
+          <details>
             <summary>Raw Score Impact Summary / L2-L3 對 Raw Score 的影響</summary>
             <div class="detail-body">
               <div class="section-note">主表看每個 factor 的 now/new/delta 與對 Raw score 變化的貢獻；更細的公式留在 trace。</div>
@@ -145,7 +154,7 @@
             </div>
           </details>
 
-          <details open>
+          <details>
             <summary>Factor Impact / 權重調整貢獻表</summary>
             <div class="detail-body">
               <table id="factorImpactTable"></table>
@@ -160,17 +169,17 @@
             </div>
           </details>
 
-          <details open>
+          <details>
             <summary>Top 30 delta preview / 排名變化與主要因子分數</summary>
             <div class="detail-body"><table id="deltaPreview"></table></div>
           </details>
 
-          <details open>
+          <details>
             <summary>Factor Score Distribution / 主要因子分數分布</summary>
             <div class="detail-body"><div id="factorDistributionBox">--</div></div>
           </details>
 
-          <details open>
+          <details>
             <summary>Sensitivity Analysis / 參數敏感度分析</summary>
             <div class="detail-body">
               <div class="section-note">每個參數用小幅 bump 測試，觀察：目前股票影響、全體平均影響、最大影響、最敏感 category。</div>
@@ -192,6 +201,18 @@
     </div>
   </main>
 
+  <script>
+    document.addEventListener("DOMContentLoaded", function(){
+      const card = document.getElementById("resultCard");
+      const btn = document.getElementById("btnToggleResult");
+      if(btn && card){
+        btn.addEventListener("click", function(){
+          card.classList.toggle("collapsed");
+          btn.textContent = card.classList.contains("collapsed") ? "展開" : "收合";
+        });
+      }
+    });
+  </script>
   <script src="../js/mm/modules/mm_formula_test_engine.js"></script>
 </body>
 </html>
