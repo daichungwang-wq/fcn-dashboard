@@ -386,41 +386,139 @@
     return 1;
   }
 
+
+  function getRegressionValuationDetails(row) {
+    return {
+      currentForwardPE: getForwardPE(row),
+      individualFairPE: num(field(row, [
+        "individual_fair_pe",
+        "regression_fair_pe",
+        "valuation_regression_fair_pe",
+        "historical_fair_pe",
+        "feature_snapshot.valuation.individual_fair_pe",
+        "feature_snapshot.valuation.regression_fair_pe"
+      ], null), null),
+      regressionFairPE: num(field(row, [
+        "regression_fair_pe",
+        "individual_fair_pe",
+        "feature_snapshot.valuation.regression_fair_pe",
+        "feature_snapshot.valuation.individual_fair_pe"
+      ], null), null),
+      currentMultiple: num(field(row, [
+        "current_regression_multiple",
+        "regression_current_multiple",
+        "price_to_regression_now",
+        "feature_snapshot.valuation.current_regression_multiple"
+      ], null), null),
+      historicalTrimmedMeanMultiple: num(field(row, [
+        "historical_trimmed_mean_multiple",
+        "regression_trimmed_mean_multiple",
+        "normal_regression_multiple",
+        "feature_snapshot.valuation.historical_trimmed_mean_multiple"
+      ], null), null),
+      historicalMedianMultiple: num(field(row, [
+        "historical_median_multiple",
+        "feature_snapshot.valuation.historical_median_multiple"
+      ], null), null),
+      historicalP25Multiple: num(field(row, [
+        "historical_p25_multiple",
+        "feature_snapshot.valuation.historical_p25_multiple"
+      ], null), null),
+      historicalP75Multiple: num(field(row, [
+        "historical_p75_multiple",
+        "feature_snapshot.valuation.historical_p75_multiple"
+      ], null), null),
+      regressionFairPriceNow: num(field(row, [
+        "regression_fair_price_now",
+        "feature_snapshot.valuation.regression_fair_price_now"
+      ], null), null),
+      regressionActualPriceNow: num(field(row, [
+        "regression_actual_price_now",
+        "price_now",
+        "market_acceptance.price_now",
+        "feature_snapshot.valuation.regression_actual_price_now"
+      ], null), null),
+      regressionModel: field(row, [
+        "regression_valuation_model",
+        "feature_snapshot.valuation.regression_valuation_model"
+      ], null),
+      regressionR2: num(field(row, [
+        "regression_valuation_r2",
+        "feature_snapshot.valuation.regression_valuation_r2"
+      ], null), null),
+      regressionHistoryWeeks: num(field(row, [
+        "regression_valuation_history_weeks",
+        "feature_snapshot.valuation.regression_valuation_history_weeks",
+        "history_weeks"
+      ], null), null),
+      regressionSource: field(row, [
+        "regression_valuation_source",
+        "feature_snapshot.valuation.regression_valuation_source"
+      ], null),
+      regressionQuality: field(row, [
+        "regression_valuation_quality",
+        "feature_snapshot.valuation.regression_valuation_quality"
+      ], null),
+      adjustmentRaw: num(field(row, [
+        "regression_adjustment_raw",
+        "feature_snapshot.valuation.regression_adjustment_raw"
+      ], null), null),
+      adjustmentCapped: num(field(row, [
+        "regression_adjustment_capped",
+        "feature_snapshot.valuation.regression_adjustment_capped"
+      ], null), null),
+      adjustmentFloor: num(field(row, [
+        "regression_adjustment_floor",
+        "feature_snapshot.valuation.regression_adjustment_floor"
+      ], null), null),
+      adjustmentCap: num(field(row, [
+        "regression_adjustment_cap",
+        "feature_snapshot.valuation.regression_adjustment_cap"
+      ], null), null),
+      valuationHeat: num(field(row, [
+        "valuation_heat",
+        "feature_snapshot.valuation.valuation_heat"
+      ], null), null),
+      valuationHeatBaselinePE: num(field(row, [
+        "valuation_heat_baseline_pe",
+        "feature_snapshot.valuation.valuation_heat_baseline_pe"
+      ], null), null),
+      valuationHeatBrakeRule: field(row, [
+        "valuation_heat_brake_rule",
+        "feature_snapshot.valuation.valuation_heat_brake_rule"
+      ], null)
+    };
+  }
+
   function getIndividualFairPE(row) {
-    const direct = num(field(row, [
-      "mean_pe",
-      "trimmed_mean_pe",
-      "individual_fair_pe",
-      "regression_fair_pe",
-      "valuation_regression_fair_pe",
-      "historical_fair_pe",
-      "feature_snapshot.valuation.mean_pe",
-      "feature_snapshot.valuation.trimmed_mean_pe",
-      "feature_snapshot.valuation.regression_fair_pe",
-      "feature_snapshot.valuation.individual_fair_pe"
-    ], null), null);
-    if (direct !== null && direct > 0) return { value: direct, source: "direct_mean_or_regression_fair_pe" };
+    const detail = getRegressionValuationDetails(row);
 
-    const currentPE = getForwardPE(row);
-    const currentMultiple = num(field(row, [
-      "current_regression_multiple",
-      "regression_current_multiple",
-      "price_to_regression_now",
-      "feature_snapshot.valuation.current_regression_multiple"
-    ], null), null);
-    const normalMultiple = num(field(row, [
-      "historical_trimmed_mean_multiple",
-      "regression_trimmed_mean_multiple",
-      "normal_regression_multiple",
-      "feature_snapshot.valuation.historical_trimmed_mean_multiple"
-    ], null), null);
-
-    if (currentPE !== null && currentPE > 0 && currentMultiple !== null && currentMultiple > 0 && normalMultiple !== null && normalMultiple > 0) {
-      return { value: currentPE * (normalMultiple / currentMultiple), source: "current_pe_x_normal_multiple_over_current_multiple" };
+    if (detail.individualFairPE !== null && detail.individualFairPE > 0) {
+      return {
+        value: detail.individualFairPE,
+        source: detail.regressionSource || "python_individual_fair_pe",
+        detail
+      };
     }
 
-    if (currentPE !== null && currentPE > 0) return { value: currentPE, source: "fallback_current_forward_pe" };
-    return { value: null, source: "missing_forward_pe" };
+    const currentPE = detail.currentForwardPE;
+    const currentMultiple = detail.currentMultiple;
+    const normalMultiple = detail.historicalTrimmedMeanMultiple;
+
+    if (currentPE !== null && currentPE > 0 && currentMultiple !== null && currentMultiple > 0 && normalMultiple !== null && normalMultiple > 0) {
+      const rawAdj = normalMultiple / Math.sqrt(currentMultiple);
+      const cappedAdj = Math.max(0.90, Math.min(rawAdj, 1.15));
+      return {
+        value: currentPE * cappedAdj,
+        source: "frontend_fallback_current_pe_x_trimmed_mean_over_sqrt_current_multiple",
+        detail: { ...detail, adjustmentRaw: rawAdj, adjustmentCapped: cappedAdj }
+      };
+    }
+
+    if (currentPE !== null && currentPE > 0) {
+      return { value: currentPE, source: "fallback_current_forward_pe", detail };
+    }
+    return { value: null, source: "missing_forward_pe", detail };
   }
 
   function getDynamicMultipliers(row) {
@@ -518,11 +616,13 @@
     return result;
   }
 
+
   function computeValuationBaseline(ctx, params = state.params) {
     const row = ctx.row;
     const categorySub = getCategorySub(row);
     const currentForwardPE = getForwardPE(row);
     const individual = getIndividualFairPE(row);
+    const regression = individual.detail || getRegressionValuationDetails(row);
     const sectorMap = buildSectorBaselineEngine(params);
     const sector = sectorMap[categorySub] || null;
     const staticAnchor = getStaticAnchor(categorySub, row);
@@ -535,6 +635,7 @@
       currentForwardPE,
       individualFairPE: individual.value,
       individualFairPESource: individual.source,
+      regression,
       staticAnchor,
       weightedPeerBaseline: sector?.weightedPeerBaseline ?? null,
       peerCount: sector?.peerCount ?? 0,
@@ -624,6 +725,10 @@
     traceLines.push(`  category_sub=${valuationBaseline.categorySub}`);
     traceLines.push(`  current_forward_pe=${fmt(valuationBaseline.currentForwardPE)}`);
     traceLines.push(`  individual_fair_pe=${fmt(valuationBaseline.individualFairPE)} / source=${valuationBaseline.individualFairPESource}`);
+    traceLines.push(`  regression_price_now=${fmt(valuationBaseline.regression.regressionFairPriceNow)} / actual_price_now=${fmt(valuationBaseline.regression.regressionActualPriceNow)}`);
+    traceLines.push(`  current_multiple=${fmt(valuationBaseline.regression.currentMultiple, 4)} / historical_trimmed_mean=${fmt(valuationBaseline.regression.historicalTrimmedMeanMultiple, 4)}`);
+    traceLines.push(`  adjustment_raw=${fmt(valuationBaseline.regression.adjustmentRaw, 4)} / adjustment_capped=${fmt(valuationBaseline.regression.adjustmentCapped, 4)} / cap=${fmt(valuationBaseline.regression.adjustmentCap, 4)}`);
+    traceLines.push(`  valuation_heat=${fmt(valuationBaseline.regression.valuationHeat, 4)} / heat_baseline_pe=${fmt(valuationBaseline.regression.valuationHeatBaselinePE)} / rule=${valuationBaseline.regression.valuationHeatBrakeRule || "--"}`);
     traceLines.push(`  weighted_peer_baseline=${fmt(valuationBaseline.weightedPeerBaseline)} / peer_count=${valuationBaseline.peerCount}`);
     traceLines.push(`  static_anchor=${fmt(valuationBaseline.staticAnchor)}`);
     traceLines.push(`  sector_baseline = peer*${fmt(normalizeWeights(params, ["sector_peer_baseline_weight", "sector_static_anchor_weight"]).sector_peer_baseline_weight)} + static*${fmt(normalizeWeights(params, ["sector_peer_baseline_weight", "sector_static_anchor_weight"]).sector_static_anchor_weight)} = ${fmt(valuationBaseline.sectorBaseline)}`);
@@ -750,8 +855,10 @@
     `;
   }
 
+
   function renderValuationBaseline(result) {
     const v = result.valuationBaseline;
+    const r = v.regression || {};
     const memberRows = v.sectorMembers.slice(0, 10).map(m => `
       <tr>
         <td>${escapeHtml(m.symbol)}</td>
@@ -775,11 +882,28 @@
       </div>
       <div class="small">
         <span class="tag">source: ${escapeHtml(v.individualFairPESource)}</span>
+        <span class="tag">quality: ${escapeHtml(r.regressionQuality || "--")}</span>
+        <span class="tag">model: ${escapeHtml(r.regressionModel || "--")}</span>
+        <span class="tag">R²: ${fmt(r.regressionR2)}</span>
+        <span class="tag">history weeks: ${fmt(r.regressionHistoryWeeks, 0)}</span>
         <span class="tag">market × industry × archetype = ${fmt(v.dynamic.combined)}</span>
         <span class="tag">market: ${escapeHtml(v.dynamic.marketRegime || "--")}</span>
         <span class="tag">industry: ${escapeHtml(v.dynamic.industryRegime || "--")}</span>
         <span class="tag">archetype: ${escapeHtml(v.dynamic.archetype || "--")}</span>
       </div>
+
+      <table class="table-tight" style="margin-top:10px">
+        <thead><tr><th colspan="4" style="text-align:left">Individual Fair PE Trace / 個股合理本益比追蹤</th></tr></thead>
+        <tbody>
+          <tr><td>Actual Price Now</td><td>${fmt(r.regressionActualPriceNow)}</td><td>Regression Fair Price Now</td><td>${fmt(r.regressionFairPriceNow)}</td></tr>
+          <tr><td>Current Regression Multiple</td><td>${fmt(r.currentMultiple, 4)}</td><td>Historical Trimmed Mean Multiple</td><td>${fmt(r.historicalTrimmedMeanMultiple, 4)}</td></tr>
+          <tr><td>Historical Median / P25 / P75</td><td colspan="3">${fmt(r.historicalMedianMultiple, 4)} / ${fmt(r.historicalP25Multiple, 4)} / ${fmt(r.historicalP75Multiple, 4)}</td></tr>
+          <tr><td>Adjustment Raw</td><td>${fmt(r.adjustmentRaw, 4)}</td><td>Adjustment Capped</td><td>${fmt(r.adjustmentCapped, 4)}</td></tr>
+          <tr><td>Adjustment Floor / Cap</td><td>${fmt(r.adjustmentFloor, 4)} / ${fmt(r.adjustmentCap, 4)}</td><td>Heat Brake Rule</td><td>${escapeHtml(r.valuationHeatBrakeRule || "--")}</td></tr>
+          <tr><td>Valuation Heat</td><td>${fmt(r.valuationHeat, 4)}</td><td>Heat Baseline PE</td><td>${fmt(r.valuationHeatBaselinePE)}</td></tr>
+        </tbody>
+      </table>
+
       <table style="margin-top:10px">
         <thead><tr><th>Top Sector Members</th><th>Fair PE</th><th>Liquidity</th><th>Weight Share</th><th>Fair PE Source</th></tr></thead>
         <tbody>${memberRows || `<tr><td colspan="5">No members</td></tr>`}</tbody>
@@ -1090,7 +1214,7 @@
 
     const name = field(ctx.row, ["name", "company_name"], "");
     $("selectedMeta").textContent = `${ctx.sym}${name ? " / " + name : ""}`;
-    $("ruleBox").innerHTML = `Debug rule：前端會重新計算公式，但必須對齊 Python M7 v2 欄位。新增 28產業 baseline engine：個股 fair PE → 以 avg_dollar_volume/liquidity 加權 → 70% peer baseline + 30% static anchor。`;
+    $("ruleBox").innerHTML = `Debug rule：前端會重新計算公式，但必須對齊 Python M7 v2 欄位。新增 28產業 baseline engine：個股 fair PE 已讀 Python heat-brake 欄位；再以 avg_dollar_volume/liquidity 加權 → 70% peer baseline + 30% static anchor。`;
 
     renderRawImpactTable(result);
     renderFactorImpactTable(result);
