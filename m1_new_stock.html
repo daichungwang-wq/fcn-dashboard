@@ -635,7 +635,78 @@
     }
 
 
-    function getList(type){
+    
+    function firstUseful(...vals){
+      for(const v of vals){
+        if(v === null || v === undefined) continue;
+        if(typeof v === 'string' && (!v.trim() || v.trim() === '--' || v.trim().toUpperCase() === 'N/A')) continue;
+        return v;
+      }
+      return '--';
+    }
+
+    function enrichProfileWithM7(profile, m7, symbol, u={}){
+      if(!profile || !m7) return profile;
+      const val = m7?.feature_snapshot?.valuation || {};
+      const returns = m7?.feature_snapshot?.returns || {};
+      const fairPrice = toNum(m7?.regression_fair_price_now);
+      const actualPrice = toNum(m7?.regression_actual_price_now);
+      const gap = (fairPrice && actualPrice != null) ? ((actualPrice - fairPrice) / fairPrice * 100) : null;
+      const gapText = gap == null ? '--' : `${pct(gap,1)}（${gapJudgement(gap)}）`;
+
+      profile.symbol = profile.symbol || symbol;
+      profile.name = profile.name || m7.name || u?.name || symbol;
+      profile.basic_info = {
+        ...(profile.basic_info || {}),
+        industry: firstUseful(profile?.basic_info?.industry, m7.subsector, u?.sector),
+        category_sub: firstUseful(profile?.basic_info?.category_sub, m7.category_sub)
+      };
+
+      profile.financial_summary = {
+        ...(profile.financial_summary || {}),
+        growth: firstUseful(profile?.financial_summary?.growth, val.eps_growth != null ? `${fmt(val.eps_growth,1)}% EPS growth` : null),
+        pe: firstUseful(profile?.financial_summary?.pe, val.forward_pe != null ? `${fmt(val.forward_pe,2)}x forward PE` : null),
+        eps: firstUseful(profile?.financial_summary?.eps, val.eps_growth != null ? `EPS growth ${fmt(val.eps_growth,1)}%` : null),
+        forward_pe: firstUseful(profile?.financial_summary?.forward_pe, val.forward_pe != null ? `${fmt(val.forward_pe,2)}x` : null),
+        peg: firstUseful(profile?.financial_summary?.peg, val.peg != null ? fmt(val.peg,2) : null)
+      };
+
+      profile.market_view = firstUseful(
+        profile.market_view,
+        `M7 v2=${fmt(m7.m7_v2_score,2)}，Trend=${fmt(m7.trend_score,2)}，Structure=${fmt(m7.structure_score,2)}；M7 fair price=${money(fairPrice,2)}，today=${money(actualPrice,2)}，gap=${gapText}。`
+      );
+
+      profile.valuation_and_timing = {
+        ...(profile.valuation_and_timing || {}),
+        valuation_view: firstUseful(
+          profile?.valuation_and_timing?.valuation_view,
+          `M7 regression fair price ${money(fairPrice,2)} vs today ${money(actualPrice,2)}，gap ${gapText}；best model ${m7.regression_valuation_model || '--'}，R² ${fmt(m7.regression_valuation_r2,2)}。`
+        ),
+        buy_strategy: firstUseful(
+          profile?.valuation_and_timing?.buy_strategy,
+          gap == null ? '等待資料' : (gap < -10 ? '偏甜可觀察分批' : (gap > 10 ? '偏熱不追高' : '合理區間等待'))
+        ),
+        technical_view: {
+          ...(profile?.valuation_and_timing?.technical_view || {}),
+          mid_trend: firstUseful(profile?.valuation_and_timing?.technical_view?.mid_trend, `Trend score ${fmt(m7.trend_score,2)} / ${m7.trend_reliability || '--'}`),
+          structure: firstUseful(profile?.valuation_and_timing?.technical_view?.structure, `${m7.best_structure_model || m7.regression_valuation_model || '--'} R² ${fmt(m7.best_structure_r2 ?? m7.regression_valuation_r2,2)}`),
+          conclusion: firstUseful(profile?.valuation_and_timing?.technical_view?.conclusion, gap == null ? 'M7 data available but fair gap missing' : `${gapJudgement(gap)}，M7 v2 ${fmt(m7.m7_v2_score,2)}`)
+        }
+      };
+
+      if(!profile.pool30_fit) profile.pool30_fit = {};
+      profile.pool30_fit.category = firstUseful(profile.pool30_fit.category, m7.category, u?.category_main, u?.category);
+      profile.pool30_fit.reason = firstUseful(profile.pool30_fit.reason, `M7 v2 ${fmt(m7.m7_v2_score,2)}，valuation ${fmt(m7.valuation_score,2)}，trend ${fmt(m7.trend_score,2)}，fair gap ${gapText}。`);
+
+      if(!profile.company_overview || profile.company_overview === '--'){
+        profile.company_overview = `${profile.name || symbol}：${m7.category_sub || m7.subsector || '--'}；M7 v2 ${fmt(m7.m7_v2_score,2)}，trend ${fmt(m7.trend_score,2)}，valuation ${fmt(m7.valuation_score,2)}。`;
+      }
+
+      profile.__m7 = m7;
+      return profile;
+    }
+
+function getList(type){
       if(type === 'profile') return Object.keys(state.profiles || {}).map(up);
       if(type === 'pool30'){
         return Object.entries(state.profiles || {})
@@ -1328,6 +1399,9 @@
         quality_check: { total_score:7.5, completeness:7.0, specificity:7.0, data_support:7.0 }
       };
 
+      const m7 = getM7(symbol);
+      enrichProfileWithM7(profile, m7, symbol, u);
+
       const revMix = buildRevenueMix(profile);
       const cusMix = buildCustomerMix(profile);
       const contracts = inferContracts(profile);
@@ -1406,7 +1480,6 @@
         </tr>
       `).join('');
 
-      const m7 = getM7(symbol);
       const nemo = profile?.nemotron || profile?.nemotron_output || profile?.ai_valuation || profile?.__raw_light?.nemotron || null;
       const m7Fair = toNum(m7?.regression_fair_price_now);
       const todayPrice = toNum(m7?.regression_actual_price_now) ?? toNum(priceNow);
