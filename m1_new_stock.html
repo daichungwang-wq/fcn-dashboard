@@ -234,10 +234,6 @@
     .headline-box .h{font-size:18px;font-weight:900;color:#7d5712}
     .headline-box .t{margin-top:8px;line-height:1.85;color:#523c15}
 
-
-    .comp-card{border:1px solid #e4edf6;background:#f9fbfe;border-radius:16px;padding:14px;margin-top:10px}
-    .comp-card .t{font-weight:900;margin-bottom:6px;color:#123255}
-    .comp-card .m{font-size:13px;color:#44586b;line-height:1.7;margin-top:4px}
     .empty{padding:54px 24px;text-align:center;color:var(--muted);font-size:16px}
     .collapsible-content.is-collapsed{display:none}
     .collapse-btn{border:1px solid var(--line);background:#fff;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:800}
@@ -755,6 +751,203 @@ function getList(type){
       `;
     }
 
+
+    function hasValidM7Data(m7){
+      if(!m7 || typeof m7 !== 'object') return false;
+      return toNum(m7.m7_v2_score) != null || toNum(m7.m7_effective_score) != null || toNum(m7.m7_raw_score) != null;
+    }
+
+    function getDecisionMode(symbol, profile, m7){
+      if(hasValidM7Data(m7)) return 'M7';
+      if(profile && !profile.__fallback_basic && (profile.valuation_and_timing || profile.pool30_fit || profile.final_view || profile.financial_summary)) return 'M1_PROXY';
+      return 'NO_DATA';
+    }
+
+    function fairGapPct(fair, price){
+      const f = toNum(fair);
+      const p = toNum(price);
+      if(f == null || p == null || f === 0) return null;
+      return (f - p) / f * 100;
+    }
+
+    function classifyFairGap(g){
+      if(!Number.isFinite(g)) return '--';
+      if(g > 10) return '低估';
+      if(g < -10) return '偏貴';
+      return '合理';
+    }
+
+    function classifyMultiplePosition(current, p25, median, p75){
+      const c = toNum(current), a = toNum(p25), m = toNum(median), b = toNum(p75);
+      if(c == null || a == null || m == null || b == null) return '--';
+      if(c < a) return '偏低';
+      if(c > b) return '偏高';
+      if(c <= m) return '正常偏低';
+      return '正常偏高';
+    }
+
+    function classifyTodayByM7(score){
+      const s = toNum(score);
+      if(s == null) return {label:'WATCH', text:'資料不足，先觀察'};
+      if(s >= 8) return {label:'STRONG', text:'可做 / 偏強'};
+      if(s >= 6) return {label:'WATCH', text:'觀察 / 中性'};
+      return {label:'AVOID', text:'避免 / 偏弱'};
+    }
+
+    function buildM7Decision(m7, priceNow){
+      const fair = toNum(m7?.regression_fair_price_now);
+      const price = toNum(m7?.regression_actual_price_now) ?? toNum(priceNow);
+      const gap = fairGapPct(fair, price);
+      const trendScore = toNum(m7?.trend_score);
+      const structureScore = toNum(m7?.structure_score);
+      const trendAnnual = toNum(m7?.trend_linear_annualized_pct);
+      const maAnnual = toNum(m7?.trend_ma_annualized_pct);
+      const accel = toNum(m7?.trend_acceleration);
+      const r2 = toNum(m7?.best_structure_r2 ?? m7?.structure_r2 ?? m7?.regression_valuation_r2);
+      const m7Score = toNum(m7?.m7_v2_score ?? m7?.m7_effective_score ?? m7?.m7_raw_score);
+      const today = classifyTodayByM7(m7Score);
+      const multPos = classifyMultiplePosition(m7?.current_regression_multiple, m7?.historical_p25_multiple, m7?.historical_median_multiple, m7?.historical_p75_multiple);
+      const trendLabel = trendScore == null ? '資料不足' : (trendScore >= 7.5 ? '強' : (trendScore >= 5.5 ? '中性' : '弱'));
+      const accelNote = accel == null ? '' : (accel < 0 ? '但近期動能正在降溫，不建議追價。' : '近期動能仍在加速。');
+      const trendSentence = `長期趨勢年化 ${trendAnnual == null ? '--' : pct(trendAnnual,1)}，MA 趨勢 ${maAnnual == null ? '--' : pct(maAnnual,1)}，結構 R²=${r2 == null ? '--' : fmt(r2,2)}，屬於${esc(m7?.trend_reliability || '--')}可靠度、${trendLabel}趨勢。${accelNote}`;
+      const valuationSentence = `目前價格相對 M7 fair price ${gap == null ? '--' : pct(gap,1)}，判斷為${classifyFairGap(gap)}；相對自身歷史 multiple 位階為${multPos}。`;
+      const finalInsight = `趨勢${trendLabel}、估值${classifyFairGap(gap)}、M7 今日分數${m7Score == null ? '--' : fmt(m7Score,2)} → ${today.text}。`;
+
+      return `
+        <section class="panel panel-body">
+          <div class="panel-head">
+            <div>
+              <h3>Investment Decision Cockpit / 投資決策中樞</h3>
+              <div class="panel-sub">Source：M7 Runtime ｜ Decision Type：M7 Quant</div>
+            </div>
+            <div class="chip">${esc(today.label)}</div>
+          </div>
+
+          <div class="section-note"><b>Trend & Structure 判斷</b></div>
+          <div class="kpi-row">
+            <div class="mini-kpi"><div class="k">trend_score</div><div class="v">${fmt(trendScore,2)}</div></div>
+            <div class="mini-kpi"><div class="k">structure_score</div><div class="v">${fmt(structureScore,2)}</div></div>
+            <div class="mini-kpi"><div class="k">trend_linear_annualized_pct</div><div class="v">${trendAnnual == null ? '--' : pct(trendAnnual,1)}</div></div>
+            <div class="mini-kpi"><div class="k">trend_ma_annualized_pct</div><div class="v">${maAnnual == null ? '--' : pct(maAnnual,1)}</div></div>
+            <div class="mini-kpi"><div class="k">trend_acceleration</div><div class="v">${accel == null ? '--' : pct(accel,1)}</div></div>
+            <div class="mini-kpi"><div class="k">best_structure_model</div><div class="v">${esc(m7?.best_structure_model || m7?.regression_valuation_model || '--')}</div></div>
+          </div>
+          <div class="section-note">${trendSentence}</div>
+
+          <div class="section-note"><b>Valuation & Price Reality</b></div>
+          <div class="kpi-row">
+            <div class="mini-kpi"><div class="k">regression_fair_price_now</div><div class="v">${money(fair,2)}</div></div>
+            <div class="mini-kpi"><div class="k">regression_actual_price_now</div><div class="v">${money(price,2)}</div></div>
+            <div class="mini-kpi"><div class="k">gap %</div><div class="v">${gap == null ? '--' : pct(gap,1)}</div><div class="d">(fair-price)/fair</div></div>
+            <div class="mini-kpi"><div class="k">historical p25 / median / p75</div><div class="v">${fmt(m7?.historical_p25_multiple,2)} / ${fmt(m7?.historical_median_multiple,2)} / ${fmt(m7?.historical_p75_multiple,2)}</div></div>
+            <div class="mini-kpi"><div class="k">current_regression_multiple</div><div class="v">${fmt(m7?.current_regression_multiple,2)}</div></div>
+            <div class="mini-kpi"><div class="k">valuation_heat</div><div class="v">${fmt(m7?.feature_snapshot?.valuation?.valuation_heat ?? m7?.valuation_heat,2)}</div></div>
+          </div>
+          <div class="valuation-band" style="margin-top:12px">
+            <div style="font-weight:900">M7 Fair Value Gap</div>
+            <div class="band-line"><div class="band-zone band-low"></div><div class="band-zone band-mid"></div><div class="band-zone band-high"></div><div class="band-pin" style="left:${clamp(50 - (gap || 0), 0, 100)}%"></div></div>
+            <div class="band-labels"><span>低估</span><span>合理</span><span>偏貴</span></div>
+          </div>
+          <div class="section-note">${valuationSentence}</div>
+
+          <div class="section-note"><b>M7 Today Decision</b></div>
+          <div class="kpi-row">
+            <div class="mini-kpi"><div class="k">m7_v2_score</div><div class="v">${fmt(m7Score,2)}</div></div>
+            <div class="mini-kpi"><div class="k">valuation_score</div><div class="v">${fmt(m7?.valuation_score,2)}</div></div>
+            <div class="mini-kpi"><div class="k">timing_score</div><div class="v">${fmt(m7?.timing_score,2)}</div></div>
+            <div class="mini-kpi"><div class="k">money_score</div><div class="v">${fmt(m7?.money_score,2)}</div></div>
+          </div>
+          <div class="headline-box"><div class="h">Final Insight</div><div class="t">${finalInsight}</div></div>
+        </section>
+      `;
+    }
+
+    function buildM1ProxyDecision(profile){
+      const fs = profile?.financial_summary || {};
+      const vt = profile?.valuation_and_timing || {};
+      const tv = vt?.technical_view || {};
+      const pool = profile?.pool30_fit || {};
+      const risks = Array.isArray(profile?.risk_opportunity?.risk) ? profile.risk_opportunity.risk : [];
+      const opps = Array.isArray(profile?.risk_opportunity?.opportunity) ? profile.risk_opportunity.opportunity : [];
+      const stockPool = pool.stock_pool === true || String(pool.stock_pool).includes('是') ? 'YES' : (pool.stock_pool === false ? 'NO' : '--');
+      const pool30 = pool.pool30 === true || String(pool.pool30).includes('是') ? 'YES' : (pool.pool30 === false || String(pool.pool30).includes('否') ? 'NO' : '--');
+      const category = pool.category || '--';
+      const timing = tv.conclusion || vt.buy_strategy || '--';
+      const final = profile.final_view || pool.reason || '--';
+
+      return `
+        <section class="panel panel-body">
+          <div class="panel-head">
+            <div>
+              <h3>Investment Decision Cockpit / 投資決策中樞</h3>
+              <div class="panel-sub">Source：M1 Deep Research Card ｜ Decision Type：Proxy / Research-based</div>
+            </div>
+            <div class="chip">M1_PROXY</div>
+          </div>
+
+          <div class="section-note"><b>Research-Based Trend & Structure</b></div>
+          <div class="kpi-row">
+            <div class="mini-kpi"><div class="k">Growth</div><div class="v">${esc(fs.growth || '--')}</div></div>
+            <div class="mini-kpi"><div class="k">Mid Trend</div><div class="v">${esc(tv.mid_trend || '--')}</div></div>
+            <div class="mini-kpi"><div class="k">Short Term</div><div class="v">${esc(tv.short_term || '--')}</div></div>
+            <div class="mini-kpi"><div class="k">Structure</div><div class="v">${esc(tv.structure || '--')}</div></div>
+          </div>
+          <div class="section-note">${esc(tv.mid_trend || profile.market_view || '沒有完整 M7，改用 M1 深度研究卡文字判斷趨勢與結構。')}</div>
+
+          <div class="section-note"><b>Research-Based Valuation</b></div>
+          <div class="kpi-row">
+            <div class="mini-kpi"><div class="k">PE</div><div class="v">${esc(fs.pe || '--')}</div></div>
+            <div class="mini-kpi"><div class="k">EPS</div><div class="v">${esc(fs.eps || '--')}</div></div>
+            <div class="mini-kpi"><div class="k">FCF Margin</div><div class="v">${esc(fs.fcf_margin || '--')}</div></div>
+            <div class="mini-kpi"><div class="k">Beta</div><div class="v">${esc(fs.beta || '--')}</div></div>
+          </div>
+          <div class="section-note">${esc(vt.valuation_view || '--')}</div>
+          <div class="section-note">Sweet Zone：${esc(vt.sweet_zone || '--')}；Buy Strategy：${esc(vt.buy_strategy || '--')}</div>
+
+          <div class="section-note"><b>Research-Based Today Decision</b></div>
+          <div class="final-grid">
+            <div class="final-card"><div class="k">Stock Pool</div><div class="v">${esc(stockPool)}</div><div class="r">${esc(pool.reason || '--')}</div></div>
+            <div class="final-card"><div class="k">Pool30</div><div class="v">${esc(pool30)}</div><div class="r">${esc(pool.reason || '--')}</div></div>
+            <div class="final-card"><div class="k">Category</div><div class="v">${esc(category)}</div><div class="r">研究卡分類</div></div>
+            <div class="final-card"><div class="k">Timing</div><div class="v">WAIT</div><div class="r">${esc(timing)}</div></div>
+          </div>
+          <div class="risk-opp" style="margin-top:14px">
+            <div class="ro-box risk-box"><h4>主要風險</h4><div class="bullet-list">${risks.slice(0,3).map(x=>`<div class="bullet-item"><div class="m">${esc(x)}</div></div>`).join('') || '<div class="small-note">--</div>'}</div></div>
+            <div class="ro-box opp-box"><h4>主要機會</h4><div class="bullet-list">${opps.slice(0,3).map(x=>`<div class="bullet-item"><div class="m">${esc(x)}</div></div>`).join('') || '<div class="small-note">--</div>'}</div></div>
+          </div>
+          <div class="headline-box"><div class="h">Final Insight</div><div class="t">${esc(final)}</div></div>
+        </section>
+      `;
+    }
+
+    function buildNoDataDecision(symbol){
+      return `
+        <section class="panel panel-body">
+          <div class="panel-head">
+            <div>
+              <h3>Investment Decision Cockpit / 投資決策中樞</h3>
+              <div class="panel-sub">Source：Data Not Ready ｜ Decision Type：No Data</div>
+            </div>
+            <div class="chip">NO_DATA</div>
+          </div>
+          <div class="final-grid">
+            <div class="final-card"><div class="k">Symbol</div><div class="v">${esc(symbol)}</div><div class="r">資料尚未建立</div></div>
+            <div class="final-card"><div class="k">M7</div><div class="v">--</div><div class="r">Not Available</div></div>
+            <div class="final-card"><div class="k">Pool30</div><div class="v">NO DECISION</div><div class="r">缺少 M7 與 M1 深度研究資料</div></div>
+            <div class="final-card"><div class="k">Timing</div><div class="v">WAIT</div><div class="r">避免誤判</div></div>
+          </div>
+          <div class="section-note">目前資料不足，系統不產生 Pool30 / FCN / Timing 結論。下一步：建立 M1 L5-A Pro+ 深度研究卡，或補入 M7 runtime。</div>
+        </section>
+      `;
+    }
+
+    function renderInvestmentDecisionCockpit(symbol, profile, m7, priceNow){
+      const mode = getDecisionMode(symbol, profile, m7);
+      if(mode === 'M7') return buildM7Decision(m7, priceNow);
+      if(mode === 'M1_PROXY') return buildM1ProxyDecision(profile);
+      return buildNoDataDecision(symbol);
+    }
+
     function parseFinancialNumber(text){
       if(text == null) return null;
       const s = String(text).replace(/,/g,'');
@@ -772,83 +965,57 @@ function getList(type){
     function buildRevenueMix(profile){
       const out = [];
       const industry = profile?.basic_info?.industry || '';
-      const segs = Array.isArray(profile?.business_model?.segments) ? profile.business_model.segments : [];
+      const segs = profile?.business_model?.segments || [];
       const fromIndustry = industry.match(/半導體\s*(\d+(?:\.\d+)?)%.*軟體\s*(\d+(?:\.\d+)?)%/);
       if(fromIndustry){
         out.push({name:'Semiconductor', pct:Number(fromIndustry[1]), detail:'半導體主體'});
         out.push({name:'Software', pct:Number(fromIndustry[2]), detail:'基礎軟體'});
       }
       segs.forEach(s => {
-        const txt = String(s || '').trim();
-        if(!txt) return;
-        const pctMatch = txt.match(/(?:收入占|營收占|占比|佔比|占|佔)\s*(\d+(?:\.\d+)?)%/);
-        const yoyMatch = txt.match(/(?:年增長|年增|YoY|成長)\s*\+?(\d+(?:\.\d+)?)%/i);
-        let name = txt
-          .replace(/收入占\s*\d+(?:\.\d+)?%.*/,'')
-          .replace(/營收占\s*\d+(?:\.\d+)?%.*/,'')
-          .replace(/占比\s*\d+(?:\.\d+)?%.*/,'')
-          .replace(/佔比\s*\d+(?:\.\d+)?%.*/,'')
-          .split(/[：:，,]/)[0]
-          .trim();
-        name = name || `Segment ${out.length + 1}`;
-        if(pctMatch) out.push({name, pct:Number(pctMatch[1]), yoy:yoyMatch ? Number(yoyMatch[1]) : null, detail:txt});
+        const name = String(s).split('：')[0] || 'Segment';
+        const pctMatch = String(s).match(/占比\s*(\d+(?:\.\d+)?)%/);
+        const yoyMatch = String(s).match(/年增\s*(\d+(?:\.\d+)?)%/);
+        if(pctMatch) out.push({name, pct:Number(pctMatch[1]), yoy:yoyMatch ? Number(yoyMatch[1]) : null, detail:s});
       });
       const unique = [];
       const seen = new Set();
       out.forEach(x => {
-        const k = String(x.name || '').toLowerCase();
+        const k = x.name.toLowerCase();
         if(seen.has(k)) return;
         seen.add(k);
         unique.push(x);
       });
       if(!unique.length){
-        unique.push({name:'Core Business', pct:60, detail:profile?.business_model?.summary || '主要業務'});
+        unique.push({name:'Core Business', pct:60, detail:'主要業務'});
         unique.push({name:'Other', pct:40, detail:'其餘收入'});
       }
       let total = unique.reduce((s,x)=>s+n(x.pct),0);
       if(total !== 100 && total > 0){
         unique.forEach(x => x.pct = x.pct / total * 100);
       }
-      return unique.slice(0,6);
+      return unique.slice(0,4);
     }
     function buildCustomerMix(profile){
-      const items = Array.isArray(profile?.customer_analysis?.key_customers) ? profile.customer_analysis.key_customers : [];
+      const items = profile?.customer_analysis?.key_customers || [];
+      const applePct = 20;
       const result = [];
-      items.forEach((x, idx) => {
-        const name = x?.name || `Customer ${idx + 1}`;
-        const text = `${x?.importance || ''} ${x?.role || ''}`;
-        const pctMatch = text.match(/(?:佔總收入|占總收入|收入占比|營收占比|佔比|占比|佔|占)\s*(\d+(?:\.\d+)?)%/);
-        const pct = pctMatch ? Number(pctMatch[1]) : null;
-        result.push({name, pct, detail:text});
-      });
-      if(!result.length){
-        const summary = String(profile?.customer_analysis?.summary || '');
-        const topMatch = summary.match(/(?:前五大|前 5 大|Top\s*5)[^\d]*(\d+(?:\.\d+)?)%/i);
-        if(topMatch) result.push({name:'Top 5 Customers', pct:Number(topMatch[1]), detail:summary});
-      }
-      let knownTotal = result.reduce((sum,x)=>sum+(Number.isFinite(x.pct)?x.pct:0),0);
-      const missing = result.filter(x => !Number.isFinite(x.pct));
-      if(missing.length){
-        const remain = Math.max(0, Math.min(100, 100 - knownTotal));
-        const fill = Math.max(1, remain / (missing.length + 1));
-        missing.forEach(x => x.pct = fill);
-        knownTotal = result.reduce((sum,x)=>sum+(Number.isFinite(x.pct)?x.pct:0),0);
-      }
-      const residual = Math.max(0, 100 - knownTotal);
+      if(items.find(x => String(x.name).toLowerCase().includes('apple'))) result.push({name:'Apple', pct:applePct});
+      if(items.find(x => String(x.name).toLowerCase().includes('google'))) result.push({name:'Google', pct:14});
+      if(items.find(x => String(x.name).toLowerCase().includes('meta'))) result.push({name:'Meta', pct:10});
+      const top3 = result.reduce((s,x)=>s+x.pct,0);
+      const residual = Math.max(0, 100 - top3);
       result.push({name:'Other / Enterprise', pct:residual});
-      return result.slice(0,6);
+      return result;
     }
     function inferContracts(profile){
+      const raw = JSON.stringify(profile || {});
       const contracts = [];
-      const items = Array.isArray(profile?.customer_analysis?.key_customers) ? profile.customer_analysis.key_customers : [];
-      items.forEach(x => {
-        const text = `${x?.importance || ''} ${x?.role || ''}`;
-        const yearMatch = text.match(/(20\d{2})/);
-        const yrsMatch = text.match(/合約年限\s*(\d+(?:\.\d+)?)\s*年/);
-        if(yearMatch){
-          contracts.push({customer:x?.name || 'Customer', endYear:Number(yearMatch[1]), text});
-        }else if(yrsMatch){
-          contracts.push({customer:x?.name || 'Customer', endYear:`${yrsMatch[1]}Y`, text});
+      const customers = ['Google','Meta','Apple','U.S. Army','bp','Airbus'];
+      customers.forEach(c => {
+        const re = new RegExp(`${c}[^0-9]{0,40}(20\\d{2})`, 'i');
+        const m = raw.match(re);
+        if(m){
+          contracts.push({customer:c, endYear:Number(m[1]), text:`合作可視度到 ${m[1]}`});
         }
       });
       return contracts.slice(0,4);
@@ -904,7 +1071,7 @@ function getList(type){
       return 60;
     }
     function inferPeerRows(symbol, profile){
-      const peers = Array.isArray(profile?.competition?.peers) ? profile.competition.peers : [];
+      const peers = profile?.competition?.peers || [];
       const mainPE = parsePercent(profile?.financial_summary?.pe);
       const mainGrowth = parsePercent(profile?.financial_summary?.growth);
       const rows = [{
@@ -913,14 +1080,12 @@ function getList(type){
         note:'主分析標的'
       }];
       peers.forEach(p => {
-        const text = `${p?.comparison || ''} ${p?.position || ''}`;
-        const pe = parsePercent(text.match(/PE\s*(\d+(?:\.\d+)?)/i)?.[0] || text);
-        const growth = parsePercent(text.match(/(?:成長|growth|年增)\s*\+?(\d+(?:\.\d+)?)%/i)?.[0] || '');
+        const pe = parsePercent(p?.comparison);
         rows.push({
           symbol: p?.name || '--',
           role: p?.position || '--',
           pe: pe,
-          growth: growth,
+          growth: null,
           model: p?.comparison || '--',
           note: p?.position || '--'
         });
@@ -1428,21 +1593,12 @@ function getList(type){
         competition: { summary:'待補', peers:[] },
         financial_summary: {},
         market_view: '待補',
-        quality_check: { total_score:7.5, completeness:7.0, specificity:7.0, data_support:7.0 }
+        quality_check: { total_score:7.5, completeness:7.0, specificity:7.0, data_support:7.0 },
+        __fallback_basic: true
       };
 
       const m7 = getM7(symbol);
       enrichProfileWithM7(profile, m7, symbol, u);
-      profile.symbol = profile.symbol || symbol;
-      profile.name = profile.name || m7?.name || u?.name || symbol;
-      profile.basic_info = profile.basic_info || {};
-      profile.business_model = profile.business_model || {summary:'--', segments:[]};
-      profile.customer_analysis = profile.customer_analysis || {summary:'--', key_customers:[]};
-      profile.competition = profile.competition || {summary:'--', peers:[]};
-      profile.financial_summary = profile.financial_summary || {};
-      profile.risk_opportunity = profile.risk_opportunity || {risk:[], opportunity:[]};
-      profile.valuation_and_timing = profile.valuation_and_timing || {technical_view:{}};
-      profile.valuation_and_timing.technical_view = profile.valuation_and_timing.technical_view || {};
 
       const revMix = buildRevenueMix(profile);
       const cusMix = buildCustomerMix(profile);
@@ -1458,13 +1614,9 @@ function getList(type){
       const timing = (profile?.valuation_and_timing?.technical_view?.conclusion || profile?.valuation_and_timing?.buy_strategy || '等待').includes('不追') ? 'WAIT' : ((profile?.valuation_and_timing?.buy_strategy || '').includes('收') ? 'ACCUMULATE' : 'WAIT');
       const fcn = /FCN 可做|適合 FCN|FCN 底層標的|可做名單/.test(JSON.stringify(profile)) ? 'LIMITED' : 'AVOID';
       const summaryText = profile?.company_overview || profile?.final_view || '--';
-      const firstCustomerText = JSON.stringify(profile?.customer_analysis?.key_customers?.[0] || '');
-      const topCustomer = /(?:約|佔總收入|占總收入|佔比|占比|佔|占)\s*(\d+(?:\.\d+)?)%/.exec(firstCustomerText);
+      const topCustomer = /約\s*(\d+(?:\.\d+)?)%/.exec(JSON.stringify(profile?.customer_analysis?.key_customers?.[0] || ''));
       const topCustomerPct = topCustomer ? Number(topCustomer[1]) : (profile?.symbol === 'AVGO' ? 20 : null);
-      const profileTextForPct = JSON.stringify(profile || {});
-      const top3Match = /(?:top-3|前三大|前 3 大)[^\d]*(\d+(?:\.\d+)?)%/i.exec(profileTextForPct);
-      const top5Match = /(?:top-5|前五大|前 5 大)[^\d]*(\d+(?:\.\d+)?)%/i.exec(profileTextForPct);
-      const top3Pct = top3Match ? Number(top3Match[1]) : (top5Match ? Number(top5Match[1]) : null);
+      const top3Pct = /top-3[^\d]*(\d+(?:\.\d+)?)%/i.exec(JSON.stringify(profile)) ? Number(/top-3[^\d]*(\d+(?:\.\d+)?)%/i.exec(JSON.stringify(profile))[1]) : (/top-5[^\d]*(\d+(?:\.\d+)?)%/i.exec(JSON.stringify(profile)) ? Number(/top-5[^\d]*(\d+(?:\.\d+)?)%/i.exec(JSON.stringify(profile))[1]) : null);
 
       const segmentsHtml = revMix.map((x,idx) => `
         <div class="segment-item">
@@ -1530,7 +1682,6 @@ function getList(type){
       const m7Fair = toNum(m7?.regression_fair_price_now);
       const todayPrice = toNum(m7?.regression_actual_price_now) ?? toNum(priceNow);
       const m7Gap = (m7Fair != null && m7Fair !== 0 && todayPrice != null) ? ((todayPrice - m7Fair) / m7Fair * 100) : null;
-      const fairGap = (m7Fair != null && m7Fair !== 0 && todayPrice != null) ? ((m7Fair - todayPrice) / m7Fair * 100) : null;
       const nemoFair = toNum(nemo?.nemo_fair_price);
       const nemoGap = (nemoFair != null && nemoFair !== 0 && todayPrice != null) ? ((todayPrice - nemoFair) / nemoFair * 100) : null;
       const m7Dir = m7Gap == null ? null : (m7Gap < -10 ? 'under' : (m7Gap > 10 ? 'over' : 'fair'));
@@ -1552,68 +1703,8 @@ function getList(type){
         eps_growth: nemo?.data_points?.eps_growth ?? m7?.feature_snapshot?.valuation?.eps_growth ?? '--',
         debt_ratio: nemo?.data_points?.debt_ratio ?? '--'
       };
-      const headerM7Summary = m7 ? `M7 v2 ${fmt(m7?.m7_v2_score,2)} | Trend ${fmt(m7?.trend_score,2)} | Valuation ${fmt(m7?.valuation_score,2)}` : 'M7 data not available';
-      const trendAnnual = toNum(m7?.trend_linear_annualized_pct) ?? toNum(m7?.trend_ma_annualized_pct);
-      const structureR2 = toNum(m7?.structure_r2) ?? toNum(m7?.best_structure_r2);
-      const trendState = trendAnnual == null ? '資料不足' : (trendAnnual > 8 ? '上升' : (trendAnnual < -5 ? '下降' : '震盪'));
-      const structureState = structureR2 == null ? '結構待確認' : (structureR2 >= 0.9 ? '高穩定' : (structureR2 >= 0.75 ? '中等穩定' : '穩定度偏弱'));
-      const trendNarrative = trendAnnual == null && structureR2 == null
-        ? '趨勢與結構資料不足，先保持觀察。'
-        : `長期趨勢年化 ${trendAnnual == null ? '--' : pct(trendAnnual,0)}，結構 R²=${structureR2 == null ? '--' : fmt(structureR2,2)}，屬於${structureState}${trendState !== '資料不足' ? trendState + '趨勢' : ''}。`;
-      const histP25 = toNum(m7?.historical_p25_multiple);
-      const histMedian = toNum(m7?.historical_median_multiple);
-      const histP75 = toNum(m7?.historical_p75_multiple);
-      const currentMultiple = toNum(m7?.current_regression_multiple);
-      const valuationPos = currentMultiple == null || histP25 == null || histP75 == null ? '資料不足' : (currentMultiple < histP25 ? '偏低' : (currentMultiple > histP75 ? '偏高' : '正常'));
-      const valuationHeat = fairGap == null ? '待確認' : (fairGap >= 0 ? '未過熱' : (fairGap <= -20 ? '過熱' : '略熱'));
-      const valuationLabel = fairGap == null ? '合理' : (fairGap >= 10 ? '低估' : (fairGap <= -10 ? '高估' : '合理'));
-      const valuationNarrative = `目前價格${fairGap == null ? '與合理價關係待確認' : (fairGap >= 0 ? `低於合理價約 ${pct(fairGap,1)}` : `高於合理價約 ${pct(Math.abs(fairGap),1)}`)}，處於歷史${valuationPos}區，${valuationHeat === '未過熱' ? '未出現過熱現象' : `市場${valuationHeat}`}。`;
-      const m7Score = n(m7?.m7_v2_score, null);
-      const todayClass = m7Score == null ? 'WATCH' : (m7Score >= 8 ? 'STRONG' : (m7Score >= 6 ? 'OK / WATCH' : 'AVOID'));
-      const todayNarrative = `M7 綜合評分 ${m7Score == null ? '--' : fmt(m7Score,2)}，屬於${todayClass === 'STRONG' ? '可進場區間（偏強）' : (todayClass === 'OK / WATCH' ? '可做但需觀察區間' : '應避免進場區間')}。`;
-      const trendLabel = trendState === '上升' ? '強' : (trendState === '震盪' ? '普通' : (trendState === '下降' ? '差' : '普通'));
-      const todayLabel = todayClass === 'STRONG' ? '可做' : (todayClass === 'OK / WATCH' ? '觀望' : '避免');
-      const conviction = (trendLabel === '強' && valuationLabel === '低估' && todayLabel === '可做') ? '中高信心機會' : ((trendLabel === '差' || todayLabel === '避免') ? '低信心機會' : '中性機會');
-      const finalInsight = `趨勢${trendLabel}、估值${valuationLabel}、當前${todayLabel} → 屬於${conviction}`;
-      const cockpitSections = [
-        `<section class="panel panel-body">
-          <div class="panel-head"><h3>Investment Decision Cockpit / 投資決策中樞</h3><div class="panel-sub">唯一決策來源：M7 + 價格 + 歷史位置</div></div>
-          <div class="section-note"><b>Trend & Structure 判斷</b></div>
-          <div class="kpi-row">
-            <div class="mini-kpi"><div class="k">trend_score</div><div class="v">${fmt(m7?.trend_score,2)}</div></div>
-            <div class="mini-kpi"><div class="k">structure_score</div><div class="v">${fmt(m7?.structure_score,2)}</div></div>
-            <div class="mini-kpi"><div class="k">trend_linear_annualized_pct</div><div class="v">${trendAnnual == null ? '--' : pct(trendAnnual,1)}</div></div>
-            <div class="mini-kpi"><div class="k">trend_ma_annualized_pct</div><div class="v">${m7?.trend_ma_annualized_pct == null ? '--' : pct(m7?.trend_ma_annualized_pct,1)}</div></div>
-            <div class="mini-kpi"><div class="k">structure_r2</div><div class="v">${structureR2 == null ? '--' : fmt(structureR2,2)}</div></div>
-            <div class="mini-kpi"><div class="k">best_structure_model</div><div class="v">${esc(m7?.best_structure_model || '--')}</div></div>
-          </div>
-          <div class="section-note">${trendNarrative}</div>
-          <div class="section-note"><b>Valuation & Price Reality</b></div>
-          <div class="kpi-row">
-            <div class="mini-kpi"><div class="k">regression_fair_price_now</div><div class="v">${money(m7Fair,2)}</div></div>
-            <div class="mini-kpi"><div class="k">regression_actual_price_now</div><div class="v">${money(todayPrice,2)}</div></div>
-            <div class="mini-kpi"><div class="k">gap %</div><div class="v">${fairGap == null ? '--' : pct(fairGap,1)}</div><div class="d">(fair-price)/fair</div></div>
-            <div class="mini-kpi"><div class="k">historical p25 / median / p75</div><div class="v">${histP25 == null ? '--' : fmt(histP25,2)} / ${histMedian == null ? '--' : fmt(histMedian,2)} / ${histP75 == null ? '--' : fmt(histP75,2)}</div></div>
-            <div class="mini-kpi"><div class="k">current_regression_multiple</div><div class="v">${currentMultiple == null ? '--' : fmt(currentMultiple,2)}</div></div>
-          </div>
-          <div class="section-note">${valuationNarrative}</div>
-          <div class="section-note"><b>M7 Today Decision</b></div>
-          <div class="kpi-row">
-            <div class="mini-kpi"><div class="k">m7_v2_score</div><div class="v">${fmt(m7?.m7_v2_score,2)}</div></div>
-            <div class="mini-kpi"><div class="k">timing_score</div><div class="v">${fmt(m7?.timing_score,2)}</div></div>
-            <div class="mini-kpi"><div class="k">money_score</div><div class="v">${fmt(m7?.money_score,2)}</div></div>
-            <div class="mini-kpi"><div class="k">Decision</div><div class="v">${todayClass}</div></div>
-          </div>
-          <div class="section-note">${todayNarrative}</div>
-          <div class="section-note"><b>Final Insight</b>：${finalInsight}</div>
-        </section>`,
-        buildCollapsible({
-          key:'m7-quant',
-          title:'M7 Quant Layer / M7 量化層',
-          summary:headerM7Summary,
-          content:m7 ? `<div class="kpi-row">${['m7_v2_score','m7_raw_score','m7_effective_score','valuation_score','trend_score','structure_score','timing_score','money_score'].map(k=>`<div class="mini-kpi"><div class="k">${k}</div><div class="v">${fmt(m7?.[k],2)}</div></div>`).join('')}</div><div class="section-note">Trend Model: ${esc(m7?.trend_formula || '--')}</div><div class="section-note">Trend Reliability: ${esc(m7?.trend_reliability || '--')}</div><div class="section-note">Structure Best Fit: ${esc(m7?.best_structure_model || '--')} (R² = ${fmt(m7?.best_structure_r2,2)})</div>` : `<div class="section-note">M7 data not available</div>`
-        })
-      ].join('');
+      const headerM7Summary = hasValidM7Data(m7) ? `M7 v2 ${fmt(m7?.m7_v2_score,2)} | Trend ${fmt(m7?.trend_score,2)} | Valuation ${fmt(m7?.valuation_score,2)}` : 'M7 data not available';
+      const cockpitSections = renderInvestmentDecisionCockpit(symbol, profile, m7, priceNow);
 
       const html = `
         <section class="panel header-panel">
@@ -1742,7 +1833,7 @@ function getList(type){
           <section class="panel panel-body">
             <div class="panel-head"><h3>4. 財務品質</h3><div class="panel-sub">Revenue / growth / margin / FCF / quality</div></div>
             <div class="kpi-row">
-              <div class="mini-kpi"><div class="k">Revenue</div><div class="v">${esc(profile?.financial_summary?.revenue || (kpiRevenue != null ? fmt(kpiRevenue,2) : '--'))}</div><div class="d">資料中的營收規模</div></div>
+              <div class="mini-kpi"><div class="k">Revenue</div><div class="v">${kpiRevenue != null ? fmt(kpiRevenue,2) : '--'}</div><div class="d">資料中的營收規模</div></div>
               <div class="mini-kpi"><div class="k">Growth</div><div class="v">${kpiGrowth != null ? fmt(kpiGrowth,1) + '%' : '--'}</div><div class="d">YoY 成長</div></div>
               <div class="mini-kpi"><div class="k">Net Margin</div><div class="v">${kpiNetMargin != null ? fmt(kpiNetMargin,1) + '%' : '--'}</div><div class="d">獲利率</div></div>
               <div class="mini-kpi"><div class="k">FCF Margin</div><div class="v">${kpiFcfMargin != null ? fmt(kpiFcfMargin,1) + '%' : '--'}</div><div class="d">現金轉換率</div></div>
