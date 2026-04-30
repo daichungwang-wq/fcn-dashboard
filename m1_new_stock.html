@@ -235,6 +235,8 @@
     .headline-box .t{margin-top:8px;line-height:1.85;color:#523c15}
 
     .empty{padding:54px 24px;text-align:center;color:var(--muted);font-size:16px}
+    .collapsible-content.is-collapsed{display:none}
+    .collapse-btn{border:1px solid var(--line);background:#fff;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:800}
 
     @media (max-width:1360px){
       .page-grid,.two-col,.viz-grid,.risk-opp,.header-grid{grid-template-columns:1fr}
@@ -413,6 +415,7 @@
       profileMode: 'auto',
       candidate80: [],
       pool30List: [],
+      m7Scores: {},
       progressStats: null
     };
 
@@ -600,6 +603,33 @@
       return 'warn';
     }
     function yn(v){ return v === true ? 'YES' : v === false ? 'NO' : (v || '--'); }
+    function getM7(symbol){ return state.m7Scores[up(symbol)] || null; }
+    function gapJudgement(g){ if(!Number.isFinite(g)) return '--'; if(g < -10) return '低估'; if(g > 10) return '偏貴'; return '合理'; }
+    function toNum(v){
+      const x = Number(v);
+      return Number.isFinite(x) ? x : null;
+    }
+    function r2Confidence(r2){
+      const x = toNum(r2);
+      if(x == null) return 'Low / warning';
+      if(x >= 0.9) return 'High';
+      if(x >= 0.8) return 'Medium';
+      return 'Low / warning';
+    }
+    function buildCollapsible({key,title,summary,content,expanded=false}){
+      return `
+        <section class="panel panel-body">
+          <div class="panel-head" style="margin-bottom:0">
+            <div>
+              <h3 style="margin:0">${esc(title)}</h3>
+              <div class="panel-sub">${esc(summary || '--')}</div>
+            </div>
+            <button class="collapse-btn" data-collapse-toggle="${esc(key)}">${expanded ? 'Collapse' : 'Expand'}</button>
+          </div>
+          <div class="collapsible-content ${expanded ? '' : 'is-collapsed'}" data-collapse-target="${esc(key)}">${content}</div>
+        </section>
+      `;
+    }
 
     function parseFinancialNumber(text){
       if(text == null) return null;
@@ -1063,6 +1093,18 @@
       if(el.bridgeSymbol) el.bridgeSymbol.textContent = symbol || '--';
       if(el.bridgeSource) el.bridgeSource.textContent = source || '--';
     }
+    function bindCollapsibleHandlers(root){
+      if(!root) return;
+      root.querySelectorAll('[data-collapse-toggle]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const key = btn.getAttribute('data-collapse-toggle');
+          const target = root.querySelector(`[data-collapse-target="${key}"]`);
+          if(!target) return;
+          target.classList.toggle('is-collapsed');
+          btn.textContent = target.classList.contains('is-collapsed') ? 'Expand' : 'Collapse';
+        });
+      });
+    }
 
     function renderLightStock(symbol, rawProfile, source, u, m){
       const profile = normalizeLightProfile(rawProfile, symbol);
@@ -1188,6 +1230,7 @@
       el.emptyState.style.display = 'none';
       el.stockPanel.style.display = 'flex';
       el.stockPanel.innerHTML = html;
+      bindCollapsibleHandlers(el.stockPanel);
       el.stockSearch.value = symbol;
       syncSharedStockPayload(symbol);
       renderWatchlist();
@@ -1312,6 +1355,103 @@
         </tr>
       `).join('');
 
+      const m7 = getM7(symbol);
+      const nemo = profile?.nemotron || profile?.nemotron_output || profile?.ai_valuation || profile?.__raw_light?.nemotron || null;
+      const m7Fair = toNum(m7?.regression_fair_price_now);
+      const todayPrice = toNum(m7?.regression_actual_price_now) ?? toNum(priceNow);
+      const m7Gap = (m7Fair != null && m7Fair !== 0 && todayPrice != null) ? ((todayPrice - m7Fair) / m7Fair * 100) : null;
+      const nemoFair = toNum(nemo?.nemo_fair_price);
+      const nemoGap = (nemoFair != null && nemoFair !== 0 && todayPrice != null) ? ((todayPrice - nemoFair) / nemoFair * 100) : null;
+      const m7Dir = m7Gap == null ? null : (m7Gap < -10 ? 'under' : (m7Gap > 10 ? 'over' : 'fair'));
+      const nemoDir = nemoGap == null ? null : (nemoGap < -10 ? 'under' : (nemoGap > 10 ? 'over' : 'fair'));
+      const sameDirection = (m7Dir && nemoDir) ? (m7Dir === nemoDir) : null;
+      let finalDecision = 'Fair Value / Wait';
+      if(m7Gap != null && m7Gap <= -10 && n(m7?.m7_v2_score, 0) >= 8) finalDecision = 'Strong Candidate';
+      else if(m7Gap != null && m7Gap >= 20) finalDecision = 'Overvalued / Avoid FCN';
+      const pool30Decision = decisionPool === 'YES' ? 'YES' : (decisionPool === 'NO' ? 'NO' : 'WATCH');
+      const fcnDecision = finalDecision.includes('Avoid') ? '避免' : (finalDecision.includes('Strong') ? '可做' : '等待');
+      const timingDecision = m7Gap == null ? '合理' : (m7Gap < -10 ? '偏甜' : (m7Gap > 10 ? '偏熱' : '合理'));
+      const evidence = {
+        revenue_growth: nemo?.data_points?.revenue_growth ?? '--',
+        gross_margin: nemo?.data_points?.gross_margin ?? '--',
+        operating_margin: nemo?.data_points?.operating_margin ?? '--',
+        fcf: nemo?.data_points?.fcf ?? '--',
+        pe: nemo?.data_points?.pe ?? '--',
+        forward_pe: nemo?.data_points?.forward_pe ?? m7?.feature_snapshot?.valuation?.forward_pe ?? '--',
+        eps_growth: nemo?.data_points?.eps_growth ?? m7?.feature_snapshot?.valuation?.eps_growth ?? '--',
+        debt_ratio: nemo?.data_points?.debt_ratio ?? '--'
+      };
+      const headerM7Summary = m7 ? `M7 v2 ${fmt(m7?.m7_v2_score,2)} | Trend ${fmt(m7?.trend_score,2)} | Valuation ${fmt(m7?.valuation_score,2)}` : 'M7 data not available';
+      const cockpitSections = [
+        buildCollapsible({
+          key:'final-decision',
+          title:'Final Decision / 最終決策',
+          summary:`Pool30 ${pool30Decision} | FCN ${fcnDecision} | Timing ${timingDecision} | ${finalDecision}`,
+          expanded:true,
+          content:`
+            <div class="final-grid">
+              <div class="final-card"><div class="k">Pool30</div><div class="v">${esc(pool30Decision)}</div><div class="r">以既有 M1 判讀 + M7 gap 回扣。</div></div>
+              <div class="final-card"><div class="k">FCN</div><div class="v">${esc(fcnDecision)}</div><div class="r">由估值區間與風險承擔決定。</div></div>
+              <div class="final-card"><div class="k">Timing</div><div class="v">${esc(timingDecision)}</div><div class="r">依 fair gap 判定偏甜/合理/偏熱。</div></div>
+              <div class="final-card"><div class="k">Final</div><div class="v">${esc(finalDecision)}</div><div class="r">${sameDirection === false ? '⚠️ M7 與 Nemotron 分歧' : 'M7 與 Nemotron 同向，conviction 提高'}</div></div>
+            </div>
+            <div class="section-note">主要原因：1) M7 gap ${m7Gap == null ? '--' : pct(m7Gap,1)}。2) M7 v2 ${fmt(m7?.m7_v2_score,2)}。3) Nemo gap ${nemoGap == null ? '--' : pct(nemoGap,1)}。</div>
+          `
+        }),
+        buildCollapsible({
+          key:'valuation-panel',
+          title:'Valuation + Fair Price / 估值與合理價',
+          summary:m7 ? `Best Fit ${m7?.regression_valuation_model || '--'} | Gap ${m7Gap == null ? '--' : pct(m7Gap,1)} | ${gapJudgement(m7Gap)}` : 'M7 data not available',
+          expanded:true,
+          content: m7 ? `
+            <div class="section-note">Best Fit Model: ${esc(m7?.regression_valuation_model || '--')} (R² = ${fmt(m7?.regression_valuation_r2,2)})</div>
+            <div class="section-note">Confidence: ${esc(r2Confidence(m7?.regression_valuation_r2))}</div>
+            <div class="kpi-row">
+              <div class="mini-kpi"><div class="k">Fair Price</div><div class="v">${money(m7Fair,2)}</div><div class="d">regression_fair_price_now</div></div>
+              <div class="mini-kpi"><div class="k">Today Price</div><div class="v">${money(todayPrice,2)}</div><div class="d">regression_actual_price_now</div></div>
+              <div class="mini-kpi"><div class="k">Gap</div><div class="v">${m7Gap == null ? '--' : pct(m7Gap,1)}</div><div class="d">(price-fair)/fair</div></div>
+              <div class="mini-kpi"><div class="k">Judgement</div><div class="v">${gapJudgement(m7Gap)}</div><div class="d">低估/合理/偏貴</div></div>
+            </div>
+          ` : `<div class="section-note">M7 data not available</div>`
+        }),
+        buildCollapsible({
+          key:'nemo-valuation',
+          title:'Nemotron AI Valuation / AI 合理價',
+          summary:nemo ? `Nemo fair ${money(nemoFair,2)} | gap ${nemoGap == null ? '--' : pct(nemoGap,1)}` : 'Nemotron data not available',
+          content:nemo ? `<div class="section-note">nemo_fair_price: ${money(nemoFair,2)}</div><div class="section-note">nemo_fair_price_reason: ${esc(nemo?.nemo_fair_price_reason || '--')}</div><div class="section-note">nemo_confidence: ${esc(nemo?.nemo_confidence || '--')}</div><div class="section-note">AI judgement: ${gapJudgement(nemoGap)}</div>` : `<div class="section-note">Nemotron valuation 尚未建立</div>`
+        }),
+        buildCollapsible({
+          key:'m7-quant',
+          title:'M7 Quant Layer / M7 量化層',
+          summary:headerM7Summary,
+          content:m7 ? `<div class="kpi-row">${['m7_v2_score','m7_raw_score','m7_effective_score','valuation_score','trend_score','structure_score','timing_score','money_score'].map(k=>`<div class="mini-kpi"><div class="k">${k}</div><div class="v">${fmt(m7?.[k],2)}</div></div>`).join('')}</div><div class="section-note">Trend Model: ${esc(m7?.trend_formula || '--')}</div><div class="section-note">Trend Reliability: ${esc(m7?.trend_reliability || '--')}</div><div class="section-note">Structure Best Fit: ${esc(m7?.best_structure_model || '--')} (R² = ${fmt(m7?.best_structure_r2,2)})</div>` : `<div class="section-note">M7 data not available</div>`
+        }),
+        buildCollapsible({
+          key:'evidence',
+          title:'M1 Evidence Layer / 數據證據層',
+          summary:'Nemotron data_points 優先，M7 feature_snapshot 補值',
+          content:`<div class="kpi-row">${Object.entries(evidence).map(([k,v])=>`<div class="mini-kpi"><div class="k">${k}</div><div class="v">${esc(String(v ?? '--'))}</div></div>`).join('')}</div><div class="section-note">Evidence implication：對 Pool30 ${pool30Decision}；對 FCN ${fcnDecision}；對 Timing ${timingDecision}。</div>`
+        }),
+        buildCollapsible({
+          key:'charts',
+          title:'Chart Layer / 圖形面板',
+          summary:'Revenue/GM/FCF/EPS/Valuation Band + Competitor Comparison',
+          content:`<div class="viz-grid"><div class="viz-card"><h4>Revenue trend</h4><div class="small-note">資料欄位已預留，等待 data/m1 evidence history feed</div></div><div class="viz-card"><h4>Gross margin trend</h4><div class="small-note">資料欄位已預留，等待 data/m1 evidence history feed</div></div><div class="viz-card"><h4>FCF trend</h4><div class="small-note">資料欄位已預留，等待 data/m1 evidence history feed</div></div><div class="viz-card"><h4>EPS trend</h4><div class="small-note">資料欄位已預留，等待 data/m1 evidence history feed</div></div><div class="viz-card"><h4>Valuation band</h4><div class="small-note">Current: ${money(todayPrice,2)} | M7 fair: ${money(m7Fair,2)} | Nemo fair: ${money(nemoFair,2)}</div></div><div class="viz-card"><h4>Competitor comparison table</h4><div class="small-note">資料欄位已預留，等待 data/m1 evidence history feed</div></div></div>`
+        }),
+        buildCollapsible({
+          key:'deep-comp',
+          title:'Deep Competition Analysis / 深度競爭分析',
+          summary:'每個 peer 含 valuation / profitability / growth / business difference / threat / implication',
+          content:`<div class="comp-card"><div class="t"><b>Peer 1: ${esc(peerRows[1]?.symbol || 'Peer A')}</b></div><div class="m">Valuation: PE ${Number.isFinite(peerRows[1]?.pe)?fmt(peerRows[1]?.pe,1):'--'} / FWD PE ${esc(String(evidence.forward_pe))} / PEG ${esc(String(m7?.feature_snapshot?.valuation?.peg ?? '--'))}</div><div class="m">Profitability: GM ${esc(String(evidence.gross_margin))} / OPM ${esc(String(evidence.operating_margin))}</div><div class="m">Growth: Revenue ${esc(String(evidence.revenue_growth))} / EPS ${esc(String(evidence.eps_growth))}</div><div class="m">Business difference: ${esc(peerRows[1]?.model || '--')}</div><div class="m">Threat: Medium</div><div class="m">Implication: 對 pool30 形成估值比較壓力，FCN 需等 gap 回到甜蜜區。</div></div><div class="comp-card"><div class="t"><b>Peer 2: ${esc(peerRows[2]?.symbol || 'Peer B')}</b></div><div class="m">Valuation: PE ${Number.isFinite(peerRows[2]?.pe)?fmt(peerRows[2]?.pe,1):'--'} / FWD PE -- / PEG --</div><div class="m">Profitability: GM -- / OPM --</div><div class="m">Growth: Revenue ${Number.isFinite(peerRows[2]?.growth)?fmt(peerRows[2]?.growth,1)+'%':'--'} / EPS --</div><div class="m">Business difference: ${esc(peerRows[2]?.model || '--')}</div><div class="m">Threat: Medium</div><div class="m">Implication: 若同賽道估值更低，會壓縮本標的 FCN 進場優先序。</div></div><div class="comp-card"><div class="t"><b>Peer 3: ${esc(peerRows[3]?.symbol || 'Peer C')}</b></div><div class="m">Valuation: PE ${Number.isFinite(peerRows[3]?.pe)?fmt(peerRows[3]?.pe,1):'--'} / FWD PE -- / PEG --</div><div class="m">Profitability: GM -- / OPM --</div><div class="m">Growth: Revenue ${Number.isFinite(peerRows[3]?.growth)?fmt(peerRows[3]?.growth,1)+'%':'--'} / EPS --</div><div class="m">Business difference: ${esc(peerRows[3]?.model || '--')}</div><div class="m">Threat: Low</div><div class="m">Implication: 對 pool30 影響較低，但 timing 評估可作市場熱度對照。</div></div>`
+        }),
+        buildCollapsible({
+          key:'m1-research',
+          title:'M1 Research Card / 文字研究卡',
+          summary:'保留既有文字研究內容，作為決策論述底稿',
+          content:`<div class="section-note">company_positioning: ${esc((profile?.__raw_light?.company_positioning || []).join(' | ') || profile?.company_overview || '--')}</div><div class="section-note">customer_analysis: ${esc(profile?.__raw_light?.customer_analysis || profile?.customer_analysis?.summary || '--')}</div><div class="section-note">competition: ${esc(profile?.__raw_light?.competition || profile?.competition?.summary || '--')}</div><div class="section-note">financial_quality: ${esc(profile?.__raw_light?.financial_quality || profile?.financial_summary?.growth || '--')}</div><div class="section-note">risk_opportunity: ${esc(profile?.__raw_light?.risk_opportunity || profile?.risk_opportunity?.risk?.[0] || '--')}</div><div class="section-note">valuation: ${esc(profile?.__raw_light?.market_view || profile?.valuation_and_timing?.valuation_view || '--')}</div><div class="section-note">fcn_view: ${esc(profile?.__raw_light?.fcn_view || profile?.final_view || '--')}</div><div class="section-note">final_decision: ${esc(profile?.__raw_light?.final_decision || profile?.final_view || '--')}</div>`
+        })
+      ].join('');
+
       const html = `
         <section class="panel header-panel">
           <div class="header-grid">
@@ -1329,6 +1469,8 @@
                     <span class="chip">Source：${esc(source)}</span>
                     <span class="chip">Industry：${esc(profile?.basic_info?.industry || u?.sector || '--')}</span>
                     <span class="chip">Sweet Zone：${esc(inferSweetZone(profile))}</span>
+                    <span class="chip">M1 Score：${fmt(m7?.m1_score,2)}</span>
+                    <span class="chip">${esc(headerM7Summary)}</span>
                   </div>
                 </div>
               </div>
@@ -1377,6 +1519,8 @@
             </div>
           </div>
         </section>
+
+        ${cockpitSections}
 
         <section class="two-col">
           <section class="panel panel-body">
@@ -1529,19 +1673,21 @@
       el.emptyState.style.display = 'none';
       el.stockPanel.style.display = 'flex';
       el.stockPanel.innerHTML = html;
+      bindCollapsibleHandlers(el.stockPanel);
       el.stockSearch.value = symbol;
       syncSharedStockPayload(symbol);
       renderWatchlist();
     }
 
     async function init(){
-      const [universe, market, deepProfiles, lightProfiles, candidate80, pool30Json] = await Promise.all([
+      const [universe, market, deepProfiles, lightProfiles, candidate80, pool30Json, m7Scores] = await Promise.all([
         fetchJson('data/m1/universe_150.json'),
         fetchJson('data/m1/m1_market_runtime.json'),
         fetchJson('data/m1/m1_stock_profile.json'),
         fetchJson('data/m1/m1_stock_profile_all.json'),
         fetchJson('data/m1/m1_candidate_80.json'),
-        fetchJson('data/pool30.json')
+        fetchJson('data/pool30.json'),
+        fetchJson('data/m7_sandbox/m7_v2_scores.json')
       ]);
 
       state.universe = asArray(universe);
@@ -1551,6 +1697,7 @@
       state.profiles = { ...state.lightProfiles, ...state.deepProfiles };
       state.candidate80 = candidate80 || [];
       state.pool30List = normalizeSymbolListFromAny(pool30Json);
+      state.m7Scores = (m7Scores && typeof m7Scores==='object') ? m7Scores : {};
       buildUniverseMap();
       renderResearchProgress();
 
@@ -1611,10 +1758,3 @@
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
