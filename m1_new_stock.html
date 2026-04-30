@@ -375,10 +375,12 @@
         <section class="panel panel-body">
           <h3>資料來源</h3>
           <div class="small-note">
-            1. <b>data/m1/m1_stock_profile.json</b><br/>
-            2. <b>data/m1/universe_150.json</b><br/>
-            3. <b>data/m1/m1_market_runtime.json</b><br/>
-            4. 後續可再接 M1 / M7 分數與圖表引擎
+            1. <b>data/m1/m1_stock_profile_nemo3.json</b>（優先）<br/>
+            2. <b>data/m1/m1_stock_profile.json</b><br/>
+            3. <b>data/m1/m1_stock_profile_all.json</b><br/>
+            4. <b>data/m1/universe_150.json</b><br/>
+            5. <b>data/m1/m1_market_runtime.json</b><br/>
+            6. <b>data/m7_sandbox/m7_v2_scores.json</b>
           </div>
         </section>
 
@@ -407,6 +409,7 @@
       profiles: {},
       deepProfiles: {},
       lightProfiles: {},
+      nemoProfiles: {},
       currentSource: 'fallback',
       universeMap: new Map(),
       currentSymbol: null,
@@ -490,21 +493,24 @@
     }
 
     function getUniverse(symbol){ return state.universeMap.get(up(symbol)) || {}; }
+    function getNemoProfile(symbol){ return state.nemoProfiles[up(symbol)] || null; }
     function getDeepProfile(symbol){ return state.deepProfiles[up(symbol)] || null; }
     function getLightProfile(symbol){ return state.lightProfiles[up(symbol)] || null; }
     function getProfile(symbol){
       const sym = up(symbol);
       if(state.profileMode === 'deep') return getDeepProfile(sym) || null;
       if(state.profileMode === 'light') return getLightProfile(sym) || null;
-      return getDeepProfile(sym) || getLightProfile(sym) || null;
+      // Auto priority: Nemo3 > Deep > Light.
+      return getNemoProfile(sym) || getDeepProfile(sym) || getLightProfile(sym) || null;
     }
     function getProfileSource(symbol){
       const sym = up(symbol);
+      const hasNemo = !!getNemoProfile(sym);
       const hasDeep = !!getDeepProfile(sym);
       const hasLight = !!getLightProfile(sym);
       if(state.profileMode === 'deep') return hasDeep ? 'deep' : 'missing_deep';
       if(state.profileMode === 'light') return hasLight ? 'light' : 'missing_light';
-      return hasDeep ? 'deep' : (hasLight ? 'light' : 'fallback');
+      return hasNemo ? 'nemo3' : (hasDeep ? 'deep' : (hasLight ? 'light' : 'fallback'));
     }
     function getMarket(symbol){ return state.market?.[up(symbol)] || {}; }
 
@@ -572,19 +578,62 @@
       };
     }
 
-    function normalizeProfiles(raw){
+    function unwrapNemoPayload(value, fallbackSymbol){
+      if(!value || typeof value !== 'object') return value;
+      let payload = value;
+      if(payload.status && payload.data && typeof payload.data === 'object') payload = payload.data;
+      const sym = up(fallbackSymbol || payload.symbol || payload.ticker || '');
+      if(sym && payload?.[sym] && typeof payload[sym] === 'object') payload = payload[sym];
+      if(!payload.symbol && sym) payload.symbol = sym;
+      if(value.status && !payload.nemotron_status) payload.nemotron_status = value.status;
+      if(value.model && !payload.nemotron_model) payload.nemotron_model = value.model;
+      if(value.error && !payload.nemotron_error) payload.nemotron_error = value.error;
+      return payload;
+    }
+
+    function normalizeProfiles(raw, options={}){
       const out = {};
       if(!raw || typeof raw !== 'object') return out;
       Object.entries(raw).forEach(([k,v]) => {
-        if(v && typeof v === 'object' && !Array.isArray(v)) {
-          const keySym = up(k);
-          const valueSym = up(v.symbol || '');
-          if(keySym) out[keySym] = v;
-          if(valueSym) out[valueSym] = v;
+        if(!v || typeof v !== 'object' || Array.isArray(v)) return;
+        const payload = options.nemo ? unwrapNemoPayload(v, k) : v;
+        if(!payload || typeof payload !== 'object' || Array.isArray(payload)) return;
+        const keySym = up(k);
+        const valueSym = up(payload.symbol || payload.ticker || '');
+        const finalSym = valueSym || keySym;
+        if(!finalSym) return;
+        if(options.nemo){
+          payload.type = payload.type || 'research_nemo3';
+          payload.__nemo3 = true;
+          payload.nemotron = payload.nemotron || payload.ai_valuation || {
+            nemo_fair_price: payload.nemo_fair_price || payload?.valuation_metrics?.nemo_fair_price || null,
+            nemo_fair_price_reason: payload.nemo_fair_price_reason || payload?.valuation?.valuation_comment || payload?.valuation_and_timing?.valuation_view || '',
+            nemo_confidence: payload.nemo_confidence || payload?.quality_check?.total_score || ''
+          };
         }
+        out[finalSym] = payload;
       });
       return out;
     }
+
+    function normalizeM7Scores(raw){
+      const out = {};
+      const rows = Array.isArray(raw?.rows) ? raw.rows : asArray(raw);
+      rows.forEach(row => {
+        if(row && typeof row === 'object' && row.symbol) out[up(row.symbol)] = row;
+      });
+      // Also support already-keyed objects.
+      if(raw && typeof raw === 'object' && !Array.isArray(raw)){
+        Object.entries(raw).forEach(([k,v]) => {
+          if(v && typeof v === 'object' && !Array.isArray(v)){
+            const sym = up(v.symbol || k);
+            if(sym && v.symbol) out[sym] = v;
+          }
+        });
+      }
+      return out;
+    }
+
 
     function getList(type){
       if(type === 'profile') return Object.keys(state.profiles || {}).map(up);
@@ -603,7 +652,7 @@
       return 'warn';
     }
     function yn(v){ return v === true ? 'YES' : v === false ? 'NO' : (v || '--'); }
-    function getM7(symbol){ return state.m7Scores[up(symbol)] || null; }
+    function getM7(symbol){ return state.m7Scores?.[up(symbol)] || null; }
     function gapJudgement(g){ if(!Number.isFinite(g)) return '--'; if(g < -10) return '低估'; if(g > 10) return '偏貴'; return '合理'; }
     function toNum(v){
       const x = Number(v);
@@ -804,6 +853,7 @@
       return String(
         u?.category_main ||
         u?.category ||
+        getNemoProfile(sym)?.pool30_fit?.category ||
         deep?.pool30_fit?.category ||
         light?.pool30_fit?.category ||
         ''
@@ -847,7 +897,7 @@
     }
 
     function buildResearchProgressStats(){
-      const deepSet = new Set(Object.keys(state.deepProfiles || {}).map(up));
+      const deepSet = new Set([...Object.keys(state.nemoProfiles || {}), ...Object.keys(state.deepProfiles || {})].map(up));
       const lightSet = new Set(Object.keys(state.lightProfiles || {}).map(up));
       const allSymbols = asArray(state.universe).map(x => up(x.symbol)).filter(Boolean);
       const candidateSymbols = normalizeSymbolListFromAny(state.candidate80);
@@ -1062,7 +1112,8 @@
         customer: profile?.customer_analysis || {},
         competition: profile?.competition || {},
         risk_opportunity: profile?.risk_opportunity || {},
-        final_view: profile?.final_view || ''
+        final_view: profile?.final_view || '',
+        m7: getM7(sym) || null
       };
     }
 
@@ -1680,9 +1731,10 @@
     }
 
     async function init(){
-      const [universe, market, deepProfiles, lightProfiles, candidate80, pool30Json, m7Scores] = await Promise.all([
+      const [universe, market, nemoProfiles, deepProfiles, lightProfiles, candidate80, pool30Json, m7Scores] = await Promise.all([
         fetchJson('data/m1/universe_150.json'),
         fetchJson('data/m1/m1_market_runtime.json'),
+        fetchJson('data/m1/m1_stock_profile_nemo3.json'),
         fetchJson('data/m1/m1_stock_profile.json'),
         fetchJson('data/m1/m1_stock_profile_all.json'),
         fetchJson('data/m1/m1_candidate_80.json'),
@@ -1692,12 +1744,14 @@
 
       state.universe = asArray(universe);
       state.market = market || {};
+      state.nemoProfiles = normalizeProfiles(nemoProfiles || {}, {nemo:true});
       state.deepProfiles = normalizeProfiles(deepProfiles || {});
       state.lightProfiles = normalizeProfiles(lightProfiles || {});
-      state.profiles = { ...state.lightProfiles, ...state.deepProfiles };
+      // Priority for auto/search/list: light < deep < nemo3.
+      state.profiles = { ...state.lightProfiles, ...state.deepProfiles, ...state.nemoProfiles };
       state.candidate80 = candidate80 || [];
       state.pool30List = normalizeSymbolListFromAny(pool30Json);
-      state.m7Scores = (m7Scores && typeof m7Scores==='object') ? m7Scores : {};
+      state.m7Scores = normalizeM7Scores(m7Scores || {});
       buildUniverseMap();
       renderResearchProgress();
 
@@ -1708,7 +1762,7 @@
       state.currentSymbol = state.currentList.includes(urlSymbol) ? urlSymbol : (state.currentList.includes(last) ? last : (state.currentList[0] || urlSymbol || 'AVGO'));
 
       if(!state.currentList.length){
-        el.emptyState.innerHTML = '沒有可用資料，請確認 data/m1/m1_stock_profile.json / data/m1/m1_stock_profile_all.json / universe_150.json / m1_market_runtime.json 路徑。';
+        el.emptyState.innerHTML = '沒有可用資料，請確認 data/m1/m1_stock_profile_nemo3.json / data/m1/m1_stock_profile.json / data/m1/m1_stock_profile_all.json / universe_150.json / m1_market_runtime.json 路徑。';
         return;
       }
 
