@@ -1552,58 +1552,68 @@ function getList(type){
         eps_growth: nemo?.data_points?.eps_growth ?? m7?.feature_snapshot?.valuation?.eps_growth ?? '--',
         debt_ratio: nemo?.data_points?.debt_ratio ?? '--'
       };
-      const getDecisionMode = (_symbol) => {
-        if(m7 && Object.keys(m7 || {}).length) return 'M7';
-        if(profile?.valuation_and_timing || profile?.pool30_fit || profile?.final_view) return 'M1_PROXY';
-        return 'NO_DATA';
-      };
-      const buildM7Decision = (m7Data) => {
-        const trendAnnual = toNum(m7Data?.trend_linear_annualized_pct);
-        const trendMaAnnual = toNum(m7Data?.trend_ma_annualized_pct);
-        const trendAcc = toNum(m7Data?.trend_acceleration);
-        const structureR2 = toNum(m7Data?.best_structure_r2);
-        const gapPct = (m7Fair != null && todayPrice != null && m7Fair !== 0) ? ((m7Fair - todayPrice) / m7Fair * 100) : null;
-        const histP25 = toNum(m7Data?.historical_p25_multiple);
-        const histMedian = toNum(m7Data?.historical_median_multiple);
-        const histP75 = toNum(m7Data?.historical_p75_multiple);
-        const curMul = toNum(m7Data?.current_regression_multiple);
-        const multiplePos = curMul == null || histP25 == null || histP75 == null ? '正常' : (curMul < histP25 ? '偏低' : (curMul > histP75 ? '偏高' : '正常'));
-        const gapLabel = gapPct == null ? '合理' : (gapPct > 10 ? '低估' : (gapPct < -10 ? '偏貴' : '合理'));
-        const m7Score = toNum(m7Data?.m7_v2_score);
-        const today = m7Score == null ? 'WATCH' : (m7Score >= 8 ? '可做 / STRONG' : (m7Score >= 6 ? '觀察 / WATCH' : '避免 / AVOID'));
-        const trendLabel = n(m7Data?.trend_score,0) >= 7.5 ? '強' : (n(m7Data?.trend_score,0) >= 5.5 ? '中性' : '弱');
-        return `<section class="panel panel-body"><div class="panel-head"><h3>Investment Decision Cockpit / 投資決策中樞</h3><div class="panel-sub">Source：M7 Runtime | Decision Type：M7 Quant</div></div>
-          <div class="section-note"><b>Trend & Structure</b></div>
+      const headerM7Summary = m7 ? `M7 v2 ${fmt(m7?.m7_v2_score,2)} | Trend ${fmt(m7?.trend_score,2)} | Valuation ${fmt(m7?.valuation_score,2)}` : 'M7 data not available';
+      const trendAnnual = toNum(m7?.trend_linear_annualized_pct) ?? toNum(m7?.trend_ma_annualized_pct);
+      const structureR2 = toNum(m7?.structure_r2) ?? toNum(m7?.best_structure_r2);
+      const trendState = trendAnnual == null ? '資料不足' : (trendAnnual > 8 ? '上升' : (trendAnnual < -5 ? '下降' : '震盪'));
+      const structureState = structureR2 == null ? '結構待確認' : (structureR2 >= 0.9 ? '高穩定' : (structureR2 >= 0.75 ? '中等穩定' : '穩定度偏弱'));
+      const trendNarrative = trendAnnual == null && structureR2 == null
+        ? '趨勢與結構資料不足，先保持觀察。'
+        : `長期趨勢年化 ${trendAnnual == null ? '--' : pct(trendAnnual,0)}，結構 R²=${structureR2 == null ? '--' : fmt(structureR2,2)}，屬於${structureState}${trendState !== '資料不足' ? trendState + '趨勢' : ''}。`;
+      const histP25 = toNum(m7?.historical_p25_multiple);
+      const histMedian = toNum(m7?.historical_median_multiple);
+      const histP75 = toNum(m7?.historical_p75_multiple);
+      const currentMultiple = toNum(m7?.current_regression_multiple);
+      const valuationPos = currentMultiple == null || histP25 == null || histP75 == null ? '資料不足' : (currentMultiple < histP25 ? '偏低' : (currentMultiple > histP75 ? '偏高' : '正常'));
+      const valuationHeat = fairGap == null ? '待確認' : (fairGap >= 0 ? '未過熱' : (fairGap <= -20 ? '過熱' : '略熱'));
+      const valuationLabel = fairGap == null ? '合理' : (fairGap >= 10 ? '低估' : (fairGap <= -10 ? '高估' : '合理'));
+      const valuationNarrative = `目前價格${fairGap == null ? '與合理價關係待確認' : (fairGap >= 0 ? `低於合理價約 ${pct(fairGap,1)}` : `高於合理價約 ${pct(Math.abs(fairGap),1)}`)}，處於歷史${valuationPos}區，${valuationHeat === '未過熱' ? '未出現過熱現象' : `市場${valuationHeat}`}。`;
+      const m7Score = n(m7?.m7_v2_score, null);
+      const todayClass = m7Score == null ? 'WATCH' : (m7Score >= 8 ? 'STRONG' : (m7Score >= 6 ? 'OK / WATCH' : 'AVOID'));
+      const todayNarrative = `M7 綜合評分 ${m7Score == null ? '--' : fmt(m7Score,2)}，屬於${todayClass === 'STRONG' ? '可進場區間（偏強）' : (todayClass === 'OK / WATCH' ? '可做但需觀察區間' : '應避免進場區間')}。`;
+      const trendLabel = trendState === '上升' ? '強' : (trendState === '震盪' ? '普通' : (trendState === '下降' ? '差' : '普通'));
+      const todayLabel = todayClass === 'STRONG' ? '可做' : (todayClass === 'OK / WATCH' ? '觀望' : '避免');
+      const conviction = (trendLabel === '強' && valuationLabel === '低估' && todayLabel === '可做') ? '中高信心機會' : ((trendLabel === '差' || todayLabel === '避免') ? '低信心機會' : '中性機會');
+      const finalInsight = `趨勢${trendLabel}、估值${valuationLabel}、當前${todayLabel} → 屬於${conviction}`;
+      const cockpitSections = [
+        `<section class="panel panel-body">
+          <div class="panel-head"><h3>Investment Decision Cockpit / 投資決策中樞</h3><div class="panel-sub">唯一決策來源：M7 + 價格 + 歷史位置</div></div>
+          <div class="section-note"><b>Trend & Structure 判斷</b></div>
           <div class="kpi-row">
-            ${['trend_score','structure_score','trend_reliability','trend_linear_annualized_pct','trend_ma_annualized_pct','trend_acceleration','best_structure_model','best_structure_r2'].map(k=>`<div class="mini-kpi"><div class="k">${k}</div><div class="v">${k.includes('pct') ? (m7Data?.[k] == null ? '--' : pct(m7Data?.[k],1)) : (k==='best_structure_model' ? esc(m7Data?.[k] || '--') : fmt(m7Data?.[k],2))}</div></div>`).join('')}
+            <div class="mini-kpi"><div class="k">trend_score</div><div class="v">${fmt(m7?.trend_score,2)}</div></div>
+            <div class="mini-kpi"><div class="k">structure_score</div><div class="v">${fmt(m7?.structure_score,2)}</div></div>
+            <div class="mini-kpi"><div class="k">trend_linear_annualized_pct</div><div class="v">${trendAnnual == null ? '--' : pct(trendAnnual,1)}</div></div>
+            <div class="mini-kpi"><div class="k">trend_ma_annualized_pct</div><div class="v">${m7?.trend_ma_annualized_pct == null ? '--' : pct(m7?.trend_ma_annualized_pct,1)}</div></div>
+            <div class="mini-kpi"><div class="k">structure_r2</div><div class="v">${structureR2 == null ? '--' : fmt(structureR2,2)}</div></div>
+            <div class="mini-kpi"><div class="k">best_structure_model</div><div class="v">${esc(m7?.best_structure_model || '--')}</div></div>
           </div>
-          <div class="section-note">長期趨勢年化 ${trendAnnual == null ? '--' : pct(trendAnnual,1)}，MA 趨勢 ${trendMaAnnual == null ? '--' : pct(trendMaAnnual,1)}，結構 R²=${structureR2 == null ? '--' : fmt(structureR2,2)}，屬於${esc(m7Data?.trend_reliability || '一般可靠度')}上升趨勢。${trendAcc != null && trendAcc < 0 ? ' 但近期動能正在降溫，不建議追價。' : ''}</div>
+          <div class="section-note">${trendNarrative}</div>
           <div class="section-note"><b>Valuation & Price Reality</b></div>
           <div class="kpi-row">
-            <div class="mini-kpi"><div class="k">regression_fair_price_now</div><div class="v">${money(m7Fair,2)}</div></div><div class="mini-kpi"><div class="k">regression_actual_price_now</div><div class="v">${money(todayPrice,2)}</div></div><div class="mini-kpi"><div class="k">gap %</div><div class="v">${gapPct == null ? '--' : pct(gapPct,1)}</div></div><div class="mini-kpi"><div class="k">current_regression_multiple</div><div class="v">${curMul == null ? '--' : fmt(curMul,2)}</div></div><div class="mini-kpi"><div class="k">historical p25/median/p75</div><div class="v">${histP25 == null ? '--' : fmt(histP25,2)} / ${histMedian == null ? '--' : fmt(histMedian,2)} / ${histP75 == null ? '--' : fmt(histP75,2)}</div></div><div class="mini-kpi"><div class="k">valuation_heat</div><div class="v">${esc(m7Data?.valuation_heat || '--')}</div></div><div class="mini-kpi"><div class="k">regression_valuation_model</div><div class="v">${esc(m7Data?.regression_valuation_model || '--')}</div></div><div class="mini-kpi"><div class="k">regression_valuation_r2</div><div class="v">${fmt(m7Data?.regression_valuation_r2,2)}</div></div><div class="mini-kpi"><div class="k">regression_valuation_quality</div><div class="v">${esc(m7Data?.regression_valuation_quality || '--')}</div></div>
+            <div class="mini-kpi"><div class="k">regression_fair_price_now</div><div class="v">${money(m7Fair,2)}</div></div>
+            <div class="mini-kpi"><div class="k">regression_actual_price_now</div><div class="v">${money(todayPrice,2)}</div></div>
+            <div class="mini-kpi"><div class="k">gap %</div><div class="v">${fairGap == null ? '--' : pct(fairGap,1)}</div><div class="d">(fair-price)/fair</div></div>
+            <div class="mini-kpi"><div class="k">historical p25 / median / p75</div><div class="v">${histP25 == null ? '--' : fmt(histP25,2)} / ${histMedian == null ? '--' : fmt(histMedian,2)} / ${histP75 == null ? '--' : fmt(histP75,2)}</div></div>
+            <div class="mini-kpi"><div class="k">current_regression_multiple</div><div class="v">${currentMultiple == null ? '--' : fmt(currentMultiple,2)}</div></div>
           </div>
-          <div class="section-note">目前價格相對 M7 fair price 約${gapLabel}${gapPct == null ? '--' : pct(Math.abs(gapPct),1)}，相對自身歷史 multiple 位階為${multiplePos}。</div>
+          <div class="section-note">${valuationNarrative}</div>
           <div class="section-note"><b>M7 Today Decision</b></div>
-          <div class="kpi-row">${['m7_v2_score','valuation_score','trend_score','structure_score','timing_score','money_score'].map(k=>`<div class="mini-kpi"><div class="k">${k}</div><div class="v">${fmt(m7Data?.[k],2)}</div></div>`).join('')}<div class="mini-kpi"><div class="k">Today</div><div class="v">${today}</div></div></div>
-          <div class="section-note"><b>Final Insight</b>：趨勢${trendLabel}、估值${gapLabel}、M7 今日分數${m7Score == null ? '不足' : '偏高'} → 屬於${today.includes('可做') ? '可觀察或可做區間' : (today.includes('觀察') ? '觀察區間' : '避免區間')}。</div>
-        </section>`;
-      };
-      const buildM1ProxyDecision = (p) => `<section class="panel panel-body"><div class="panel-head"><h3>Investment Decision Cockpit / 投資決策中樞</h3><div class="panel-sub">Source：M1 Deep Research Card | Decision Type：Proxy / Research-based</div></div>
-        <div class="section-note"><b>Research-Based Trend & Structure</b></div>
-        <div class="kpi-row"><div class="mini-kpi"><div class="k">mid_trend</div><div class="v">${esc(p?.valuation_and_timing?.technical_view?.mid_trend || '--')}</div></div><div class="mini-kpi"><div class="k">technical structure</div><div class="v">${esc(p?.valuation_and_timing?.technical_view?.structure || '--')}</div></div><div class="mini-kpi"><div class="k">growth</div><div class="v">${esc(p?.financial_summary?.growth || '--')}</div></div></div>
-        <div class="section-note"><b>Research-Based Valuation</b></div>
-        <div class="kpi-row"><div class="mini-kpi"><div class="k">PE</div><div class="v">${esc(p?.financial_summary?.pe || '--')}</div></div><div class="mini-kpi"><div class="k">valuation_view</div><div class="v">${esc(p?.valuation_and_timing?.valuation_view || '--')}</div></div><div class="mini-kpi"><div class="k">sweet_zone</div><div class="v">${esc(p?.valuation_and_timing?.sweet_zone || '--')}</div></div><div class="mini-kpi"><div class="k">buy_strategy</div><div class="v">${esc(p?.valuation_and_timing?.buy_strategy || '--')}</div></div></div>
-        <div class="section-note"><b>Research-Based Today Decision</b></div>
-        <div class="kpi-row"><div class="mini-kpi"><div class="k">stock_pool</div><div class="v">${esc(p?.pool30_fit?.stock_pool || '--')}</div></div><div class="mini-kpi"><div class="k">pool30</div><div class="v">${esc(p?.pool30_fit?.pool30 || '--')}</div></div><div class="mini-kpi"><div class="k">category</div><div class="v">${esc(p?.pool30_fit?.category || '--')}</div></div><div class="mini-kpi"><div class="k">timing conclusion</div><div class="v">${esc(p?.valuation_and_timing?.technical_view?.conclusion || '--')}</div></div><div class="mini-kpi"><div class="k">final_view</div><div class="v">${esc(p?.final_view || '--')}</div></div></div>
-      </section>`;
-      const buildNoDataDecision = (_symbol) => `<section class="panel panel-body"><div class="panel-head"><h3>Investment Decision Cockpit / 投資決策中樞</h3><div class="panel-sub">Source：Data Not Ready</div></div><div class="kpi-row"><div class="mini-kpi"><div class="k">M7</div><div class="v">Not Available</div></div><div class="mini-kpi"><div class="k">M1 Deep Research</div><div class="v">Not Available</div></div><div class="mini-kpi"><div class="k">Pool30</div><div class="v">NO DECISION</div></div><div class="mini-kpi"><div class="k">FCN</div><div class="v">NO DECISION</div></div><div class="mini-kpi"><div class="k">Timing</div><div class="v">WAIT</div></div></div><div class="section-note">Reason：缺少 M7 與 M1 深度研究資料，系統不做判斷，避免誤判。</div><div class="section-note">Next Step：1) 建立 M1 L5-A Pro+ 深度研究卡 2) 或補入 M7 runtime</div></section>`;
-      const renderInvestmentDecisionCockpit = (symbolNow, p, m7Data) => {
-        const mode = getDecisionMode(symbolNow);
-        if(mode === 'M7') return buildM7Decision(m7Data);
-        if(mode === 'M1_PROXY') return buildM1ProxyDecision(p);
-        return buildNoDataDecision(symbolNow);
-      };
-      const cockpitSections = renderInvestmentDecisionCockpit(symbol, profile, m7);
+          <div class="kpi-row">
+            <div class="mini-kpi"><div class="k">m7_v2_score</div><div class="v">${fmt(m7?.m7_v2_score,2)}</div></div>
+            <div class="mini-kpi"><div class="k">timing_score</div><div class="v">${fmt(m7?.timing_score,2)}</div></div>
+            <div class="mini-kpi"><div class="k">money_score</div><div class="v">${fmt(m7?.money_score,2)}</div></div>
+            <div class="mini-kpi"><div class="k">Decision</div><div class="v">${todayClass}</div></div>
+          </div>
+          <div class="section-note">${todayNarrative}</div>
+          <div class="section-note"><b>Final Insight</b>：${finalInsight}</div>
+        </section>`,
+        buildCollapsible({
+          key:'m7-quant',
+          title:'M7 Quant Layer / M7 量化層',
+          summary:headerM7Summary,
+          content:m7 ? `<div class="kpi-row">${['m7_v2_score','m7_raw_score','m7_effective_score','valuation_score','trend_score','structure_score','timing_score','money_score'].map(k=>`<div class="mini-kpi"><div class="k">${k}</div><div class="v">${fmt(m7?.[k],2)}</div></div>`).join('')}</div><div class="section-note">Trend Model: ${esc(m7?.trend_formula || '--')}</div><div class="section-note">Trend Reliability: ${esc(m7?.trend_reliability || '--')}</div><div class="section-note">Structure Best Fit: ${esc(m7?.best_structure_model || '--')} (R² = ${fmt(m7?.best_structure_r2,2)})</div>` : `<div class="section-note">M7 data not available</div>`
+        })
+      ].join('');
 
       const html = `
         <section class="panel header-panel">
