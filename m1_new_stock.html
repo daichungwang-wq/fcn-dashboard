@@ -794,7 +794,70 @@ function getList(type){
       return {label:'AVOID', text:'避免 / 偏弱'};
     }
 
-    function buildM7Decision(m7, priceNow){
+    function extractResearchSnapshot(profile){
+      const fs = profile?.financial_summary || {};
+      const vt = profile?.valuation_and_timing || {};
+      const tv = vt?.technical_view || {};
+      const pool = profile?.pool30_fit || {};
+      const risks = Array.isArray(profile?.risk_opportunity?.risk) ? profile.risk_opportunity.risk : [];
+      const opps = Array.isArray(profile?.risk_opportunity?.opportunity) ? profile.risk_opportunity.opportunity : [];
+      const hasResearch = !!(profile && !profile.__fallback_basic && (profile.financial_summary || profile.valuation_and_timing || profile.pool30_fit || profile.final_view));
+      return {
+        hasResearch,
+        revenue: fs.revenue || '--',
+        growth: fs.growth || '--',
+        net_margin: fs.net_margin || '--',
+        fcf_margin: fs.fcf_margin || '--',
+        eps: fs.eps || '--',
+        pe: fs.pe || '--',
+        beta: fs.beta || '--',
+        valuation_view: vt.valuation_view || '--',
+        sweet_zone: vt.sweet_zone || '--',
+        buy_strategy: vt.buy_strategy || '--',
+        mid_trend: tv.mid_trend || '--',
+        short_term: tv.short_term || '--',
+        structure: tv.structure || '--',
+        timing_conclusion: tv.conclusion || vt.buy_strategy || '--',
+        stock_pool: pool.stock_pool,
+        pool30: pool.pool30,
+        category: pool.category || '--',
+        pool30_reason: pool.reason || '--',
+        upgrade_condition: Array.isArray(pool.upgrade_condition) ? pool.upgrade_condition : [],
+        risks,
+        opportunities: opps,
+        final_view: profile?.final_view || '--'
+      };
+    }
+
+    function boolLabel(v){
+      if(v === true) return 'YES';
+      if(v === false) return 'NO';
+      const s = String(v ?? '').trim().toLowerCase();
+      if(['yes','true','是','y'].includes(s)) return 'YES';
+      if(['no','false','否','n'].includes(s)) return 'NO';
+      return v == null || v === '' ? '--' : String(v);
+    }
+
+    function classifyResearchSupport(r){
+      if(!r?.hasResearch) return {label:'NO_RESEARCH', text:'缺少研究卡，僅能使用 M7 市場量化判斷'};
+      const pool30 = boolLabel(r.pool30);
+      const stockPool = boolLabel(r.stock_pool);
+      if(pool30 === 'YES') return {label:'SUPPORT', text:'研究卡支持 pool30 / 核心候選'};
+      if(stockPool === 'YES') return {label:'STOCK_POOL', text:'研究卡支持 stock_pool，但尚未支持 pool30'};
+      if(pool30 === 'NO') return {label:'CAUTION', text:'研究卡不支持 pool30，需保守解讀 M7 訊號'};
+      return {label:'WATCH', text:'研究卡資訊不足，維持觀察'};
+    }
+
+    function combineM7ResearchDecision(m7Today, gapLabel, researchSupport){
+      if(researchSupport.label === 'NO_RESEARCH') return `${m7Today.text}；但缺少 M1 深度研究卡，不能直接升級為 pool30 結論。`;
+      if(m7Today.label === 'STRONG' && researchSupport.label === 'SUPPORT') return `M7 市場訊號偏強，且研究卡支持 pool30 → 中高信心機會。`;
+      if(m7Today.label === 'STRONG' && researchSupport.label === 'STOCK_POOL') return `M7 市場訊號偏強，但研究卡僅支持 stock_pool → 可做交易觀察，不直接升級 pool30。`;
+      if(m7Today.label === 'STRONG' && researchSupport.label === 'CAUTION') return `M7 市場訊號偏強，但研究卡不支持 pool30 → 只可視為短線/FCN 條件觀察，不宜當核心接股。`;
+      if(m7Today.label === 'AVOID') return `M7 今日分數偏弱，即使研究卡有題材，也先避免追價。`;
+      return `M7 今日訊號為觀察，研究卡結論為${researchSupport.text}；估值狀態為${gapLabel}，建議等待更明確買點。`;
+    }
+
+    function buildM7Decision(m7, priceNow, profile){
       const fair = toNum(m7?.regression_fair_price_now);
       const price = toNum(m7?.regression_actual_price_now) ?? toNum(priceNow);
       const gap = fairGapPct(fair, price);
@@ -806,24 +869,28 @@ function getList(type){
       const r2 = toNum(m7?.best_structure_r2 ?? m7?.structure_r2 ?? m7?.regression_valuation_r2);
       const m7Score = toNum(m7?.m7_v2_score ?? m7?.m7_effective_score ?? m7?.m7_raw_score);
       const today = classifyTodayByM7(m7Score);
+      const gapLabel = classifyFairGap(gap);
       const multPos = classifyMultiplePosition(m7?.current_regression_multiple, m7?.historical_p25_multiple, m7?.historical_median_multiple, m7?.historical_p75_multiple);
       const trendLabel = trendScore == null ? '資料不足' : (trendScore >= 7.5 ? '強' : (trendScore >= 5.5 ? '中性' : '弱'));
       const accelNote = accel == null ? '' : (accel < 0 ? '但近期動能正在降溫，不建議追價。' : '近期動能仍在加速。');
       const trendSentence = `長期趨勢年化 ${trendAnnual == null ? '--' : pct(trendAnnual,1)}，MA 趨勢 ${maAnnual == null ? '--' : pct(maAnnual,1)}，結構 R²=${r2 == null ? '--' : fmt(r2,2)}，屬於${esc(m7?.trend_reliability || '--')}可靠度、${trendLabel}趨勢。${accelNote}`;
-      const valuationSentence = `目前價格相對 M7 fair price ${gap == null ? '--' : pct(gap,1)}，判斷為${classifyFairGap(gap)}；相對自身歷史 multiple 位階為${multPos}。`;
-      const finalInsight = `趨勢${trendLabel}、估值${classifyFairGap(gap)}、M7 今日分數${m7Score == null ? '--' : fmt(m7Score,2)} → ${today.text}。`;
+      const valuationSentence = `目前價格相對 M7 fair price ${gap == null ? '--' : pct(gap,1)}，判斷為${gapLabel}；相對自身歷史 multiple 位階為${multPos}。`;
+      const r = extractResearchSnapshot(profile);
+      const researchSupport = classifyResearchSupport(r);
+      const finalInsight = combineM7ResearchDecision(today, gapLabel, researchSupport);
+      const sourceText = r.hasResearch ? 'M7 Runtime + M1 Deep Research Card' : 'M7 Runtime only';
 
       return `
         <section class="panel panel-body">
           <div class="panel-head">
             <div>
               <h3>Investment Decision Cockpit / 投資決策中樞</h3>
-              <div class="panel-sub">Source：M7 Runtime ｜ Decision Type：M7 Quant</div>
+              <div class="panel-sub">Source：${esc(sourceText)} ｜ Decision Type：M7 Quant + Research Fusion</div>
             </div>
             <div class="chip">${esc(today.label)}</div>
           </div>
 
-          <div class="section-note"><b>Trend & Structure 判斷</b></div>
+          <div class="section-note"><b>1. Trend & Structure / M7 市場結構</b></div>
           <div class="kpi-row">
             <div class="mini-kpi"><div class="k">trend_score</div><div class="v">${fmt(trendScore,2)}</div></div>
             <div class="mini-kpi"><div class="k">structure_score</div><div class="v">${fmt(structureScore,2)}</div></div>
@@ -834,13 +901,13 @@ function getList(type){
           </div>
           <div class="section-note">${trendSentence}</div>
 
-          <div class="section-note"><b>Valuation & Price Reality</b></div>
+          <div class="section-note"><b>2. Valuation & Price Reality / 價格現實</b></div>
           <div class="kpi-row">
-            <div class="mini-kpi"><div class="k">regression_fair_price_now</div><div class="v">${money(fair,2)}</div></div>
-            <div class="mini-kpi"><div class="k">regression_actual_price_now</div><div class="v">${money(price,2)}</div></div>
-            <div class="mini-kpi"><div class="k">gap %</div><div class="v">${gap == null ? '--' : pct(gap,1)}</div><div class="d">(fair-price)/fair</div></div>
+            <div class="mini-kpi"><div class="k">M7 fair price</div><div class="v">${money(fair,2)}</div></div>
+            <div class="mini-kpi"><div class="k">Today price</div><div class="v">${money(price,2)}</div></div>
+            <div class="mini-kpi"><div class="k">fair gap %</div><div class="v">${gap == null ? '--' : pct(gap,1)}</div><div class="d">(fair-price)/fair</div></div>
             <div class="mini-kpi"><div class="k">historical p25 / median / p75</div><div class="v">${fmt(m7?.historical_p25_multiple,2)} / ${fmt(m7?.historical_median_multiple,2)} / ${fmt(m7?.historical_p75_multiple,2)}</div></div>
-            <div class="mini-kpi"><div class="k">current_regression_multiple</div><div class="v">${fmt(m7?.current_regression_multiple,2)}</div></div>
+            <div class="mini-kpi"><div class="k">current multiple</div><div class="v">${fmt(m7?.current_regression_multiple,2)}</div></div>
             <div class="mini-kpi"><div class="k">valuation_heat</div><div class="v">${fmt(m7?.feature_snapshot?.valuation?.valuation_heat ?? m7?.valuation_heat,2)}</div></div>
           </div>
           <div class="valuation-band" style="margin-top:12px">
@@ -850,12 +917,23 @@ function getList(type){
           </div>
           <div class="section-note">${valuationSentence}</div>
 
-          <div class="section-note"><b>M7 Today Decision</b></div>
+          <div class="section-note"><b>3. Research Evidence / M1 基本面證據</b></div>
           <div class="kpi-row">
-            <div class="mini-kpi"><div class="k">m7_v2_score</div><div class="v">${fmt(m7Score,2)}</div></div>
-            <div class="mini-kpi"><div class="k">valuation_score</div><div class="v">${fmt(m7?.valuation_score,2)}</div></div>
-            <div class="mini-kpi"><div class="k">timing_score</div><div class="v">${fmt(m7?.timing_score,2)}</div></div>
-            <div class="mini-kpi"><div class="k">money_score</div><div class="v">${fmt(m7?.money_score,2)}</div></div>
+            <div class="mini-kpi"><div class="k">Revenue</div><div class="v">${esc(r.revenue)}</div></div>
+            <div class="mini-kpi"><div class="k">Growth</div><div class="v">${esc(r.growth)}</div></div>
+            <div class="mini-kpi"><div class="k">PE</div><div class="v">${esc(r.pe)}</div></div>
+            <div class="mini-kpi"><div class="k">FCF Margin</div><div class="v">${esc(r.fcf_margin)}</div></div>
+            <div class="mini-kpi"><div class="k">Research Category</div><div class="v">${esc(r.category)}</div></div>
+            <div class="mini-kpi"><div class="k">Research Support</div><div class="v">${esc(researchSupport.label)}</div></div>
+          </div>
+          <div class="section-note">${esc(r.hasResearch ? (r.pool30_reason || r.final_view) : researchSupport.text)}</div>
+
+          <div class="section-note"><b>4. Today Decision / 統一結論</b></div>
+          <div class="final-grid">
+            <div class="final-card"><div class="k">M7 Today</div><div class="v">${esc(today.label)}</div><div class="r">M7 score ${m7Score == null ? '--' : fmt(m7Score,2)}：${esc(today.text)}</div></div>
+            <div class="final-card"><div class="k">Research Pool30</div><div class="v">${esc(boolLabel(r.pool30))}</div><div class="r">${esc(r.pool30_reason)}</div></div>
+            <div class="final-card"><div class="k">Research Stock Pool</div><div class="v">${esc(boolLabel(r.stock_pool))}</div><div class="r">${esc(researchSupport.text)}</div></div>
+            <div class="final-card"><div class="k">Timing</div><div class="v">${esc(today.label === 'STRONG' && gapLabel !== '偏貴' ? 'GO / WATCH' : 'WAIT')}</div><div class="r">${esc(r.timing_conclusion)}</div></div>
           </div>
           <div class="headline-box"><div class="h">Final Insight</div><div class="t">${finalInsight}</div></div>
         </section>
@@ -943,7 +1021,7 @@ function getList(type){
 
     function renderInvestmentDecisionCockpit(symbol, profile, m7, priceNow){
       const mode = getDecisionMode(symbol, profile, m7);
-      if(mode === 'M7') return buildM7Decision(m7, priceNow);
+      if(mode === 'M7') return buildM7Decision(m7, priceNow, profile);
       if(mode === 'M1_PROXY') return buildM1ProxyDecision(profile);
       return buildNoDataDecision(symbol);
     }
