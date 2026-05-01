@@ -2,38 +2,221 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8" />
-  <title>M1 Competitive Test</title>
+  <title>M1 Competitive Batch Test</title>
 </head>
 <body>
-  <h1>M1 Competitive Test</h1>
+  <h1>M1 Competitive Batch Test</h1>
   <pre id="output">Loading...</pre>
 
   <script type="module">
     import { EarningsEngine } from "./js/m1/earnings_engine.js";
 
-    const stockData = {
-      eps_history: [
-        { fiscal_year: 2019, eps: 0.92 },
-        { fiscal_year: 2020, eps: 1.13 },
-        { fiscal_year: 2021, eps: 2.50 },
-        { fiscal_year: 2022, eps: 3.85 },
-        { fiscal_year: 2023, eps: 1.74 },
-        { fiscal_year: 2024, eps: 11.93 }
-      ],
-      eps_forward: [
-        { fiscal_year: 2025, eps_estimate: 24.0 },
-        { fiscal_year: 2026, eps_estimate: 8.34 },
-        { fiscal_year: 2027, eps_estimate: 11.24 }
-      ],
-      quality_flag: ["high_volatility", "ai_cycle"]
-    };
+    // ===== 10家公司 =====
+    const stocks = [
+      {
+        symbol: "NVDA",
+        name: "Nvidia",
+        eps_history: [
+          { fiscal_year: 2019, eps: 0.92 },
+          { fiscal_year: 2020, eps: 1.13 },
+          { fiscal_year: 2021, eps: 2.50 },
+          { fiscal_year: 2022, eps: 3.85 },
+          { fiscal_year: 2023, eps: 1.74 },
+          { fiscal_year: 2024, eps: 11.93 }
+        ],
+        eps_forward: [
+          { fiscal_year: 2025, eps_estimate: 24.0 },
+          { fiscal_year: 2026, eps_estimate: 8.34 },
+          { fiscal_year: 2027, eps_estimate: 11.24 }
+        ],
+        quality_flag: ["high_volatility", "ai_cycle"]
+      },
 
-    const output = EarningsEngine.v3(stockData);
+      {
+        symbol: "MSFT",
+        name: "Microsoft",
+        eps_history: [
+          { fiscal_year: 2019, eps: 5.06 },
+          { fiscal_year: 2020, eps: 5.76 },
+          { fiscal_year: 2021, eps: 8.05 },
+          { fiscal_year: 2022, eps: 9.65 },
+          { fiscal_year: 2023, eps: 9.68 },
+          { fiscal_year: 2024, eps: 11.80 }
+        ],
+        eps_forward: [
+          { fiscal_year: 2025, eps_estimate: 14.5 },
+          { fiscal_year: 2026, eps_estimate: 17.0 },
+          { fiscal_year: 2027, eps_estimate: 19.3 }
+        ]
+      },
+
+      {
+        symbol: "AVGO",
+        name: "Broadcom",
+        eps_history: [
+          { fiscal_year: 2019, eps: 3.30 },
+          { fiscal_year: 2020, eps: 6.35 },
+          { fiscal_year: 2021, eps: 6.80 },
+          { fiscal_year: 2022, eps: 7.40 },
+          { fiscal_year: 2023, eps: 10.50 },
+          { fiscal_year: 2024, eps: 13.60 }
+        ],
+        eps_forward: [
+          { fiscal_year: 2025, eps_estimate: 11.5 },
+          { fiscal_year: 2026, eps_estimate: 17.0 },
+          { fiscal_year: 2027, eps_estimate: 18.0 }
+        ]
+      },
+
+      {
+        symbol: "TSM",
+        name: "TSMC",
+        eps_history: [
+          { fiscal_year: 2019, eps: 2.00 },
+          { fiscal_year: 2020, eps: 3.00 },
+          { fiscal_year: 2021, eps: 3.90 },
+          { fiscal_year: 2022, eps: 6.30 },
+          { fiscal_year: 2023, eps: 5.20 },
+          { fiscal_year: 2024, eps: 7.20 }
+        ],
+        eps_forward: [
+          { fiscal_year: 2025, eps_estimate: 10.0 },
+          { fiscal_year: 2026, eps_estimate: 15.4 },
+          { fiscal_year: 2027, eps_estimate: 19.2 }
+        ]
+      },
+
+      {
+        symbol: "AMD",
+        name: "AMD",
+        eps_history: [
+          { fiscal_year: 2019, eps: 0.30 },
+          { fiscal_year: 2020, eps: 1.29 },
+          { fiscal_year: 2021, eps: 2.79 },
+          { fiscal_year: 2022, eps: 3.50 },
+          { fiscal_year: 2023, eps: 0.90 },
+          { fiscal_year: 2024, eps: 2.00 }
+        ],
+        eps_forward: [
+          { fiscal_year: 2025, eps_estimate: 4.5 },
+          { fiscal_year: 2026, eps_estimate: 6.7 },
+          { fiscal_year: 2027, eps_estimate: 11.0 }
+        ],
+        quality_flag: ["high_volatility"]
+      },
+
+      {
+        symbol: "AMZN",
+        name: "Amazon",
+        eps_history: [
+          { fiscal_year: 2019, eps: 23.01 },
+          { fiscal_year: 2020, eps: 41.83 },
+          { fiscal_year: 2021, eps: 64.81 },
+          { fiscal_year: 2022, eps: -0.27 },
+          { fiscal_year: 2023, eps: 2.90 },
+          { fiscal_year: 2024, eps: 3.80 }
+        ],
+        eps_forward: [
+          { fiscal_year: 2025, eps_estimate: 6.5 },
+          { fiscal_year: 2026, eps_estimate: 8.5 },
+          { fiscal_year: 2027, eps_estimate: 9.8 }
+        ],
+        quality_flag: ["cyclical"]
+      },
+
+      {
+        symbol: "GOOG",
+        name: "Alphabet",
+        eps_history: [
+          { fiscal_year: 2019, eps: 49.16 },
+          { fiscal_year: 2020, eps: 58.61 },
+          { fiscal_year: 2021, eps: 112.20 },
+          { fiscal_year: 2022, eps: 59.97 },
+          { fiscal_year: 2023, eps: 74.04 },
+          { fiscal_year: 2024, eps: 90.00 }
+        ],
+        eps_forward: [
+          { fiscal_year: 2025, eps_estimate: 10.5 },
+          { fiscal_year: 2026, eps_estimate: 12.7 },
+          { fiscal_year: 2027, eps_estimate: 13.9 }
+        ]
+      },
+
+      {
+        symbol: "META",
+        name: "Meta",
+        eps_history: [
+          { fiscal_year: 2019, eps: 6.43 },
+          { fiscal_year: 2020, eps: 10.09 },
+          { fiscal_year: 2021, eps: 13.77 },
+          { fiscal_year: 2022, eps: 8.59 },
+          { fiscal_year: 2023, eps: 14.87 },
+          { fiscal_year: 2024, eps: 18.00 }
+        ],
+        eps_forward: [
+          { fiscal_year: 2025, eps_estimate: 25.0 },
+          { fiscal_year: 2026, eps_estimate: 30.9 },
+          { fiscal_year: 2027, eps_estimate: 36.0 }
+        ]
+      },
+
+      {
+        symbol: "ORCL",
+        name: "Oracle",
+        eps_history: [
+          { fiscal_year: 2019, eps: 3.08 },
+          { fiscal_year: 2020, eps: 3.62 },
+          { fiscal_year: 2021, eps: 4.00 },
+          { fiscal_year: 2022, eps: 3.80 },
+          { fiscal_year: 2023, eps: 4.40 },
+          { fiscal_year: 2024, eps: 4.80 }
+        ],
+        eps_forward: [
+          { fiscal_year: 2025, eps_estimate: 6.0 },
+          { fiscal_year: 2026, eps_estimate: 7.4 },
+          { fiscal_year: 2027, eps_estimate: 8.0 }
+        ]
+      },
+
+      {
+        symbol: "NFLX",
+        name: "Netflix",
+        eps_history: [
+          { fiscal_year: 2019, eps: 4.13 },
+          { fiscal_year: 2020, eps: 6.08 },
+          { fiscal_year: 2021, eps: 11.24 },
+          { fiscal_year: 2022, eps: 9.95 },
+          { fiscal_year: 2023, eps: 12.03 },
+          { fiscal_year: 2024, eps: 14.00 }
+        ],
+        eps_forward: [
+          { fiscal_year: 2025, eps_estimate: 18.0 },
+          { fiscal_year: 2026, eps_estimate: 21.0 },
+          { fiscal_year: 2027, eps_estimate: 23.0 }
+        ]
+      }
+    ];
+
+    // ===== 批次運算 =====
+    const results = stocks.map(s => {
+      const r = EarningsEngine.v3(s);
+
+      return {
+        symbol: s.symbol,
+        name: s.name,
+        score: r.earnings_power_score,
+        growth: r.components.growth,
+        short: r.components.short_consistency,
+        middle: r.components.middle_consistency,
+        quality: r.components.quality
+      };
+    });
+
+    // 排序
+    results.sort((a, b) => b.score - a.score);
 
     document.getElementById("output").textContent =
-      JSON.stringify(output, null, 2);
-
-    console.log(output);
+      JSON.stringify(results, null, 2);
   </script>
 </body>
 </html>
