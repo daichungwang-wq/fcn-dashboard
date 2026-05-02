@@ -1884,13 +1884,99 @@ def _score_future_profit(eps_2026: float | None) -> float:
     return clamp(5.0 + math.log(max(e, 0.01)) * 1.8, 0.0, 10.0)
 
 
-def _score_growth(eps_2026: float | None, eps_2027: float | None) -> float:
+def _weighted_forward_growth(eps_2025: float | None, eps_2026: float | None, eps_2027: float | None) -> dict[str, float | None]:
+    """
+    Final M1 Competitive EPS growth definition.
+
+    growth_2026_vs_2025 = eps_2026 / eps_2025 - 1
+    growth_2027_vs_2026 = eps_2027 / eps_2026 - 1
+
+    weighted_forward_growth =
+        0.55 * growth_2026_vs_2025 + 0.45 * growth_2027_vs_2026
+
+    Governance:
+      - Requires positive eps_2025 and eps_2026.
+      - Requires eps_2027 to use the full two-stage formula.
+      - If eps_2027 is missing but eps_2025/2026 are valid, fallback to 2026 vs 2025.
+    """
+    e25 = safe_num(eps_2025, None)
     e26 = safe_num(eps_2026, None)
     e27 = safe_num(eps_2027, None)
-    if e26 is None or e27 is None or e26 <= 0:
+
+    if e25 is None or e26 is None or e25 <= 0 or e26 <= 0:
+        return {
+            "growth_2026_vs_2025": None,
+            "growth_2027_vs_2026": None,
+            "weighted_forward_growth": None,
+            "growth_formula": "missing_or_nonpositive_eps_2025_or_eps_2026",
+        }
+
+    g1 = e26 / e25 - 1.0
+    g2 = None
+    if e27 is not None and e27 > 0:
+        g2 = e27 / e26 - 1.0
+        g = 0.55 * g1 + 0.45 * g2
+        formula = "0.55*(eps_2026/eps_2025-1)+0.45*(eps_2027/eps_2026-1)"
+    else:
+        g = g1
+        formula = "fallback_eps_2026_vs_2025_only"
+
+    return {
+        "growth_2026_vs_2025": g1,
+        "growth_2027_vs_2026": g2,
+        "weighted_forward_growth": g,
+        "growth_formula": formula,
+    }
+
+
+def _growth_to_score(g: float | None) -> float:
+    """
+    Convert weighted forward EPS growth to 0-10 score using linear interpolation.
+
+    Points are the final agreed business curve:
+      <=0%   => 2.0
+       5%    => 4.0
+      10%    => 6.0
+      15%    => 7.0
+      20%    => 8.0
+      25%    => 9.0
+      30%    => 9.5
+      50%    => 9.8
+     100%+   => 10.0
+    """
+    if g is None or not math.isfinite(safe_num(g, 0.0)):
         return 5.999
-    growth = e27 / e26 - 1.0
-    return clamp(5.0 + growth * 10.0, 0.0, 10.0)
+
+    points = [
+        (0.00, 2.0),
+        (0.05, 4.0),
+        (0.10, 6.0),
+        (0.15, 7.0),
+        (0.20, 8.0),
+        (0.25, 9.0),
+        (0.30, 9.5),
+        (0.50, 9.8),
+        (1.00, 10.0),
+    ]
+
+    if g <= 0.0:
+        return 2.0
+    if g >= points[-1][0]:
+        return 10.0
+
+    for i in range(1, len(points)):
+        x0, y0 = points[i - 1]
+        x1, y1 = points[i]
+        if x0 <= g <= x1:
+            t = (g - x0) / (x1 - x0)
+            return clamp(y0 + t * (y1 - y0), 0.0, 10.0)
+
+    return 5.999
+
+
+def _score_growth(eps_2025: float | None, eps_2026: float | None, eps_2027: float | None) -> float:
+    growth_payload = _weighted_forward_growth(eps_2025, eps_2026, eps_2027)
+    return _growth_to_score(safe_num(growth_payload.get("weighted_forward_growth"), None))
 
 
 def _eps_yoy_stability_score(eps_values: list[float]) -> float:
@@ -2274,7 +2360,8 @@ def compute_eps_engine_v26(feature: dict[str, Any], trend: dict[str, Any] | None
         confidence = "low"
     else:
         future_profit_score = _score_future_profit(eps_2026)
-        growth_score = _score_growth(eps_2026, eps_2027)
+        growth_payload = _weighted_forward_growth(eps_2025, eps_2026, eps_2027)
+        growth_score = _growth_to_score(safe_num(growth_payload.get("weighted_forward_growth"), None))
         cc_score = 0.30 * future_profit_score + 0.30 * growth_score + 0.20 * consistency_score + 0.20 * quality_score
         cc_score = clamp(cc_score, 0.0, 10.0)
         if has_history and eps_model.get("best_model"):
@@ -2294,6 +2381,10 @@ def compute_eps_engine_v26(feature: dict[str, Any], trend: dict[str, Any] | None
         "cc_score": round2(cc_score),
         "future_profit_score": round2(future_profit_score),
         "future_growth_score": round2(growth_score),
+        "future_growth_rate": round(safe_num(growth_payload.get("weighted_forward_growth"), 0.0), 4) if has_model and growth_payload.get("weighted_forward_growth") is not None else None,
+        "growth_2026_vs_2025": round(safe_num(growth_payload.get("growth_2026_vs_2025"), 0.0), 4) if has_model and growth_payload.get("growth_2026_vs_2025") is not None else None,
+        "growth_2027_vs_2026": round(safe_num(growth_payload.get("growth_2027_vs_2026"), 0.0), 4) if has_model and growth_payload.get("growth_2027_vs_2026") is not None else None,
+        "future_growth_formula": growth_payload.get("growth_formula") if has_model else None,
         "middle_consistency_score": round2(consistency_score),
         "eps_yoy_stability_score": round2(eps_yoy_stability_score),
         "quality_score": round2(quality_score),
