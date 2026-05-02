@@ -1575,7 +1575,7 @@ def compute_exposure_penalty(feature: dict[str, Any]) -> dict[str, Any]:
 
 
 # -------------------------
-# EPS Engine v2.6 add-on (non-breaking)
+# M1 Competitive / CC EPS Engine add-on (non-breaking)
 # -------------------------
 def _eps_data_rows() -> dict[str, Any]:
     """Return EPS records by symbol. Supports {meta,data}, flat dict, and list-of-records formats."""
@@ -1608,7 +1608,7 @@ def _extract_eps_history(eps_info: dict[str, Any]) -> list[dict[str, float]]:
     rows = eps_info.get("eps_history", []) if isinstance(eps_info, dict) else []
     out: list[dict[str, float]] = []
     if isinstance(rows, list):
-        for r in rows:
+        for idx, r in enumerate(rows):
             if isinstance(r, dict):
                 yr = safe_num(r.get("fiscal_year", r.get("year")), None)
                 eps = safe_num(r.get("eps", r.get("diluted_eps", r.get("eps_actual"))), None)
@@ -1617,7 +1617,7 @@ def _extract_eps_history(eps_info: dict[str, Any]) -> list[dict[str, float]]:
             else:
                 eps = safe_num(r, None)
                 if eps is not None:
-                    out.append({"fiscal_year": len(out), "eps": eps})
+                    out.append({"fiscal_year": idx, "eps": eps})
     return sorted(out, key=lambda x: x["fiscal_year"])
 
 
@@ -1631,7 +1631,7 @@ def _extract_forward_eps(eps_info: dict[str, Any]) -> dict[int, dict[str, Any]]:
                 continue
             if isinstance(v, dict):
                 eps = safe_num(v.get("eps_estimate", v.get("eps", v.get("value"))), None)
-                analyst_count = safe_num(v.get("analyst_count"), None)
+                analyst_count = safe_num(v.get("analyst_count", v.get("analysts")), None)
             else:
                 eps = safe_num(v, None)
                 analyst_count = None
@@ -1658,6 +1658,205 @@ def _annual_avg_prices_from_weekly(weekly_prices: list[Any]) -> list[float]:
     return annual
 
 
+def _annual_avg_price_by_year_from_weekly(weekly_prices: list[Any], latest_complete_year: int = 2025) -> dict[int, float]:
+    """
+    Convert M7 weekly price sequence to annual average price buckets.
+
+    Important M1/CC governance:
+    - EPS history is fiscal-year annual data.
+    - M7 price history is weekly data without exact date stamps in m7_v2_scores output.
+    - Therefore we bucket consecutive 52-week windows into annual averages and assign
+      the last full 52-week bucket to latest_complete_year (default 2025).
+    - Example with 522 weeks: 10 full annual buckets => 2016..2025.
+    """
+    annual = _annual_avg_prices_from_weekly(weekly_prices)
+    if not annual:
+        return {}
+    start_year = int(latest_complete_year) - len(annual) + 1
+    return {start_year + i: p for i, p in enumerate(annual)}
+
+
+def _solve_linear_system(a: list[list[float]], b: list[float]) -> list[float] | None:
+    n = len(b)
+    if n == 0:
+        return None
+    mat = [row[:] + [b[i]] for i, row in enumerate(a)]
+    for col in range(n):
+        pivot = max(range(col, n), key=lambda r: abs(mat[r][col]))
+        if abs(mat[pivot][col]) < 1e-12:
+            return None
+        if pivot != col:
+            mat[col], mat[pivot] = mat[pivot], mat[col]
+        pivot_val = mat[col][col]
+        for j in range(col, n + 1):
+            mat[col][j] /= pivot_val
+        for r in range(n):
+            if r == col:
+                continue
+            factor = mat[r][col]
+            for j in range(col, n + 1):
+                mat[r][j] -= factor * mat[col][j]
+    return [mat[i][n] for i in range(n)]
+
+
+def _fit_design_matrix(design: list[list[float]], y_values: list[float]) -> dict[str, Any]:
+    if len(design) != len(y_values) or len(y_values) < 2:
+        return {"r2": None, "coeffs": None, "fitted": []}
+    cols = len(design[0]) if design else 0
+    if cols <= 0 or len(y_values) < cols:
+        return {"r2": None, "coeffs": None, "fitted": []}
+    lhs: list[list[float]] = []
+    rhs: list[float] = []
+    for i in range(cols):
+        lhs_row = []
+        for j in range(cols):
+            lhs_row.append(sum(row[i] * row[j] for row in design))
+        lhs.append(lhs_row)
+        rhs.append(sum(row[i] * y for row, y in zip(design, y_values)))
+    coeffs = _solve_linear_system(lhs, rhs)
+    if coeffs is None:
+        return {"r2": None, "coeffs": None, "fitted": []}
+    fitted = [sum(c * row[i] for i, c in enumerate(coeffs)) for row in design]
+    mean_y = sum(y_values) / len(y_values)
+    ss_tot = sum((y - mean_y) ** 2 for y in y_values)
+    ss_res = sum((y - yhat) ** 2 for y, yhat in zip(y_values, fitted))
+    r2 = 1.0 if ss_tot <= 1e-12 else clamp(1.0 - ss_res / ss_tot, 0.0, 1.0)
+    return {"r2": r2, "coeffs": coeffs, "fitted": fitted}
+
+
+def _predict_from_coeffs(coeffs: list[float] | None, row: list[float]) -> float | None:
+    if coeffs is None or len(coeffs) != len(row):
+        return None
+    val = sum(c * row[i] for i, c in enumerate(coeffs))
+    if not math.isfinite(val):
+        return None
+    return val
+
+
+def _fit_eps_regression_models(years: list[int], prices: list[float], eps_values: list[float]) -> dict[str, Any]:
+    """
+    M1 Competitive EPS regression, following the agreed spec:
+      input  = fiscal year + annual average price + annual EPS
+      models = 3 regression forms
+      output = best R² model and prediction function metadata
+
+    Models:
+      1) linear:      EPS = a + b*t + c*price
+      2) quadratic:   EPS = a + b*t + c*t² + d*price
+      3) logarithmic: EPS = a + b*log(t+1) + c*log(price)
+    """
+    cleaned: list[tuple[int, float, float]] = []
+    for y, p, e in zip(years, prices, eps_values):
+        yy = int(y)
+        pp = safe_num(p, None)
+        ee = safe_num(e, None)
+        if pp is not None and pp > 0 and ee is not None and math.isfinite(ee):
+            cleaned.append((yy, pp, ee))
+    if len(cleaned) < 3:
+        return {"best_model": None, "best_r2": None, "models": {}, "sample_count": len(cleaned)}
+
+    base_year = cleaned[0][0]
+    t_vals = [float(y - base_year) for y, _, _ in cleaned]
+    p_vals = [p for _, p, _ in cleaned]
+    e_vals = [e for _, _, e in cleaned]
+
+    design_linear = [[1.0, t, p] for t, p in zip(t_vals, p_vals)]
+    design_quadratic = [[1.0, t, t * t, p] for t, p in zip(t_vals, p_vals)]
+    design_logarithmic = [[1.0, math.log(t + 1.0), math.log(max(p, 1e-9))] for t, p in zip(t_vals, p_vals)]
+
+    models = {
+        "eps_linear_time_price": _fit_design_matrix(design_linear, e_vals),
+        "eps_quadratic_time_price": _fit_design_matrix(design_quadratic, e_vals),
+        "eps_log_time_log_price": _fit_design_matrix(design_logarithmic, e_vals),
+    }
+    valid = {k: v for k, v in models.items() if v.get("r2") is not None}
+    best_name = max(valid, key=lambda k: valid[k]["r2"]) if valid else None
+    best_r2 = valid[best_name]["r2"] if best_name else None
+    return {
+        "best_model": best_name,
+        "best_r2": best_r2,
+        "models": models,
+        "sample_count": len(cleaned),
+        "base_year": base_year,
+    }
+
+
+def _predict_eps_with_best_model(model_payload: dict[str, Any], year: int, price: float | None) -> float | None:
+    best = model_payload.get("best_model")
+    if not best:
+        return None
+    model = (model_payload.get("models") or {}).get(best, {})
+    coeffs = model.get("coeffs")
+    base_year = safe_num(model_payload.get("base_year"), None)
+    pp = safe_num(price, None)
+    if base_year is None or pp is None or pp <= 0:
+        return None
+    t = float(int(year) - int(base_year))
+    if best == "eps_linear_time_price":
+        row = [1.0, t, pp]
+    elif best == "eps_quadratic_time_price":
+        row = [1.0, t, t * t, pp]
+    elif best == "eps_log_time_log_price":
+        row = [1.0, math.log(t + 1.0), math.log(max(pp, 1e-9))]
+    else:
+        return None
+    pred = _predict_from_coeffs(coeffs, row)
+    if pred is None:
+        return None
+    # EPS regression can produce negative predictions for turnaround stocks; keep negative for scoring,
+    # but clamp pathological explosions for governance.
+    return clamp(pred, -50.0, 500.0)
+
+
+def _fit_price_forecast_model(annual_price_by_year: dict[int, float]) -> dict[str, Any]:
+    rows = sorted((int(y), safe_num(p, None)) for y, p in annual_price_by_year.items())
+    rows = [(y, p) for y, p in rows if p is not None and p > 0]
+    if len(rows) < 3:
+        return {"best_model": None, "best_r2": None, "models": {}, "base_year": None, "sample_count": len(rows)}
+    years = [y for y, _ in rows]
+    prices = [p for _, p in rows]
+    base_year = years[0]
+    t_vals = [float(y - base_year) for y in years]
+    log_prices = [math.log(max(p, 1e-9)) for p in prices]
+
+    models = {
+        "price_linear_time": _fit_design_matrix([[1.0, t] for t in t_vals], log_prices),
+        "price_quadratic_time": _fit_design_matrix([[1.0, t, t * t] for t in t_vals], log_prices),
+        "price_log_time": _fit_design_matrix([[1.0, math.log(t + 1.0)] for t in t_vals], log_prices),
+    }
+    valid = {k: v for k, v in models.items() if v.get("r2") is not None}
+    best_name = max(valid, key=lambda k: valid[k]["r2"]) if valid else None
+    best_r2 = valid[best_name]["r2"] if best_name else None
+    return {"best_model": best_name, "best_r2": best_r2, "models": models, "base_year": base_year, "sample_count": len(rows)}
+
+
+def _predict_price_with_best_model(price_model: dict[str, Any], year: int) -> float | None:
+    best = price_model.get("best_model")
+    if not best:
+        return None
+    model = (price_model.get("models") or {}).get(best, {})
+    coeffs = model.get("coeffs")
+    base_year = safe_num(price_model.get("base_year"), None)
+    if base_year is None:
+        return None
+    t = float(int(year) - int(base_year))
+    if best == "price_linear_time":
+        row = [1.0, t]
+    elif best == "price_quadratic_time":
+        row = [1.0, t, t * t]
+    elif best == "price_log_time":
+        row = [1.0, math.log(t + 1.0)]
+    else:
+        return None
+    pred_log = _predict_from_coeffs(coeffs, row)
+    if pred_log is None:
+        return None
+    try:
+        return clamp(math.exp(pred_log), 0.01, 100000.0)
+    except OverflowError:
+        return None
+
+
 def _linear_fit_predict(y_values: list[float], future_index: int) -> tuple[float | None, float | None]:
     y = [safe_num(v, None) for v in y_values if safe_num(v, None) is not None]
     n = len(y)
@@ -1682,7 +1881,6 @@ def _score_future_profit(eps_2026: float | None) -> float:
     e = safe_num(eps_2026, None)
     if e is None or e <= 0:
         return 0.0
-    # EPS level score: neutral around EPS=1, gradually rewards large absolute earning power.
     return clamp(5.0 + math.log(max(e, 0.01)) * 1.8, 0.0, 10.0)
 
 
@@ -1699,19 +1897,42 @@ def _score_consistency(eps_values: list[float]) -> float:
     vals = [safe_num(v, None) for v in eps_values if safe_num(v, None) is not None]
     if len(vals) < 3:
         return 5.999
-    _, r2v = _linear_fit_predict(vals, len(vals))
+    years = list(range(len(vals)))
+    model = _fit_eps_regression_models(years, [float(i + 1) for i in years], vals)
+    r2v = safe_num(model.get("best_r2"), None)
     if r2v is None:
         return 5.999
     negatives_penalty = 1.0 if any(v <= 0 for v in vals) else 0.0
     return clamp(r2v * 10.0 - negatives_penalty, 0.0, 10.0)
 
 
-def _score_quality(eps_values: list[float], model_r2: float | None, flags: list[Any]) -> float:
+def _score_quality_from_eps_regression(
+    eps_values: list[float],
+    eps_model_r2: float | None,
+    price_model_r2: float | None,
+    forward_map: dict[int, dict[str, Any]],
+    flags: list[Any],
+) -> float:
+    """Quality is EPS explainability/data quality, not PE R²."""
     vals = [safe_num(v, None) for v in eps_values if safe_num(v, None) is not None]
-    base = safe_num(model_r2, None)
-    if base is None:
-        base = 0.60 if len(vals) >= 3 else 0.5999
-    score = clamp(base * 10.0, 0.0, 10.0)
+    eps_r2 = safe_num(eps_model_r2, None)
+    if eps_r2 is None:
+        eps_r2 = 0.60 if len(vals) >= 3 else 0.5999
+    price_r2 = safe_num(price_model_r2, None)
+    if price_r2 is None:
+        price_r2 = 0.50
+    data_coverage = clamp(len(vals) / 6.0, 0.0, 1.0)
+    fwd_available = 0.0
+    for yr in [2025, 2026, 2027]:
+        if safe_num((forward_map.get(yr) or {}).get("eps"), None) is not None:
+            fwd_available += 1.0
+    fwd_score = fwd_available / 3.0
+    score = (
+        0.55 * eps_r2 * 10.0
+        + 0.15 * price_r2 * 10.0
+        + 0.15 * data_coverage * 10.0
+        + 0.15 * fwd_score * 10.0
+    )
     flag_set = {str(x).lower() for x in flags} if isinstance(flags, list) else set()
     if any(v <= 0 for v in vals):
         score -= 1.0
@@ -1722,8 +1943,6 @@ def _score_quality(eps_values: list[float], model_r2: float | None, flags: list[
     if "adjusted_eps" in flag_set:
         score -= 0.5
     return clamp(score, 0.0, 10.0)
-
-
 
 
 def _median(values: list[float]) -> float | None:
@@ -1753,122 +1972,105 @@ def _eps_cagr(eps_values: list[float]) -> float | None:
 
 def build_global_eps_model(symbols: list[str], bundle: InputBundle) -> dict[str, Any]:
     """
-    Build a cross-sectional EPS imputation model from stocks that have both EPS history
-    and M7/runtime weekly prices. This is the Option 3 global model:
+    Build global M1 Competitive EPS regression model for stocks without EPS history.
 
-      known stocks:  annual EPS + annual avg price -> earnings yield (EPS / Price)
-      no-EPS stocks: future EPS = future price * category/global earnings yield
+    This follows the original CC requirement:
+      known stocks: annual_avg_price + fiscal_year + EPS -> train EPS regression
+      missing stocks: annual/future price + year -> impute EPS
 
-    Notes:
-    - This is intentionally non-breaking and only used as fallback inside eps_engine.
-    - It does not modify M7 valuation/trend/structure scores.
-    - For ETFs this produces an earnings-power proxy, not a company EPS statement.
+    It does not alter M7 valuation/trend/structure/money scores.
     """
     eps_rows = _eps_data_rows()
-    global_yields: list[float] = []
+    samples_by_cat: dict[str, dict[str, list[Any]]] = {}
+    all_years: list[int] = []
+    all_prices: list[float] = []
+    all_eps: list[float] = []
     global_growths: list[float] = []
-    by_category: dict[str, dict[str, list[float]]] = {}
 
     for raw_sym in symbols:
         sym = normalize_symbol(raw_sym)
         eps_info = eps_rows.get(sym, {})
         eps_hist = _extract_eps_history(eps_info)
-        eps_values = [r.get("eps") for r in eps_hist if safe_num(r.get("eps"), None) is not None]
-        if len(eps_values) < 2:
+        if len(eps_hist) < 3:
             continue
-
         feature = build_feature_row(sym, bundle)
         category_sub = str(feature.get("valuation", {}).get("category_sub") or "UNKNOWN")
-        weekly_prices = feature.get("weekly_prices", []) if isinstance(feature.get("weekly_prices"), list) else []
-        annual_prices = _annual_avg_prices_from_weekly(weekly_prices)
-        if not annual_prices:
+        annual_price_by_year = _annual_avg_price_by_year_from_weekly(feature.get("weekly_prices", []))
+        years: list[int] = []
+        prices: list[float] = []
+        eps_values: list[float] = []
+        for r in eps_hist:
+            yr = int(r["fiscal_year"])
+            p = safe_num(annual_price_by_year.get(yr), None)
+            e = safe_num(r.get("eps"), None)
+            if p is not None and p > 0 and e is not None and math.isfinite(e):
+                years.append(yr)
+                prices.append(p)
+                eps_values.append(e)
+        if len(eps_values) < 3:
             continue
+        all_years.extend(years)
+        all_prices.extend(prices)
+        all_eps.extend(eps_values)
+        bucket = samples_by_cat.setdefault(category_sub, {"years": [], "prices": [], "eps": [], "growth": []})
+        bucket["years"].extend(years)
+        bucket["prices"].extend(prices)
+        bucket["eps"].extend(eps_values)
+        g = _eps_cagr(eps_values)
+        if g is not None:
+            global_growths.append(g)
+            bucket["growth"].append(g)
 
-        n = min(len(annual_prices), len(eps_values))
-        if n <= 0:
-            continue
-        aligned_prices = annual_prices[-n:]
-        aligned_eps = eps_values[-n:]
-
-        sample_yields: list[float] = []
-        for p, e in zip(aligned_prices, aligned_eps):
-            p = safe_num(p, None)
-            e = safe_num(e, None)
-            if p is not None and p > 0 and e is not None and e > 0:
-                yld = e / p
-                if math.isfinite(yld) and 0.0001 <= yld <= 1.0:
-                    sample_yields.append(yld)
-
-        if not sample_yields:
-            continue
-
-        stock_yield = _median(sample_yields[-5:]) or _median(sample_yields)
-        stock_growth = _eps_cagr(aligned_eps)
-        if stock_yield is not None:
-            global_yields.append(stock_yield)
-            by_category.setdefault(category_sub, {"yield": [], "growth": []})["yield"].append(stock_yield)
-        if stock_growth is not None:
-            global_growths.append(stock_growth)
-            by_category.setdefault(category_sub, {"yield": [], "growth": []})["growth"].append(stock_growth)
-
-    global_yield = _median(global_yields) or 0.04
-    global_growth = _median(global_growths) or 0.08
-
+    global_model = _fit_eps_regression_models(all_years, all_prices, all_eps)
     category_models: dict[str, dict[str, Any]] = {}
-    for cat, vals in by_category.items():
-        category_models[cat] = {
-            "earnings_yield": _median(vals.get("yield", [])) or global_yield,
-            "growth": _median(vals.get("growth", [])) or global_growth,
-            "sample_count": len(vals.get("yield", [])),
-        }
+    for cat, s in samples_by_cat.items():
+        model = _fit_eps_regression_models(s["years"], s["prices"], s["eps"])
+        # Use category model only if it has enough observations and a valid R².
+        if safe_num(model.get("sample_count"), 0) >= 8 and model.get("best_model"):
+            category_models[cat] = {
+                "model": model,
+                "sample_count": model.get("sample_count"),
+                "growth": _median(s.get("growth", [])),
+            }
 
     return {
-        "global_earnings_yield": global_yield,
-        "global_growth": global_growth,
-        "global_sample_count": len(global_yields),
+        "global_model": global_model,
+        "global_sample_count": global_model.get("sample_count", 0),
+        "global_growth": _median(global_growths) or 0.08,
         "category_models": category_models,
     }
 
 
 def _predict_eps_from_global_model(
     feature: dict[str, Any],
-    trend: dict[str, Any] | None,
-    valuation: dict[str, Any],
-    annual_prices: list[float],
+    annual_price_by_year: dict[int, float],
+    price_model: dict[str, Any],
     global_eps_model: dict[str, Any] | None,
 ) -> dict[str, Any]:
-    """Use category/global earnings yield to impute forward EPS for no-EPS stocks."""
-    model = global_eps_model or {}
+    model_pack = global_eps_model or {}
+    valuation = feature.get("valuation", {}) if isinstance(feature.get("valuation"), dict) else {}
     category_sub = str(valuation.get("category_sub") or "UNKNOWN")
-    cat_model = (model.get("category_models") or {}).get(category_sub, {}) if isinstance(model, dict) else {}
+    cat = (model_pack.get("category_models") or {}).get(category_sub)
+    if isinstance(cat, dict) and isinstance(cat.get("model"), dict):
+        model_payload = cat.get("model")
+        source = "category_eps_regression_model"
+        sample_count = safe_num(cat.get("sample_count"), 0)
+        growth = safe_num(cat.get("growth"), safe_num(model_pack.get("global_growth"), 0.08))
+    else:
+        model_payload = model_pack.get("global_model", {}) if isinstance(model_pack, dict) else {}
+        source = "global_eps_regression_model"
+        sample_count = safe_num(model_pack.get("global_sample_count"), 0) if isinstance(model_pack, dict) else 0
+        growth = safe_num(model_pack.get("global_growth"), 0.08) if isinstance(model_pack, dict) else 0.08
 
-    earnings_yield = safe_num(cat_model.get("earnings_yield"), None)
-    model_source = "category_global_eps_model"
-    sample_count = safe_num(cat_model.get("sample_count"), 0)
-    if earnings_yield is None or earnings_yield <= 0:
-        earnings_yield = safe_num(model.get("global_earnings_yield"), 0.04)
-        model_source = "market_global_eps_model"
-        sample_count = safe_num(model.get("global_sample_count"), 0)
+    price_2025 = annual_price_by_year.get(2025) or _predict_price_with_best_model(price_model, 2025)
+    price_2026 = _predict_price_with_best_model(price_model, 2026) or price_2025
+    price_2027 = _predict_price_with_best_model(price_model, 2027) or price_2026
 
-    growth = safe_num(cat_model.get("growth"), None)
-    if growth is None:
-        growth = safe_num(model.get("global_growth"), 0.08)
-    growth = clamp(growth, -0.50, 0.80)
-
-    price_now = safe_num(valuation.get("regression_actual_price_now"), None)
-    if price_now is None and annual_prices:
-        price_now = annual_prices[-1]
-
-    trend_pct = safe_num((trend or {}).get("linear_annualized_pct"), safe_num(feature.get("returns", {}).get("12m"), 0.0))
-    trend_rate = clamp(trend_pct / 100.0, -0.80, 1.50)
-
-    price_2025 = price_now if price_now is not None else None
-    price_2026 = price_now * ((1.0 + trend_rate) ** 1) if price_now is not None else None
-    price_2027 = price_now * ((1.0 + trend_rate) ** 2) if price_now is not None else None
-
-    eps_2025 = price_2025 * earnings_yield if price_2025 is not None else None
-    eps_2026 = price_2026 * earnings_yield if price_2026 is not None else None
-    eps_2027 = eps_2026 * (1.0 + growth) if eps_2026 is not None else None
+    eps_2025 = _predict_eps_with_best_model(model_payload, 2025, price_2025)
+    eps_2026 = _predict_eps_with_best_model(model_payload, 2026, price_2026)
+    eps_2027 = _predict_eps_with_best_model(model_payload, 2027, price_2027)
+    if eps_2027 is None and eps_2026 is not None:
+        eps_2027 = eps_2026 * (1.0 + clamp(growth, -0.50, 0.80))
 
     return {
         "eps_2025": eps_2025,
@@ -1877,111 +2079,73 @@ def _predict_eps_from_global_model(
         "price_2025": price_2025,
         "price_2026": price_2026,
         "price_2027": price_2027,
-        "earnings_yield": earnings_yield,
-        "growth": growth,
-        "source": model_source,
+        "source": source,
         "sample_count": int(sample_count or 0),
+        "r2": model_payload.get("best_r2") if isinstance(model_payload, dict) else None,
+        "best_model": model_payload.get("best_model") if isinstance(model_payload, dict) else None,
     }
+
 
 def compute_eps_engine_v26(feature: dict[str, Any], trend: dict[str, Any] | None = None, structure: dict[str, Any] | None = None, global_eps_model: dict[str, Any] | None = None) -> dict[str, Any]:
     """
-    EPS Engine v2.6 add-on.
+    M1 Competitive CC Engine - regression version.
 
-    Design rules:
-    - Non-breaking: only returns a payload; it does not alter M7 valuation/trend/structure/money outputs.
-    - Primary data: EPS history from data/m1/eps_history_ai.json + M7 weekly_prices / valuation PE.
-    - Uses M7 weekly_prices to build annual average prices, then aligns them with annual EPS.
-    - Uses PE = annual_price / EPS to estimate stock-specific PE when enough history exists.
-    - Uses M7 fair PE / anchor PE as valuation prior.
-    - Analyst forward EPS is blended only when analyst_count >= 5; otherwise model EPS is used.
-    - If no usable EPS model exists, CC defaults to 5.999 per governance rule.
+    This intentionally replaces the prior PE-driven CC logic.
+    It follows the original agreed requirement:
+      1) weekly_prices -> annual average prices
+      2) annual average prices + fiscal-year EPS -> 3 EPS regressions
+      3) select best R² model
+      4) predict EPS 2025/2026/2027
+      5) if no EPS history, use the global EPS regression model.
+
+    M7 valuation/trend/structure/money scores remain untouched.
     """
     symbol = normalize_symbol(feature.get("symbol"))
     eps_info = _eps_data_rows().get(symbol, {})
     valuation = feature.get("valuation", {}) if isinstance(feature.get("valuation"), dict) else {}
+    category_sub = str(valuation.get("category_sub") or "")
+    is_etf_or_skip = "ETF" in category_sub.upper() or bool(eps_info.get("skip_eps"))
+
     weekly_prices = feature.get("weekly_prices", []) if isinstance(feature.get("weekly_prices"), list) else []
+    annual_price_by_year = _annual_avg_price_by_year_from_weekly(weekly_prices, latest_complete_year=2025)
+    price_model = _fit_price_forecast_model(annual_price_by_year)
     eps_history_rows = _extract_eps_history(eps_info)
     forward_map = _extract_forward_eps(eps_info)
     quality_flags = eps_info.get("quality_flag", []) if isinstance(eps_info, dict) else []
 
-    # ETF / no-company-EPS symbols are not skipped anymore.
-    # Under Option 3, they use the global EPS model as an earnings-power proxy.
-    # This is not accounting EPS; the status/warnings make that explicit.
-    category_sub = str(valuation.get("category_sub") or "")
-    is_etf_or_skip = "ETF" in category_sub.upper() or bool(eps_info.get("skip_eps"))
+    years: list[int] = []
+    prices: list[float] = []
+    eps_values: list[float] = []
+    for r in eps_history_rows:
+        yr = int(r["fiscal_year"])
+        p = safe_num(annual_price_by_year.get(yr), None)
+        e = safe_num(r.get("eps"), None)
+        if p is not None and p > 0 and e is not None and math.isfinite(e):
+            years.append(yr)
+            prices.append(p)
+            eps_values.append(e)
 
-    fair_pe = safe_num(valuation.get("regression_fair_pe"), safe_num(valuation.get("individual_fair_pe"), None))
-    current_forward_pe = safe_num(valuation.get("forward_pe"), None)
-    base_anchor = safe_num(valuation.get("base_anchor"), safe_num(valuation.get("anchor_pe"), None))
-    anchor_adjusted = None
-    if base_anchor is not None and base_anchor > 0:
-        anchor_adjusted = base_anchor * safe_num(valuation.get("market_multiplier"), 1.0) * safe_num(valuation.get("industry_multiplier"), 1.0) * safe_num(valuation.get("archetype_multiplier"), 1.0)
-        anchor_adjusted = clamp(anchor_adjusted, 1.0, 120.0)
+    eps_model = _fit_eps_regression_models(years, prices, eps_values) if len(eps_values) >= 3 else {
+        "best_model": None,
+        "best_r2": None,
+        "models": {},
+        "sample_count": len(eps_values),
+    }
 
-    # M7 valuation fair PE is the prior; current PE is secondary; adjusted anchor is fallback.
-    pe_prior_parts: list[tuple[float, float]] = []
-    if fair_pe is not None and fair_pe > 0:
-        pe_prior_parts.append((0.55, fair_pe))
-    if current_forward_pe is not None and current_forward_pe > 0:
-        pe_prior_parts.append((0.25, current_forward_pe))
-    if anchor_adjusted is not None and anchor_adjusted > 0:
-        pe_prior_parts.append((0.20, anchor_adjusted))
-    if pe_prior_parts:
-        wsum = sum(w for w, _ in pe_prior_parts)
-        pe_prior = sum(w * v for w, v in pe_prior_parts) / max(wsum, 1e-9)
-    else:
-        pe_prior = None
+    price_2025 = annual_price_by_year.get(2025) or _predict_price_with_best_model(price_model, 2025)
+    price_2026 = _predict_price_with_best_model(price_model, 2026) or price_2025
+    price_2027 = _predict_price_with_best_model(price_model, 2027) or price_2026
 
-    annual_prices = _annual_avg_prices_from_weekly(weekly_prices)
-    eps_values = [r["eps"] for r in eps_history_rows]
-    paired_pe: list[float] = []
-    if annual_prices and eps_values:
-        n = min(len(annual_prices), len(eps_values))
-        # Align latest annual prices with latest EPS history because exact week dates are not stored in M7 output.
-        aligned_prices = annual_prices[-n:]
-        aligned_eps = eps_values[-n:]
-        for p, e in zip(aligned_prices, aligned_eps):
-            if p is not None and p > 0 and e is not None and e > 0:
-                pe = p / e
-                if math.isfinite(pe) and 0 < pe <= 300:
-                    paired_pe.append(pe)
-
-    pe_regression_2026 = None
-    pe_regression_2027 = None
-    pe_model_r2 = None
-    if len(paired_pe) >= 3:
-        pe_regression_2026, pe_model_r2 = _linear_fit_predict(paired_pe, len(paired_pe) + 1)
-        pe_regression_2027, _ = _linear_fit_predict(paired_pe, len(paired_pe) + 2)
-
-    # Combine historical PE model with M7 valuation prior.
-    def combine_pe(model_pe: float | None) -> float | None:
-        parts: list[tuple[float, float]] = []
-        if model_pe is not None and model_pe > 0 and math.isfinite(model_pe):
-            parts.append((0.50, clamp(model_pe, 1.0, 120.0)))
-        if pe_prior is not None and pe_prior > 0:
-            parts.append((0.50 if parts else 1.0, pe_prior))
-        if not parts:
-            return None
-        wsum = sum(w for w, _ in parts)
-        return clamp(sum(w * v for w, v in parts) / max(wsum, 1e-9), 1.0, 120.0)
-
-    pe_2026 = combine_pe(pe_regression_2026)
-    pe_2027 = combine_pe(pe_regression_2027 if pe_regression_2027 is not None else pe_regression_2026)
-
-    price_now = safe_num(valuation.get("regression_actual_price_now"), None)
-    if price_now is None and annual_prices:
-        price_now = annual_prices[-1]
-    trend_pct = safe_num((trend or {}).get("linear_annualized_pct"), safe_num(feature.get("returns", {}).get("12m"), 0.0))
-    trend_rate = clamp(trend_pct / 100.0, -0.80, 1.50)
-    price_2026 = price_now * ((1.0 + trend_rate) ** 1) if price_now is not None else None
-    price_2027 = price_now * ((1.0 + trend_rate) ** 2) if price_now is not None else None
-
-    model_eps_2026 = price_2026 / pe_2026 if price_2026 is not None and pe_2026 is not None and pe_2026 > 0 else None
-    model_eps_2027 = price_2027 / pe_2027 if price_2027 is not None and pe_2027 is not None and pe_2027 > 0 else None
+    model_eps_2025 = _predict_eps_with_best_model(eps_model, 2025, price_2025)
+    model_eps_2026 = _predict_eps_with_best_model(eps_model, 2026, price_2026)
+    model_eps_2027 = _predict_eps_with_best_model(eps_model, 2027, price_2027)
 
     global_projection = None
     if (model_eps_2026 is None or model_eps_2027 is None or is_etf_or_skip) and global_eps_model:
-        global_projection = _predict_eps_from_global_model(feature, trend, valuation, annual_prices, global_eps_model)
+        global_projection = _predict_eps_from_global_model(feature, annual_price_by_year, price_model, global_eps_model)
+        if model_eps_2025 is None or is_etf_or_skip:
+            model_eps_2025 = global_projection.get("eps_2025")
+            price_2025 = global_projection.get("price_2025")
         if model_eps_2026 is None or is_etf_or_skip:
             model_eps_2026 = global_projection.get("eps_2026")
             price_2026 = global_projection.get("price_2026")
@@ -2003,12 +2167,15 @@ def compute_eps_engine_v26(feature: dict[str, Any], trend: dict[str, Any] | None
             return 0.65 * ae + 0.35 * me, "analyst_model_blend"
         if ae is not None and ae > 0 and ac is not None and ac >= 5:
             return ae, "analyst_only"
+        if ae is not None and ae > 0 and ac is None and me is not None and me > 0:
+            return 0.50 * ae + 0.50 * me, "forward_provided_no_count_blend"
         if me is not None and me > 0:
             return me, "model_only"
         if ae is not None and ae > 0:
-            return ae, "analyst_low_count"
+            return ae, "forward_provided_low_count"
         return None, "missing"
 
+    eps_2025 = analyst_2025 if safe_num(analyst_2025, None) is not None else model_eps_2025
     eps_2026, src_2026 = blend_eps(analyst_2026, model_eps_2026, analyst_count_2026)
     eps_2027, src_2027 = blend_eps(analyst_2027, model_eps_2027, analyst_count_2027)
 
@@ -2017,46 +2184,45 @@ def compute_eps_engine_v26(feature: dict[str, Any], trend: dict[str, Any] | None
     warnings: list[str] = []
     if not has_history:
         warnings.append("eps_history_less_than_3")
-    if pe_prior is None:
-        warnings.append("missing_m7_pe_prior")
-    if pe_model_r2 is None and len(paired_pe) < 3:
-        warnings.append("pe_history_regression_insufficient")
-    if src_2026 in {"analyst_low_count", "missing"} or src_2027 in {"analyst_low_count", "missing"}:
-        warnings.append("forward_eps_low_confidence_or_missing")
+    if len(annual_price_by_year) < 3:
+        warnings.append("annual_price_history_less_than_3")
     if global_projection is not None:
-        warnings.append("global_eps_model_used")
+        warnings.append("global_eps_regression_model_used")
     if is_etf_or_skip:
         warnings.append("etf_or_skip_eps_global_proxy_not_company_eps")
+    if src_2026 in {"forward_provided_low_count", "missing"} or src_2027 in {"forward_provided_low_count", "missing"}:
+        warnings.append("forward_eps_low_confidence_or_missing")
+
+    consistency_score = _score_consistency(eps_values)
+    quality_score = _score_quality_from_eps_regression(
+        eps_values,
+        safe_num(eps_model.get("best_r2"), None),
+        safe_num(price_model.get("best_r2"), None),
+        forward_map,
+        quality_flags,
+    )
 
     if not has_model:
         cc_score = 5.999
         future_profit_score = 5.999
         growth_score = 5.999
-        consistency_score = _score_consistency(eps_values)
-        quality_score = _score_quality(eps_values, pe_model_r2, quality_flags)
-        eps_status = "neutral_fallback_no_forward_model"
+        eps_status = "neutral_fallback_no_eps_regression_model"
         eps_source = "neutral_fallback"
         confidence = "low"
     else:
         future_profit_score = _score_future_profit(eps_2026)
         growth_score = _score_growth(eps_2026, eps_2027)
-        consistency_score = _score_consistency(eps_values)
-        quality_score = _score_quality(eps_values, pe_model_r2, quality_flags)
         cc_score = 0.30 * future_profit_score + 0.30 * growth_score + 0.20 * consistency_score + 0.20 * quality_score
         cc_score = clamp(cc_score, 0.0, 10.0)
-        if has_history and len(paired_pe) >= 3:
-            eps_status = "actual_history_plus_m7_pe_model"
-            confidence = "high" if safe_num(pe_model_r2, 0.0) >= 0.60 else "medium"
-        elif has_history:
-            eps_status = "actual_history_plus_m7_pe_prior"
-            confidence = "medium"
+        if has_history and eps_model.get("best_model"):
+            eps_status = "actual_history_plus_eps_regression"
+            confidence = "high" if safe_num(eps_model.get("best_r2"), 0.0) >= 0.70 else "medium"
         elif global_projection is not None:
-            eps_status = "etf_global_proxy" if is_etf_or_skip else "global_eps_model_imputed"
-            gp_n = safe_num(global_projection.get("sample_count"), 0)
-            confidence = "medium" if gp_n >= 5 else "low"
+            eps_status = "etf_global_proxy" if is_etf_or_skip else "global_eps_regression_imputed"
+            confidence = "medium" if safe_num(global_projection.get("sample_count"), 0) >= 8 else "low"
         else:
-            eps_status = "imputed_from_m7_price_pe"
-            confidence = "medium" if pe_prior is not None else "low"
+            eps_status = "eps_regression_partial"
+            confidence = "medium"
         eps_source = f"2026:{src_2026};2027:{src_2027}"
         if global_projection is not None:
             eps_source += f";global:{global_projection.get('source')}"
@@ -2067,36 +2233,43 @@ def compute_eps_engine_v26(feature: dict[str, Any], trend: dict[str, Any] | None
         "future_growth_score": round2(growth_score),
         "middle_consistency_score": round2(consistency_score),
         "quality_score": round2(quality_score),
-        # UI-compatible aliases for m1_competitive.html v2
         "future_profit": round2(future_profit_score),
         "future_growth": round2(growth_score),
         "consistency": round2(consistency_score),
         "quality": round2(quality_score),
-        "eps_2025": round2(analyst_2025) if analyst_2025 is not None else None,
+        "eps_2025": round2(eps_2025) if eps_2025 is not None else None,
         "eps_2026": round2(eps_2026) if eps_2026 is not None else None,
         "eps_2027": round2(eps_2027) if eps_2027 is not None else None,
+        "model_eps_2025": round2(model_eps_2025) if model_eps_2025 is not None else None,
         "model_eps_2026": round2(model_eps_2026) if model_eps_2026 is not None else None,
         "model_eps_2027": round2(model_eps_2027) if model_eps_2027 is not None else None,
         "analyst_eps_2026": round2(analyst_2026) if analyst_2026 is not None else None,
         "analyst_eps_2027": round2(analyst_2027) if analyst_2027 is not None else None,
         "analyst_count_2026": analyst_count_2026,
         "analyst_count_2027": analyst_count_2027,
-        "pe_model_2026": round2(pe_2026) if pe_2026 is not None else None,
-        "pe_model_2027": round2(pe_2027) if pe_2027 is not None else None,
-        "pe_prior": round2(pe_prior) if pe_prior is not None else None,
-        "pe_history_r2": round2(pe_model_r2) if pe_model_r2 is not None else None,
+        "eps_regression_model": eps_model.get("best_model"),
+        "eps_regression_r2": round2(eps_model.get("best_r2")) if eps_model.get("best_r2") is not None else None,
+        "eps_regression_sample_count": eps_model.get("sample_count"),
+        "price_regression_model": price_model.get("best_model"),
+        "price_regression_r2": round2(price_model.get("best_r2")) if price_model.get("best_r2") is not None else None,
+        "annual_price_alignment_method": "52_week_bucket_latest_complete_year_2025",
+        "annual_price_years_used": years,
+        "price_model_2025": round2(price_2025) if price_2025 is not None else None,
         "price_model_2026": round2(price_2026) if price_2026 is not None else None,
         "price_model_2027": round2(price_2027) if price_2027 is not None else None,
-        "global_earnings_yield": round2(global_projection.get("earnings_yield") * 100.0) if global_projection is not None and global_projection.get("earnings_yield") is not None else None,
-        "global_growth_assumption": round2(global_projection.get("growth") * 100.0) if global_projection is not None and global_projection.get("growth") is not None else None,
+        # Legacy-compatible fields kept but no longer drive CC quality.
+        "pe_model_2026": None,
+        "pe_model_2027": None,
+        "pe_prior": None,
+        "pe_history_r2": None,
         "global_model_source": global_projection.get("source") if global_projection is not None else None,
         "global_model_sample_count": global_projection.get("sample_count") if global_projection is not None else None,
+        "global_model_r2": round2(global_projection.get("r2")) if global_projection is not None and global_projection.get("r2") is not None else None,
         "eps_status": eps_status,
         "eps_source": eps_source,
         "confidence": confidence,
         "warnings": warnings,
     }
-
 
 def compute_overheat_penalty(timing_raw: float) -> float:
     pts = curve_params["overheat_penalty_curve"]["snapshot"]["points"]
