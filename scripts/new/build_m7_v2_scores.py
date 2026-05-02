@@ -1724,7 +1724,166 @@ def _score_quality(eps_values: list[float], model_r2: float | None, flags: list[
     return clamp(score, 0.0, 10.0)
 
 
-def compute_eps_engine_v26(feature: dict[str, Any], trend: dict[str, Any] | None = None, structure: dict[str, Any] | None = None) -> dict[str, Any]:
+
+
+def _median(values: list[float]) -> float | None:
+    arr = sorted([safe_num(v, None) for v in values if safe_num(v, None) is not None and math.isfinite(safe_num(v, 0.0))])
+    if not arr:
+        return None
+    n = len(arr)
+    mid = n // 2
+    if n % 2 == 1:
+        return arr[mid]
+    return (arr[mid - 1] + arr[mid]) / 2.0
+
+
+def _eps_cagr(eps_values: list[float]) -> float | None:
+    vals = [safe_num(v, None) for v in eps_values if safe_num(v, None) is not None]
+    positives = [v for v in vals if v is not None and v > 0]
+    if len(positives) < 2:
+        return None
+    first = positives[0]
+    last = positives[-1]
+    years = max(1, len(positives) - 1)
+    try:
+        return clamp((last / first) ** (1.0 / years) - 1.0, -0.80, 1.50)
+    except Exception:
+        return None
+
+
+def build_global_eps_model(symbols: list[str], bundle: InputBundle) -> dict[str, Any]:
+    """
+    Build a cross-sectional EPS imputation model from stocks that have both EPS history
+    and M7/runtime weekly prices. This is the Option 3 global model:
+
+      known stocks:  annual EPS + annual avg price -> earnings yield (EPS / Price)
+      no-EPS stocks: future EPS = future price * category/global earnings yield
+
+    Notes:
+    - This is intentionally non-breaking and only used as fallback inside eps_engine.
+    - It does not modify M7 valuation/trend/structure scores.
+    - For ETFs this produces an earnings-power proxy, not a company EPS statement.
+    """
+    eps_rows = _eps_data_rows()
+    global_yields: list[float] = []
+    global_growths: list[float] = []
+    by_category: dict[str, dict[str, list[float]]] = {}
+
+    for raw_sym in symbols:
+        sym = normalize_symbol(raw_sym)
+        eps_info = eps_rows.get(sym, {})
+        eps_hist = _extract_eps_history(eps_info)
+        eps_values = [r.get("eps") for r in eps_hist if safe_num(r.get("eps"), None) is not None]
+        if len(eps_values) < 2:
+            continue
+
+        feature = build_feature_row(sym, bundle)
+        category_sub = str(feature.get("valuation", {}).get("category_sub") or "UNKNOWN")
+        weekly_prices = feature.get("weekly_prices", []) if isinstance(feature.get("weekly_prices"), list) else []
+        annual_prices = _annual_avg_prices_from_weekly(weekly_prices)
+        if not annual_prices:
+            continue
+
+        n = min(len(annual_prices), len(eps_values))
+        if n <= 0:
+            continue
+        aligned_prices = annual_prices[-n:]
+        aligned_eps = eps_values[-n:]
+
+        sample_yields: list[float] = []
+        for p, e in zip(aligned_prices, aligned_eps):
+            p = safe_num(p, None)
+            e = safe_num(e, None)
+            if p is not None and p > 0 and e is not None and e > 0:
+                yld = e / p
+                if math.isfinite(yld) and 0.0001 <= yld <= 1.0:
+                    sample_yields.append(yld)
+
+        if not sample_yields:
+            continue
+
+        stock_yield = _median(sample_yields[-5:]) or _median(sample_yields)
+        stock_growth = _eps_cagr(aligned_eps)
+        if stock_yield is not None:
+            global_yields.append(stock_yield)
+            by_category.setdefault(category_sub, {"yield": [], "growth": []})["yield"].append(stock_yield)
+        if stock_growth is not None:
+            global_growths.append(stock_growth)
+            by_category.setdefault(category_sub, {"yield": [], "growth": []})["growth"].append(stock_growth)
+
+    global_yield = _median(global_yields) or 0.04
+    global_growth = _median(global_growths) or 0.08
+
+    category_models: dict[str, dict[str, Any]] = {}
+    for cat, vals in by_category.items():
+        category_models[cat] = {
+            "earnings_yield": _median(vals.get("yield", [])) or global_yield,
+            "growth": _median(vals.get("growth", [])) or global_growth,
+            "sample_count": len(vals.get("yield", [])),
+        }
+
+    return {
+        "global_earnings_yield": global_yield,
+        "global_growth": global_growth,
+        "global_sample_count": len(global_yields),
+        "category_models": category_models,
+    }
+
+
+def _predict_eps_from_global_model(
+    feature: dict[str, Any],
+    trend: dict[str, Any] | None,
+    valuation: dict[str, Any],
+    annual_prices: list[float],
+    global_eps_model: dict[str, Any] | None,
+) -> dict[str, Any]:
+    """Use category/global earnings yield to impute forward EPS for no-EPS stocks."""
+    model = global_eps_model or {}
+    category_sub = str(valuation.get("category_sub") or "UNKNOWN")
+    cat_model = (model.get("category_models") or {}).get(category_sub, {}) if isinstance(model, dict) else {}
+
+    earnings_yield = safe_num(cat_model.get("earnings_yield"), None)
+    model_source = "category_global_eps_model"
+    sample_count = safe_num(cat_model.get("sample_count"), 0)
+    if earnings_yield is None or earnings_yield <= 0:
+        earnings_yield = safe_num(model.get("global_earnings_yield"), 0.04)
+        model_source = "market_global_eps_model"
+        sample_count = safe_num(model.get("global_sample_count"), 0)
+
+    growth = safe_num(cat_model.get("growth"), None)
+    if growth is None:
+        growth = safe_num(model.get("global_growth"), 0.08)
+    growth = clamp(growth, -0.50, 0.80)
+
+    price_now = safe_num(valuation.get("regression_actual_price_now"), None)
+    if price_now is None and annual_prices:
+        price_now = annual_prices[-1]
+
+    trend_pct = safe_num((trend or {}).get("linear_annualized_pct"), safe_num(feature.get("returns", {}).get("12m"), 0.0))
+    trend_rate = clamp(trend_pct / 100.0, -0.80, 1.50)
+
+    price_2025 = price_now if price_now is not None else None
+    price_2026 = price_now * ((1.0 + trend_rate) ** 1) if price_now is not None else None
+    price_2027 = price_now * ((1.0 + trend_rate) ** 2) if price_now is not None else None
+
+    eps_2025 = price_2025 * earnings_yield if price_2025 is not None else None
+    eps_2026 = price_2026 * earnings_yield if price_2026 is not None else None
+    eps_2027 = eps_2026 * (1.0 + growth) if eps_2026 is not None else None
+
+    return {
+        "eps_2025": eps_2025,
+        "eps_2026": eps_2026,
+        "eps_2027": eps_2027,
+        "price_2025": price_2025,
+        "price_2026": price_2026,
+        "price_2027": price_2027,
+        "earnings_yield": earnings_yield,
+        "growth": growth,
+        "source": model_source,
+        "sample_count": int(sample_count or 0),
+    }
+
+def compute_eps_engine_v26(feature: dict[str, Any], trend: dict[str, Any] | None = None, structure: dict[str, Any] | None = None, global_eps_model: dict[str, Any] | None = None) -> dict[str, Any]:
     """
     EPS Engine v2.6 add-on.
 
@@ -1745,31 +1904,11 @@ def compute_eps_engine_v26(feature: dict[str, Any], trend: dict[str, Any] | None
     forward_map = _extract_forward_eps(eps_info)
     quality_flags = eps_info.get("quality_flag", []) if isinstance(eps_info, dict) else []
 
-    # ETF / known no-EPS handling. Universe type is not always carried into feature, so use PE availability too.
+    # ETF / no-company-EPS symbols are not skipped anymore.
+    # Under Option 3, they use the global EPS model as an earnings-power proxy.
+    # This is not accounting EPS; the status/warnings make that explicit.
     category_sub = str(valuation.get("category_sub") or "")
-    if "ETF" in category_sub.upper() or bool(eps_info.get("skip_eps")):
-        return {
-            "cc_score": 5.999,
-            "future_profit_score": 5.999,
-            "future_growth_score": 5.999,
-            "middle_consistency_score": 5.999,
-            "quality_score": 5.999,
-            "eps_2025": None,
-            "eps_2026": None,
-            "eps_2027": None,
-            "model_eps_2026": None,
-            "model_eps_2027": None,
-            "analyst_eps_2026": None,
-            "analyst_eps_2027": None,
-            "pe_model": None,
-            "price_model_2026": None,
-            "price_model_2027": None,
-            "model_r2": None,
-            "eps_status": "etf_or_skip_eps",
-            "eps_source": "neutral_fallback",
-            "confidence": "low",
-            "warnings": ["eps_not_applicable"],
-        }
+    is_etf_or_skip = "ETF" in category_sub.upper() or bool(eps_info.get("skip_eps"))
 
     fair_pe = safe_num(valuation.get("regression_fair_pe"), safe_num(valuation.get("individual_fair_pe"), None))
     current_forward_pe = safe_num(valuation.get("forward_pe"), None)
@@ -1840,6 +1979,16 @@ def compute_eps_engine_v26(feature: dict[str, Any], trend: dict[str, Any] | None
     model_eps_2026 = price_2026 / pe_2026 if price_2026 is not None and pe_2026 is not None and pe_2026 > 0 else None
     model_eps_2027 = price_2027 / pe_2027 if price_2027 is not None and pe_2027 is not None and pe_2027 > 0 else None
 
+    global_projection = None
+    if (model_eps_2026 is None or model_eps_2027 is None or is_etf_or_skip) and global_eps_model:
+        global_projection = _predict_eps_from_global_model(feature, trend, valuation, annual_prices, global_eps_model)
+        if model_eps_2026 is None or is_etf_or_skip:
+            model_eps_2026 = global_projection.get("eps_2026")
+            price_2026 = global_projection.get("price_2026")
+        if model_eps_2027 is None or is_etf_or_skip:
+            model_eps_2027 = global_projection.get("eps_2027")
+            price_2027 = global_projection.get("price_2027")
+
     analyst_2025 = forward_map.get(2025, {}).get("eps")
     analyst_2026 = forward_map.get(2026, {}).get("eps")
     analyst_2027 = forward_map.get(2027, {}).get("eps")
@@ -1874,6 +2023,10 @@ def compute_eps_engine_v26(feature: dict[str, Any], trend: dict[str, Any] | None
         warnings.append("pe_history_regression_insufficient")
     if src_2026 in {"analyst_low_count", "missing"} or src_2027 in {"analyst_low_count", "missing"}:
         warnings.append("forward_eps_low_confidence_or_missing")
+    if global_projection is not None:
+        warnings.append("global_eps_model_used")
+    if is_etf_or_skip:
+        warnings.append("etf_or_skip_eps_global_proxy_not_company_eps")
 
     if not has_model:
         cc_score = 5.999
@@ -1897,10 +2050,16 @@ def compute_eps_engine_v26(feature: dict[str, Any], trend: dict[str, Any] | None
         elif has_history:
             eps_status = "actual_history_plus_m7_pe_prior"
             confidence = "medium"
+        elif global_projection is not None:
+            eps_status = "etf_global_proxy" if is_etf_or_skip else "global_eps_model_imputed"
+            gp_n = safe_num(global_projection.get("sample_count"), 0)
+            confidence = "medium" if gp_n >= 5 else "low"
         else:
             eps_status = "imputed_from_m7_price_pe"
             confidence = "medium" if pe_prior is not None else "low"
         eps_source = f"2026:{src_2026};2027:{src_2027}"
+        if global_projection is not None:
+            eps_source += f";global:{global_projection.get('source')}"
 
     return {
         "cc_score": round2(cc_score),
@@ -1928,6 +2087,10 @@ def compute_eps_engine_v26(feature: dict[str, Any], trend: dict[str, Any] | None
         "pe_history_r2": round2(pe_model_r2) if pe_model_r2 is not None else None,
         "price_model_2026": round2(price_2026) if price_2026 is not None else None,
         "price_model_2027": round2(price_2027) if price_2027 is not None else None,
+        "global_earnings_yield": round2(global_projection.get("earnings_yield") * 100.0) if global_projection is not None and global_projection.get("earnings_yield") is not None else None,
+        "global_growth_assumption": round2(global_projection.get("growth") * 100.0) if global_projection is not None and global_projection.get("growth") is not None else None,
+        "global_model_source": global_projection.get("source") if global_projection is not None else None,
+        "global_model_sample_count": global_projection.get("sample_count") if global_projection is not None else None,
         "eps_status": eps_status,
         "eps_source": eps_source,
         "confidence": confidence,
@@ -2178,6 +2341,7 @@ def main() -> int:
             }
         rows_out: list[dict[str, Any]] = []
         eps_rows = _eps_data_rows()
+        global_eps_model = build_global_eps_model(symbols, bundle)
 
         for sym in symbols:
             norm_sym = normalize_symbol(sym)
@@ -2237,7 +2401,7 @@ def main() -> int:
             m7_effective_score = m7_raw_score if m7_v2_fallback_to_raw else m7_v2_score
             m7_effective_score_source = "m7_raw_score" if m7_v2_fallback_to_raw else "m7_v2_score"
 
-            eps_engine = compute_eps_engine_v26(feature, trend, structure)
+            eps_engine = compute_eps_engine_v26(feature, trend, structure, global_eps_model)
             weekly_count = len([
                 x for x in feature.get("weekly_prices", [])
                 if safe_num(x, None) is not None and safe_num(x, 0.0) > 0
@@ -2426,6 +2590,7 @@ def main() -> int:
             "scope": {
                 "scenarios": ["M7_RAW", "M7_V2", "M7_EFFECTIVE", "M7_FINAL"],
                 "symbol_count": len(rows_out),
+                "global_eps_model_sample_count": global_eps_model.get("global_sample_count"),
             },
             "rows": rows_out,
         }
