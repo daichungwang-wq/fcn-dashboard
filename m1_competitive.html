@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>M1 Competitive Score / EPS Engine v2.7</title>
+  <title>M1 Competitive Score / EPS Engine v2.8</title>
   <style>
     :root {
       --bg: #f6f7fb;
@@ -168,8 +168,8 @@
 <body>
   <div class="wrap">
     <section class="hero">
-      <h1>M1 Competitive Score / EPS Engine v2.7</h1>
-      <p>本頁直接讀取 M7 產出的 <b>eps_engine.cc_score</b>，重點顯示 EPS / CC Engine 的資料完整度、解釋力與 fallback 可信度。Global fallback 只作最後備援，若 global_model_r2 偏低，頁面會明確提示。</p>
+      <h1>M1 Competitive Score / EPS Engine v2.8</h1>
+      <p>本頁直接讀取 M7 產出的 <b>eps_engine.cc_score</b>，重點顯示 CC Engine 的資料來源、可信度與 fallback 層級。新版 Rank A/B/C/D 以 <b>CC 來源可信度</b> 為主：正常 EPS → partial EPS → runtime fundamentals → global / ETF / proxy。</p>
       <span class="path">Source: ./data/m7_sandbox/m7_v2_scores.json</span>
     </section>
 
@@ -187,10 +187,10 @@
         </select>
         <select id="gradeFilter">
           <option value="all">全部可信等級</option>
-          <option value="A">A 高可信</option>
-          <option value="B">B 中高可信</option>
-          <option value="C">C 低可信</option>
-          <option value="D">D ETF Proxy</option>
+          <option value="A">A 正常 EPS</option>
+          <option value="B">B Partial EPS</option>
+          <option value="C">C Runtime Fallback</option>
+          <option value="D">D Global / ETF / Proxy</option>
           <option value="UNKNOWN">UNKNOWN</option>
         </select>
       </div>
@@ -203,26 +203,26 @@
       <div class="kpi"><div class="label">Total Symbols</div><div id="kpiTotal" class="value">--</div><div class="note">m7_v2_scores rows count</div></div>
       <div class="kpi"><div class="label">OK Calculated</div><div id="kpiOk" class="value">--</div><div class="note">有 eps_engine.cc_score</div></div>
       <div class="kpi"><div class="label">Average CC</div><div id="kpiAvg" class="value">--</div><div class="note">只計算 status=ok</div></div>
-      <div class="kpi"><div class="label">A / B Coverage</div><div id="kpiTrust" class="value">--</div><div class="note">A: history≥3 & forward≥2；B: history≥3 & forward≥1</div></div>
+      <div class="kpi"><div class="label">A / B Coverage</div><div id="kpiTrust" class="value">--</div><div class="note">A/B = EPS 模型可信來源；C = runtime fallback</div></div>
       <div class="kpi"><div class="label">Global Low R²</div><div id="kpiGlobalLow" class="value">--</div><div class="note">global_model_r2 &lt; 0.10 需警示</div></div>
     </section>
 
     <section class="explain-grid">
       <div class="explain-card">
-        <h3><span class="grade-dot grade-a">A</span>history EPS ≥3 + forward EPS ≥2</h3>
-        <p>高可信：至少 3 年歷史 EPS（例如 2024 / 2023 / 2022...），且至少 2 年 forward EPS（2025 / 2026 / 2027 任兩年）。</p>
+        <h3><span class="grade-dot grade-a">A</span>正常 EPS 模式</h3>
+        <p>高可信：資料齊全，使用 EPS history + forward EPS / EPS regression 產生 CC；可直接進 M1 排序。</p>
       </div>
       <div class="explain-card">
-        <h3><span class="grade-dot grade-b">B</span>history EPS ≥3 + forward EPS ≥1</h3>
-        <p>中高可信：至少 3 年歷史 EPS，且至少 1 年 forward EPS；可以進模型，但 forward 覆蓋不足要提示。</p>
+        <h3><span class="grade-dot grade-b">B</span>Partial EPS 模式</h3>
+        <p>中高可信：有部分 EPS / forward EPS，但 analyst_count 或 forward coverage 不完整；可用，但需看 warning。</p>
       </div>
       <div class="explain-card">
-        <h3><span class="grade-dot grade-c">C</span>history EPS ≥1 + forward EPS ≥1</h3>
-        <p>低可信：只有部分 EPS 資料，至少有 1 筆歷史 EPS 與 1 筆 forward EPS；可顯示但不應當成完整模型。</p>
+        <h3><span class="grade-dot grade-c">C</span>Runtime Fundamental Fallback</h3>
+        <p>中可信：EPS 結構資料不足，改用 market_runtime 的 trailing_eps / forward_eps / PE / margin / FCF / ROE / debt 等欄位補 CC。</p>
       </div>
       <div class="explain-card">
-        <h3><span class="grade-dot grade-d">D</span>無 history EPS</h3>
-        <p>無公司歷史 EPS：只能使用 fallback / proxy / global model；ETF 也歸入 D，不能視為公司獲利能力。</p>
+        <h3><span class="grade-dot grade-d">D</span>Global / ETF / Proxy</h3>
+        <p>低可信：沒有足夠 EPS，也沒有足夠 runtime fundamentals；或 ETF / global proxy。只能參考，不可視為公司 EPS。</p>
       </div>
     </section>
 
@@ -341,17 +341,30 @@
     }
 
     function classifyEPS(eps) {
-      const source = String(pick(eps?.eps_source, eps?.source, eps?.eps_status, "") || "").toLowerCase();
+      const explicitRank = String(pick(eps?.cc_rank, eps?.eps_coverage_grade, eps?.coverage_grade, "") || "").toUpperCase();
+      if (["A", "B", "C", "D"].includes(explicitRank)) return explicitRank;
+
+      const sourceText = String([
+        eps?.cc_source,
+        eps?.cc_method,
+        eps?.eps_source,
+        eps?.source,
+        eps?.eps_status,
+        eps?.runtime_fundamental_source,
+        eps?.global_model_source
+      ].filter(Boolean).join(" ")).toLowerCase();
       const quoteType = String(eps?.quote_type || eps?.quoteType || "").toLowerCase();
       const historyCount = getHistoryEPSCount(eps);
       const forwardCount = countForwardEPS(eps);
 
-      // ETF / proxy 沒有公司 EPS，直接視為 D。
-      if (source.includes("etf_global_proxy") || source.includes("etf_proxy") || source.includes("proxy_etf") || quoteType === "etf") {
-        return "D";
-      }
+      // New definition: rank by CC source credibility.
+      if (quoteType === "etf" || sourceText.includes("etf") || sourceText.includes("proxy")) return "D";
+      if (sourceText.includes("runtime_fundamental")) return "C";
+      if (sourceText.includes("global") || sourceText.includes("neutral_fallback") || sourceText.includes("fallback_or_partial")) return "D";
+      if (sourceText.includes("partial") || sourceText.includes("forward_provided_no_count") || sourceText.includes("no_count")) return "B";
+      if (sourceText.includes("full_m7_eps") || sourceText.includes("actual_history_plus_eps_regression") || sourceText.includes("full_eps")) return "A";
 
-      // 振宇定義：A/B/C/D 只看 EPS coverage，不看 R² / quality / consistency。
+      // Backward-compatible fallback for older files.
       if (historyCount >= 3 && forwardCount >= 2) return "A";
       if (historyCount >= 3 && forwardCount >= 1) return "B";
       if (historyCount >= 1 && forwardCount >= 1) return "C";
@@ -359,10 +372,10 @@
     }
 
     function gradeLabel(grade) {
-      if (grade === "A") return "A 高可信";
-      if (grade === "B") return "B 中高可信";
-      if (grade === "C") return "C 低可信";
-      if (grade === "D") return "D 無 history EPS";
+      if (grade === "A") return "A 正常 EPS";
+      if (grade === "B") return "B Partial EPS";
+      if (grade === "C") return "C Runtime";
+      if (grade === "D") return "D Global/ETF";
       return "UNKNOWN";
     }
 
@@ -384,13 +397,16 @@
       if (Number.isFinite(globalR2) && globalR2 < 0.10) {
         warnings.push("⚠️ Global model R² < 0.10：global fallback 解釋力很低，不可直接相信");
       }
+      if (grade === "B") {
+        warnings.push("B：Partial EPS；forward coverage 或 analyst_count 不完整，需看 warning");
+      }
       if (grade === "C") {
-        warnings.push("C：history EPS ≥1 且 forward EPS ≥1，資料不完整，低可信");
+        warnings.push("C：使用 market_runtime fundamental fallback；中可信，但不是 EPS regression");
       }
       if (grade === "D") {
-        warnings.push("D：無 history EPS；若為 ETF / proxy，不可視為公司獲利能力");
+        warnings.push("D：Global / ETF / proxy；低可信，不可視為公司 EPS");
       }
-      if (String(eps?.eps_source || "").includes("no_count")) {
+      if (String(eps?.eps_source || eps?.cc_source || "").includes("no_count")) {
         warnings.push("forward EPS 有值，但 analyst_count 缺失");
       }
       return [...new Set(warnings)].filter(Boolean);
@@ -409,7 +425,7 @@
         .map(x => {
           const eps = x.eps_engine || x.eps || null;
           const hasScore = Number.isFinite(Number(eps?.cc_score));
-          const confidence = eps?.confidence || "";
+          const confidence = eps?.cc_confidence || eps?.confidence || "";
           const status = hasScore ? "ok" : "no_eps_engine";
           const grade = classifyEPS(eps || {});
           const historyEpsCount = getHistoryEPSCount(eps || {});
@@ -433,8 +449,8 @@
             grade,
             warnings,
             has_eps_data: Boolean(eps?.has_eps_data),
-            eps_status: eps?.eps_status || "",
-            eps_source: eps?.eps_source || eps?.source || "",
+            eps_status: eps?.cc_source || eps?.eps_status || "",
+            eps_source: eps?.cc_method || eps?.eps_source || eps?.source || eps?.cc_source || "",
             eps_regression_model: eps?.eps_regression_model || eps?.regression_model || "",
             eps_regression_r2: pick(eps?.eps_regression_r2, eps?.regression_r2),
             eps_regression_sample_count: historyEpsCount,
@@ -443,6 +459,12 @@
             global_model_sample_count: eps?.global_model_sample_count,
             global_model_r2: eps?.global_model_r2,
             annual_price_years_used: eps?.annual_price_years_used,
+            cc_source: eps?.cc_source || "",
+            cc_confidence: eps?.cc_confidence || "",
+            cc_method: eps?.cc_method || "",
+            runtime_cc_score: eps?.runtime_cc_score,
+            runtime_cc_breakdown: eps?.runtime_cc_breakdown,
+            runtime_fundamental_fields_used: eps?.runtime_fundamental_fields_used,
             components: {
               future_profit: eps?.future_profit === true ? 10 : eps?.future_profit === false ? 0 : score01To10(eps?.future_profit),
               future_growth: eps?.future_growth === true ? 10 : eps?.future_growth === false ? 0 : score01To10(eps?.future_growth),
@@ -533,7 +555,7 @@
             <td>${fmt(r.forward_eps_count, 0)}</td>
             <td>${fmt(r.global_model_r2)}<span class="subline">${r.global_model_source || "--"}</span></td>
             <td>${fmt(r.global_model_sample_count, 0)}<span class="subline">yrs ${fmt(r.annual_price_years_used, 0)}</span></td>
-            <td><span class="pill ${statusClass(r.status, r.confidence, r.grade)}">${statusText}</span><span class="subline">${source}</span><span class="subline">confidence: ${r.confidence || "--"}</span><span class="subline">${epsLine}</span></td>
+            <td><span class="pill ${statusClass(r.status, r.confidence, r.grade)}">${statusText}</span><span class="subline">${source}</span><span class="subline">confidence: ${r.confidence || "--"}</span><span class="subline">runtime: ${r.runtime_cc_score !== undefined && r.runtime_cc_score !== null ? fmt(r.runtime_cc_score) : "--"}</span><span class="subline">${epsLine}</span></td>
             <td>${warningHtml}</td>
           </tr>
         `;
@@ -548,10 +570,10 @@
         count: state.results.length,
         filtered_count: state.filtered.length,
         grade_definition: {
-          A: "history EPS >= 3 and forward EPS >= 2",
-          B: "history EPS >= 3 and forward EPS >= 1",
-          C: "history EPS >= 1 and forward EPS >= 1",
-          D: "no history EPS"
+          A: "normal EPS mode: full EPS / actual history plus EPS regression",
+          B: "partial EPS mode: EPS usable but incomplete forward or analyst count",
+          C: "runtime fundamental fallback: market_runtime fundamentals used for CC",
+          D: "global / ETF / proxy / neutral fallback"
         },
         grade_counts: state.results.reduce((acc, x) => {
           acc[x.grade] = (acc[x.grade] || 0) + 1;
