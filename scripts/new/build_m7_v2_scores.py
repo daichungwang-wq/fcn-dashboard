@@ -1578,12 +1578,29 @@ def compute_exposure_penalty(feature: dict[str, Any]) -> dict[str, Any]:
 # EPS Engine v2.6 add-on (non-breaking)
 # -------------------------
 def _eps_data_rows() -> dict[str, Any]:
-    """Return EPS records by symbol. Supports {meta,data} and flat dict formats."""
+    """Return EPS records by symbol. Supports {meta,data}, flat dict, and list-of-records formats."""
     raw = EPS_HISTORY_DATA
     if isinstance(raw, dict) and isinstance(raw.get("data"), dict):
         return {normalize_symbol(k): v for k, v in raw.get("data", {}).items() if isinstance(v, dict)}
     if isinstance(raw, dict):
-        return {normalize_symbol(k): v for k, v in raw.items() if isinstance(v, dict)}
+        out: dict[str, Any] = {}
+        for k, v in raw.items():
+            if k in {"meta", "summary"}:
+                continue
+            if isinstance(v, dict):
+                sym = normalize_symbol(v.get("symbol") or k)
+                if sym:
+                    out[sym] = v
+        return out
+    if isinstance(raw, list):
+        out: dict[str, Any] = {}
+        for row in raw:
+            if not isinstance(row, dict):
+                continue
+            sym = normalize_symbol(row.get("symbol") or row.get("ticker"))
+            if sym:
+                out[sym] = row
+        return out
     return {}
 
 
@@ -1891,6 +1908,11 @@ def compute_eps_engine_v26(feature: dict[str, Any], trend: dict[str, Any] | None
         "future_growth_score": round2(growth_score),
         "middle_consistency_score": round2(consistency_score),
         "quality_score": round2(quality_score),
+        # UI-compatible aliases for m1_competitive.html v2
+        "future_profit": round2(future_profit_score),
+        "future_growth": round2(growth_score),
+        "consistency": round2(consistency_score),
+        "quality": round2(quality_score),
         "eps_2025": round2(analyst_2025) if analyst_2025 is not None else None,
         "eps_2026": round2(eps_2026) if eps_2026 is not None else None,
         "eps_2027": round2(eps_2027) if eps_2027 is not None else None,
@@ -2155,9 +2177,11 @@ def main() -> int:
                 "p75": percentile(benchmark_values, 0.75),
             }
         rows_out: list[dict[str, Any]] = []
+        eps_rows = _eps_data_rows()
 
         for sym in symbols:
-            feature = build_feature_row(sym, bundle)
+            norm_sym = normalize_symbol(sym)
+            feature = build_feature_row(norm_sym, bundle)
             trend = compute_trend(feature)
             structure = compute_structure(feature)
             regression_valuation = compute_regression_valuation_band(feature, structure)
@@ -2214,16 +2238,21 @@ def main() -> int:
             m7_effective_score_source = "m7_raw_score" if m7_v2_fallback_to_raw else "m7_v2_score"
 
             eps_engine = compute_eps_engine_v26(feature, trend, structure)
+            weekly_count = len([
+                x for x in feature.get("weekly_prices", [])
+                if safe_num(x, None) is not None and safe_num(x, 0.0) > 0
+            ])
             competitive_scope = {
-                "in_universe_150": sym in UNIVERSE_BY_SYMBOL,
-                "has_baseline_row": sym in bundle.baseline_rows,
-                "has_pool30_row": sym in bundle.pool30_rows,
-                "has_market_runtime": sym in bundle.market_runtime,
-                "has_weekly_prices": len([x for x in feature.get("weekly_prices", []) if safe_num(x, None) is not None and safe_num(x, 0.0) > 0]) > 0,
-                "has_eps_data": bool(_eps_data_rows().get(sym)),
+                "in_universe_150": norm_sym in UNIVERSE_BY_SYMBOL,
+                "has_baseline_row": norm_sym in bundle.baseline_rows,
+                "has_pool30_row": norm_sym in bundle.pool30_rows,
+                "has_market_runtime": norm_sym in bundle.market_runtime,
+                "has_weekly_prices": weekly_count > 0,
+                "weekly_price_count": weekly_count,
+                "has_eps_data": norm_sym in eps_rows,
                 "score_source": (
                     "full_m7_eps"
-                    if (len([x for x in feature.get("weekly_prices", []) if safe_num(x, None) is not None and safe_num(x, 0.0) > 0]) >= 52 and bool(_eps_data_rows().get(sym)))
+                    if (weekly_count >= 52 and norm_sym in eps_rows)
                     else "fallback_or_partial"
                 ),
             }
