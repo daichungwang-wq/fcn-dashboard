@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>M1 Review Console v2.4 EPS Competitive</title>
+  <title>M1 Review Console v2.3</title>
   <style>
     :root{
       --bg:#f4f7fb;
@@ -199,51 +199,6 @@
       gap:10px;
       margin-top:10px;
     }
-
-    .eps-coverage-title{
-      margin-top:16px;
-      margin-bottom:8px;
-      font-size:15px;
-      font-weight:900;
-      color:#0f172a;
-    }
-
-    .eps-coverage-grid{
-      display:grid;
-      grid-template-columns:repeat(5,1fr);
-      gap:10px;
-      margin-top:8px;
-    }
-
-    .eps-card{
-      border:1px solid #e7edf5;
-      border-radius:14px;
-      background:#ffffff;
-      padding:12px;
-      min-height:116px;
-    }
-    .eps-card .t{
-      font-size:12px;
-      color:#64748b;
-      margin-bottom:8px;
-      font-weight:800;
-      line-height:1.4;
-    }
-    .eps-card .v{
-      font-size:22px;
-      font-weight:900;
-      line-height:1.15;
-    }
-    .eps-card .s{
-      margin-top:8px;
-      font-size:12px;
-      color:#64748b;
-      line-height:1.45;
-    }
-    .eps-card.rank-a{background:#f0fdf4;}
-    .eps-card.rank-b{background:#eff6ff;}
-    .eps-card.rank-c{background:#fff7ed;}
-    .eps-card.rank-d{background:#fef2f2;}
 
     .mini-card{
       border:1px solid #e7edf5;
@@ -654,6 +609,64 @@
       color:#3730a3;
     }
 
+
+
+    .eps-coverage-section{
+      margin-top:16px;
+    }
+    .section-subtitle{
+      font-size:16px;
+      font-weight:900;
+      margin:8px 0 10px;
+    }
+    .eps-coverage-grid{
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      gap:10px;
+      margin-top:8px;
+    }
+    .eps-coverage-grid .stat{
+      min-height:118px;
+    }
+    .eps-rank-a{ background:#ecfdf3; }
+    .eps-rank-b{ background:#eff6ff; }
+    .eps-rank-c{ background:#fff7ed; }
+    .eps-rank-d{ background:#fef2f2; }
+    .eps-glossary-card{
+      margin-top:10px;
+      border:1px dashed #cdd9ea;
+      border-radius:14px;
+      background:#fafcff;
+      padding:10px 12px;
+      font-size:12px;
+      color:#475569;
+      line-height:1.65;
+      font-weight:700;
+    }
+    .stock-row{
+      position:relative;
+      padding-right:118px;
+    }
+    .market-mini{
+      position:absolute;
+      top:12px;
+      right:12px;
+      min-width:94px;
+      text-align:right;
+      font-size:12px;
+      line-height:1.35;
+      color:#475569;
+      font-weight:800;
+    }
+    .market-mini .price{
+      color:#0f172a;
+      font-size:13px;
+      font-weight:900;
+    }
+    .market-up{ color:#16a34a; }
+    .market-down{ color:#dc2626; }
+    .market-flat{ color:#64748b; }
+
     @media (max-width: 1550px){
       .toolbar{
         grid-template-columns:1fr 1fr 1fr 1fr;
@@ -668,7 +681,9 @@
       .summary-grid{
         grid-template-columns:repeat(2,1fr);
       }
-      .category-summary-grid,
+      .category-summary-grid{
+        grid-template-columns:repeat(3,1fr);
+      }
       .eps-coverage-grid{
         grid-template-columns:repeat(3,1fr);
       }
@@ -681,7 +696,9 @@
       .detail-grid{
         grid-template-columns:1fr;
       }
-      .category-summary-grid,
+      .category-summary-grid{
+        grid-template-columns:repeat(2,1fr);
+      }
       .eps-coverage-grid{
         grid-template-columns:repeat(2,1fr);
       }
@@ -707,7 +724,7 @@
     <div class="hero">
       <div class="hero-top">
         <div>
-          <h1>M1 Review Console v2.4｜EPS Competitive Integrated</h1>
+          <h1>M1 Review Console v2.5</h1>
           <div class="sub">
             <b>L1：</b>五大分類卡片，只先看 AI 推薦重點與關鍵數據，方便人工初篩。<br>
             <b>L2 / L3 / L4：</b>右側逐層展開，看 rule、看市場、做人為覆核與備註。<br>
@@ -794,8 +811,13 @@
 
           <div class="category-summary-grid" id="categorySummaryGrid"></div>
 
-          <div class="eps-coverage-title">1.5 EPS Coverage</div>
-          <div class="eps-coverage-grid" id="epsCoverageGrid"></div>
+          <div class="eps-coverage-section">
+            <div class="section-subtitle">1.5 EPS Coverage</div>
+            <div class="eps-coverage-grid" id="epsCoverageGrid"></div>
+            <div class="eps-glossary-card" id="epsGlossaryBox">
+              ⓘ 名詞說明：C2P = Capex to Profit ｜ CC = Competitive Score ｜ M7n = M7_v2 Score
+            </div>
+          </div>
         </div>
       </div>
 
@@ -807,9 +829,10 @@
         <div class="rule-wrap">
           <div class="formula-box">
             <b>2.1 M1 公式簡介</b><br>
-            M1_raw = 0.45 × Capex_to_Profit + 0.30 × Competitive Score + 0.25 × M7_v2 Score<br>
-            Competitive Score = eps_engine.cc_score（由 build_m7_v2_scores.py 產出）<br>
-            M7_v2 Score = data/m7_sandbox/m7_v2_scores.json 的 m7_v2_score<br>
+            M1_raw = 0.45 × C2P + 0.30 × CC + 0.25 × M7n<br>
+            C2P = Capex to Profit<br>
+            CC = Competitive Score（eps_engine.cc_score，由 build_m7_v2_scores.py 產出）<br>
+            M7n = M7_v2 Score（data/m7_sandbox/m7_v2_scores.json）<br>
             M1_score = normalize to max 10<br>
             AI 推薦 = STRONG + PASS
           </div>
@@ -855,8 +878,7 @@
       pool30Raw: [],
       fundamentalMap: {},
       competitiveCards: {},
-      m7Rows: [],
-      m7Map: {},
+      m7ScoreMap: {},
       candidatePrepared: [],
       pool30Prepared: [],
       candidateScored: [],
@@ -922,6 +944,81 @@
       return Number.isFinite(x) ? (x * 100).toFixed(digits) + "%" : "-";
     }
 
+
+    function fmtPrice(v) {
+      const x = Number(v);
+      if (!Number.isFinite(x)) return "-";
+      return "$" + x.toFixed(x >= 100 ? 2 : 2);
+    }
+
+    function marketClass(v) {
+      const x = Number(v);
+      if (!Number.isFinite(x) || Math.abs(x) < 0.000001) return "market-flat";
+      return x > 0 ? "market-up" : "market-down";
+    }
+
+    function fmtPctSigned(v, digits = 2) {
+      const x = Number(v);
+      if (!Number.isFinite(x)) return "-";
+      return `${x >= 0 ? "+" : ""}${(x * 100).toFixed(digits)}%`;
+    }
+
+    function normalizeM7Scores(raw) {
+      const rows = Array.isArray(raw) ? raw : (Array.isArray(raw?.rows) ? raw.rows : []);
+      const out = {};
+      rows.forEach(r => {
+        const sym = String(r?.symbol || "").toUpperCase().trim();
+        if (sym) out[sym] = r;
+      });
+      return out;
+    }
+
+    function getM7Row(symbol) {
+      return state.m7ScoreMap?.[String(symbol || "").toUpperCase().trim()] || null;
+    }
+
+    function epsCoverageFromEngine(eps) {
+      if (!eps || typeof eps !== "object") {
+        return { grade: "D", historyCount: 0, forwardCount: 0 };
+      }
+      const historyCount = Number(eps.eps_regression_sample_count || 0);
+      const forwardCount = [eps.eps_2025, eps.eps_2026, eps.eps_2027]
+        .filter(v => Number.isFinite(Number(v))).length;
+      let grade = "D";
+      if (historyCount >= 3 && forwardCount >= 2) grade = "A";
+      else if (historyCount >= 3 && forwardCount >= 1) grade = "B";
+      else if (historyCount >= 1 && forwardCount >= 1) grade = "C";
+      else grade = "D";
+      return { grade, historyCount, forwardCount };
+    }
+
+    function computeNewM1(row) {
+      const c2p = n(row.capex_score ?? row.breakdown?.capex_score, 5.999);
+      const cc = n(row.competitive_score, 5.999);
+      const m7n = n(row.m7_v2_score, n(row.breakdown?.m7_score, 5.999));
+      const raw = 0.45 * c2p + 0.30 * cc + 0.25 * m7n;
+      return {
+        raw_m1_score: +raw.toFixed(2),
+        M1_score: +Math.max(0, Math.min(10, raw)).toFixed(2),
+        breakdown: {
+          capex_score: c2p,
+          competitive_score: cc,
+          m7_v2_score: m7n,
+          m3_score: null,
+          m7_score: m7n
+        }
+      };
+    }
+
+    function applyNewM1Formula(rows) {
+      const computed = rows.map(row => {
+        const s = computeNewM1(row);
+        return { ...row, ...s };
+      }).sort((a, b) => n(b.M1_score, -999) - n(a.M1_score, -999));
+      computed.forEach((row, idx) => { row.rank = idx + 1; });
+      return computed;
+    }
+
     function escapeHtml(str) {
       return String(str ?? "")
         .replaceAll("&","&amp;")
@@ -942,111 +1039,6 @@
       if (raw.includes("defensive")) return "defensive";
       if (raw.includes("speculative")) return "speculative";
       return "speculative";
-    }
-
-    function normalizeM7Rows(raw) {
-      if (Array.isArray(raw)) return raw.filter(x => x && typeof x === "object");
-      if (raw && Array.isArray(raw.rows)) return raw.rows.filter(x => x && typeof x === "object");
-      return [];
-    }
-
-    function buildM7Map(rows) {
-      const out = {};
-      rows.forEach(row => {
-        const sym = String(row.symbol || "").toUpperCase().trim();
-        if (sym) out[sym] = row;
-      });
-      return out;
-    }
-
-    function finiteOrNull(v) {
-      const x = Number(v);
-      return Number.isFinite(x) ? x : null;
-    }
-
-    function countUsableForwardEPS(eps) {
-      if (!eps || typeof eps !== "object") return 0;
-      return [eps.eps_2025, eps.eps_2026, eps.eps_2027]
-        .map(finiteOrNull)
-        .filter(x => x !== null && x > 0).length;
-    }
-
-    function classifyEPSCoverage(row) {
-      const m7 = state.m7Map[String(row.symbol || "").toUpperCase()] || row.m7_row || {};
-      const eps = m7.eps_engine || row.eps_engine || {};
-      const scope = m7.competitive_scope || {};
-      const status = String(eps.eps_status || "").toLowerCase();
-      const hasCompanyEPS = scope.has_eps_data === true && !status.includes("global") && !status.includes("etf") && !status.includes("neutral_fallback");
-      const historyCount = hasCompanyEPS ? Number(eps.eps_regression_sample_count || 0) : 0;
-      const forwardCount = hasCompanyEPS ? countUsableForwardEPS(eps) : 0;
-
-      let grade = "D";
-      if (historyCount >= 3 && forwardCount >= 2) grade = "A";
-      else if (historyCount >= 3 && forwardCount >= 1) grade = "B";
-      else if (historyCount >= 1 && forwardCount >= 1) grade = "C";
-
-      return { grade, historyCount, forwardCount, eps, m7 };
-    }
-
-    function attachM7DataToRows(rows) {
-      return rows.map(row => {
-        const m7 = state.m7Map[row.symbol] || {};
-        const eps = m7.eps_engine || {};
-        return {
-          ...row,
-          m7_row: m7,
-          eps_engine: eps,
-          competitive_score: finiteOrNull(eps.cc_score),
-          competitive_future_profit: finiteOrNull(eps.future_profit_score),
-          competitive_future_growth: finiteOrNull(eps.future_growth_score),
-          competitive_consistency: finiteOrNull(eps.middle_consistency_score),
-          competitive_quality: finiteOrNull(eps.quality_score),
-          competitive_growth_rate: finiteOrNull(eps.future_growth_rate),
-          m7_v2_score: finiteOrNull(m7.m7_v2_score),
-          m7_effective_score: finiteOrNull(m7.m7_effective_score)
-        };
-      });
-    }
-
-    function applyM1CompetitiveFormula(rows) {
-      const values = rows.map(row => {
-        const capex = finiteOrNull(row.capex_score ?? row.breakdown?.capex_score);
-        const comp = finiteOrNull(row.competitive_score);
-        const m7v2 = finiteOrNull(row.m7_v2_score);
-        if (capex === null || comp === null || m7v2 === null) return null;
-        return 0.45 * capex + 0.30 * comp + 0.25 * m7v2;
-      }).filter(Number.isFinite);
-      const maxScore = values.length ? Math.max(...values, 0.0001) : 10;
-
-      return rows.map(row => {
-        const capex = finiteOrNull(row.capex_score ?? row.breakdown?.capex_score);
-        const comp = finiteOrNull(row.competitive_score);
-        const m7v2 = finiteOrNull(row.m7_v2_score);
-
-        if (capex === null || comp === null || m7v2 === null) {
-          return {
-            ...row,
-            m1_formula_source: "legacy_m1_engine_fallback"
-          };
-        }
-
-        const raw = 0.45 * capex + 0.30 * comp + 0.25 * m7v2;
-        const normalized = maxScore > 10 ? raw / maxScore * 10 : raw;
-        return {
-          ...row,
-          raw_m1_score: +raw.toFixed(2),
-          M1_score: +Math.max(0, Math.min(10, normalized)).toFixed(2),
-          m1_formula_source: "0.45_capex_0.30_competitive_0.25_m7v2",
-          breakdown: {
-            ...(row.breakdown || {}),
-            capex_score: capex,
-            competitive_score: comp,
-            m7_v2_score: m7v2,
-            m3_score: null,
-            m7_score: m7v2
-          }
-        };
-      }).sort((a,b) => n(b.M1_score,-999) - n(a.M1_score,-999)).map((row, idx) => ({...row, rank: idx + 1}));
     }
 
     function mapRangeScore(x, bands) {
@@ -1117,6 +1109,11 @@
         const pure = n(row.m7_lite_score, null);
         const event = calcEventProxy(row);
 
+        const m7row = getM7Row(symbol);
+        const eps = m7row?.eps_engine || {};
+        const coverage = epsCoverageFromEngine(eps);
+        const m7Returns = m7row?.feature_snapshot?.returns || {};
+
         return {
           ...row,
           symbol,
@@ -1130,6 +1127,20 @@
           valuation_score: n(row.valuation_score, null),
           trend_score: n(row.trend_score, null),
           quality_score: n(row.quality_score, null),
+          competitive_score: n(eps.cc_score, null),
+          competitive_raw_score: n(eps.cc_raw_score ?? eps.cc_score, null),
+          m7_v2_score: n(m7row?.m7_v2_score, null),
+          eps_coverage_grade: coverage.grade,
+          eps_history_count: coverage.historyCount,
+          eps_forward_count: coverage.forwardCount,
+          eps_future_profit_score: n(eps.future_profit_score, null),
+          eps_future_growth_score: n(eps.future_growth_score, null),
+          eps_consistency_score: n(eps.middle_consistency_score ?? eps.consistency, null),
+          eps_quality_score: n(eps.quality_score ?? eps.quality, null),
+          eps_future_growth_rate: n(eps.future_growth_rate, null),
+          eps_warnings: Array.isArray(eps.warnings) ? eps.warnings : [],
+          price_now: n(m7row?.regression_actual_price_now ?? m7row?.price_now ?? row.price_now ?? row.price, null),
+          ret_1d: n(m7Returns["1d"] ?? m7row?.ret_1d ?? row.ret_1d, row.ret_1d),
           capex_ratio_prev_y: n(f.capex_ratio_prev_y, null),
           revenue_growth_q: n(f.revenue_growth_q, null),
           operating_income_growth_q: n(f.operating_income_growth_q, null),
@@ -1281,9 +1292,9 @@
 
       return [
         `M1 ${fmt(row.M1_score)}`,
-        `Capex45 ${fmt(row.breakdown?.capex_score)}`,
-        `Comp30 ${fmt(row.competitive_score ?? row.breakdown?.competitive_score)}`,
-        `M7v2-25 ${fmt(row.m7_v2_score ?? row.breakdown?.m7_v2_score)}`,
+        `C2P ${fmt(row.breakdown?.capex_score)}`,
+        `CC ${fmt(row.breakdown?.competitive_score)}`,
+        `M7n ${fmt(row.breakdown?.m7_v2_score)}`,
         `vs p50 ${diffP50 !== null ? (diffP50 >= 0 ? "+" : "") + fmt(diffP50) : "-"}`,
         `p75 ${fmt(cfg?.strong)}`,
         `${ratioP75 !== null ? (ratioP75 >= 0 ? "+" : "") + fmt(ratioP75) + "%" : "-"}`
@@ -1396,35 +1407,32 @@
           </div>
         `;
       }).join("");
-
-      renderEPSCoverageGrid();
     }
 
-    function renderEPSCoverageGrid() {
-      const total = state.candidateScored.length || 0;
+
+    function renderEpsCoverageDashboard() {
+      const rows = state.candidateScored || [];
+      const total = rows.length;
       const counts = { A: 0, B: 0, C: 0, D: 0 };
-      state.candidateScored.forEach(row => {
-        const c = classifyEPSCoverage(row);
-        counts[c.grade] = (counts[c.grade] || 0) + 1;
+      rows.forEach(row => {
+        const g = row.eps_coverage_grade || "D";
+        counts[g] = (counts[g] || 0) + 1;
       });
-
       const pct = (v) => total ? `${fmt((v / total) * 100, 1)}%` : "0.0%";
-      const dataSource = "data/m7_sandbox/m7_v2_scores.json";
       const cards = [
-        { key:"TOTAL", title:"原始總池", value:`${total}`, sub:dataSource, cls:"" },
-        { key:"A", title:"Rank A", value:`${counts.A} / ${total}`, sub:`${pct(counts.A)} ｜ history EPS ≥3 + forward EPS ≥2`, cls:"rank-a" },
-        { key:"B", title:"Rank B", value:`${counts.B} / ${total}`, sub:`${pct(counts.B)} ｜ history EPS ≥3 + forward EPS ≥1`, cls:"rank-b" },
-        { key:"C", title:"Rank C", value:`${counts.C} / ${total}`, sub:`${pct(counts.C)} ｜ history EPS ≥1 + forward EPS ≥1`, cls:"rank-c" },
-        { key:"D", title:"Rank D", value:`${counts.D} / ${total}`, sub:`${pct(counts.D)} ｜ 無 company EPS history / ETF / fallback`, cls:"rank-d" },
+        { label: "原始總池", value: `${total}`, sub: "data/m7_sandbox/m7_v2_scores.json", cls: "" },
+        { label: "Rank A", value: `${counts.A} / ${total}`, sub: `${pct(counts.A)} ｜ history EPS ≥3 + forward EPS ≥2`, cls: "eps-rank-a" },
+        { label: "Rank B", value: `${counts.B} / ${total}`, sub: `${pct(counts.B)} ｜ history EPS ≥3 + forward EPS ≥1`, cls: "eps-rank-b" },
+        { label: "Rank C", value: `${counts.C} / ${total}`, sub: `${pct(counts.C)} ｜ history EPS ≥1 + forward EPS ≥1`, cls: "eps-rank-c" },
+        { label: "Rank D", value: `${counts.D} / ${total}`, sub: `${pct(counts.D)} ｜ 無 company EPS history / ETF / fallback`, cls: "eps-rank-d" },
       ];
-
-      const el = $("epsCoverageGrid");
-      if (!el) return;
-      el.innerHTML = cards.map(card => `
-        <div class="eps-card ${card.cls}">
-          <div class="t">${escapeHtml(card.title)}</div>
-          <div class="v">${escapeHtml(card.value)}</div>
-          <div class="s">${escapeHtml(card.sub)}</div>
+      const box = $("epsCoverageGrid");
+      if (!box) return;
+      box.innerHTML = cards.map(c => `
+        <div class="stat ${c.cls}">
+          <div class="label">${escapeHtml(c.label)}</div>
+          <div class="value">${escapeHtml(c.value)}</div>
+          <div class="sub">${escapeHtml(c.sub)}</div>
         </div>
       `).join("");
     }
@@ -1527,6 +1535,10 @@
 
       return `
         <div class="stock-row ${active}" data-symbol="${escapeHtml(row.symbol)}">
+          <div class="market-mini">
+            <div class="price">${escapeHtml(fmtPrice(row.price_now))}</div>
+            <div class="${marketClass(row.ret_1d)}">${escapeHtml(fmtPctSigned(row.ret_1d))}</div>
+          </div>
           <div class="row-line-1">
             <div class="rank-box">
               <div class="label-sm">RANK</div>
@@ -2057,13 +2069,12 @@ timing 判斷
             <div class="detail-grid">
               <div class="detail-card"><div class="k">M1 Score</div><div class="v" style="${scoreColor(row.M1_score)}">${fmt(row.M1_score)}</div></div>
               <div class="detail-card"><div class="k">Raw M1</div><div class="v">${fmt(row.raw_m1_score)}</div></div>
-              <div class="detail-card"><div class="k">Capex_to_Profit (45%)</div><div class="v" style="${scoreColor(row.breakdown?.capex_score)}">${fmt(row.breakdown?.capex_score)}</div></div>
-              <div class="detail-card"><div class="k">Competitive Score (30%)</div><div class="v" style="${scoreColor(row.competitive_score ?? row.breakdown?.competitive_score)}">${fmt(row.competitive_score ?? row.breakdown?.competitive_score)}</div></div>
-              <div class="detail-card"><div class="k">M7_v2 Score (25%)</div><div class="v" style="${scoreColor(row.m7_v2_score ?? row.breakdown?.m7_v2_score)}">${fmt(row.m7_v2_score ?? row.breakdown?.m7_v2_score)}</div></div>
-              <div class="detail-card"><div class="k">EPS Coverage</div><div class="v">Rank ${classifyEPSCoverage(row).grade} ｜ H${classifyEPSCoverage(row).historyCount} / F${classifyEPSCoverage(row).forwardCount}</div></div>
-              <div class="detail-card"><div class="k">Forward Growth</div><div class="v">${fmt(row.competitive_future_growth)} ｜ rate ${fmtPct(row.competitive_growth_rate)}</div></div>
-              <div class="detail-card"><div class="k">Future Profit / EPS Quality</div><div class="v">${fmt(row.competitive_future_profit)} / ${fmt(row.competitive_quality)}</div></div>
-              <div class="detail-card"><div class="k">EPS Consistency</div><div class="v">${fmt(row.competitive_consistency)}</div></div>
+              <div class="detail-card"><div class="k">C2P｜Capex_to_Profit (45%)</div><div class="v" style="${scoreColor(row.breakdown?.capex_score)}">${fmt(row.breakdown?.capex_score)}</div></div>
+              <div class="detail-card"><div class="k">CC｜Competitive Score (30%)</div><div class="v" style="${scoreColor(row.breakdown?.competitive_score)}">${fmt(row.breakdown?.competitive_score)}</div></div>
+              <div class="detail-card"><div class="k">M7n｜M7_v2 Score (25%)</div><div class="v" style="${scoreColor(row.breakdown?.m7_v2_score)}">${fmt(row.breakdown?.m7_v2_score)}</div></div>
+              <div class="detail-card"><div class="k">EPS Coverage</div><div class="v">Rank ${escapeHtml(row.eps_coverage_grade || "D")} ｜ H${row.eps_history_count ?? 0} / F${row.eps_forward_count ?? 0}</div></div>
+              <div class="detail-card"><div class="k">Forward Growth / Profit</div><div class="v">${fmt(row.eps_future_growth_score)} / ${fmt(row.eps_future_profit_score)}</div></div>
+              <div class="detail-card"><div class="k">EPS Consistency / Quality</div><div class="v">${fmt(row.eps_consistency_score)} / ${fmt(row.eps_quality_score)}</div></div>
               <div class="detail-card"><div class="k">正式規則</div><div class="v">strong ${fmt(cfg.strong)} ｜ pass ${fmt(cfg.pass)} ｜ watch ${fmt(cfg.watch)}</div></div>
               <div class="detail-card"><div class="k">vs p50</div><div class="v">${Number.isFinite(row.M1_score) && Number.isFinite(cfg.pass) ? `${row.M1_score - cfg.pass >= 0 ? "+" : ""}${fmt(row.M1_score - cfg.pass)}` : "-"}</div></div>
               <div class="detail-card"><div class="k">p75 對比</div><div class="v">${Number.isFinite(row.M1_score) && Number.isFinite(cfg.strong) && cfg.strong !== 0 ? `${((((row.M1_score / cfg.strong) - 1) * 100) >= 0 ? "+" : "") + fmt((((row.M1_score / cfg.strong) - 1) * 100))}%` : "-"}</div></div>
@@ -2083,7 +2094,8 @@ timing 判斷
           </summary>
           <div class="layer-body">
             <div class="detail-grid">
-              <div class="detail-card"><div class="k">1D</div><div class="v">${fmtPct(row.ret_1d)}</div></div>
+              <div class="detail-card"><div class="k">當日價格</div><div class="v">${fmtPrice(row.price_now)}</div></div>
+              <div class="detail-card"><div class="k">1D</div><div class="v ${marketClass(row.ret_1d)}">${fmtPctSigned(row.ret_1d)}</div></div>
               <div class="detail-card"><div class="k">1W</div><div class="v">${fmtPct(row.ret_1w)}</div></div>
               <div class="detail-card"><div class="k">1M</div><div class="v">${fmtPct(row.ret_1m)}</div></div>
               <div class="detail-card"><div class="k">3M</div><div class="v">${fmtPct(row.ret_3m)}</div></div>
@@ -2323,6 +2335,7 @@ function exportPool30() {
     function refreshView(keepSelection = true) {
       const filteredRows = applyViewFilter();
       renderDashboard(filteredRows);
+      renderEpsCoverageDashboard();
       renderRuleGrid();
       renderCategoryCards(filteredRows);
 
@@ -2358,10 +2371,9 @@ function exportPool30() {
         state.pool30Raw = Array.isArray(pool30Raw) ? pool30Raw : [];
         state.fundamentalMap = fundamentalMap || {};
         state.competitiveCards = competitiveCards || {};
-        state.m7Rows = normalizeM7Rows(m7ScoresRaw);
-        state.m7Map = buildM7Map(state.m7Rows);
+        state.m7ScoreMap = normalizeM7Scores(m7ScoresRaw);
 
-        state.candidatePrepared = attachM7DataToRows(prepareRows(state.candidateRaw, state.fundamentalMap));
+        state.candidatePrepared = prepareRows(state.candidateRaw, state.fundamentalMap);
 
         const pool30Set = new Set(state.pool30Raw.map(x => String(x.symbol || "").toUpperCase().trim()));
         state.pool30Prepared = state.candidatePrepared.filter(x => pool30Set.has(x.symbol));
@@ -2369,13 +2381,15 @@ function exportPool30() {
         const candidateEngine = runM1Engine(state.candidatePrepared);
         const pool30Engine = runM1Engine(state.pool30Prepared);
 
-        state.candidateScored = applyM1CompetitiveFormula(mergeEngineOutput(state.candidatePrepared, candidateEngine));
-        state.pool30Scored = applyM1CompetitiveFormula(mergeEngineOutput(state.pool30Prepared, pool30Engine));
+        state.candidateScored = applyNewM1Formula(mergeEngineOutput(state.candidatePrepared, candidateEngine));
+        state.pool30Scored = applyNewM1Formula(mergeEngineOutput(state.pool30Prepared, pool30Engine));
 
         state.pool30Rules = buildPool30Rules(state.pool30Scored);
         state.filterConfig = await loadFormalRulesOrDefault();
 
-        state.candidateScored = applyFilter(state.candidateScored, state.filterConfig, state.pool30Rules);
+        state.candidateScored = applyFilter(state.candidateScored, state.filterConfig, state.pool30Rules)
+          .sort((a, b) => n(b.M1_score, -999) - n(a.M1_score, -999));
+        state.candidateScored.forEach((row, idx) => { row.rank = idx + 1; });
 
         buildCategoryOptions(state.candidateScored);
         state.selected = state.candidateScored[0] || null;
