@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>M1 Review Console v2.3</title>
+  <title>M1 Review Console v2.4 EPS Competitive</title>
   <style>
     :root{
       --bg:#f4f7fb;
@@ -199,6 +199,51 @@
       gap:10px;
       margin-top:10px;
     }
+
+    .eps-coverage-title{
+      margin-top:16px;
+      margin-bottom:8px;
+      font-size:15px;
+      font-weight:900;
+      color:#0f172a;
+    }
+
+    .eps-coverage-grid{
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      gap:10px;
+      margin-top:8px;
+    }
+
+    .eps-card{
+      border:1px solid #e7edf5;
+      border-radius:14px;
+      background:#ffffff;
+      padding:12px;
+      min-height:116px;
+    }
+    .eps-card .t{
+      font-size:12px;
+      color:#64748b;
+      margin-bottom:8px;
+      font-weight:800;
+      line-height:1.4;
+    }
+    .eps-card .v{
+      font-size:22px;
+      font-weight:900;
+      line-height:1.15;
+    }
+    .eps-card .s{
+      margin-top:8px;
+      font-size:12px;
+      color:#64748b;
+      line-height:1.45;
+    }
+    .eps-card.rank-a{background:#f0fdf4;}
+    .eps-card.rank-b{background:#eff6ff;}
+    .eps-card.rank-c{background:#fff7ed;}
+    .eps-card.rank-d{background:#fef2f2;}
 
     .mini-card{
       border:1px solid #e7edf5;
@@ -623,7 +668,8 @@
       .summary-grid{
         grid-template-columns:repeat(2,1fr);
       }
-      .category-summary-grid{
+      .category-summary-grid,
+      .eps-coverage-grid{
         grid-template-columns:repeat(3,1fr);
       }
     }
@@ -635,7 +681,8 @@
       .detail-grid{
         grid-template-columns:1fr;
       }
-      .category-summary-grid{
+      .category-summary-grid,
+      .eps-coverage-grid{
         grid-template-columns:repeat(2,1fr);
       }
     }
@@ -645,7 +692,8 @@
         grid-template-columns:1fr;
       }
       .summary-grid,
-      .category-summary-grid{
+      .category-summary-grid,
+      .eps-coverage-grid{
         grid-template-columns:1fr;
       }
       .hero-top{
@@ -659,7 +707,7 @@
     <div class="hero">
       <div class="hero-top">
         <div>
-          <h1>M1 Review Console v2.3</h1>
+          <h1>M1 Review Console v2.4｜EPS Competitive Integrated</h1>
           <div class="sub">
             <b>L1：</b>五大分類卡片，只先看 AI 推薦重點與關鍵數據，方便人工初篩。<br>
             <b>L2 / L3 / L4：</b>右側逐層展開，看 rule、看市場、做人為覆核與備註。<br>
@@ -745,6 +793,9 @@
           </div>
 
           <div class="category-summary-grid" id="categorySummaryGrid"></div>
+
+          <div class="eps-coverage-title">1.5 EPS Coverage</div>
+          <div class="eps-coverage-grid" id="epsCoverageGrid"></div>
         </div>
       </div>
 
@@ -756,8 +807,9 @@
         <div class="rule-wrap">
           <div class="formula-box">
             <b>2.1 M1 公式簡介</b><br>
-            M1_raw = 0.5 × Capex + 0.25 × M3 + 0.25 × M7<br>
-            M1_biased = M1_raw × category bias<br>
+            M1_raw = 0.45 × Capex_to_Profit + 0.30 × Competitive Score + 0.25 × M7_v2 Score<br>
+            Competitive Score = eps_engine.cc_score（由 build_m7_v2_scores.py 產出）<br>
+            M7_v2 Score = data/m7_sandbox/m7_v2_scores.json 的 m7_v2_score<br>
             M1_score = normalize to max 10<br>
             AI 推薦 = STRONG + PASS
           </div>
@@ -803,6 +855,8 @@
       pool30Raw: [],
       fundamentalMap: {},
       competitiveCards: {},
+      m7Rows: [],
+      m7Map: {},
       candidatePrepared: [],
       pool30Prepared: [],
       candidateScored: [],
@@ -888,6 +942,111 @@
       if (raw.includes("defensive")) return "defensive";
       if (raw.includes("speculative")) return "speculative";
       return "speculative";
+    }
+
+    function normalizeM7Rows(raw) {
+      if (Array.isArray(raw)) return raw.filter(x => x && typeof x === "object");
+      if (raw && Array.isArray(raw.rows)) return raw.rows.filter(x => x && typeof x === "object");
+      return [];
+    }
+
+    function buildM7Map(rows) {
+      const out = {};
+      rows.forEach(row => {
+        const sym = String(row.symbol || "").toUpperCase().trim();
+        if (sym) out[sym] = row;
+      });
+      return out;
+    }
+
+    function finiteOrNull(v) {
+      const x = Number(v);
+      return Number.isFinite(x) ? x : null;
+    }
+
+    function countUsableForwardEPS(eps) {
+      if (!eps || typeof eps !== "object") return 0;
+      return [eps.eps_2025, eps.eps_2026, eps.eps_2027]
+        .map(finiteOrNull)
+        .filter(x => x !== null && x > 0).length;
+    }
+
+    function classifyEPSCoverage(row) {
+      const m7 = state.m7Map[String(row.symbol || "").toUpperCase()] || row.m7_row || {};
+      const eps = m7.eps_engine || row.eps_engine || {};
+      const scope = m7.competitive_scope || {};
+      const status = String(eps.eps_status || "").toLowerCase();
+      const hasCompanyEPS = scope.has_eps_data === true && !status.includes("global") && !status.includes("etf") && !status.includes("neutral_fallback");
+      const historyCount = hasCompanyEPS ? Number(eps.eps_regression_sample_count || 0) : 0;
+      const forwardCount = hasCompanyEPS ? countUsableForwardEPS(eps) : 0;
+
+      let grade = "D";
+      if (historyCount >= 3 && forwardCount >= 2) grade = "A";
+      else if (historyCount >= 3 && forwardCount >= 1) grade = "B";
+      else if (historyCount >= 1 && forwardCount >= 1) grade = "C";
+
+      return { grade, historyCount, forwardCount, eps, m7 };
+    }
+
+    function attachM7DataToRows(rows) {
+      return rows.map(row => {
+        const m7 = state.m7Map[row.symbol] || {};
+        const eps = m7.eps_engine || {};
+        return {
+          ...row,
+          m7_row: m7,
+          eps_engine: eps,
+          competitive_score: finiteOrNull(eps.cc_score),
+          competitive_future_profit: finiteOrNull(eps.future_profit_score),
+          competitive_future_growth: finiteOrNull(eps.future_growth_score),
+          competitive_consistency: finiteOrNull(eps.middle_consistency_score),
+          competitive_quality: finiteOrNull(eps.quality_score),
+          competitive_growth_rate: finiteOrNull(eps.future_growth_rate),
+          m7_v2_score: finiteOrNull(m7.m7_v2_score),
+          m7_effective_score: finiteOrNull(m7.m7_effective_score)
+        };
+      });
+    }
+
+    function applyM1CompetitiveFormula(rows) {
+      const values = rows.map(row => {
+        const capex = finiteOrNull(row.capex_score ?? row.breakdown?.capex_score);
+        const comp = finiteOrNull(row.competitive_score);
+        const m7v2 = finiteOrNull(row.m7_v2_score);
+        if (capex === null || comp === null || m7v2 === null) return null;
+        return 0.45 * capex + 0.30 * comp + 0.25 * m7v2;
+      }).filter(Number.isFinite);
+      const maxScore = values.length ? Math.max(...values, 0.0001) : 10;
+
+      return rows.map(row => {
+        const capex = finiteOrNull(row.capex_score ?? row.breakdown?.capex_score);
+        const comp = finiteOrNull(row.competitive_score);
+        const m7v2 = finiteOrNull(row.m7_v2_score);
+
+        if (capex === null || comp === null || m7v2 === null) {
+          return {
+            ...row,
+            m1_formula_source: "legacy_m1_engine_fallback"
+          };
+        }
+
+        const raw = 0.45 * capex + 0.30 * comp + 0.25 * m7v2;
+        const normalized = maxScore > 10 ? raw / maxScore * 10 : raw;
+        return {
+          ...row,
+          raw_m1_score: +raw.toFixed(2),
+          M1_score: +Math.max(0, Math.min(10, normalized)).toFixed(2),
+          m1_formula_source: "0.45_capex_0.30_competitive_0.25_m7v2",
+          breakdown: {
+            ...(row.breakdown || {}),
+            capex_score: capex,
+            competitive_score: comp,
+            m7_v2_score: m7v2,
+            m3_score: null,
+            m7_score: m7v2
+          }
+        };
+      }).sort((a,b) => n(b.M1_score,-999) - n(a.M1_score,-999)).map((row, idx) => ({...row, rank: idx + 1}));
     }
 
     function mapRangeScore(x, bands) {
@@ -1122,9 +1281,9 @@
 
       return [
         `M1 ${fmt(row.M1_score)}`,
-        `Capex ${fmt(row.breakdown?.capex_score)}`,
-        `M3 ${fmt(row.breakdown?.m3_score)}`,
-        `M7 ${fmt(row.breakdown?.m7_score)}`,
+        `Capex45 ${fmt(row.breakdown?.capex_score)}`,
+        `Comp30 ${fmt(row.competitive_score ?? row.breakdown?.competitive_score)}`,
+        `M7v2-25 ${fmt(row.m7_v2_score ?? row.breakdown?.m7_v2_score)}`,
         `vs p50 ${diffP50 !== null ? (diffP50 >= 0 ? "+" : "") + fmt(diffP50) : "-"}`,
         `p75 ${fmt(cfg?.strong)}`,
         `${ratioP75 !== null ? (ratioP75 >= 0 ? "+" : "") + fmt(ratioP75) + "%" : "-"}`
@@ -1237,6 +1396,37 @@
           </div>
         `;
       }).join("");
+
+      renderEPSCoverageGrid();
+    }
+
+    function renderEPSCoverageGrid() {
+      const total = state.candidateScored.length || 0;
+      const counts = { A: 0, B: 0, C: 0, D: 0 };
+      state.candidateScored.forEach(row => {
+        const c = classifyEPSCoverage(row);
+        counts[c.grade] = (counts[c.grade] || 0) + 1;
+      });
+
+      const pct = (v) => total ? `${fmt((v / total) * 100, 1)}%` : "0.0%";
+      const dataSource = "data/m7_sandbox/m7_v2_scores.json";
+      const cards = [
+        { key:"TOTAL", title:"原始總池", value:`${total}`, sub:dataSource, cls:"" },
+        { key:"A", title:"Rank A", value:`${counts.A} / ${total}`, sub:`${pct(counts.A)} ｜ history EPS ≥3 + forward EPS ≥2`, cls:"rank-a" },
+        { key:"B", title:"Rank B", value:`${counts.B} / ${total}`, sub:`${pct(counts.B)} ｜ history EPS ≥3 + forward EPS ≥1`, cls:"rank-b" },
+        { key:"C", title:"Rank C", value:`${counts.C} / ${total}`, sub:`${pct(counts.C)} ｜ history EPS ≥1 + forward EPS ≥1`, cls:"rank-c" },
+        { key:"D", title:"Rank D", value:`${counts.D} / ${total}`, sub:`${pct(counts.D)} ｜ 無 company EPS history / ETF / fallback`, cls:"rank-d" },
+      ];
+
+      const el = $("epsCoverageGrid");
+      if (!el) return;
+      el.innerHTML = cards.map(card => `
+        <div class="eps-card ${card.cls}">
+          <div class="t">${escapeHtml(card.title)}</div>
+          <div class="v">${escapeHtml(card.value)}</div>
+          <div class="s">${escapeHtml(card.sub)}</div>
+        </div>
+      `).join("");
     }
 
     function renderRuleGrid() {
@@ -1867,9 +2057,13 @@ timing 判斷
             <div class="detail-grid">
               <div class="detail-card"><div class="k">M1 Score</div><div class="v" style="${scoreColor(row.M1_score)}">${fmt(row.M1_score)}</div></div>
               <div class="detail-card"><div class="k">Raw M1</div><div class="v">${fmt(row.raw_m1_score)}</div></div>
-              <div class="detail-card"><div class="k">Capex</div><div class="v" style="${scoreColor(row.breakdown?.capex_score)}">${fmt(row.breakdown?.capex_score)}</div></div>
-              <div class="detail-card"><div class="k">M3</div><div class="v" style="${scoreColor(row.breakdown?.m3_score)}">${fmt(row.breakdown?.m3_score)}</div></div>
-              <div class="detail-card"><div class="k">M7</div><div class="v" style="${scoreColor(row.breakdown?.m7_score)}">${fmt(row.breakdown?.m7_score)}</div></div>
+              <div class="detail-card"><div class="k">Capex_to_Profit (45%)</div><div class="v" style="${scoreColor(row.breakdown?.capex_score)}">${fmt(row.breakdown?.capex_score)}</div></div>
+              <div class="detail-card"><div class="k">Competitive Score (30%)</div><div class="v" style="${scoreColor(row.competitive_score ?? row.breakdown?.competitive_score)}">${fmt(row.competitive_score ?? row.breakdown?.competitive_score)}</div></div>
+              <div class="detail-card"><div class="k">M7_v2 Score (25%)</div><div class="v" style="${scoreColor(row.m7_v2_score ?? row.breakdown?.m7_v2_score)}">${fmt(row.m7_v2_score ?? row.breakdown?.m7_v2_score)}</div></div>
+              <div class="detail-card"><div class="k">EPS Coverage</div><div class="v">Rank ${classifyEPSCoverage(row).grade} ｜ H${classifyEPSCoverage(row).historyCount} / F${classifyEPSCoverage(row).forwardCount}</div></div>
+              <div class="detail-card"><div class="k">Forward Growth</div><div class="v">${fmt(row.competitive_future_growth)} ｜ rate ${fmtPct(row.competitive_growth_rate)}</div></div>
+              <div class="detail-card"><div class="k">Future Profit / EPS Quality</div><div class="v">${fmt(row.competitive_future_profit)} / ${fmt(row.competitive_quality)}</div></div>
+              <div class="detail-card"><div class="k">EPS Consistency</div><div class="v">${fmt(row.competitive_consistency)}</div></div>
               <div class="detail-card"><div class="k">正式規則</div><div class="v">strong ${fmt(cfg.strong)} ｜ pass ${fmt(cfg.pass)} ｜ watch ${fmt(cfg.watch)}</div></div>
               <div class="detail-card"><div class="k">vs p50</div><div class="v">${Number.isFinite(row.M1_score) && Number.isFinite(cfg.pass) ? `${row.M1_score - cfg.pass >= 0 ? "+" : ""}${fmt(row.M1_score - cfg.pass)}` : "-"}</div></div>
               <div class="detail-card"><div class="k">p75 對比</div><div class="v">${Number.isFinite(row.M1_score) && Number.isFinite(cfg.strong) && cfg.strong !== 0 ? `${((((row.M1_score / cfg.strong) - 1) * 100) >= 0 ? "+" : "") + fmt((((row.M1_score / cfg.strong) - 1) * 100))}%` : "-"}</div></div>
@@ -2150,12 +2344,13 @@ function exportPool30() {
       try {
         state.reviewMap = loadReviewMap();
 
-        const [universeRaw, candidateRaw, pool30Raw, fundamentalMap, competitiveCards] = await Promise.all([
+        const [universeRaw, candidateRaw, pool30Raw, fundamentalMap, competitiveCards, m7ScoresRaw] = await Promise.all([
           fetchJSON("data/m1/universe_150.json").catch(() => []),
           fetchJSON("data/m1/m1_candidate_80.json"),
           fetchJSON("data/pool30.json"),
           fetchJSON("data/m1/m1_fundamental_map.json"),
-          fetchJSON("data/m1/competitive_cards.json").catch(() => ({}))
+          fetchJSON("data/m1/competitive_cards.json").catch(() => ({})),
+          fetchJSON("data/m7_sandbox/m7_v2_scores.json").catch(() => ({ rows: [] }))
         ]);
 
         state.universeRaw = Array.isArray(universeRaw) ? universeRaw : [];
@@ -2163,8 +2358,10 @@ function exportPool30() {
         state.pool30Raw = Array.isArray(pool30Raw) ? pool30Raw : [];
         state.fundamentalMap = fundamentalMap || {};
         state.competitiveCards = competitiveCards || {};
+        state.m7Rows = normalizeM7Rows(m7ScoresRaw);
+        state.m7Map = buildM7Map(state.m7Rows);
 
-        state.candidatePrepared = prepareRows(state.candidateRaw, state.fundamentalMap);
+        state.candidatePrepared = attachM7DataToRows(prepareRows(state.candidateRaw, state.fundamentalMap));
 
         const pool30Set = new Set(state.pool30Raw.map(x => String(x.symbol || "").toUpperCase().trim()));
         state.pool30Prepared = state.candidatePrepared.filter(x => pool30Set.has(x.symbol));
@@ -2172,8 +2369,8 @@ function exportPool30() {
         const candidateEngine = runM1Engine(state.candidatePrepared);
         const pool30Engine = runM1Engine(state.pool30Prepared);
 
-        state.candidateScored = mergeEngineOutput(state.candidatePrepared, candidateEngine);
-        state.pool30Scored = mergeEngineOutput(state.pool30Prepared, pool30Engine);
+        state.candidateScored = applyM1CompetitiveFormula(mergeEngineOutput(state.candidatePrepared, candidateEngine));
+        state.pool30Scored = applyM1CompetitiveFormula(mergeEngineOutput(state.pool30Prepared, pool30Engine));
 
         state.pool30Rules = buildPool30Rules(state.pool30Scored);
         state.filterConfig = await loadFormalRulesOrDefault();
