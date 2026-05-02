@@ -1047,6 +1047,17 @@ def compute_structure(feature: dict[str, Any]) -> dict[str, Any]:
     weekly_prices = [safe_num(x, None) for x in feature.get("weekly_prices", [])]
     weekly_prices = [x for x in weekly_prices if x is not None and x > 0]
 
+    # NEW: define allowed_models before insufficient-data return.
+    # Some universe_150 stocks may have <52 weekly prices; the early-return branch
+    # still needs this value for debug/governance output.
+    structure_cfg = M7_PARAM_CONFIG.get("structure", {}) if isinstance(M7_PARAM_CONFIG, dict) else {}
+    allowed_models_cfg = structure_cfg.get("allowed_models", {}) if isinstance(structure_cfg, dict) else {}
+    allowed_models = {
+        "linear": bool(allowed_models_cfg.get("linear", True)),
+        "quadratic": bool(allowed_models_cfg.get("quadratic", True)),
+        "logarithmic": bool(allowed_models_cfg.get("logarithmic", True)),
+    }
+
     def _solve_linear_system(a: list[list[float]], b: list[float]) -> list[float] | None:
         """Small Gaussian elimination solver to avoid sklearn/numpy dependency."""
         n = len(b)
@@ -1122,7 +1133,7 @@ def compute_structure(feature: dict[str, Any]) -> dict[str, Any]:
             "best_structure_r2": None,
             "best_structure_model": "insufficient_data",
             "structure_score_method": "best_allowed_r2_to_b3_curve",
-        "structure_allowed_models": allowed_models,
+            "structure_allowed_models": allowed_models,
 
             "linear_slope": None,
             "quadratic_a": None,
@@ -1141,13 +1152,6 @@ def compute_structure(feature: dict[str, Any]) -> dict[str, Any]:
         "linear": linear.get("r2"),
         "quadratic": quadratic.get("r2"),
         "logarithmic": logarithmic.get("r2"),
-    }
-    structure_cfg = M7_PARAM_CONFIG.get("structure", {}) if isinstance(M7_PARAM_CONFIG, dict) else {}
-    allowed_models_cfg = structure_cfg.get("allowed_models", {}) if isinstance(structure_cfg, dict) else {}
-    allowed_models = {
-        "linear": bool(allowed_models_cfg.get("linear", True)),
-        "quadratic": bool(allowed_models_cfg.get("quadratic", True)),
-        "logarithmic": bool(allowed_models_cfg.get("logarithmic", True)),
     }
     valid_models = {k: v for k, v in model_r2.items() if v is not None and allowed_models.get(k, True)}
 
@@ -2122,7 +2126,13 @@ def main() -> int:
 
     try:
         bundle = load_inputs()
-        symbols = sorted(set(bundle.pool30_rows.keys()) | set(bundle.baseline_rows.keys()))
+        # Competitive Score universe: use universe_150 as the mother pool,
+        # while preserving existing pool30/baseline symbols.
+        symbols = sorted(
+            set(UNIVERSE_BY_SYMBOL.keys())
+            | set(bundle.pool30_rows.keys())
+            | set(bundle.baseline_rows.keys())
+        )
 
         global MONEY_LIQUIDITY_BENCHMARK
         benchmark_values: list[float] = []
@@ -2204,11 +2214,25 @@ def main() -> int:
             m7_effective_score_source = "m7_raw_score" if m7_v2_fallback_to_raw else "m7_v2_score"
 
             eps_engine = compute_eps_engine_v26(feature, trend, structure)
+            competitive_scope = {
+                "in_universe_150": sym in UNIVERSE_BY_SYMBOL,
+                "has_baseline_row": sym in bundle.baseline_rows,
+                "has_pool30_row": sym in bundle.pool30_rows,
+                "has_market_runtime": sym in bundle.market_runtime,
+                "has_weekly_prices": len([x for x in feature.get("weekly_prices", []) if safe_num(x, None) is not None and safe_num(x, 0.0) > 0]) > 0,
+                "has_eps_data": bool(_eps_data_rows().get(sym)),
+                "score_source": (
+                    "full_m7_eps"
+                    if (len([x for x in feature.get("weekly_prices", []) if safe_num(x, None) is not None and safe_num(x, 0.0) > 0]) >= 52 and bool(_eps_data_rows().get(sym)))
+                    else "fallback_or_partial"
+                ),
+            }
 
             rows_out.append({
                 "symbol": sym,
                 "name": feature["name"],
                 "eps_engine": eps_engine,
+                "competitive_scope": competitive_scope,
                 "category": feature["category"],
                 "subsector": feature["subsector"],
                 "category_sub": feature["valuation"].get("category_sub"),
