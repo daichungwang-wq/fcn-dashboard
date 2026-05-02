@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>M1 Competitive Score / EPS Engine v2.6</title>
+  <title>M1 Competitive Score / EPS Engine v2.7</title>
   <style>
     :root {
       --bg: #f6f7fb;
@@ -12,9 +12,13 @@
       --muted: #6b7280;
       --line: #e5e7eb;
       --brand: #2563eb;
+      --brand2: #1d4ed8;
       --good: #047857;
       --warn: #b45309;
       --bad: #b91c1c;
+      --orange: #c2410c;
+      --purple: #6d28d9;
+      --shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
     }
 
     * { box-sizing: border-box; }
@@ -25,7 +29,7 @@
       color: var(--text);
     }
 
-    .wrap { max-width: 1280px; margin: 0 auto; padding: 24px; }
+    .wrap { max-width: 1480px; margin: 0 auto; padding: 24px; }
     .hero {
       background: linear-gradient(135deg, #111827, #1d4ed8);
       color: white;
@@ -34,7 +38,8 @@
       box-shadow: 0 16px 40px rgba(15, 23, 42, 0.18);
     }
     .hero h1 { margin: 0 0 8px; font-size: 28px; }
-    .hero p { margin: 0; color: rgba(255,255,255,0.78); line-height: 1.6; }
+    .hero p { margin: 0; color: rgba(255,255,255,0.80); line-height: 1.65; }
+    .hero .path { display:inline-block; margin-top:10px; padding:6px 10px; border-radius:999px; background:rgba(255,255,255,0.13); color:#fff; font-size:12px; }
 
     .toolbar {
       display: flex;
@@ -58,13 +63,15 @@
       background: var(--brand);
       color: white;
       border-color: var(--brand);
-      font-weight: 700;
+      font-weight: 800;
     }
-    input { min-width: 220px; }
+    button.secondary { background:#fff; color:var(--brand); }
+    input { min-width: 260px; }
+    label { color:#374151; font-size:13px; }
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(5, minmax(0, 1fr));
       gap: 14px;
       margin: 18px 0;
     }
@@ -73,75 +80,118 @@
       border: 1px solid var(--line);
       border-radius: 18px;
       padding: 16px;
-      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
+      box-shadow: var(--shadow);
     }
     .kpi .label { color: var(--muted); font-size: 13px; }
-    .kpi .value { font-size: 28px; font-weight: 800; margin-top: 6px; }
-    .kpi .note { color: var(--muted); font-size: 12px; margin-top: 4px; }
+    .kpi .value { font-size: 27px; font-weight: 900; margin-top: 6px; letter-spacing:-0.02em; }
+    .kpi .note { color: var(--muted); font-size: 12px; margin-top: 4px; line-height:1.45; }
+
+    .explain-grid {
+      display:grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap:12px;
+      margin: 12px 0 18px;
+    }
+    .explain-card {
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:14px;
+      background:#fff;
+      box-shadow: var(--shadow);
+      min-height:110px;
+    }
+    .explain-card h3 { margin:0 0 6px; font-size:15px; }
+    .explain-card p { margin:0; color:var(--muted); font-size:12px; line-height:1.55; }
+    .grade-dot { display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px; border-radius:999px; font-weight:900; margin-right:6px; }
+    .grade-a { background:#ecfdf5; color:var(--good); }
+    .grade-b { background:#eff6ff; color:var(--brand2); }
+    .grade-c { background:#fff7ed; color:var(--orange); }
+    .grade-d { background:#fef2f2; color:var(--bad); }
+    .grade-u { background:#f3f4f6; color:#374151; }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 13px;
+      font-size: 12.5px;
       background: white;
       border-radius: 18px;
       overflow: hidden;
     }
     th, td {
-      padding: 11px 10px;
+      padding: 10px 9px;
       border-bottom: 1px solid var(--line);
       text-align: right;
       white-space: nowrap;
+      vertical-align: top;
     }
     th:first-child, td:first-child,
     th:nth-child(2), td:nth-child(2),
     th:nth-child(3), td:nth-child(3),
-    th:nth-child(11), td:nth-child(11) { text-align: left; }
+    th:nth-child(4), td:nth-child(4),
+    th:nth-child(16), td:nth-child(16),
+    th:nth-child(17), td:nth-child(17) { text-align: left; }
     th {
       color: #374151;
       background: #f9fafb;
       position: sticky;
       top: 0;
       z-index: 1;
+      font-size: 12px;
     }
     tbody tr:hover { background: #f8fafc; }
-    .table-wrap { max-height: 68vh; overflow: auto; border-radius: 18px; border: 1px solid var(--line); }
-    .pill { display: inline-flex; align-items: center; border-radius: 999px; padding: 4px 8px; font-size: 12px; font-weight: 700; }
+    .table-wrap { max-height: 72vh; overflow: auto; border-radius: 18px; border: 1px solid var(--line); }
+    .pill { display: inline-flex; align-items: center; border-radius: 999px; padding: 4px 8px; font-size: 11.5px; font-weight: 800; }
     .ok { background: #ecfdf5; color: var(--good); }
     .watch { background: #fffbeb; color: var(--warn); }
     .bad { background: #fef2f2; color: var(--bad); }
+    .proxy { background:#f5f3ff; color:var(--purple); }
     .muted { color: var(--muted); }
     .error { color: var(--bad); white-space: pre-wrap; }
-    .subline { display: block; color: var(--muted); font-size: 12px; margin-top: 3px; }
+    .subline { display: block; color: var(--muted); font-size: 11.5px; margin-top: 3px; line-height:1.35; }
+    .warn-text { color:var(--bad); font-weight:800; }
+    .soft-warn { color:var(--warn); font-weight:800; }
     details { margin-top: 18px; }
-    summary { cursor: pointer; font-weight: 800; }
+    summary { cursor: pointer; font-weight: 900; }
     pre { background: #0b1020; color: #d1e7ff; padding: 14px; border-radius: 14px; overflow: auto; }
 
-    @media (max-width: 980px) {
-      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    @media (max-width: 1180px) {
+      .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .explain-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
-    @media (max-width: 640px) {
+    @media (max-width: 720px) {
       .wrap { padding: 14px; }
-      .grid { grid-template-columns: 1fr; }
+      .grid, .explain-grid { grid-template-columns: 1fr; }
+      input { min-width: 180px; width:100%; }
     }
   </style>
 </head>
 <body>
   <div class="wrap">
     <section class="hero">
-      <h1>M1 Competitive Score / EPS Engine v2.6</h1>
-      <p>資料來源：<b>data/m7_sandbox/m7_v2_scores.json</b>。本頁直接讀取 M7 產出的 <b>eps_engine.cc_score</b>，不再呼叫前端 earnings_engine.js 計算。</p>
+      <h1>M1 Competitive Score / EPS Engine v2.7</h1>
+      <p>本頁直接讀取 M7 產出的 <b>eps_engine.cc_score</b>，重點顯示 EPS / CC Engine 的資料完整度、解釋力與 fallback 可信度。Global fallback 只作最後備援，若 global_model_r2 偏低，頁面會明確提示。</p>
+      <span class="path">Source: ./data/m7_sandbox/m7_v2_scores.json</span>
     </section>
 
     <section class="toolbar">
       <div class="left">
-        <button id="reloadBtn">重新載入 / Recalculate</button>
+        <button id="reloadBtn">重新載入</button>
+        <button id="expandBtn" class="secondary">展開 Debug</button>
         <input id="searchBox" placeholder="搜尋 Symbol / Name，例如 NVDA" />
         <select id="statusFilter">
           <option value="all">全部狀態</option>
           <option value="ok">OK</option>
           <option value="no_eps_engine">無 eps_engine</option>
           <option value="low_confidence">低信心</option>
+          <option value="global_low_r2">Global R² &lt; 0.10</option>
+        </select>
+        <select id="gradeFilter">
+          <option value="all">全部可信等級</option>
+          <option value="A">A 高可信</option>
+          <option value="B">B 中高可信</option>
+          <option value="C">C 低可信</option>
+          <option value="D">D ETF Proxy</option>
+          <option value="UNKNOWN">UNKNOWN</option>
         </select>
       </div>
       <div class="right">
@@ -153,7 +203,27 @@
       <div class="kpi"><div class="label">Total Symbols</div><div id="kpiTotal" class="value">--</div><div class="note">m7_v2_scores rows count</div></div>
       <div class="kpi"><div class="label">OK Calculated</div><div id="kpiOk" class="value">--</div><div class="note">有 eps_engine.cc_score</div></div>
       <div class="kpi"><div class="label">Average CC</div><div id="kpiAvg" class="value">--</div><div class="note">只計算 status=ok</div></div>
-      <div class="kpi"><div class="label">Top Symbol</div><div id="kpiTop" class="value">--</div><div class="note">依 eps_engine.cc_score 排序</div></div>
+      <div class="kpi"><div class="label">High Trust A/B</div><div id="kpiTrust" class="value">--</div><div class="note">A full EPS + B forward blend</div></div>
+      <div class="kpi"><div class="label">Global Low R²</div><div id="kpiGlobalLow" class="value">--</div><div class="note">global_model_r2 &lt; 0.10 需警示</div></div>
+    </section>
+
+    <section class="explain-grid">
+      <div class="explain-card">
+        <h3><span class="grade-dot grade-a">A</span>full_m7_eps / actual_history_plus_eps_regression</h3>
+        <p>高可信：有公司 EPS history，並能做公司層 EPS regression。這類資料最適合進入 M1 / CC scoring。</p>
+      </div>
+      <div class="explain-card">
+        <h3><span class="grade-dot grade-b">B</span>forward_provided_no_count_blend</h3>
+        <p>中高可信：有 forward EPS，但 analyst_count 缺失；可用，但 UI 必須提醒樣本數不足。</p>
+      </div>
+      <div class="explain-card">
+        <h3><span class="grade-dot grade-c">C</span>global_eps_regression_imputed</h3>
+        <p>低可信：使用 global model 推估。若 global_model_r2 約 0.05，代表解釋力很低，只能當最後 fallback。</p>
+      </div>
+      <div class="explain-card">
+        <h3><span class="grade-dot grade-d">D</span>etf_global_proxy</h3>
+        <p>只是 proxy：ETF 沒有公司 EPS，本頁只把它視為替代參考，不應解讀成公司獲利能力。</p>
+      </div>
     </section>
 
     <section class="card">
@@ -162,26 +232,32 @@
           <thead>
             <tr>
               <th>#</th>
+              <th>Grade</th>
               <th>Symbol</th>
-              <th>Name</th>
+              <th>Name / Category</th>
               <th>CC Score</th>
               <th>M7 Score</th>
               <th>Future Profit</th>
               <th>Future Growth</th>
               <th>Consistency</th>
               <th>Quality</th>
-              <th>PE Model</th>
-              <th>Status / Basis</th>
+              <th>EPS YoY Stability</th>
+              <th>EPS R²</th>
+              <th>EPS Samples</th>
+              <th>Global R²</th>
+              <th>Global Samples</th>
+              <th>EPS Source / Status</th>
+              <th>Warnings</th>
             </tr>
           </thead>
           <tbody id="resultBody">
-            <tr><td colspan="11" class="muted">Loading...</td></tr>
+            <tr><td colspan="17" class="muted">Loading...</td></tr>
           </tbody>
         </table>
       </div>
     </section>
 
-    <details>
+    <details id="debugDetails">
       <summary>Debug JSON / 原始輸出</summary>
       <pre id="debugOutput">Loading...</pre>
     </details>
@@ -203,20 +279,99 @@
       return Number(v).toFixed(digits);
     }
 
-    function statusClass(status, confidence) {
-      if (status === "ok" && confidence !== "low") return "ok";
-      if (status === "ok") return "watch";
-      return "bad";
+    function fmtPctLike(v, digits = 2) {
+      if (v === null || v === undefined || !Number.isFinite(Number(v))) return "--";
+      const x = Number(v);
+      return Math.abs(x) <= 1.5 ? (x * 100).toFixed(digits) + "%" : x.toFixed(digits);
+    }
+
+    function score01To10(v) {
+      if (v === null || v === undefined || !Number.isFinite(Number(v))) return null;
+      const x = Number(v);
+      return x <= 1.5 ? x * 10 : x;
     }
 
     function normalizeName(x) {
-      return x?.name || x?.symbol || "";
+      return x?.name || x?.company_name || x?.symbol || "";
     }
 
     function rowsFromPayload(payload) {
       if (Array.isArray(payload)) return payload;
       if (Array.isArray(payload?.rows)) return payload.rows;
+      if (payload?.rows && typeof payload.rows === "object") return Object.values(payload.rows);
       return [];
+    }
+
+    function statusClass(status, confidence, grade) {
+      if (grade === "D") return "proxy";
+      if (status === "ok" && confidence !== "low" && ["A", "B"].includes(grade)) return "ok";
+      if (status === "ok") return "watch";
+      return "bad";
+    }
+
+    function pick(...values) {
+      for (const v of values) {
+        if (v !== null && v !== undefined && v !== "") return v;
+      }
+      return null;
+    }
+
+    function classifyEPS(eps) {
+      const source = String(pick(eps?.eps_source, eps?.source, eps?.eps_status, "") || "").toLowerCase();
+      const status = String(eps?.eps_status || "").toLowerCase();
+      const quoteType = String(eps?.quote_type || eps?.quoteType || "").toLowerCase();
+
+      if (source.includes("etf_global_proxy") || source.includes("etf_proxy") || source.includes("proxy_etf") || quoteType === "etf") {
+        return "D";
+      }
+      if (source.includes("full_m7_eps") || source.includes("actual_history_plus_eps_regression") || source.includes("company_eps_history") || source.includes("company_regression")) {
+        return "A";
+      }
+      if (source.includes("forward_provided_no_count_blend") || source.includes("forward") || status.includes("forward")) {
+        return "B";
+      }
+      if (source.includes("global_eps_regression_imputed") || source.includes("global")) {
+        return "C";
+      }
+      return "UNKNOWN";
+    }
+
+    function gradeLabel(grade) {
+      if (grade === "A") return "A 高可信";
+      if (grade === "B") return "B 中高可信";
+      if (grade === "C") return "C 低可信";
+      if (grade === "D") return "D ETF Proxy";
+      return "UNKNOWN";
+    }
+
+    function gradeClass(grade) {
+      if (grade === "A") return "grade-a";
+      if (grade === "B") return "grade-b";
+      if (grade === "C") return "grade-c";
+      if (grade === "D") return "grade-d";
+      return "grade-u";
+    }
+
+    function normalizeWarnings(eps, grade) {
+      const warnings = [];
+      const raw = eps?.warnings;
+      if (Array.isArray(raw)) warnings.push(...raw.map(String));
+      else if (raw) warnings.push(String(raw));
+
+      const globalR2 = Number(eps?.global_model_r2);
+      if (Number.isFinite(globalR2) && globalR2 < 0.10) {
+        warnings.push("⚠️ Global model R² < 0.10：global fallback 解釋力很低，不可直接相信");
+      }
+      if (grade === "C") {
+        warnings.push("⚠️ 使用 global_eps_regression_imputed：低可信，只能當最後 fallback");
+      }
+      if (grade === "D") {
+        warnings.push("ETF / Proxy：不是公司 EPS，不可視為公司獲利能力");
+      }
+      if (String(eps?.eps_source || "").includes("no_count")) {
+        warnings.push("forward EPS 有值，但 analyst_count 缺失");
+      }
+      return [...new Set(warnings)].filter(Boolean);
     }
 
     async function loadM7Data() {
@@ -225,40 +380,51 @@
       return await res.json();
     }
 
-    function score01To10(v) {
-      if (v === null || v === undefined || !Number.isFinite(Number(v))) return null;
-      const n = Number(v);
-      return n <= 1.5 ? n * 10 : n;
-    }
-
     function calculate() {
       const rows = rowsFromPayload(state.rawPayload);
 
       state.results = rows
         .map(x => {
-          const eps = x.eps_engine || null;
+          const eps = x.eps_engine || x.eps || null;
           const hasScore = Number.isFinite(Number(eps?.cc_score));
           const confidence = eps?.confidence || "";
           const status = hasScore ? "ok" : "no_eps_engine";
-          const consistency10 = score01To10(eps?.consistency);
+          const grade = classifyEPS(eps || {});
+          const warnings = normalizeWarnings(eps || {}, grade);
+
+          const consistency10 = score01To10(pick(eps?.consistency, eps?.middle_consistency));
           const quality10 = score01To10(eps?.quality);
+          const epsYoyStability = pick(eps?.eps_yoy_stability, eps?.yoy_stability);
 
           return {
             symbol: x.symbol,
-            name: x.name,
+            name: x.name || x.company_name,
             category: x.category,
-            category_sub: x.category_sub,
+            category_sub: x.category_sub || x.subsector || x.sub_category,
             competitive_score: hasScore ? Number(eps.cc_score) : null,
             earnings_power_score: hasScore ? Number(eps.cc_score) : null,
-            m7_score: x.m7_effective_score ?? x.m7_v2_score ?? x.m7_raw_score ?? null,
+            m7_score: pick(x.m7_effective_score, x.m7_v2_score, x.m7_raw_score, x.m7_score),
             status,
             confidence,
+            grade,
+            warnings,
+            has_eps_data: Boolean(eps?.has_eps_data),
+            eps_status: eps?.eps_status || "",
+            eps_source: eps?.eps_source || eps?.source || "",
+            eps_regression_model: eps?.eps_regression_model || eps?.regression_model || "",
+            eps_regression_r2: pick(eps?.eps_regression_r2, eps?.regression_r2),
+            eps_regression_sample_count: pick(eps?.eps_regression_sample_count, eps?.regression_sample_count),
+            global_model_source: eps?.global_model_source || "",
+            global_model_sample_count: eps?.global_model_sample_count,
+            global_model_r2: eps?.global_model_r2,
+            annual_price_years_used: eps?.annual_price_years_used,
             components: {
-              future_profit: eps?.future_profit ? 10 : 0,
-              future_growth: eps?.future_growth ? 10 : 0,
+              future_profit: eps?.future_profit === true ? 10 : eps?.future_profit === false ? 0 : score01To10(eps?.future_profit),
+              future_growth: eps?.future_growth === true ? 10 : eps?.future_growth === false ? 0 : score01To10(eps?.future_growth),
               short_consistency: consistency10,
               middle_consistency: consistency10,
-              quality: quality10
+              quality: quality10,
+              eps_yoy_stability: epsYoyStability
             },
             eps_engine: eps,
             meta: {
@@ -277,6 +443,7 @@
     function applyFilters() {
       const q = $("searchBox").value.trim().toUpperCase();
       const status = $("statusFilter").value;
+      const grade = $("gradeFilter").value;
       const confidenceOnly = $("confidenceOnly").checked;
 
       state.filtered = state.results.filter(r => {
@@ -285,8 +452,10 @@
         if (status === "ok") matchStatus = r.status === "ok";
         if (status === "no_eps_engine") matchStatus = r.status === "no_eps_engine";
         if (status === "low_confidence") matchStatus = r.confidence === "low";
+        if (status === "global_low_r2") matchStatus = Number.isFinite(Number(r.global_model_r2)) && Number(r.global_model_r2) < 0.10;
+        const matchGrade = grade === "all" || r.grade === grade;
         const matchConfidence = !confidenceOnly || ["high", "medium"].includes(r.confidence);
-        return matchQ && matchStatus && matchConfidence;
+        return matchQ && matchStatus && matchGrade && matchConfidence;
       });
 
       render();
@@ -295,39 +464,51 @@
     function renderKPIs() {
       const total = state.results.length;
       const ok = state.results.filter(x => x.status === "ok" && Number.isFinite(Number(x.competitive_score)));
-      const avg = ok.length ? ok.reduce((s, x) => s + Number(x.competitive_score), 0) / ok.length : null;
-      const top = ok[0];
+      const avg = ok.length ? ok.reduce((sum, x) => sum + Number(x.competitive_score), 0) / ok.length : null;
+      const highTrust = state.results.filter(x => ["A", "B"].includes(x.grade)).length;
+      const globalLow = state.results.filter(x => Number.isFinite(Number(x.global_model_r2)) && Number(x.global_model_r2) < 0.10).length;
 
       $("kpiTotal").textContent = total;
       $("kpiOk").textContent = ok.length;
       $("kpiAvg").textContent = fmt(avg);
-      $("kpiTop").textContent = top ? `${top.symbol} ${fmt(top.competitive_score)}` : "--";
+      $("kpiTrust").textContent = highTrust;
+      $("kpiGlobalLow").textContent = globalLow;
     }
 
     function renderTable() {
       if (!state.filtered.length) {
-        $("resultBody").innerHTML = `<tr><td colspan="11" class="muted">No results</td></tr>`;
+        $("resultBody").innerHTML = `<tr><td colspan="17" class="muted">No results</td></tr>`;
         return;
       }
 
       $("resultBody").innerHTML = state.filtered.map((r, idx) => {
         const c = r.components || {};
-        const basis = r.meta?.reason || "";
-        const peText = r.meta?.pe_model !== null && r.meta?.pe_model !== undefined ? fmt(r.meta.pe_model) : "--";
         const epsLine = `2026 ${fmt(r.meta?.eps_2026)} / 2027 ${fmt(r.meta?.eps_2027)}`;
+        const source = r.eps_source || "--";
+        const statusText = r.eps_status || r.status || "--";
+        const warningHtml = r.warnings.length
+          ? r.warnings.map(w => `<div class="${String(w).includes("Global") || String(w).includes("低可信") ? "warn-text" : "soft-warn"}">${w}</div>`).join("")
+          : `<span class="muted">--</span>`;
+
         return `
           <tr>
             <td>${idx + 1}</td>
+            <td><span class="grade-dot ${gradeClass(r.grade)}">${r.grade === "UNKNOWN" ? "?" : r.grade}</span><span class="subline">${gradeLabel(r.grade)}</span></td>
             <td><b>${r.symbol || "--"}</b><span class="subline">${r.category_sub || r.category || ""}</span></td>
-            <td>${normalizeName(r)}</td>
+            <td>${normalizeName(r)}<span class="subline">${r.category || ""}</span></td>
             <td><b>${fmt(r.competitive_score)}</b></td>
             <td>${fmt(r.m7_score)}</td>
             <td>${fmt(c.future_profit)}</td>
             <td>${fmt(c.future_growth)}</td>
             <td>${fmt(c.middle_consistency)}</td>
             <td>${fmt(c.quality)}</td>
-            <td>${peText}<span class="subline">${epsLine}</span></td>
-            <td><span class="pill ${statusClass(r.status, r.confidence)}">${r.status}</span><br><span class="muted">${basis} / ${r.confidence || "--"}</span></td>
+            <td>${fmtPctLike(c.eps_yoy_stability)}</td>
+            <td>${fmt(r.eps_regression_r2)}<span class="subline">${r.eps_regression_model || "--"}</span></td>
+            <td>${fmt(r.eps_regression_sample_count, 0)}</td>
+            <td>${fmt(r.global_model_r2)}<span class="subline">${r.global_model_source || "--"}</span></td>
+            <td>${fmt(r.global_model_sample_count, 0)}<span class="subline">yrs ${fmt(r.annual_price_years_used, 0)}</span></td>
+            <td><span class="pill ${statusClass(r.status, r.confidence, r.grade)}">${statusText}</span><span class="subline">${source}</span><span class="subline">confidence: ${r.confidence || "--"}</span><span class="subline">${epsLine}</span></td>
+            <td>${warningHtml}</td>
           </tr>
         `;
       }).join("");
@@ -339,7 +520,12 @@
         generated_at: state.rawPayload?.generated_at || null,
         scope: state.rawPayload?.scope || null,
         count: state.results.length,
-        sample: state.results.slice(0, 5),
+        filtered_count: state.filtered.length,
+        grade_counts: state.results.reduce((acc, x) => {
+          acc[x.grade] = (acc[x.grade] || 0) + 1;
+          return acc;
+        }, {}),
+        sample: state.results.slice(0, 8),
         results: state.results
       }, null, 2);
     }
@@ -352,19 +538,25 @@
 
     async function init() {
       try {
-        $("resultBody").innerHTML = `<tr><td colspan="11" class="muted">Loading ${DATA_URL}...</td></tr>`;
+        $("resultBody").innerHTML = `<tr><td colspan="17" class="muted">Loading ${DATA_URL}...</td></tr>`;
         state.rawPayload = await loadM7Data();
         calculate();
       } catch (err) {
         console.error(err);
-        $("resultBody").innerHTML = `<tr><td colspan="11" class="error">${err.message}</td></tr>`;
+        $("resultBody").innerHTML = `<tr><td colspan="17" class="error">${err.message}</td></tr>`;
         $("debugOutput").textContent = `${err.stack || err.message}\n\n請確認：\n1. data/m7_sandbox/m7_v2_scores.json 已存在\n2. build_m7_v2_scores.py 已產出 eps_engine 欄位\n3. GitHub Pages 已更新到最新版本\n4. 需透過 GitHub Pages / local server 開啟，不能直接用 file://`;
       }
     }
 
     $("reloadBtn").addEventListener("click", init);
+    $("expandBtn").addEventListener("click", () => {
+      const d = $("debugDetails");
+      d.open = !d.open;
+      $("expandBtn").textContent = d.open ? "收合 Debug" : "展開 Debug";
+    });
     $("searchBox").addEventListener("input", applyFilters);
     $("statusFilter").addEventListener("change", applyFilters);
+    $("gradeFilter").addEventListener("change", applyFilters);
     $("confidenceOnly").addEventListener("change", applyFilters);
 
     init();
