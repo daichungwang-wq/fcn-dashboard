@@ -551,7 +551,70 @@
       ],
          "quality_flag": ["high_volatility"],
       },
-
+     "TGT": {
+      "eps_history": [
+        {"fiscal_year": 2019, "eps": 5.51},
+        {"fiscal_year": 2020, "eps": 6.36},
+        {"fiscal_year": 2021, "eps": 8.64},
+        {"fiscal_year": 2022, "eps": 14.1},
+        {"fiscal_year": 2023, "eps": 5.98},
+        {"fiscal_year": 2024, "eps": 8.94}
+      ],
+      "eps_forward": [
+        {"fiscal_year": 2025, "eps_estimate": 8.86},
+        {"fiscal_year": 2026, "eps_estimate": 8.13},
+        {"fiscal_year": 2027, "eps_estimate": 7.91}
+      ],
+      "quality_flag": ["high_volatility"]
+},
+ "PG": {
+      "eps_history": [
+        {"fiscal_year": 2019, "eps": 4.22},
+        {"fiscal_year": 2020, "eps": 4.96},
+        {"fiscal_year": 2021, "eps": 5.5},
+        {"fiscal_year": 2022, "eps": 5.81},
+        {"fiscal_year": 2023, "eps": 5.9},
+        {"fiscal_year": 2024, "eps": 6.02}
+      ],
+      "eps_forward": [
+        {"fiscal_year": 2025, "eps_estimate": 6.51},
+        {"fiscal_year": 2026, "eps_estimate": 6.84},
+        {"fiscal_year": 2027, "eps_estimate": NULL}
+      ],
+      "quality_flag": ["high_volatility"]
+},
+ "PEP": {
+      "eps_history": [
+        {"fiscal_year": 2019, "eps": 5.2},
+        {"fiscal_year": 2020, "eps": 5.12},
+        {"fiscal_year": 2021, "eps": 5.49},
+        {"fiscal_year": 2022, "eps": 6.42},
+        {"fiscal_year": 2023, "eps": 6.56},
+        {"fiscal_year": 2024, "eps": 6.95}
+      ],
+      "eps_forward": [
+        {"fiscal_year": 2025, "eps_estimate": 7},
+        {"fiscal_year": 2026, "eps_estimate": 8},
+        {"fiscal_year": 2027, "eps_estimate": 8.01}
+      ],
+      "quality_flag": ["high_volatility"]
+},
+ "PFE": {
+      "eps_history": [
+        {"fiscal_year": 2019, "eps": 2.82},
+        {"fiscal_year": 2020, "eps": 1.63},
+        {"fiscal_year": 2021, "eps": 3.85},
+        {"fiscal_year": 2022, "eps": 5.47},
+        {"fiscal_year": 2023, "eps": 0.37},
+        {"fiscal_year": 2024, "eps": 1.41}
+      ],
+      "eps_forward": [
+        {"fiscal_year": 2025, "eps_estimate": 1.4},
+        {"fiscal_year": 2026, "eps_estimate": 1.4},
+        {"fiscal_year": 2027, "eps_estimate": 1.4}
+      ],
+      "quality_flag": ["high_volatility"]
+    },
     "NFLX": {
       "eps_history": [
         {"fiscal_year": 2019, "eps": 4.13},
