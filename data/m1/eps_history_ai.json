@@ -56,6 +56,29 @@
       ],
       "quality_flag": ["adjusted_eps"]
     },
+     "AAPL": {
+      "symbol": "AAPL",
+      "name": "Apple Inc.",
+      "type": "STOCK",
+      "skip_eps": false,
+      "eps_basis": "diluted_eps",
+      "eps_history": [
+        {"fiscal_year": 2019, "eps": 2.97},
+        {"fiscal_year": 2020, "eps": 3.28},
+        {"fiscal_year": 2021, "eps": 5.61},
+        {"fiscal_year": 2022, "eps": 6.11},
+        {"fiscal_year": 2023, "eps": 6.13},
+        {"fiscal_year": 2024, "eps": 6.56}
+      ],
+      "eps_forward": [
+        {"fiscal_year": 2025, "eps_estimate": 7.0, "analyst_count": 35},
+        {"fiscal_year": 2026, "eps_estimate": 7.8, "analyst_count": 33},
+        {"fiscal_year": 2027, "eps_estimate": null, "analyst_count": null}
+        ],
+        
+         "quality_flag": [],
+      "source_note": "Apple filings + consensus estimates"
+    },
 
     "TSM": {
       "eps_history": [
