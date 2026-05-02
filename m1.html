@@ -996,7 +996,7 @@
       const c2p = n(row.capex_score ?? row.breakdown?.capex_score, 5.999);
       const cc = n(row.competitive_score, 5.999);
       const m7n = n(row.m7_v2_score, n(row.breakdown?.m7_score, 5.999));
-      const raw = 0.45 * c2p + 0.30 * cc + 0.25 * m7n;
+      const raw = 0.45 * c2p + 0.35 * cc + 0.2 * m7n;
       return {
         raw_m1_score: +raw.toFixed(2),
         M1_score: +Math.max(0, Math.min(10, raw)).toFixed(2),
