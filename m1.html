@@ -1011,13 +1011,33 @@
     }
 
     function applyNewM1Formula(rows) {
-      const computed = rows.map(row => {
-        const s = computeNewM1(row);
-        return { ...row, ...s };
-      }).sort((a, b) => n(b.M1_score, -999) - n(a.M1_score, -999));
-      computed.forEach((row, idx) => { row.rank = idx + 1; });
-      return computed;
+  // Step 1：先算 raw
+  const computed = rows.map(row => {
+    const s = computeNewM1(row);
+    return { ...row, ...s };
+  });
+
+  // Step 2：找最大 raw（核心）
+  const maxRaw = Math.max(...computed.map(r => n(r.raw_m1_score, 0)));
+
+  // Step 3：normalize → 10分制
+  computed.forEach(row => {
+    if (!Number.isFinite(row.raw_m1_score) || maxRaw === 0) {
+      row.M1_score = 0;
+    } else {
+      row.M1_score = +(row.raw_m1_score / maxRaw * 10).toFixed(2);
     }
+  });
+
+  // Step 4：排序 + rank
+  computed.sort((a, b) => n(b.M1_score, -999) - n(a.M1_score, -999));
+
+  computed.forEach((row, idx) => {
+    row.rank = idx + 1;
+  });
+
+  return computed;
+}
 
     function escapeHtml(str) {
       return String(str ?? "")
