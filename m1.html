@@ -829,7 +829,7 @@
         <div class="rule-wrap">
           <div class="formula-box">
             <b>2.1 M1 公式簡介</b><br>
-            M1_raw = 0.45 × C2P + 0.35 × CC + 0.2 × M7n<br>
+            M1_raw = 0.45 × C2P + 0.30 × CC + 0.25 × M7n<br>
             C2P = Capex to Profit<br>
             CC = Competitive Score（eps_engine.cc_score，由 build_m7_v2_scores.py 產出）<br>
             M7n = M7_v2 Score（data/m7_sandbox/m7_v2_scores.json）<br>
@@ -996,7 +996,7 @@
       const c2p = n(row.capex_score ?? row.breakdown?.capex_score, 5.999);
       const cc = n(row.competitive_score, 5.999);
       const m7n = n(row.m7_v2_score, n(row.breakdown?.m7_score, 5.999));
-      const raw = 0.45 * c2p + 0.35 * cc + 0.2 * m7n;
+      const raw = 0.45 * c2p + 0.30 * cc + 0.25 * m7n;
       return {
         raw_m1_score: +raw.toFixed(2),
         M1_score: +Math.max(0, Math.min(10, raw)).toFixed(2),
@@ -1011,33 +1011,24 @@
     }
 
     function applyNewM1Formula(rows) {
-  // Step 1：先算 raw
-  const computed = rows.map(row => {
-    const s = computeNewM1(row);
-    return { ...row, ...s };
-  });
+      const computed = rows.map(row => {
+        const s = computeNewM1(row);
+        return { ...row, ...s };
+      });
 
-  // Step 2：找最大 raw（核心）
-  const maxRaw = Math.max(...computed.map(r => n(r.raw_m1_score, 0)));
+      const maxRaw = Math.max(...computed.map(r => n(r.raw_m1_score, 0)));
+      computed.forEach(row => {
+        if (!Number.isFinite(row.raw_m1_score) || maxRaw <= 0) {
+          row.M1_score = 0;
+        } else {
+          row.M1_score = +(row.raw_m1_score / maxRaw * 10).toFixed(2);
+        }
+      });
 
-  // Step 3：normalize → 10分制
-  computed.forEach(row => {
-    if (!Number.isFinite(row.raw_m1_score) || maxRaw === 0) {
-      row.M1_score = 0;
-    } else {
-      row.M1_score = +(row.raw_m1_score / maxRaw * 10).toFixed(2);
+      computed.sort((a, b) => n(b.M1_score, -999) - n(a.M1_score, -999));
+      computed.forEach((row, idx) => { row.rank = idx + 1; });
+      return computed;
     }
-  });
-
-  // Step 4：排序 + rank
-  computed.sort((a, b) => n(b.M1_score, -999) - n(a.M1_score, -999));
-
-  computed.forEach((row, idx) => {
-    row.rank = idx + 1;
-  });
-
-  return computed;
-}
 
     function escapeHtml(str) {
       return String(str ?? "")
@@ -1149,6 +1140,13 @@
           quality_score: n(row.quality_score, null),
           competitive_score: n(eps.cc_score, null),
           competitive_raw_score: n(eps.cc_raw_score ?? eps.cc_score, null),
+          cc_source: eps.cc_source || eps.eps_status || null,
+          cc_confidence: eps.cc_confidence || eps.confidence || null,
+          cc_method: eps.cc_method || null,
+          runtime_cc_score: n(eps.runtime_cc_score, null),
+          runtime_cc_breakdown: eps.runtime_cc_breakdown || null,
+          runtime_fundamental_fields_used: eps.runtime_fundamental_fields_used ?? null,
+          runtime_fundamental_source: eps.runtime_fundamental_source || null,
           m7_v2_score: n(m7row?.m7_v2_score, null),
           eps_coverage_grade: coverage.grade,
           eps_history_count: coverage.historyCount,
@@ -2091,10 +2089,13 @@ timing 判斷
               <div class="detail-card"><div class="k">Raw M1</div><div class="v">${fmt(row.raw_m1_score)}</div></div>
               <div class="detail-card"><div class="k">C2P｜Capex_to_Profit (45%)</div><div class="v" style="${scoreColor(row.breakdown?.capex_score)}">${fmt(row.breakdown?.capex_score)}</div></div>
               <div class="detail-card"><div class="k">CC｜Competitive Score (30%)</div><div class="v" style="${scoreColor(row.breakdown?.competitive_score)}">${fmt(row.breakdown?.competitive_score)}</div></div>
+              <div class="detail-card"><div class="k">CC Source / Confidence</div><div class="v">${escapeHtml(row.cc_source || "-")} / ${escapeHtml(row.cc_confidence || "-")}</div></div>
               <div class="detail-card"><div class="k">M7n｜M7_v2 Score (25%)</div><div class="v" style="${scoreColor(row.breakdown?.m7_v2_score)}">${fmt(row.breakdown?.m7_v2_score)}</div></div>
+              <div class="detail-card"><div class="k">Raw M1 → Norm M1</div><div class="v">${fmt(row.raw_m1_score)} → ${fmt(row.M1_score)}</div></div>
               <div class="detail-card"><div class="k">EPS Coverage</div><div class="v">Rank ${escapeHtml(row.eps_coverage_grade || "D")} ｜ H${row.eps_history_count ?? 0} / F${row.eps_forward_count ?? 0}</div></div>
               <div class="detail-card"><div class="k">Forward Growth / Profit</div><div class="v">${fmt(row.eps_future_growth_score)} / ${fmt(row.eps_future_profit_score)}</div></div>
               <div class="detail-card"><div class="k">EPS Consistency / Quality</div><div class="v">${fmt(row.eps_consistency_score)} / ${fmt(row.eps_quality_score)}</div></div>
+              <div class="detail-card"><div class="k">Runtime CC Breakdown</div><div class="v">${row.runtime_cc_breakdown ? `Profit ${fmt(row.runtime_cc_breakdown.profitability)} ｜ Value ${fmt(row.runtime_cc_breakdown.forward_eps_value)} ｜ Growth ${fmt(row.runtime_cc_breakdown.growth)} ｜ CF ${fmt(row.runtime_cc_breakdown.cashflow)} ｜ Debt ${fmt(row.runtime_cc_breakdown.balance_sheet)}` : "-"}</div></div>
               <div class="detail-card"><div class="k">正式規則</div><div class="v">strong ${fmt(cfg.strong)} ｜ pass ${fmt(cfg.pass)} ｜ watch ${fmt(cfg.watch)}</div></div>
               <div class="detail-card"><div class="k">vs p50</div><div class="v">${Number.isFinite(row.M1_score) && Number.isFinite(cfg.pass) ? `${row.M1_score - cfg.pass >= 0 ? "+" : ""}${fmt(row.M1_score - cfg.pass)}` : "-"}</div></div>
               <div class="detail-card"><div class="k">p75 對比</div><div class="v">${Number.isFinite(row.M1_score) && Number.isFinite(cfg.strong) && cfg.strong !== 0 ? `${((((row.M1_score / cfg.strong) - 1) * 100) >= 0 ? "+" : "") + fmt((((row.M1_score / cfg.strong) - 1) * 100))}%` : "-"}</div></div>
