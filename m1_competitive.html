@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>M1 Competitive Score / EPS Batch</title>
+  <title>M1 Competitive Score / EPS Engine v2.6</title>
   <style>
     :root {
       --bg: #f6f7fb;
@@ -95,6 +95,7 @@
     }
     th:first-child, td:first-child,
     th:nth-child(2), td:nth-child(2),
+    th:nth-child(3), td:nth-child(3),
     th:nth-child(11), td:nth-child(11) { text-align: left; }
     th {
       color: #374151;
@@ -111,6 +112,7 @@
     .bad { background: #fef2f2; color: var(--bad); }
     .muted { color: var(--muted); }
     .error { color: var(--bad); white-space: pre-wrap; }
+    .subline { display: block; color: var(--muted); font-size: 12px; margin-top: 3px; }
     details { margin-top: 18px; }
     summary { cursor: pointer; font-weight: 800; }
     pre { background: #0b1020; color: #d1e7ff; padding: 14px; border-radius: 14px; overflow: auto; }
@@ -127,8 +129,8 @@
 <body>
   <div class="wrap">
     <section class="hero">
-      <h1>M1 Competitive Score / EPS Batch</h1>
-      <p>資料來源：<b>data/m1/eps_history_ai.json</b>。本頁會批次讀取 EPS history / forward EPS，呼叫 <b>js/m1/earnings_engine.js</b> 產出 EPS-based competitive score。</p>
+      <h1>M1 Competitive Score / EPS Engine v2.6</h1>
+      <p>資料來源：<b>data/m7_sandbox/m7_v2_scores.json</b>。本頁直接讀取 M7 產出的 <b>eps_engine.cc_score</b>，不再呼叫前端 earnings_engine.js 計算。</p>
     </section>
 
     <section class="toolbar">
@@ -138,20 +140,20 @@
         <select id="statusFilter">
           <option value="all">全部狀態</option>
           <option value="ok">OK</option>
-          <option value="eps_not_applicable">EPS 不適用</option>
-          <option value="insufficient_eps_history">歷史 EPS 不足</option>
+          <option value="no_eps_engine">無 eps_engine</option>
+          <option value="low_confidence">低信心</option>
         </select>
       </div>
       <div class="right">
-        <label><input id="strictAnalyst" type="checkbox" /> Forward EPS 嚴格採用 analyst_count ≥ 5</label>
+        <label><input id="confidenceOnly" type="checkbox" /> 只看 High / Medium confidence</label>
       </div>
     </section>
 
     <section class="grid">
-      <div class="kpi"><div class="label">Total Symbols</div><div id="kpiTotal" class="value">--</div><div class="note">eps_history_ai.json data count</div></div>
-      <div class="kpi"><div class="label">OK Calculated</div><div id="kpiOk" class="value">--</div><div class="note">可進 competitive score</div></div>
-      <div class="kpi"><div class="label">Average Competitive</div><div id="kpiAvg" class="value">--</div><div class="note">只計算 status=ok</div></div>
-      <div class="kpi"><div class="label">Top Symbol</div><div id="kpiTop" class="value">--</div><div class="note">依 competitive_score 排序</div></div>
+      <div class="kpi"><div class="label">Total Symbols</div><div id="kpiTotal" class="value">--</div><div class="note">m7_v2_scores rows count</div></div>
+      <div class="kpi"><div class="label">OK Calculated</div><div id="kpiOk" class="value">--</div><div class="note">有 eps_engine.cc_score</div></div>
+      <div class="kpi"><div class="label">Average CC</div><div id="kpiAvg" class="value">--</div><div class="note">只計算 status=ok</div></div>
+      <div class="kpi"><div class="label">Top Symbol</div><div id="kpiTop" class="value">--</div><div class="note">依 eps_engine.cc_score 排序</div></div>
     </section>
 
     <section class="card">
@@ -162,13 +164,13 @@
               <th>#</th>
               <th>Symbol</th>
               <th>Name</th>
-              <th>Competitive</th>
-              <th>Earnings Power</th>
+              <th>CC Score</th>
+              <th>M7 Score</th>
               <th>Future Profit</th>
               <th>Future Growth</th>
-              <th>Short</th>
-              <th>Middle</th>
+              <th>Consistency</th>
               <th>Quality</th>
+              <th>PE Model</th>
               <th>Status / Basis</th>
             </tr>
           </thead>
@@ -186,8 +188,6 @@
   </div>
 
   <script type="module">
-    import { EarningsEngine } from "./js/m1/earnings_engine.js";
-
     const DATA_URL = "./data/m7_sandbox/m7_v2_scores.json";
 
     const state = {
@@ -203,9 +203,9 @@
       return Number(v).toFixed(digits);
     }
 
-    function statusClass(status) {
-      if (status === "ok") return "ok";
-      if (status === "eps_not_applicable") return "watch";
+    function statusClass(status, confidence) {
+      if (status === "ok" && confidence !== "low") return "ok";
+      if (status === "ok") return "watch";
       return "bad";
     }
 
@@ -213,31 +213,63 @@
       return x?.name || x?.symbol || "";
     }
 
-    async function loadEPSData() {
+    function rowsFromPayload(payload) {
+      if (Array.isArray(payload)) return payload;
+      if (Array.isArray(payload?.rows)) return payload.rows;
+      return [];
+    }
+
+    async function loadM7Data() {
       const res = await fetch(DATA_URL, { cache: "no-store" });
       if (!res.ok) throw new Error(`Failed to load ${DATA_URL}: HTTP ${res.status}`);
       return await res.json();
     }
 
-    function calculate() {
-      const strictAnalystCount = $("strictAnalyst").checked;
-
-    state.results = state.rawPayload
-  .map(x => ({
-    symbol: x.symbol,
-    name: x.name,
-    competitive_score: x.eps_engine?.cc_score,
-    earnings_power_score: x.eps_engine?.cc_score,
-    status: x.eps_engine?.eps_status || "no_data",
-    components: {
-      future_profit: x.eps_engine?.future_profit ? 10 : 0,
-      future_growth: x.eps_engine?.future_growth ? 10 : 0,
-      short_consistency: x.eps_engine?.consistency,
-      middle_consistency: x.eps_engine?.consistency,
-      quality: x.eps_engine?.quality
+    function score01To10(v) {
+      if (v === null || v === undefined || !Number.isFinite(Number(v))) return null;
+      const n = Number(v);
+      return n <= 1.5 ? n * 10 : n;
     }
-  }))
-  .sort((a, b) => (b.competitive_score ?? -999) - (a.competitive_score ?? -999));
+
+    function calculate() {
+      const rows = rowsFromPayload(state.rawPayload);
+
+      state.results = rows
+        .map(x => {
+          const eps = x.eps_engine || null;
+          const hasScore = Number.isFinite(Number(eps?.cc_score));
+          const confidence = eps?.confidence || "";
+          const status = hasScore ? "ok" : "no_eps_engine";
+          const consistency10 = score01To10(eps?.consistency);
+          const quality10 = score01To10(eps?.quality);
+
+          return {
+            symbol: x.symbol,
+            name: x.name,
+            category: x.category,
+            category_sub: x.category_sub,
+            competitive_score: hasScore ? Number(eps.cc_score) : null,
+            earnings_power_score: hasScore ? Number(eps.cc_score) : null,
+            m7_score: x.m7_effective_score ?? x.m7_v2_score ?? x.m7_raw_score ?? null,
+            status,
+            confidence,
+            components: {
+              future_profit: eps?.future_profit ? 10 : 0,
+              future_growth: eps?.future_growth ? 10 : 0,
+              short_consistency: consistency10,
+              middle_consistency: consistency10,
+              quality: quality10
+            },
+            eps_engine: eps,
+            meta: {
+              reason: eps?.eps_status || "",
+              pe_model: eps?.pe_model ?? null,
+              eps_2026: eps?.eps_2026 ?? null,
+              eps_2027: eps?.eps_2027 ?? null
+            }
+          };
+        })
+        .sort((a, b) => (b.competitive_score ?? -999) - (a.competitive_score ?? -999));
 
       applyFilters();
     }
@@ -245,11 +277,16 @@
     function applyFilters() {
       const q = $("searchBox").value.trim().toUpperCase();
       const status = $("statusFilter").value;
+      const confidenceOnly = $("confidenceOnly").checked;
 
       state.filtered = state.results.filter(r => {
         const matchQ = !q || String(r.symbol || "").toUpperCase().includes(q) || String(normalizeName(r)).toUpperCase().includes(q);
-        const matchStatus = status === "all" || r.status === status;
-        return matchQ && matchStatus;
+        let matchStatus = true;
+        if (status === "ok") matchStatus = r.status === "ok";
+        if (status === "no_eps_engine") matchStatus = r.status === "no_eps_engine";
+        if (status === "low_confidence") matchStatus = r.confidence === "low";
+        const matchConfidence = !confidenceOnly || ["high", "medium"].includes(r.confidence);
+        return matchQ && matchStatus && matchConfidence;
       });
 
       render();
@@ -275,20 +312,22 @@
 
       $("resultBody").innerHTML = state.filtered.map((r, idx) => {
         const c = r.components || {};
-        const basis = r.meta?.earnings_power_v3_meta?.growth_basis || r.meta?.reason || "";
+        const basis = r.meta?.reason || "";
+        const peText = r.meta?.pe_model !== null && r.meta?.pe_model !== undefined ? fmt(r.meta.pe_model) : "--";
+        const epsLine = `2026 ${fmt(r.meta?.eps_2026)} / 2027 ${fmt(r.meta?.eps_2027)}`;
         return `
           <tr>
             <td>${idx + 1}</td>
-            <td><b>${r.symbol || "--"}</b></td>
+            <td><b>${r.symbol || "--"}</b><span class="subline">${r.category_sub || r.category || ""}</span></td>
             <td>${normalizeName(r)}</td>
             <td><b>${fmt(r.competitive_score)}</b></td>
-            <td>${fmt(r.earnings_power_score)}</td>
+            <td>${fmt(r.m7_score)}</td>
             <td>${fmt(c.future_profit)}</td>
             <td>${fmt(c.future_growth)}</td>
-            <td>${fmt(c.short_consistency)}</td>
             <td>${fmt(c.middle_consistency)}</td>
             <td>${fmt(c.quality)}</td>
-            <td><span class="pill ${statusClass(r.status)}">${r.status}</span><br><span class="muted">${basis}</span></td>
+            <td>${peText}<span class="subline">${epsLine}</span></td>
+            <td><span class="pill ${statusClass(r.status, r.confidence)}">${r.status}</span><br><span class="muted">${basis} / ${r.confidence || "--"}</span></td>
           </tr>
         `;
       }).join("");
@@ -297,9 +336,10 @@
     function renderDebug() {
       $("debugOutput").textContent = JSON.stringify({
         source: DATA_URL,
-        meta: state.rawPayload?.meta || null,
-        summary: state.rawPayload?.summary || null,
+        generated_at: state.rawPayload?.generated_at || null,
+        scope: state.rawPayload?.scope || null,
         count: state.results.length,
+        sample: state.results.slice(0, 5),
         results: state.results
       }, null, 2);
     }
@@ -313,19 +353,19 @@
     async function init() {
       try {
         $("resultBody").innerHTML = `<tr><td colspan="11" class="muted">Loading ${DATA_URL}...</td></tr>`;
-        state.rawPayload = await loadEPSData();
+        state.rawPayload = await loadM7Data();
         calculate();
       } catch (err) {
         console.error(err);
         $("resultBody").innerHTML = `<tr><td colspan="11" class="error">${err.message}</td></tr>`;
-        $("debugOutput").textContent = `${err.stack || err.message}\n\n請確認：\n1. data/m1/eps_history_ai.json 已存在\n2. js/m1/earnings_engine.js 已存在\n3. 需透過 GitHub Pages / local server 開啟，不能直接用 file://`;
+        $("debugOutput").textContent = `${err.stack || err.message}\n\n請確認：\n1. data/m7_sandbox/m7_v2_scores.json 已存在\n2. build_m7_v2_scores.py 已產出 eps_engine 欄位\n3. GitHub Pages 已更新到最新版本\n4. 需透過 GitHub Pages / local server 開啟，不能直接用 file://`;
       }
     }
 
     $("reloadBtn").addEventListener("click", init);
     $("searchBox").addEventListener("input", applyFilters);
     $("statusFilter").addEventListener("change", applyFilters);
-    $("strictAnalyst").addEventListener("change", calculate);
+    $("confidenceOnly").addEventListener("change", applyFilters);
 
     init();
   </script>
