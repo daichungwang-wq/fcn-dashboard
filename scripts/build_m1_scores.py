@@ -7,7 +7,7 @@ Output: data/m1/m1_scores.json
 
 V2 principle:
 - MM must know every relevant stock, not only candidate_80.
-- Score everything possible, then mark scope / missing fields / fallback usage.
+- Score everything possible, then mark scope / CC quality / missing fields / fallback usage.
 - Do not hide COIN-like names just because EPS or candidate membership is incomplete.
 
 Formula:
@@ -154,24 +154,120 @@ def calc_fundamental_score(f: Dict[str, Any]) -> Optional[float]:
 
 
 def eps_coverage(eps: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Quality-oriented CC grading.
+
+    Important:
+    - CC-A/B/C/D is data credibility, not "field exists".
+    - runtime_fundamental_fallback / proxy data must not become CC-A.
+    - If eps_engine gives an explicit cc_rank, keep it only when it is not contradicted
+      by obvious fallback/proxy status.
+    """
     if not isinstance(eps, dict) or not eps:
-        return {"grade": "D", "history_count": 0, "forward_count": 0, "source": "missing_eps_engine", "confidence": "low", "label": "Global / ETF / Proxy"}
+        return {
+            "grade": "D",
+            "history_count": 0,
+            "forward_count": 0,
+            "source": "missing_eps_engine",
+            "confidence": "low",
+            "label": "Missing EPS / Proxy",
+            "eps_layer": "missing",
+            "eps_status_detail": "missing_eps_engine",
+            "quality_flags": ["missing_eps_engine"],
+        }
+
     h = int(to_float(eps.get("eps_regression_sample_count"), 0) or 0)
     f = sum(1 for k in ("eps_2025", "eps_2026", "eps_2027") if to_float(eps.get(k)) is not None)
+
+    status = str(eps.get("eps_status") or eps.get("cc_source") or eps.get("source") or "").strip()
+    confidence = str(eps.get("cc_confidence") or eps.get("confidence") or "").strip().lower()
     raw_rank = str(eps.get("cc_rank") or eps.get("eps_coverage_rank") or "").upper().strip()
-    grade = raw_rank if raw_rank in {"A", "B", "C", "D"} else ""
-    if not grade:
-        status = str(eps.get("eps_status") or eps.get("cc_source") or "")
-        if status == "actual_history_plus_eps_regression" and h >= 3 and f >= 2:
-            grade = "A"
-        elif status == "runtime_fundamental_fallback":
-            grade = "C"
-        elif h >= 1 or f >= 1 or status == "eps_regression_partial":
-            grade = "B"
+
+    warnings = eps.get("warnings") if isinstance(eps.get("warnings"), list) else []
+    warning_text = " ".join(str(x).lower() for x in warnings)
+    status_l = status.lower()
+
+    fallback_like = any(token in status_l for token in [
+        "runtime_fundamental_fallback",
+        "fallback",
+        "proxy",
+        "global",
+        "etf"
+    ]) or any(token in warning_text for token in [
+        "fallback",
+        "proxy",
+        "missing",
+        "insufficient",
+        "partial"
+    ])
+
+    adjusted_like = str(eps.get("eps_basis") or "").lower() in {"adjusted_eps", "non_gaap", "adjusted"} \
+        or "adjusted_eps" in warning_text
+
+    if fallback_like and "runtime" in status_l:
+        grade = "C"
+        layer = "fallback"
+        label = "Runtime Fundamental Fallback"
+    elif fallback_like:
+        grade = "D"
+        layer = "proxy"
+        label = "Global / Proxy"
+    elif status == "actual_history_plus_eps_regression" and h >= 3 and f >= 2 and confidence not in {"low", "d"}:
+        grade = "A"
+        layer = "full"
+        label = "Full EPS"
+    elif status in {"eps_regression_partial", "actual_history_plus_eps_regression"} or h >= 1 or f >= 1:
+        grade = "B"
+        layer = "partial"
+        label = "Partial EPS"
+    else:
+        grade = "D"
+        layer = "missing"
+        label = "Missing EPS / Proxy"
+
+    # Allow explicit cc_rank only if it does not overstate obvious fallback/proxy data.
+    if raw_rank in {"A", "B", "C", "D"}:
+        if fallback_like:
+            order = {"A": 4, "B": 3, "C": 2, "D": 1}
+            # fallback can be at most C; proxy can be at most D
+            cap = "C" if "runtime" in status_l else "D"
+            grade = raw_rank if order[raw_rank] <= order[cap] else cap
         else:
-            grade = "D"
-    labels = {"A": "Full EPS", "B": "Partial EPS", "C": "Runtime Fundamentals", "D": "Global / ETF / Proxy"}
-    return {"grade": grade, "history_count": h, "forward_count": f, "source": eps.get("cc_source") or eps.get("eps_status") or "-", "confidence": eps.get("cc_confidence") or eps.get("confidence") or "-", "label": eps.get("cc_rank_label") or labels[grade]}
+            grade = raw_rank
+
+    # Adjusted / non-GAAP EPS should be visible as a quality flag; keep grade but mark it.
+    flags = []
+    if fallback_like:
+        flags.append("fallback_or_proxy")
+    if adjusted_like:
+        flags.append("adjusted_eps")
+    if h < 3:
+        flags.append("eps_history_lt_3")
+    if f < 2:
+        flags.append("eps_forward_lt_2")
+    if confidence == "low":
+        flags.append("low_confidence")
+
+    # Re-map label after explicit rank correction, but preserve fallback/proxy language.
+    label_map = {
+        "A": "Full EPS",
+        "B": "Partial EPS",
+        "C": "Runtime Fundamental Fallback" if fallback_like else "Runtime / Partial Fundamentals",
+        "D": "Missing EPS / Proxy",
+    }
+    label = eps.get("cc_rank_label") or label_map.get(grade, label)
+
+    return {
+        "grade": grade,
+        "history_count": h,
+        "forward_count": f,
+        "source": eps.get("cc_source") or eps.get("eps_status") or eps.get("source") or "-",
+        "confidence": eps.get("cc_confidence") or eps.get("confidence") or "-",
+        "label": label,
+        "eps_layer": layer,
+        "eps_status_detail": status or "-",
+        "quality_flags": sorted(set(flags)),
+    }
 
 
 def normalize_daily_return(rt: Dict[str, Any]) -> Optional[float]:
@@ -260,7 +356,10 @@ def prepare_row(s: str, maps: Dict[str, Dict[str, Dict[str, Any]]], fundamental:
 
     missing = []
     if not f: missing.append("fundamental_map")
-    if not eps: missing.append("eps_engine")
+    if not eps:
+        missing.append("eps_engine")
+    elif cov.get("grade") in {"C", "D"}:
+        missing.append("eps_quality_not_full")
     if not rt: missing.append("runtime")
     if capex_score is None: missing.append("capex_score")
     if cc is None: missing.append("cc_score")
@@ -296,6 +395,9 @@ def prepare_row(s: str, maps: Dict[str, Dict[str, Dict[str, Any]]], fundamental:
         "m7_v2_score": m7n,
         "eps_coverage_grade": cov["grade"],
         "eps_rank_label": cov["label"],
+        "eps_layer": cov.get("eps_layer"),
+        "eps_status_detail": cov.get("eps_status_detail"),
+        "eps_quality_flags": cov.get("quality_flags", []),
         "eps_cc_source": cov["source"],
         "eps_cc_confidence": cov["confidence"],
         "eps_history_count": cov["history_count"],
@@ -447,7 +549,7 @@ def main() -> None:
     scored = score_rows(rows)
     payload = {
         "source": "scripts/build_m1_scores.py",
-        "version": "m1_scores_v2_0_decision_center",
+        "version": "m1_scores_v2_1_cc_quality",
         "updated_at": datetime.now(timezone.utc).isoformat(),
         "formula": "M1_raw = 0.45*C2P + 0.30*CC + 0.25*M7n; M1_score = M1_raw / max(M1_raw across all relevant MM stocks) * 10",
         "principle": "Score every MM-relevant stock when possible; mark scope, data quality, missing fields, fallback usage, and problem flags instead of hiding missing-data names.",
