@@ -1,5 +1,5 @@
 /* ==========================================================================
-   MM × M1 Integration — C1 Single Stock Cockpit / Decision Engine + Chart
+   MM × M1 Integration — C1 Single Stock Cockpit / Decision Engine + Chart + Runtime Normalization
    File: js/mm/modules/mm_stock_cockpit.js
 
    Goal:
@@ -68,22 +68,70 @@
     });
   }
 
-function fmtPct(v, digits = 1, dash = "--") {
-  const n = safeNum(v);
-  if (n === null) return dash;
-
-  let value = n;
-
-  // 🔥 核心修正：防止 0.56 / 56 混用
-  if (Math.abs(n) <= 1) {
-    value = n * 100;
-  } else if (Math.abs(n) > 50) {
-    // 👉 明顯異常（像 -56%）
-    value = n / 100;
+  function fmtPct(v, digits = 1, dash = "--") {
+    const n = safeNum(v);
+    if (n === null) return dash;
+    const value = Math.abs(n) <= 1 ? n * 100 : n;
+    return `${value.toFixed(digits)}%`;
   }
 
-  return `${value.toFixed(digits)}%`;
-}
+  /*
+     Runtime normalization rule:
+     - General ratios such as CC coverage still use fmtPct().
+     - Market returns use percent-points internally for display.
+     - ret_1d sometimes arrives as -0.56 meaning -0.56%, not -56%.
+     - If previous close exists, 1D return is recalculated from price / previous close.
+  */
+  function normalizeReturnPct(rawValue, runtime = {}, period = "") {
+    const raw = safeNum(rawValue);
+    const price = firstNum(
+      runtime.price,
+      runtime.last_price,
+      runtime.close,
+      runtime.current_price,
+      runtime.price_now
+    );
+
+    if (period === "1d" && price !== null) {
+      const prevClose = firstNum(
+        runtime.previous_close,
+        runtime.prev_close,
+        runtime.prior_close,
+        runtime.yesterday_close,
+        runtime.last_close,
+        runtime.price_ref_d1
+      );
+      if (prevClose && prevClose > 0) {
+        return ((price - prevClose) / prevClose) * 100;
+      }
+    }
+
+    if (raw === null) return null;
+
+    const abs = Math.abs(raw);
+
+    // Very small values are normally decimal returns: 0.0129 => 1.29%.
+    if (abs <= 0.25) return raw * 100;
+
+    // Values between 0.25 and 3 are usually percent-points in this runtime:
+    // -0.561 means -0.561%, not -56.1%.
+    if (abs <= 3) return raw;
+
+    // Values like 12.9 / 73.3 are already percent-points.
+    return raw;
+  }
+
+  function fmtReturnPct(v, runtime = {}, period = "", digits = 1, dash = "--") {
+    const n = normalizeReturnPct(v, runtime, period);
+    if (n === null) return dash;
+    return `${n.toFixed(digits)}%`;
+  }
+
+  function fmtPctPoint(v, digits = 1, dash = "--") {
+    const n = safeNum(v);
+    if (n === null) return dash;
+    return `${n.toFixed(digits)}%`;
+  }
 
   function clamp(n, min, max) {
     const x = safeNum(n, min);
@@ -750,11 +798,17 @@ function fmtPct(v, digits = 1, dash = "--") {
       `${d.symbol}：MM 決策卡整合 M1 quality、M7 valuation/trend、M2 exposure 與 CC source。`
     );
 
-    const ret1d = firstNum(d.runtime.ret_1d, d.runtime.change_pct, d.runtime.day_change_pct);
-    const ret1w = firstNum(d.runtime.ret_1w, d.runtime.return_1w);
-    const ret1m = firstNum(d.runtime.ret_1m, d.runtime.return_1m);
-    const ret3m = firstNum(d.runtime.ret_3m, d.runtime.return_3m, d.runtime.proxy_return_3m);
-    const ret12m = firstNum(d.runtime.ret_12m, d.runtime.ret_1y, d.runtime.return_12m);
+    const rawRet1d = firstNum(d.runtime.ret_1d, d.runtime.change_pct, d.runtime.day_change_pct);
+    const rawRet1w = firstNum(d.runtime.ret_1w, d.runtime.return_1w);
+    const rawRet1m = firstNum(d.runtime.ret_1m, d.runtime.return_1m);
+    const rawRet3m = firstNum(d.runtime.ret_3m, d.runtime.return_3m, d.runtime.proxy_return_3m);
+    const rawRet12m = firstNum(d.runtime.ret_12m, d.runtime.ret_1y, d.runtime.return_12m);
+
+    const ret1d = normalizeReturnPct(rawRet1d, d.runtime, "1d");
+    const ret1w = normalizeReturnPct(rawRet1w, d.runtime, "1w");
+    const ret1m = normalizeReturnPct(rawRet1m, d.runtime, "1m");
+    const ret3m = normalizeReturnPct(rawRet3m, d.runtime, "3m");
+    const ret12m = normalizeReturnPct(rawRet12m, d.runtime, "12m");
 
     const volumeRatio = firstNum(d.runtime.volume_ratio, d.m7.volume_ratio);
     const pos12m = firstNum(d.runtime.position_12m_pct, d.runtime.price_position_12m, d.runtime.range_position_12m);
@@ -781,12 +835,9 @@ function fmtPct(v, digits = 1, dash = "--") {
 
           <div class="price-strip">
             <div class="mini-kpi"><div class="k">Today Price</div><div class="v">${fmtNum(d.price, 2)}</div><div class="d">現價 / runtime</div></div>
-            <div class="d">
-  今日變化 (runtime)
-  ${Math.abs(ret1d) > 0.3 ? "⚠️" : ""}
-</div>
-            <div class="mini-kpi"><div class="k">1W / 1M</div><div class="v">${fmtPct(ret1w)} / ${fmtPct(ret1m)}</div><div class="d">短期表現</div></div>
-            <div class="mini-kpi"><div class="k">3M / 12M</div><div class="v">${fmtPct(ret3m)} / ${fmtPct(ret12m)}</div><div class="d">中長期表現</div></div>
+            <div class="mini-kpi"><div class="k">Δ%</div><div class="v ${retClass(ret1d)}">${fmtPctPoint(ret1d, 1)}</div><div class="d">今日變化 / normalized</div></div>
+            <div class="mini-kpi"><div class="k">1W / 1M</div><div class="v">${fmtPctPoint(ret1w, 1)} / ${fmtPctPoint(ret1m, 1)}</div><div class="d">短期表現</div></div>
+            <div class="mini-kpi"><div class="k">3M / 12M</div><div class="v">${fmtPctPoint(ret3m, 1)} / ${fmtPctPoint(ret12m, 1)}</div><div class="d">中長期表現</div></div>
             <div class="mini-kpi"><div class="k">Volume / Position</div><div class="v">${volumeRatio === null ? "--" : fmtNum(volumeRatio, 2) + "x"}</div><div class="d">12M position：${pos12m === null ? "--" : fmtPct(pos12m)}</div></div>
           </div>
 
