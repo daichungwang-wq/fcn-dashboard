@@ -1758,6 +1758,30 @@ def _predict_from_coeffs(coeffs: list[float] | None, row: list[float]) -> float 
     return val
 
 
+
+
+def _safe_log_positive(x: Any) -> float | None:
+    """Return log(x) only for positive finite inputs; otherwise None.
+
+    Governance note:
+    - EPS itself may be 0 or negative and can remain as regression target y.
+    - Only log-transformed INPUTS must be strictly positive.
+    """
+    v = safe_num(x, None)
+    if v is None or v <= 0 or not math.isfinite(v):
+        return None
+    return math.log(v)
+
+
+def _safe_eps_growth(new_eps: Any, old_eps: Any) -> float | None:
+    """EPS growth is only meaningful when both EPS values are positive."""
+    new_v = safe_num(new_eps, None)
+    old_v = safe_num(old_eps, None)
+    if new_v is None or old_v is None or new_v <= 0 or old_v <= 0:
+        return None
+    return new_v / old_v - 1.0
+
+
 def _fit_eps_regression_models(years: list[int], prices: list[float], eps_values: list[float]) -> dict[str, Any]:
     """
     M1 Competitive EPS regression, following the agreed spec:
@@ -1787,12 +1811,23 @@ def _fit_eps_regression_models(years: list[int], prices: list[float], eps_values
 
     design_linear = [[1.0, t, p] for t, p in zip(t_vals, p_vals)]
     design_quadratic = [[1.0, t, t * t, p] for t, p in zip(t_vals, p_vals)]
-    design_logarithmic = [[1.0, math.log(t + 1.0), math.log(max(p, 1e-9))] for t, p in zip(t_vals, p_vals)]
+
+    # Log model can use negative/zero EPS as target y, but its INPUTS must be positive.
+    # t+1 is positive for the fitted history because base_year is the first year (t>=0).
+    # price must also be strictly positive. If not, skip only the logarithmic model.
+    log_design: list[list[float]] = []
+    log_y: list[float] = []
+    for t, p, e in zip(t_vals, p_vals, e_vals):
+        lt = _safe_log_positive(t + 1.0)
+        lp = _safe_log_positive(p)
+        if lt is not None and lp is not None:
+            log_design.append([1.0, lt, lp])
+            log_y.append(e)
 
     models = {
         "eps_linear_time_price": _fit_design_matrix(design_linear, e_vals),
         "eps_quadratic_time_price": _fit_design_matrix(design_quadratic, e_vals),
-        "eps_log_time_log_price": _fit_design_matrix(design_logarithmic, e_vals),
+        "eps_log_time_log_price": _fit_design_matrix(log_design, log_y) if len(log_design) >= 3 else {"r2": None, "coeffs": None, "fitted": []},
     }
     valid = {k: v for k, v in models.items() if v.get("r2") is not None}
     best_name = max(valid, key=lambda k: valid[k]["r2"]) if valid else None
@@ -1822,7 +1857,11 @@ def _predict_eps_with_best_model(model_payload: dict[str, Any], year: int, price
     elif best == "eps_quadratic_time_price":
         row = [1.0, t, t * t, pp]
     elif best == "eps_log_time_log_price":
-        row = [1.0, math.log(t + 1.0), math.log(max(pp, 1e-9))]
+        lt = _safe_log_positive(t + 1.0)
+        lp = _safe_log_positive(pp)
+        if lt is None or lp is None:
+            return None
+        row = [1.0, lt, lp]
     else:
         return None
     pred = _predict_from_coeffs(coeffs, row)
@@ -1844,10 +1883,18 @@ def _fit_price_forecast_model(annual_price_by_year: dict[int, float]) -> dict[st
     t_vals = [float(y - base_year) for y in years]
     log_prices = [math.log(max(p, 1e-9)) for p in prices]
 
+    price_log_design: list[list[float]] = []
+    price_log_y: list[float] = []
+    for t, lp in zip(t_vals, log_prices):
+        lt = _safe_log_positive(t + 1.0)
+        if lt is not None:
+            price_log_design.append([1.0, lt])
+            price_log_y.append(lp)
+
     models = {
         "price_linear_time": _fit_design_matrix([[1.0, t] for t in t_vals], log_prices),
         "price_quadratic_time": _fit_design_matrix([[1.0, t, t * t] for t in t_vals], log_prices),
-        "price_log_time": _fit_design_matrix([[1.0, math.log(t + 1.0)] for t in t_vals], log_prices),
+        "price_log_time": _fit_design_matrix(price_log_design, price_log_y) if len(price_log_design) >= 3 else {"r2": None, "coeffs": None, "fitted": []},
     }
     valid = {k: v for k, v in models.items() if v.get("r2") is not None}
     best_name = max(valid, key=lambda k: valid[k]["r2"]) if valid else None
@@ -1870,7 +1917,10 @@ def _predict_price_with_best_model(price_model: dict[str, Any], year: int) -> fl
     elif best == "price_quadratic_time":
         row = [1.0, t, t * t]
     elif best == "price_log_time":
-        row = [1.0, math.log(t + 1.0)]
+        lt = _safe_log_positive(t + 1.0)
+        if lt is None:
+            return None
+        row = [1.0, lt]
     else:
         return None
     pred_log = _predict_from_coeffs(coeffs, row)
@@ -1928,12 +1978,21 @@ def _weighted_forward_growth(eps_2025: float | None, eps_2026: float | None, eps
     e26 = safe_num(eps_2026, None)
     e27 = safe_num(eps_2027, None)
 
-    if e25 is None or e26 is None or e25 <= 0 or e26 <= 0:
+    if e25 is None or e26 is None:
         return {
             "growth_2026_vs_2025": None,
             "growth_2027_vs_2026": None,
             "weighted_forward_growth": None,
-            "growth_formula": "missing_or_nonpositive_eps_2025_or_eps_2026",
+            "growth_formula": "missing_eps_2025_or_eps_2026",
+            "growth_type": "missing",
+        }
+    if e25 <= 0 or e26 <= 0:
+        return {
+            "growth_2026_vs_2025": None,
+            "growth_2027_vs_2026": None,
+            "weighted_forward_growth": None,
+            "growth_formula": "nonpositive_eps_growth_not_computed",
+            "growth_type": "recovery_or_loss",
         }
 
     g1 = e26 / e25 - 1.0
@@ -1951,6 +2010,7 @@ def _weighted_forward_growth(eps_2025: float | None, eps_2026: float | None, eps
         "growth_2027_vs_2026": g2,
         "weighted_forward_growth": g,
         "growth_formula": formula,
+        "growth_type": "normal",
     }
 
 
@@ -2399,10 +2459,7 @@ def compute_runtime_cc_score(rt: dict[str, Any]) -> dict[str, Any] | None:
     # 2) Forward EPS value: positive forward EPS + reasonable forward PE + EPS improvement.
     forward_profit_score = _score_future_profit(forward_eps) if forward_eps is not None else None
     forward_pe_score = _score_inverse(forward_pe, 5.0, 60.0)
-    if trailing_eps is not None and trailing_eps > 0 and forward_eps is not None and forward_eps > 0:
-        implied_eps_growth = forward_eps / trailing_eps - 1.0
-    else:
-        implied_eps_growth = None
+    implied_eps_growth = _safe_eps_growth(forward_eps, trailing_eps)
     implied_eps_growth_score = _growth_to_score(implied_eps_growth)
     forward_eps_value = _weighted_available([
         (0.40, forward_profit_score),
@@ -2659,6 +2716,7 @@ def compute_eps_engine_v26(feature: dict[str, Any], trend: dict[str, Any] | None
         "growth_2026_vs_2025": round(safe_num(growth_payload.get("growth_2026_vs_2025"), 0.0), 4) if has_model and growth_payload.get("growth_2026_vs_2025") is not None else None,
         "growth_2027_vs_2026": round(safe_num(growth_payload.get("growth_2027_vs_2026"), 0.0), 4) if has_model and growth_payload.get("growth_2027_vs_2026") is not None else None,
         "future_growth_formula": growth_payload.get("growth_formula") if has_model else None,
+        "future_growth_type": growth_payload.get("growth_type") if has_model else None,
         "middle_consistency_score": round2(consistency_score),
         "eps_yoy_stability_score": round2(eps_yoy_stability_score),
         "quality_score": round2(quality_score),
