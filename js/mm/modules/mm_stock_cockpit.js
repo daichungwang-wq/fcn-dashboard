@@ -1,5 +1,5 @@
 /* ==========================================================================
-   MM × M1 Integration — C1 Single Stock Cockpit / Decision Engine + Chart + Runtime Normalization + Profile Adapter
+   MM × M1 Integration — C1 Single Stock Cockpit / Decision Engine + Chart + Runtime Normalization + Profile Adapter + Right Position Forecast Layout
    File: js/mm/modules/mm_stock_cockpit.js
 
    Goal:
@@ -331,8 +331,17 @@
       in_pool30: inPool30,
       m1_score: firstNum(
         pool.m1_score, comp.m1_score, cand.m1_score, uni.m1_score,
+        pool.m1_competitive_score, comp.m1_competitive_score, cand.m1_competitive_score, uni.m1_competitive_score,
+        pool.m1_final_score, comp.m1_final_score, cand.m1_final_score, uni.m1_final_score,
+        pool.final_score, comp.final_score, cand.final_score, uni.final_score,
+        pool.total_score, comp.total_score, cand.total_score, uni.total_score,
+        pool.competitive_score, comp.competitive_score, cand.competitive_score, uni.competitive_score,
         pool.score, comp.score, cand.score, uni.score
       ),
+      m1_source: Object.keys(pool).length ? "pool30" :
+                 Object.keys(comp).length ? "m1_competitive" :
+                 Object.keys(cand).length ? "candidate" :
+                 Object.keys(uni).length ? "universe" : "missing",
       category: pool.category || comp.category || cand.category || uni.category || "",
       category_sub: pool.category_sub || comp.category_sub || cand.category_sub || uni.category_sub || "",
       filter_result: pool.filter_result || comp.filter_result || cand.filter_result || uni.filter_result || "",
@@ -961,25 +970,14 @@
             <div class="mini-kpi"><div class="k">Volume / Position</div><div class="v">${volumeRatio === null ? "--" : fmtNum(volumeRatio, 2) + "x"}</div><div class="d">12M position：${pos12m === null ? "--" : fmtPct(pos12m)}</div></div>
           </div>
 
-          <div class="range-wrap">
-            <div class="range-top"><span>Today price vs Regression / Historical Position</span><span>Low → Current → High</span></div>
-            <div class="range-bar">
-              <div class="range-fill" style="width:${rangePos}%"></div>
-              <div class="range-pin" style="left:${rangePos}%"></div>
-            </div>
-            <div class="range-label">
-              <span>Fair / Regression：${fmtNum(d.fairPrice, 2)}</span>
-              <span>Valuation Gap：${d.valuationGapPct === null ? "--" : fmtPct(d.valuationGapPct)}</span>
-              <span>Confidence：${d.r2 === null ? "--" : "R² " + fmtNum(d.r2, 2)}</span>
-            </div>
-          </div>
-
           ${renderPriceChart(d)}
         </div>
 
-        <div>
+        <div class="mm-right-decision-stack">
           ${renderFinalBox(d)}
           ${renderScoreGrid(d)}
+          ${renderPositionPanel(d, rangePos)}
+          ${renderForecastPlaceholder(d)}
         </div>
       </div>
     `;
@@ -1057,6 +1055,60 @@
           referrerpolicy="origin"
           style="width:100%;height:320px;border:0;border-radius:16px;background:#fff;"
         ></iframe>
+      </div>
+    `;
+  }
+
+  function renderPositionPanel(d, rangePos) {
+    return `
+      <div class="range-wrap mm-right-position-panel">
+        <div class="range-top">
+          <span>Today price vs Regression / Historical Position</span>
+          <span>Low → Current → High</span>
+        </div>
+        <div class="range-bar">
+          <div class="range-fill" style="width:${rangePos}%"></div>
+          <div class="range-pin" style="left:${rangePos}%"></div>
+        </div>
+        <div class="range-label">
+          <span>Fair / Regression：${fmtNum(d.fairPrice, 2)}</span>
+          <span>Valuation Gap：${d.valuationGapPct === null ? "--" : fmtPct(d.valuationGapPct)}</span>
+          <span>Confidence：${d.r2 === null ? "--" : "R² " + fmtNum(d.r2, 2)}</span>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderForecastPlaceholder(d) {
+    return `
+      <div class="mm-forecast-panel">
+        <div class="mm-forecast-head">
+          <div>
+            <div class="mm-forecast-title">Price Forecast / 價格預測</div>
+            <div class="mm-forecast-sub">M6 model placeholder：先保留版位，暫不在 MM 做 heavy logic</div>
+          </div>
+          <span class="pill warn">Pending M6</span>
+        </div>
+        <div class="mm-forecast-grid">
+          <div class="mm-forecast-card">
+            <div class="k">明日</div>
+            <div class="v">--</div>
+            <div class="d">forecast price / delta</div>
+          </div>
+          <div class="mm-forecast-card">
+            <div class="k">一周</div>
+            <div class="v">--</div>
+            <div class="d">forecast price / delta</div>
+          </div>
+          <div class="mm-forecast-card">
+            <div class="k">一個月</div>
+            <div class="v">--</div>
+            <div class="d">forecast price / delta</div>
+          </div>
+        </div>
+        <div class="mm-forecast-note">
+          預留資料來源：data/m6/price_forecast.json。未來由 M6 產生 raw forecast × 暴力修正權重後，MM C1 只讀取顯示。
+        </div>
       </div>
     `;
   }
@@ -1192,7 +1244,7 @@
       <details open>
         <summary>L4 M1 Score + CC Source / 股票品質與資料可信度</summary>
         <div class="mm-detail-grid">
-          <div class="mini-kpi"><div class="k">M1 Score</div><div class="v">${fmtNum(d.m1Score, 2)}</div><div class="d">M1 competitive score</div></div>
+          <div class="mini-kpi"><div class="k">M1 Score</div><div class="v">${fmtNum(d.m1Score, 2)}</div><div class="d">Source：${esc(d.m1.m1_source || "missing")}</div></div>
           <div class="mini-kpi"><div class="k">Pool Status</div><div class="v">${esc(d.m1.in_pool30 ? "Pool30" : d.m1.in_candidate ? "Candidate" : d.m1.in_universe ? "Universe" : "Not in Universe")}</div><div class="d">AI → Candidate → Pool30 funnel</div></div>
           <div class="mini-kpi"><div class="k">Category</div><div class="v">${esc(firstVal(d.m1.category, "--"))}</div><div class="d">${esc(firstVal(d.m1.category_sub, "--"))}</div></div>
           <div class="mini-kpi"><div class="k">CC Source</div><div class="v">${esc(d.cc.text)}</div><div class="d">${esc(d.cc.note)}</div></div>
@@ -1251,6 +1303,21 @@
         .mm-chart-head{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:10px}
         .mm-chart-title{font-size:14px;font-weight:1000}
         .mm-chart-sub{font-size:11px;color:var(--muted);margin-top:3px;font-weight:750}
+        .mm-right-decision-stack{display:flex;flex-direction:column;gap:10px}
+        .mm-right-position-panel{margin-top:0}
+        .mm-forecast-panel{
+          border:1px solid #dfeaf5;border-radius:18px;background:#fff;
+          padding:13px;box-shadow:0 8px 20px rgba(16,24,40,.035)
+        }
+        .mm-forecast-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:10px}
+        .mm-forecast-title{font-size:14px;font-weight:1000}
+        .mm-forecast-sub{font-size:11px;color:var(--muted);margin-top:3px;font-weight:750;line-height:1.45}
+        .mm-forecast-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+        .mm-forecast-card{border:1px solid #e4edf6;border-radius:14px;background:#f8fbff;padding:10px}
+        .mm-forecast-card .k{font-size:11px;color:var(--muted)}
+        .mm-forecast-card .v{font-size:20px;font-weight:1000;margin-top:5px}
+        .mm-forecast-card .d{font-size:11px;color:var(--muted);line-height:1.35;margin-top:4px}
+        .mm-forecast-note{font-size:11px;color:#475467;line-height:1.5;margin-top:9px;background:#f8fafc;border:1px dashed #d8e4ef;border-radius:12px;padding:8px}
         .mm-decision-engine{
           margin-top:18px;border:1px solid #dfeaf5;border-radius:20px;
           background:linear-gradient(180deg,#fbfdff,#f6f9fd);padding:14px
@@ -1293,6 +1360,7 @@
           .mm-detail-grid{grid-template-columns:repeat(2,1fr)}
           .mm-trace{grid-template-columns:repeat(3,1fr)}
           .mm-final-decision{grid-template-columns:1fr}
+          .mm-forecast-grid{grid-template-columns:1fr}
         }
         @media(max-width:720px){
           .mm-engine-flow,.mm-detail-grid,.mm-trace{grid-template-columns:1fr}
@@ -1385,3 +1453,4 @@
   });
 
 })();
+
