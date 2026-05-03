@@ -1,5 +1,5 @@
 /* ==========================================================================
-   MM × M1 Integration — C1 Single Stock Cockpit / Decision Engine + Chart + Runtime Normalization
+   MM × M1 Integration — C1 Single Stock Cockpit / Decision Engine + Chart + Runtime Normalization + Profile Adapter
    File: js/mm/modules/mm_stock_cockpit.js
 
    Goal:
@@ -752,6 +752,126 @@
     return Math.round(clamp(count || 0, 0, 5) / 5 * 100);
   }
 
+
+  /* -----------------------------
+     Profile / narrative adapter
+     Purpose:
+     - m1_new_stock.html can read multiple profile schemas.
+     - MM C1 should not only read one_line / business_summary.
+     - This adapter maps deep card + generic card + old template schemas into one MM narrative.
+  ----------------------------- */
+
+  function cleanText(v) {
+    if (v === null || v === undefined) return "";
+    if (Array.isArray(v)) return v.map(cleanText).filter(Boolean).join(" ");
+    if (typeof v === "object") {
+      return Object.values(v).map(cleanText).filter(Boolean).join(" ");
+    }
+    return String(v).replace(/\s+/g, " ").trim();
+  }
+
+  function pickText(...vals) {
+    for (const v of vals) {
+      const t = cleanText(v);
+      if (t) return t;
+    }
+    return "";
+  }
+
+  function sentenceLimit(text, maxSentences = 3, maxChars = 260) {
+    const t = cleanText(text);
+    if (!t) return "";
+    const parts = t
+      .split(/(?<=[。.!?？])\s+/)
+      .map(x => x.trim())
+      .filter(Boolean);
+
+    let out = parts.length ? parts.slice(0, maxSentences).join(" ") : t;
+    if (out.length > maxChars) out = out.slice(0, maxChars).replace(/[，,、;；:\s]+$/g, "") + "…";
+    return out;
+  }
+
+  function getModuleText(profile, keys = []) {
+    if (!profile || typeof profile !== "object") return "";
+
+    const modules = profile.modules || profile.sections || profile.research || profile.template || {};
+    for (const k of keys) {
+      const direct = profile[k];
+      const nested = modules[k];
+      const t = pickText(
+        direct && direct.summary,
+        direct && direct.text,
+        direct && direct.content,
+        direct && direct.points,
+        direct,
+        nested && nested.summary,
+        nested && nested.text,
+        nested && nested.content,
+        nested && nested.points,
+        nested
+      );
+      if (t) return t;
+    }
+
+    return "";
+  }
+
+  function buildProfileNarrative(profile, symbol) {
+    const hasProfile = !!(profile && Object.keys(profile).length);
+
+    const companyName = pickText(
+      profile && profile.name,
+      profile && profile.company_name,
+      profile && profile.title
+    );
+
+    const positioning = pickText(
+      profile && profile.one_line,
+      profile && profile.company_positioning,
+      profile && profile.business_summary,
+      profile && profile.summary,
+      profile && profile.description,
+      profile && profile.company_overview,
+      profile && profile.overview,
+      profile && profile.template && profile.template.business_summary,
+      profile && profile.template && profile.template.why_in_m1,
+      getModuleText(profile, ["company_structure", "business_model", "company_overview", "business_summary"])
+    );
+
+    const customer = pickText(
+      profile && profile.customer_analysis,
+      profile && profile.customers,
+      profile && profile.customer,
+      getModuleText(profile, ["customer_analysis", "competition", "market_view"])
+    );
+
+    const decision = pickText(
+      profile && profile.final_decision,
+      profile && profile.investment_view,
+      profile && profile.fcn_view,
+      profile && profile.valuation_and_timing,
+      profile && profile.template && profile.template.final_decision,
+      profile && profile.template && profile.template.fcn_view,
+      getModuleText(profile, ["final_decision", "risk_opportunity", "valuation_and_timing", "fcn_view"])
+    );
+
+    const merged = sentenceLimit(
+      [positioning, customer, decision].filter(Boolean).join(" "),
+      4,
+      360
+    );
+
+    return {
+      hasProfile,
+      companyName,
+      oneLine: merged || `${symbol}：Profile Missing，目前僅顯示 M1 / M7 / M2 / CC 數據；建議補 data/m1/m1_stock_profile_all.json 或 m1_stock_profile.json。`,
+      sourceLabel: hasProfile
+        ? (profile.source || profile.profile_source || profile.type || profile.research_level || "profile")
+        : "missing"
+    };
+  }
+
+
   /* -----------------------------
      Rendering
   ----------------------------- */
@@ -761,6 +881,8 @@
     if (!root) return;
 
     STATE.activeSymbol = normalizeSymbol(symbol || DEFAULT_SYMBOL);
+    const input = $("mm-c1-search-fallback");
+    if (input && normalizeSymbol(input.value) !== STATE.activeSymbol) input.value = STATE.activeSymbol;
     const d = buildDecision(STATE.activeSymbol);
 
     root.innerHTML = `
@@ -775,12 +897,15 @@
         ${renderL4(d)}
       </div>
     `;
+
+    syncActionLinks(STATE.activeSymbol);
   }
 
   function renderL0(d) {
+    const narrative = buildProfileNarrative(d.profile, d.symbol);
+
     const name = firstVal(
-      d.profile.name,
-      d.profile.company_name,
+      narrative.companyName,
       d.m1.name,
       d.m7.name,
       d.runtime.name,
@@ -790,13 +915,7 @@
     const cat = firstVal(d.m1.category, d.m7.category, d.runtime.category, "--");
     const sub = firstVal(d.m1.category_sub, d.m7.category_sub, d.runtime.category_sub, d.m7.subsector, "--");
 
-    const oneLine = firstVal(
-      d.profile.one_line,
-      d.profile.business_summary,
-      d.profile.company_positioning,
-      d.profile.summary,
-      `${d.symbol}：MM 決策卡整合 M1 quality、M7 valuation/trend、M2 exposure 與 CC source。`
-    );
+    const oneLine = narrative.oneLine;
 
     const rawRet1d = firstNum(d.runtime.ret_1d, d.runtime.change_pct, d.runtime.day_change_pct);
     const rawRet1w = firstNum(d.runtime.ret_1w, d.runtime.return_1w);
@@ -828,6 +947,7 @@
               <div class="meta-row">
                 <span class="chip">Category：${esc(cat)}</span>
                 <span class="chip">Sub-category：${esc(sub)}</span>
+                <span class="chip ${narrative.hasProfile ? "ok" : "warn"}">Profile：${esc(narrative.sourceLabel)}</span>
                 <span class="chip ${ccClass(d.cc.grade)}">${esc(d.cc.text)}：${esc(d.cc.note)}</span>
               </div>
             </div>
@@ -1181,6 +1301,19 @@
     `;
   }
 
+
+  function syncActionLinks(symbol) {
+    const sym = normalizeSymbol(symbol || STATE.activeSymbol || DEFAULT_SYMBOL);
+    const links = document.querySelectorAll("#c1-cockpit-shell .cockpit-links a");
+    links.forEach(a => {
+      const text = (a.textContent || "").toLowerCase();
+      if (text.includes("research") || text.includes("m1 research")) {
+        a.href = `../m1_new_stock.html?symbol=${encodeURIComponent(sym)}`;
+      }
+    });
+  }
+
+
   /* -----------------------------
      Controls / init
   ----------------------------- */
@@ -1194,7 +1327,11 @@
       return `<option value="${esc(s)}" ${selected}>${esc(s)}</option>`;
     }).join("");
 
-    sel.onchange = () => render(sel.value);
+    sel.onchange = () => {
+      const input = $("mm-c1-search-fallback");
+      if (input) input.value = sel.value;
+      render(sel.value);
+    };
   }
 
   function bindSearch() {
@@ -1248,4 +1385,3 @@
   });
 
 })();
-
