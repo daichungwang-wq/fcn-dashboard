@@ -68,12 +68,22 @@
     });
   }
 
-  function fmtPct(v, digits = 1, dash = "--") {
-    const n = safeNum(v);
-    if (n === null) return dash;
-    const value = Math.abs(n) <= 1 ? n * 100 : n;
-    return `${value.toFixed(digits)}%`;
+function fmtPct(v, digits = 1, dash = "--") {
+  const n = safeNum(v);
+  if (n === null) return dash;
+
+  let value = n;
+
+  // 🔥 核心修正：防止 0.56 / 56 混用
+  if (Math.abs(n) <= 1) {
+    value = n * 100;
+  } else if (Math.abs(n) > 50) {
+    // 👉 明顯異常（像 -56%）
+    value = n / 100;
   }
+
+  return `${value.toFixed(digits)}%`;
+}
 
   function clamp(n, min, max) {
     const x = safeNum(n, min);
