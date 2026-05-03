@@ -775,6 +775,36 @@
       white-space:pre-wrap;
     }
 
+    .forecast-basis-box{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin:10px 0 12px;
+    }
+    .forecast-basis-item{
+      border:1px solid #dbe7f0;
+      border-radius:14px;
+      padding:10px;
+      background:#ffffff;
+    }
+    .forecast-basis-item .k{
+      font-size:11px;
+      color:#64748b;
+      font-weight:800;
+      margin-bottom:4px;
+    }
+    .forecast-basis-item .v{
+      font-size:18px;
+      color:#0f172a;
+      font-weight:900;
+    }
+    .forecast-basis-item .d{
+      font-size:11px;
+      color:#64748b;
+      line-height:1.45;
+      margin-top:4px;
+    }
+
 
     @media (max-width: 980px){
       .toolbar{grid-template-columns:1fr}
@@ -1374,8 +1404,10 @@ ${safeText(stock.final_note || "-")}
       }
 
       const models = Array.isArray(row.model_points) ? row.model_points.filter(x => x.available && Number.isFinite(Number(x.fair_price))) : [];
+      const m7Actual = Number(row.m7_actual_price_now);
       const prices = [
         Number(row.price_now),
+        ...(Number.isFinite(m7Actual) ? [m7Actual] : []),
         ...models.map(x => Number(x.fair_price))
       ].filter(Number.isFinite);
 
@@ -1399,6 +1431,11 @@ ${safeText(stock.final_note || "-")}
               <div class="marker-label">${safeText(m.label)}</div>
             </div>
           `).join("")}
+          ${Number.isFinite(m7Actual) ? `
+            <div class="forecast-marker" style="left:${pos(m7Actual)}%;background:#f97316;">
+              <div class="marker-label" style="top:60px;color:#9a3412;background:#fff7ed;border-color:#fed7aa;">M7 ACTUAL</div>
+            </div>
+          ` : ""}
           <div class="forecast-marker today" style="left:${pos(row.price_now)}%;">
             <div class="marker-label">TODAY</div>
           </div>
@@ -1447,13 +1484,26 @@ ${safeText(stock.final_note || "-")}
 
           ${renderForecastBar(row)}
 
+          <div class="forecast-basis-box">
+            <div class="forecast-basis-item">
+              <div class="k">Runtime Today Price / 今日價格基準</div>
+              <div class="v">$${fmtNum(row.price_now)}</div>
+              <div class="d">Forecast gap / return 一律用 runtime today price 當 denominator。</div>
+            </div>
+            <div class="forecast-basis-item">
+              <div class="k">M7 Actual Price / M7回歸用價格</div>
+              <div class="v">$${fmtNum(row.m7_actual_price_now)}</div>
+              <div class="d">這是 M7 weekly series 的最新價格，通常是 last week close，不等於今日即時價。</div>
+            </div>
+          </div>
+
           <div class="forecast-result-grid">
             <div class="forecast-result-card">
               <div class="result-title">Result A｜直接調整價格平均</div>
               <div class="result-main">$${fmtNum(resultA.price)}</div>
               <div class="result-sub">
                 Return vs Today：${fmtPct(resultA.return_vs_today)}<br>
-                公式：avg(fair_price_i × abs(today / fair_price_i))
+                公式：avg(fair_price_i × abs(runtime_today / fair_price_i))
               </div>
             </div>
 
@@ -1462,7 +1512,7 @@ ${safeText(stock.final_note || "-")}
               <div class="result-main">$${fmtNum(resultB.fair_implied_price)}</div>
               <div class="result-sub">
                 Fair Expected Return：${fmtPct(resultB.fair_expected_return)}<br>
-                公式：Σ(gap_i × confidence_weight_i) / Σ(weight_i)
+                公式：Σ((fair_i - runtime_today)/runtime_today × confidence_weight_i) / Σ(weight_i)
               </div>
             </div>
           </div>
@@ -1491,9 +1541,10 @@ ${safeText(stock.final_note || "-")}
               <tr>
                 <th>Model</th>
                 <th>Fair Price</th>
-                <th>調整因子 abs(today/model)</th>
+                <th>M7 Actual / Basis</th>
+                <th>調整因子 abs(runtime today/model)</th>
                 <th>調整後價格 A</th>
-                <th>Gap Return</th>
+                <th>Gap Return vs Runtime Today</th>
                 <th>R²</th>
                 <th>Confidence Weight</th>
                 <th>Status</th>
@@ -1504,6 +1555,7 @@ ${safeText(stock.final_note || "-")}
                 <tr class="${m.module === "M1" ? "m1-row" : "m7-row"}">
                   <td><b>${safeText(m.label)}</b><br><span class="small">${safeText(m.module)} / ${safeText(m.model)}</span></td>
                   <td>$${fmtNum(m.fair_price)}</td>
+                  <td>$${fmtNum(m.model_actual_price)}<br><span class="small">${safeText(m.model_actual_price_basis || "-")}</span></td>
                   <td>${fmtNum(m.user_adjustment_factor_abs_today_over_model, 4)}</td>
                   <td>$${fmtNum(m.adjusted_price_user_formula)}</td>
                   <td>${fmtPct(m.gap_return)}</td>
@@ -1732,3 +1784,4 @@ Warnings：${warnings.length ? warnings.join(" / ") : "none"}
   </script>
 </body>
 </html>
+
