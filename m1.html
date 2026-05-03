@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>M1 Review Console v2.3</title>
+  <title>M1 Review Console v2.6</title>
   <style>
     :root{
       --bg:#f4f7fb;
@@ -724,7 +724,7 @@
     <div class="hero">
       <div class="hero-top">
         <div>
-          <h1>M1 Review Console v2.5 Rank Source Fix</h1>
+          <h1>M1 Review Console v2.6 Normalized M1 Fix</h1>
           <div class="sub">
             <b>L1：</b>五大分類卡片，只先看 AI 推薦重點與關鍵數據，方便人工初篩。<br>
             <b>L2 / L3 / L4：</b>右側逐層展開，看 rule、看市場、做人為覆核與備註。<br>
@@ -833,7 +833,7 @@
             C2P = Capex to Profit<br>
             CC = Competitive Score（eps_engine.cc_score，由 build_m7_v2_scores.py 產出）<br>
             M7n = M7_v2 Score（data/m7_sandbox/m7_v2_scores.json）<br>
-            M1_score = normalize to max 10<br>
+            M1_score = M1_raw / max(M1_raw) × 10（與 m1_test.html v2.5 同步）<br>
             AI 推薦 = STRONG + PASS
           </div>
 
@@ -1077,7 +1077,22 @@
       const computed = rows.map(row => {
         const s = computeNewM1(row);
         return { ...row, ...s };
-      }).sort((a, b) => n(b.M1_score, -999) - n(a.M1_score, -999));
+      });
+
+      // IMPORTANT:
+      // Keep m1.html aligned with m1_test.html v2.5.
+      // M1_raw = 0.45*C2P + 0.30*CC + 0.25*M7n
+      // M1_score = normalize raw score to max 10 within the current scored set.
+      const maxRaw = Math.max(...computed.map(r => n(r.raw_m1_score, 0)));
+      computed.forEach(row => {
+        if (!Number.isFinite(row.raw_m1_score) || maxRaw <= 0) {
+          row.M1_score = 0;
+        } else {
+          row.M1_score = +(row.raw_m1_score / maxRaw * 10).toFixed(2);
+        }
+      });
+
+      computed.sort((a, b) => n(b.M1_score, -999) - n(a.M1_score, -999));
       computed.forEach((row, idx) => { row.rank = idx + 1; });
       return computed;
     }
@@ -2570,4 +2585,5 @@ function exportPool30() {
   </script>
 </body>
 </html>
+
 
