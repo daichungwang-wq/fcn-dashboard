@@ -38,6 +38,7 @@ jobs:
           python scripts/build_m1_candidate_80.py
           node scripts/build_m1_pool_output.js
           node js/m1/generate_fundamental.js
+          python scripts/build_m1_scores.py
 
       - name: Validate outputs and print weekly summary
         run: |
@@ -50,8 +51,9 @@ jobs:
           candidate_path = "data/m1/m1_candidate_80.json"
           pool_path = "data/m1/pool_stock_evaluated_v1.json"
           fundamental_path = "data/m1/m1_fundamental_map.json"
+          m1_scores_path = "data/m1/m1_scores.json"
 
-          expected = [candidate_path, pool_path, fundamental_path]
+          expected = [candidate_path, pool_path, fundamental_path, m1_scores_path]
           missing = [p for p in expected if not os.path.exists(p)]
           if missing:
               print("missing_outputs=" + ", ".join(missing))
@@ -61,14 +63,20 @@ jobs:
               candidate = json.load(f)
           with open(pool_path, "r", encoding="utf-8") as f:
               pool = json.load(f)
+          with open(m1_scores_path, "r", encoding="utf-8") as f:
+              m1_scores = json.load(f)
 
           candidate_count = len(candidate) if isinstance(candidate, list) else 0
           pool_output_count = len(pool.get("all", [])) if isinstance(pool, dict) else 0
+          m1_score_count = len(m1_scores.get("rows", [])) if isinstance(m1_scores, dict) else 0
           fundamental_status = "ok" if os.path.exists(fundamental_path) else "missing"
 
           print(f"candidate_count={candidate_count}")
           print(f"pool_output_count={pool_output_count}")
+          print(f"m1_score_count={m1_score_count}")
           print(f"fundamental_file_status={fundamental_status}")
+          print("m1_formula=" + str(m1_scores.get("formula", "-")))
+          print("m1_summary=" + json.dumps(m1_scores.get("summary", {}), ensure_ascii=False))
           PY
 
       - name: Commit and push changed data/json output files
@@ -86,3 +94,4 @@ jobs:
 
           git commit -m "weekly m1 universe rebuild"
           git push
+
