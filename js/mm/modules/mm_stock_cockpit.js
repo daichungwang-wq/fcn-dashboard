@@ -804,6 +804,52 @@ m6Forecast: "/fcn-dashboard/data/m6/price_forecast_debug.json"
       }
     ];
 
+     function getM6Upside1M(m6){
+  return m6?.weighted_upside_pct_1m ??
+         m6?.forecast?.["1m"]?.final?.weighted_upside_pct_final ??
+         null;
+}
+
+function buildOneLineDecision(d){
+
+  const m6 = d.m6;
+  const m1 = d.m1Score;
+  const val = d.valuationGapPct;
+
+  if (!m6){
+    return `${d.symbol}｜無M6資料，觀察`;
+  }
+
+  const mode = m6.decision_mode;
+  const dir = m6.short_direction;
+  const up = getM6Upside1M(m6);
+
+  const upTxt = up!=null ? `${up>0?"+":""}${up.toFixed(1)}%` : "--";
+
+  if (mode==="B" && dir==="up"){
+    return `${d.symbol}｜B-up ${upTxt}，短線轉強，可順勢`;
+  }
+
+  if (mode==="B" && dir==="down"){
+    return `${d.symbol}｜B-down ${upTxt}，轉弱，避免進場`;
+  }
+
+  if (mode==="A"){
+    if (Math.abs(up)<1){
+      return `${d.symbol}｜A盤整 ${upTxt}，觀望`;
+    }
+    if (up>2){
+      return `${d.symbol}｜A盤整偏多 ${upTxt}，可分批`;
+    }
+    return `${d.symbol}｜A盤整，等待方向`;
+  }
+
+  if (m1 >= 8 && val > 10){
+    return `${d.symbol}｜品質佳但估值高，等回檔`;
+  }
+
+  return `${d.symbol}｜觀察`;
+}
     const final = finalDecision({
       m1Score,
       m7Score,
