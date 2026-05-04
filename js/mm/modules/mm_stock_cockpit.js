@@ -719,6 +719,7 @@ m6Forecast: "/fcn-dashboard/data/m6/price_forecast_debug.json"
     const profile = getProfile(symbol);
     const eps = getEPS(symbol);
     const m2 = getM2Exposure(symbol);
+    const m6 = getM6(symbol);
     const cc = buildCCSource(symbol, m1, m7, runtime, eps);
 
     const price = firstNum(runtime.price, runtime.last_price, runtime.close, runtime.current_price, runtime.price_now);
