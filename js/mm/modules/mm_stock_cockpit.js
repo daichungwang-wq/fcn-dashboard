@@ -823,6 +823,7 @@ m6Forecast: "/fcn-dashboard/data/m6/price_forecast_debug.json"
       profile,
       eps,
       m2,
+      m6,
       cc,
       price,
       fairPrice,
