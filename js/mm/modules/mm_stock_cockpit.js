@@ -37,8 +37,7 @@
     fcnPool: "/fcn-dashboard/data/fcn_pool.json",
     profileAll: "/fcn-dashboard/data/m1/m1_stock_profile_all.json",
     profileDeep: "/fcn-dashboard/data/m1/m1_stock_profile.json",
-    m6Forecast: "/fcn-dashboard/data/m6/price_forecast_debug.json",
-    m6Positions: "/fcn-dashboard/data/m6/positions.json"
+    m6Forecast: "/fcn-dashboard/data/m6/price_forecast_debug.json"
   };
 
   const STATE = {
@@ -286,8 +285,7 @@
       data.m2Exposure,
       data.profileAll,
       data.profileDeep,
-      data.m6Forecast,
-      data.m6Positions
+      data.m6Forecast
     ].forEach(src => {
       asArray(src).forEach(x => {
         const s = normalizeSymbol(x.symbol || x.ticker);
@@ -557,33 +555,8 @@
     };
   }
 
-  function getM6StockInventory(symbol, price = null) {
-    const sym = normalizeSymbol(symbol);
-    const rows = asArray(STATE.data.m6Positions).filter(x => normalizeSymbol(x.symbol || x.ticker || x.underlying) === sym);
-
-    const amount = sum(rows.map(x => {
-      const directAmount = firstNum(
-        x.market_value_usd,
-        x.market_value,
-        x.current_value_usd,
-        x.current_value,
-        x.value_usd,
-        x.amount_usd,
-        x.position_amount_usd,
-        x.position_value
-      );
-      if (directAmount !== null) return directAmount;
-      const qty = firstNum(x.quantity, x.qty, x.shares, x.units);
-      const px = firstNum(x.current, x.current_price, x.price, x.last_price, price);
-      return qty !== null && px !== null ? qty * px : 0;
-    }));
-
-    return {
-      amount_usd: amount,
-      position_count: rows.length,
-      rows
-    };
-  }
+  // M6 stock inventory is intentionally not deducted at this stage.
+  // Current allocation source of truth = fcn_pool active basket exposure.
 
   function firstNum(...vals) {
     for (const v of vals) {
@@ -936,31 +909,128 @@
     return `USD ${n.toLocaleString(undefined, { minimumFractionDigits: digits, maximumFractionDigits: digits })}`;
   }
 
+  const FCN_TOTAL_BUDGET_USD = 1200000;
+  const DAILY_ORDER_BUCKETS = [0, 10000, 20000, 30000, 50000];
+
+  function isActiveFcn(row) {
+    const status = String(row && row.status || "").toLowerCase();
+    return status === "active" && row && row.has_position !== false;
+  }
+
+  function getActiveFcnRows() {
+    return asArray(STATE.data.fcnPool).filter(isActiveFcn);
+  }
+
+  function daysToDate(dateStr) {
+    if (!dateStr) return null;
+    const t = new Date(dateStr).getTime();
+    if (!Number.isFinite(t)) return null;
+    return Math.ceil((t - Date.now()) / 86400000);
+  }
+
+  function getFHAmt(row) {
+    return firstNum(row && row.fcn_amount_usd, row && row.amount_usd, row && row.notional_usd, row && row.principal_usd, row && row.amt, row && row.amount, 0) || 0;
+  }
+
+  function buildPortfolioAllocationContext() {
+    const rows = getActiveFcnRows();
+    const activeAmt = sum(rows.map(getFHAmt));
+    const maturityRows = rows.filter(x => {
+      const days = daysToDate(x.maturity_time || x.exit_time);
+      return days !== null && days >= 0 && days <= 10;
+    });
+    const maturityAmt = sum(maturityRows.map(getFHAmt));
+    const availableCash = Math.max(0, FCN_TOTAL_BUDGET_USD - activeAmt - maturityAmt);
+    return {
+      total_budget_usd: FCN_TOTAL_BUDGET_USD,
+      active_fcn_amt_usd: activeAmt,
+      maturity_reserved_usd: maturityAmt,
+      available_cash_usd: availableCash,
+      active_count: rows.length,
+      maturity_count: maturityRows.length
+    };
+  }
+
+  function bucketFloor(amount) {
+    const n = safeNum(amount, 0) || 0;
+    let out = 0;
+    DAILY_ORDER_BUCKETS.forEach(b => { if (n >= b) out = b; });
+    return out;
+  }
+
+  function clampDailyBucket(index, available, portfolioCash) {
+    const maxByAvailable = bucketFloor(Math.min(available, portfolioCash, 50000));
+    if (maxByAvailable <= 0) return 0;
+    const maxIndex = DAILY_ORDER_BUCKETS.indexOf(maxByAvailable);
+    const idx = Math.max(0, Math.min(index, maxIndex));
+    return DAILY_ORDER_BUCKETS[idx];
+  }
+
+  function buildDailySuggestion(d, planBase) {
+    const timing = classifyFcnTiming(d);
+    const portfolio = planBase.portfolio_context;
+    const cap = planBase.cap_amount || 0;
+    const invested = planBase.m2_invested || 0;
+    const investedRatio = cap > 0 ? invested / cap : 1;
+
+    if (planBase.available <= 0 || portfolio.available_cash_usd <= 0 || planBase.over_limit) {
+      return { amount: 0, amount_text: fmtUsd(0, 0), bucket_label: "不下單", probability_hint: "風險 / 額度限制", reasons: ["可再加碼金額為 0 或資金水位不足"] };
+    }
+
+    // Default = USD 20k. This is the normal case and should happen most often (~70%).
+    let idx = 2;
+    const reasons = ["常態標準單：USD 20,000（約70%情境）"];
+
+    if (timing.key === "pullback") { idx += 1; reasons.push("M6短線回檔 / 甜甜價：上調一檔"); }
+    else if (timing.key === "strong_up") { idx -= 2; reasons.push("M6短線急速上行：下調兩檔"); }
+    else if (["mild_up", "up", "missing"].includes(timing.key)) { idx -= 1; reasons.push("M6不是甜甜價：下調一檔"); }
+
+    if (investedRatio >= 1) { idx = 0; reasons.push("已達或超過單股上限：今日不新增"); }
+    else if (investedRatio >= 0.70) { idx -= 1; reasons.push("已投資比例超過70%：下調一檔"); }
+    else if (investedRatio <= 0.30) { idx += 1; reasons.push("已投資比例低於30%：可上調一檔"); }
+
+    if (portfolio.available_cash_usd < 50000) { idx = Math.min(idx, 1); reasons.push("可運用FCN資金低於5萬：最多試單"); }
+    else if (portfolio.available_cash_usd < 100000) { idx -= 1; reasons.push("可運用FCN資金低於10萬：下調一檔"); }
+
+    const amount = clampDailyBucket(idx, planBase.available, portfolio.available_cash_usd);
+    const label = amount === 0 ? "不下單" : amount === 10000 ? "試單" : amount === 20000 ? "標準單 / 70%" : amount === 30000 ? "偏積極" : "最大單";
+    return {
+      amount,
+      amount_text: fmtUsd(amount, 0),
+      bucket_label: label,
+      probability_hint: "USD 0~50,000；常態 USD 20,000，最高 USD 50,000",
+      reasons
+    };
+  }
+
   function buildFcnAllocationPlan(d) {
     const cap = getFcnBaseCap(d);
     const timing = classifyFcnTiming(d);
     const m2Invested = firstNum(d.m2.fcn_amount_usd, 0) || 0;
-    const m6Inventory = firstNum(d.m6Inventory && d.m6Inventory.amount_usd, 0) || 0;
-    const availableRaw = cap.amount - m2Invested - m6Inventory;
+    const availableRaw = cap.amount - m2Invested;
     const available = Math.max(0, availableRaw);
     const overLimit = availableRaw < 0;
+    const portfolio = buildPortfolioAllocationContext();
 
-    return {
+    const base = {
       cap_amount: cap.amount,
       cap_reason: cap.reason,
       timing_strength: timing.allocation,
       timing_label: timing.label,
       timing_tone: timing.tone,
       m2_invested: m2Invested,
-      m6_inventory: m6Inventory,
       available_raw: availableRaw,
       available,
       over_limit: overLimit,
+      portfolio_context: portfolio,
       available_text: fmtUsd(available, 0),
       cap_text: fmtUsd(cap.amount, 0),
       invested_text: fmtUsd(m2Invested, 0),
-      inventory_text: fmtUsd(m6Inventory, 0)
+      portfolio_cash_text: fmtUsd(portfolio.available_cash_usd, 0)
     };
+
+    const daily = buildDailySuggestion(d, base);
+    return { ...base, daily_suggested: daily, daily_text: daily.amount_text };
   }
 
   function buildFcnAction(d) {
@@ -1014,8 +1084,6 @@
     const eps = getEPS(symbol);
     const m2 = getM2Exposure(symbol);
     const m6 = getM6(symbol);
-    const priceForInventory = firstNum(runtime.price, runtime.last_price, runtime.close, runtime.current_price, runtime.price_now);
-    const m6Inventory = getM6StockInventory(symbol, priceForInventory);
     const cc = buildCCSource(symbol, m1, m7, runtime, eps);
 
     const price = firstNum(runtime.price, runtime.last_price, runtime.close, runtime.current_price, runtime.price_now);
@@ -1120,7 +1188,6 @@
       eps,
       m2,
       m6,
-      m6Inventory,
       cc,
       price,
       fairPrice,
@@ -1793,14 +1860,14 @@
 
         <div class="mm-allocation-hero ${fcnTiming.tone}">
           <div>
-            <div class="mm-allocation-k">Suggested FCN Add Amount / 可再加碼金額</div>
+            <div class="mm-allocation-k">Addable FCN Amount / 可再加碼金額</div>
             <div class="mm-allocation-v">${esc(buildFcnAllocationPlan(d).available_text)}</div>
-            <div class="mm-allocation-d">上限 ${esc(buildFcnAllocationPlan(d).cap_text)} − M2已投資 ${esc(buildFcnAllocationPlan(d).invested_text)} − M6庫存 ${esc(buildFcnAllocationPlan(d).inventory_text)}</div>
+            <div class="mm-allocation-d">單股上限 ${esc(buildFcnAllocationPlan(d).cap_text)} − fcn_pool已投資 ${esc(buildFcnAllocationPlan(d).invested_text)}；暫不扣 M6 股票庫存。</div>
           </div>
           <div class="mm-allocation-side">
-            <div class="mm-allocation-k">M6 Timing / 投資金額強度</div>
-            <div class="mm-allocation-side-v">${esc(fcnTiming.label)} / ${esc(fcnTiming.allocation)}</div>
-            <div class="mm-allocation-d">M6：${esc(label)} / ${esc(direction)}；下跌是甜甜價，上漲過快反而不追。</div>
+            <div class="mm-allocation-k">Today Suggested Amount / 今日建議金額</div>
+            <div class="mm-allocation-side-v">${esc(buildFcnAllocationPlan(d).daily_text)}</div>
+            <div class="mm-allocation-d">${esc(buildFcnAllocationPlan(d).daily_suggested.bucket_label)}；區間 USD 0~50,000，常態 USD 20,000（約70%）。</div>
           </div>
         </div>
 
@@ -1878,7 +1945,7 @@
           <div class="mm-final-side-d">
             ${esc(action)}<br>
             <span style="font-size:11px;color:var(--muted);font-weight:900;">
-              投資強度：${esc(plan.timing_strength)}｜M2已投資：${esc(plan.invested_text)}｜M6庫存：${esc(plan.inventory_text)}
+              投資強度：${esc(plan.timing_strength)}｜fcn_pool已投資：${esc(plan.invested_text)}｜今日建議：${esc(plan.daily_text)}
             </span>
           </div>
         </div>
@@ -1944,24 +2011,69 @@
 
   function renderL2(d) {
     const brokers = d.m2.broker_breakdown || {};
+    const plan = buildFcnAllocationPlan(d);
+    const rows = Array.isArray(d.m2.active_fcn_rows) ? d.m2.active_fcn_rows : [];
     const brokerRows = Object.keys(brokers).length
-      ? Object.entries(brokers).map(([k, v]) => `<tr><td>${esc(k)}</td><td>USD ${fmtNum(v, 0)}</td></tr>`).join("")
+      ? Object.entries(brokers).map(([k, v]) => `<tr><td>${esc(k)}</td><td>${fmtUsd(v, 0)}</td></tr>`).join("")
       : `<tr><td colspan="2">No broker breakdown</td></tr>`;
 
+    const fcnRows = rows.length
+      ? rows.map(x => {
+          const bank = x.tw_bank || x.broker || x.bank || "--";
+          const basket = Array.isArray(x.basket) ? x.basket.join(" / ") : "--";
+          return `
+            <tr>
+              <td><b>${esc(x.fcn_id || "--")}</b><br><span>${esc(bank)}</span></td>
+              <td>${fmtUsd(getFHAmt(x), 0)}</td>
+              <td>${esc(basket)}</td>
+              <td>${esc(firstVal(x.rate, "--"))}%</td>
+              <td>KI ${esc(firstVal(x.ki, "--"))}% / Strike ${esc(firstVal(x.strike, "--"))}%</td>
+              <td>${esc(x.maturity_time || "--")}</td>
+            </tr>
+          `;
+        }).join("")
+      : `<tr><td colspan="6">目前 fcn_pool 沒有此股票的 active FCN。</td></tr>`;
+
     return `
-      <details open>
-        <summary>L2 M2 Risk Breakdown / FCN 曝險風險</summary>
+      <details open class="mm-m2-risk-detail">
+        <summary>
+          <span>L2 M2 Risk Breakdown / FCN 曝險風險</span>
+          <span class="mm-summary-actions">
+            <a class="btn" href="../m2.html" onclick="event.stopPropagation()">Go M2</a>
+          </span>
+        </summary>
         <div class="mm-detail-grid">
-          <div class="mini-kpi"><div class="k">FCN Amount</div><div class="v">USD ${fmtNum(d.m2.fcn_amount_usd, 0)}</div><div class="d">同底層 FCN 名目金額</div></div>
-          <div class="mini-kpi"><div class="k">Active Count</div><div class="v">${fmtNum(d.m2.active_fcn_count, 0)}</div><div class="d">目前偵測到的 FCN 檔數</div></div>
-          <div class="mini-kpi"><div class="k">Concentration</div><div class="v">${fmtPct(d.m2.concentration_pct)}</div><div class="d">M2 exposure / concentration</div></div>
+          <div class="mini-kpi"><div class="k">Active FCN Amount</div><div class="v">${fmtUsd(d.m2.fcn_amount_usd, 0)}</div><div class="d">同底層 active FCN 名目金額</div></div>
+          <div class="mini-kpi"><div class="k">Active Count</div><div class="v">${fmtNum(d.m2.active_fcn_count, 0)}</div><div class="d">目前 fcn_pool 偵測到的 FCN 檔數</div></div>
+          <div class="mini-kpi"><div class="k">Addable Amount</div><div class="v">${esc(plan.available_text)}</div><div class="d">單股上限 ${esc(plan.cap_text)} − 已投資 ${esc(plan.invested_text)}</div></div>
+          <div class="mini-kpi"><div class="k">Today Suggested</div><div class="v">${esc(plan.daily_text)}</div><div class="d">${esc(plan.daily_suggested.bucket_label)}｜常態2萬，最高5萬</div></div>
         </div>
-        <div class="table-wrap mm-small-table">
-          <table>
-            <thead><tr><th>Broker / Account</th><th>Amount</th></tr></thead>
-            <tbody>${brokerRows}</tbody>
-          </table>
+
+        <div class="mm-m2-analysis-box">
+          <b>Analysis / 判讀：</b>${esc(buildM2Text(d))}；${esc(buildFcnAction(d))}<br>
+          <span>資金水位：總預算 ${esc(fmtUsd(plan.portfolio_context.total_budget_usd, 0))}｜active FCN ${esc(fmtUsd(plan.portfolio_context.active_fcn_amt_usd, 0))}｜到期保留 ${esc(fmtUsd(plan.portfolio_context.maturity_reserved_usd, 0))}｜可用 ${esc(plan.portfolio_cash_text)}</span><br>
+          <span>今日建議邏輯：${esc(plan.daily_suggested.reasons.join(" / "))}</span>
         </div>
+
+        <details class="mm-m2-subdetail" open>
+          <summary>Broker Breakdown / 銀行拆分</summary>
+          <div class="table-wrap mm-small-table">
+            <table>
+              <thead><tr><th>Broker / Account</th><th>Amount</th></tr></thead>
+              <tbody>${brokerRows}</tbody>
+            </table>
+          </div>
+        </details>
+
+        <details class="mm-m2-subdetail">
+          <summary>Related FCN List / 相關 FCN 清單</summary>
+          <div class="table-wrap mm-small-table">
+            <table>
+              <thead><tr><th>FCN</th><th>Amount</th><th>Basket</th><th>Rate</th><th>Protection</th><th>Maturity</th></tr></thead>
+              <tbody>${fcnRows}</tbody>
+            </table>
+          </div>
+        </details>
       </details>
     `;
   }
@@ -2186,6 +2298,13 @@
         .mm-trace div{background:#fff;border:1px solid #e4edf6;border-radius:12px;padding:10px}
         .mm-trace b{display:block;font-size:11px;color:var(--muted)}
         .mm-trace span{display:block;font-size:18px;font-weight:1000;margin-top:4px}
+
+        .mm-m2-risk-detail summary{display:flex;justify-content:space-between;align-items:center;gap:10px}
+        .mm-summary-actions{display:inline-flex;gap:8px;align-items:center}
+        .mm-m2-analysis-box{margin:10px 0;padding:10px 12px;border-radius:14px;background:#fffaf0;border:1px solid #f1dfb5;font-size:12px;line-height:1.6;color:#344054;font-weight:750}
+        .mm-m2-analysis-box span{color:var(--muted);font-weight:800}
+        .mm-m2-subdetail{margin-top:10px;border:1px solid #e4edf6;border-radius:12px;background:#fff;padding:8px 10px}
+        .mm-m2-subdetail summary{cursor:pointer;font-size:12px;font-weight:900;color:#475467}
         .mm-pos{color:var(--good)!important}
         .mm-neg{color:var(--bad)!important}
         @media(max-width:1180px){
