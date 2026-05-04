@@ -1502,7 +1502,7 @@
     `;
   }
 
-  function renderFinalBox(d) {  function renderFinalBox(d) {
+  function renderFinalBox(d) {
     return `
       <div class="mm-final-decision ${d.final.status}">
         <div>
@@ -1838,6 +1838,9 @@
     },
     getState: () => STATE
   };
+
+  // Compatibility alias for older MM dashboard app wiring.
+  window.MMModuleCockpit = window.MMStockCockpit;
 
   document.addEventListener("DOMContentLoaded", () => {
     init({ symbol: DEFAULT_SYMBOL });
