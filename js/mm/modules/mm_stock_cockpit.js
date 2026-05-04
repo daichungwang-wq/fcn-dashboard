@@ -37,7 +37,7 @@
     fcnPool: "/fcn-dashboard/data/fcn_pool.json",
     profileAll: "/fcn-dashboard/data/m1/m1_stock_profile_all.json",
     profileDeep: "/fcn-dashboard/data/m1/m1_stock_profile.json",
-m6Forecast: "/fcn-dashboard/data/m6/price_forecast_debug.json"
+    m6Forecast: "/fcn-dashboard/data/m6/price_forecast_debug.json"
   };
 
   const STATE = {
@@ -284,7 +284,8 @@ m6Forecast: "/fcn-dashboard/data/m6/price_forecast_debug.json"
       data.m7Scores,
       data.m2Exposure,
       data.profileAll,
-      data.profileDeep
+      data.profileDeep,
+      data.m6Forecast
     ].forEach(src => {
       asArray(src).forEach(x => {
         const s = normalizeSymbol(x.symbol || x.ticker);
@@ -311,19 +312,20 @@ m6Forecast: "/fcn-dashboard/data/m6/price_forecast_debug.json"
     return item || {};
   }
 
-    function getM6(symbol) {
-  const raw = STATE.data.m6Forecast;
-  const sym = normalizeSymbol(symbol);
-  if (!raw) return null;
+  function getM6(symbol) {
+    const raw = STATE.data.m6Forecast;
+    const sym = normalizeSymbol(symbol);
+    if (!raw) return null;
 
-  const rows = Array.isArray(raw.data)
-    ? raw.data
-    : Array.isArray(raw.rows)
-    ? raw.rows
-    : asArray(raw);
+    const rows = Array.isArray(raw.data)
+      ? raw.data
+      : Array.isArray(raw.rows)
+      ? raw.rows
+      : asArray(raw);
 
-  return rows.find(x => normalizeSymbol(x.symbol || x.ticker) === sym) || null;
-}
+    return rows.find(x => normalizeSymbol(x.symbol || x.ticker || x.underlying) === sym) || null;
+  }
+
   function getM1(symbol) {
     const sym = normalizeSymbol(symbol);
 
@@ -709,6 +711,99 @@ m6Forecast: "/fcn-dashboard/data/m6/price_forecast_debug.json"
   }
 
   /* -----------------------------
+     M6 Forecast Adapter / MM One-line Decision
+     M6 is a display input here. MM does not run model logic.
+  ----------------------------- */
+
+  function getM6Final(m6, horizon) {
+    return m6 && m6.forecast && m6.forecast[horizon] && m6.forecast[horizon].final
+      ? m6.forecast[horizon].final
+      : {};
+  }
+
+  function getM6BeforeDecision(m6, horizon) {
+    return m6 && m6.forecast && m6.forecast[horizon] && m6.forecast[horizon].price_weighted_before_decision
+      ? m6.forecast[horizon].price_weighted_before_decision
+      : {};
+  }
+
+  function getM6DecisionAdjustment(m6, horizon) {
+    return m6 && m6.forecast && m6.forecast[horizon] && m6.forecast[horizon].decision_adjustment
+      ? m6.forecast[horizon].decision_adjustment
+      : {};
+  }
+
+  function getM6OneMonthUpside(m6) {
+    return firstNum(
+      m6 && m6.weighted_upside_pct_1m,
+      m6 && m6.forecast && m6.forecast["1m"] && m6.forecast["1m"].final
+        ? m6.forecast["1m"].final.weighted_upside_pct_final
+        : null,
+      m6 && m6.flat && m6.flat.final_weighted_1m && m6.today_price
+        ? ((m6.flat.final_weighted_1m / m6.today_price) - 1) * 100
+        : null
+    );
+  }
+
+  function buildOneLineDecision(d) {
+    const m6 = d.m6;
+    const m1 = d.m1Score;
+    const m7 = d.m7Score;
+    const valGap = d.valuationGapPct;
+    const exposurePct = firstNum(d.m2.concentration_pct, d.m2.exposure_pct, d.m2.weight_pct);
+
+    if (!m6) {
+      if (m1 !== null && m1 >= 8) {
+        return `${d.symbol}｜M1品質達標，但尚無M6短線預測；先以估值與曝險控管。`;
+      }
+      return `${d.symbol}｜尚無M6短線預測；先維持觀察，避免只用單一分數決策。`;
+    }
+
+    const mode = m6.decision_mode || (m6.flat && m6.flat.decision_mode) || "";
+    const label = m6.decision_label || (m6.flat && m6.flat.decision_label) || mode || "M6";
+    const dir = m6.short_direction || (m6.flat && m6.flat.short_direction) || "";
+    const up1m = getM6OneMonthUpside(m6);
+    const upText = up1m === null ? "--" : `${up1m >= 0 ? "+" : ""}${fmtNum(up1m, 1)}%`;
+    const m6Tag = `${label} ${upText}`;
+
+    if (mode === "B" && dir === "up") {
+      if (m1 !== null && m1 >= 8 && valGap !== null && valGap > 15) {
+        return `${d.symbol}｜${m6Tag}，短線轉強但估值偏高；可順勢觀察，不追高，FCN需拉低strike。`;
+      }
+      if (exposurePct !== null && exposurePct >= 15) {
+        return `${d.symbol}｜${m6Tag}，短線方向向上但同底層曝險偏高；可續抱，暫不加碼FCN。`;
+      }
+      return `${d.symbol}｜${m6Tag}，短線方向明確向上；可順勢觀察進場點，避免追價。`;
+    }
+
+    if (mode === "B" && dir === "down") {
+      if (m1 !== null && m1 >= 8) {
+        return `${d.symbol}｜${m6Tag}，長期品質仍可，但短線轉弱；等待回檔完成再評估。`;
+      }
+      return `${d.symbol}｜${m6Tag}，短線轉弱，先防守，不建議新進或做高strike FCN。`;
+    }
+
+    if (mode === "A") {
+      if (up1m !== null && Math.abs(up1m) < 1) {
+        return `${d.symbol}｜A盤整 ${upText}，短線方向不明；等待突破或回檔，不急著動作。`;
+      }
+      if (up1m !== null && up1m > 2) {
+        return `${d.symbol}｜A盤整但1M偏多 ${upText}；可分批觀察，不用追高。`;
+      }
+      if (up1m !== null && up1m < -2) {
+        return `${d.symbol}｜A盤整但1M偏弱 ${upText}；先看支撐，不急著接。`;
+      }
+      return `${d.symbol}｜A盤整，短線沒有明確方向；以區間與風控為主。`;
+    }
+
+    if (m1 !== null && m1 >= 8 && m7 !== null && m7 >= 7) {
+      return `${d.symbol}｜M1/M7分數佳，但M6訊號不完整；可列候選，等短線確認。`;
+    }
+
+    return `${d.symbol}｜訊號未形成一致結論；先觀察，等待M1/M7/M6同步。`;
+  }
+
+  /* -----------------------------
      Decision Engine
   ----------------------------- */
 
@@ -804,52 +899,6 @@ m6Forecast: "/fcn-dashboard/data/m6/price_forecast_debug.json"
       }
     ];
 
-     function getM6Upside1M(m6){
-  return m6?.weighted_upside_pct_1m ??
-         m6?.forecast?.["1m"]?.final?.weighted_upside_pct_final ??
-         null;
-}
-
-function buildOneLineDecision(d){
-
-  const m6 = d.m6;
-  const m1 = d.m1Score;
-  const val = d.valuationGapPct;
-
-  if (!m6){
-    return `${d.symbol}｜無M6資料，觀察`;
-  }
-
-  const mode = m6.decision_mode;
-  const dir = m6.short_direction;
-  const up = getM6Upside1M(m6);
-
-  const upTxt = up!=null ? `${up>0?"+":""}${up.toFixed(1)}%` : "--";
-
-  if (mode==="B" && dir==="up"){
-    return `${d.symbol}｜B-up ${upTxt}，短線轉強，可順勢`;
-  }
-
-  if (mode==="B" && dir==="down"){
-    return `${d.symbol}｜B-down ${upTxt}，轉弱，避免進場`;
-  }
-
-  if (mode==="A"){
-    if (Math.abs(up)<1){
-      return `${d.symbol}｜A盤整 ${upTxt}，觀望`;
-    }
-    if (up>2){
-      return `${d.symbol}｜A盤整偏多 ${upTxt}，可分批`;
-    }
-    return `${d.symbol}｜A盤整，等待方向`;
-  }
-
-  if (m1 >= 8 && val > 10){
-    return `${d.symbol}｜品質佳但估值高，等回檔`;
-  }
-
-  return `${d.symbol}｜觀察`;
-}
     const final = finalDecision({
       m1Score,
       m7Score,
@@ -1209,6 +1258,7 @@ function buildOneLineDecision(d){
     const sub = firstVal(d.m1.category_sub, d.m7.category_sub, d.runtime.category_sub, d.m7.subsector, "--");
 
     const oneLine = buildOneLineDecision(d) || narrative.oneLine;
+
     const rawRet1d = firstNum(d.runtime.ret_1d, d.runtime.change_pct, d.runtime.day_change_pct);
     const rawRet1w = firstNum(d.runtime.ret_1w, d.runtime.return_1w);
     const rawRet1m = firstNum(d.runtime.ret_1m, d.runtime.return_1m);
@@ -1361,46 +1411,98 @@ function buildOneLineDecision(d){
       </div>
     `;
   }
-function renderForecastPlaceholder(d) {
 
-  const m6 = d.m6;
+  function renderForecastPlaceholder(d) {
+    const m6 = d.m6;
 
-  if (!m6){
-    return `<div class="mm-forecast-panel">No M6 data</div>`;
-  }
+    if (!m6) {
+      return `
+        <div class="mm-forecast-panel">
+          <div class="mm-forecast-head">
+            <div>
+              <div class="mm-forecast-title">M6 Price Forecast / 價格預測</div>
+              <div class="mm-forecast-sub">尚未讀到 data/m6/price_forecast_debug.json 對應資料</div>
+            </div>
+            <span class="pill warn">No M6</span>
+          </div>
+          <div class="mm-forecast-grid">
+            <div class="mm-forecast-card"><div class="k">明日</div><div class="v">--</div><div class="d">等待 M6 engine</div></div>
+            <div class="mm-forecast-card"><div class="k">一周</div><div class="v">--</div><div class="d">等待 M6 engine</div></div>
+            <div class="mm-forecast-card"><div class="k">一個月</div><div class="v">--</div><div class="d">等待 M6 engine</div></div>
+          </div>
+          <div class="mm-forecast-note">請先執行 scripts/m6/build_price_forecast_debug.py 產生 data/m6/price_forecast_debug.json。</div>
+        </div>
+      `;
+    }
 
-  const f1d = m6.forecast?.["1d"]?.final || {};
-  const f1w = m6.forecast?.["1w"]?.final || {};
-  const f1m = m6.forecast?.["1m"]?.final || {};
+    const f1d = getM6Final(m6, "1d");
+    const f1w = getM6Final(m6, "1w");
+    const f1m = getM6Final(m6, "1m");
+    const b1d = getM6BeforeDecision(m6, "1d");
+    const b1w = getM6BeforeDecision(m6, "1w");
+    const b1m = getM6BeforeDecision(m6, "1m");
+    const a1d = getM6DecisionAdjustment(m6, "1d");
+    const a1w = getM6DecisionAdjustment(m6, "1w");
+    const a1m = getM6DecisionAdjustment(m6, "1m");
 
-  function row(title, f){
+    const mode = m6.decision_mode || (m6.flat && m6.flat.decision_mode) || "--";
+    const label = m6.decision_label || (m6.flat && m6.flat.decision_label) || mode;
+    const direction = m6.short_direction || (m6.flat && m6.flat.short_direction) || "--";
+    const tone = mode === "B" ? "ok" : "warn";
+    const timing = m6.timing_structure || {};
+
+    function forecastCard(title, finalObj, beforeObj, adjObj) {
+      const price = firstNum(finalObj.weighted_price_final);
+      const upside = firstNum(finalObj.weighted_upside_pct_final);
+      const before = firstNum(beforeObj.weighted_price);
+      const after = firstNum(adjObj.after_price, price);
+      const beforeText = before === null ? "--" : `$${fmtNum(before, 2)}`;
+      const afterText = after === null ? "--" : `$${fmtNum(after, 2)}`;
+
+      return `
+        <div class="mm-forecast-card">
+          <div class="k">${esc(title)}</div>
+          <div class="v">${price === null ? "--" : "$" + fmtNum(price, 2)}</div>
+          <div class="d">
+            upside：${upside === null ? "--" : (upside >= 0 ? "+" : "") + fmtNum(upside, 1) + "%"}<br>
+            before：${beforeText}<br>
+            after：${afterText}
+          </div>
+        </div>
+      `;
+    }
+
     return `
-      <div class="mm-forecast-card">
-        <div class="k">${title}</div>
-        <div class="v">$${fmtNum(f.weighted_price_final)}</div>
-        <div class="d">
-          ${f.weighted_upside_pct_final>0?"+":""}${fmtNum(f.weighted_upside_pct_final,1)}%
+      <div class="mm-forecast-panel">
+        <div class="mm-forecast-head">
+          <div>
+            <div class="mm-forecast-title">M6 Price Forecast / 價格預測</div>
+            <div class="mm-forecast-sub">v9.1：pure price 三模型 + timing A/B + decision price adjustment</div>
+          </div>
+          <span class="pill ${tone}">${esc(label)} / ${esc(direction)}</span>
+        </div>
+        <div class="mm-forecast-grid">
+          ${forecastCard("明日 1D", f1d, b1d, a1d)}
+          ${forecastCard("一周 1W", f1w, b1w, a1w)}
+          ${forecastCard("一個月 1M", f1m, b1m, a1m)}
+        </div>
+        <div class="mm-forecast-note">
+          Timing raw 1D/1W/1M：
+          ${fmtNum(timing.raw_returns && timing.raw_returns.ret_1d_pct, 2)}% /
+          ${fmtNum(timing.raw_returns && timing.raw_returns.ret_1w_pct, 2)}% /
+          ${fmtNum(timing.raw_returns && timing.raw_returns.ret_1m_pct, 2)}%；
+          daily normalized：
+          ${fmtNum(timing.daily_normalized_returns && timing.daily_normalized_returns.ret_1d_daily_pct, 3)}% /
+          ${fmtNum(timing.daily_normalized_returns && timing.daily_normalized_returns.ret_1w_daily_pct, 3)}% /
+          ${fmtNum(timing.daily_normalized_returns && timing.daily_normalized_returns.ret_1m_daily_pct, 3)}%；
+          consistency=${fmtNum(timing.consistency_ratio, 3)}，
+          dispersion=${fmtNum(timing.dispersion, 5)}。
         </div>
       </div>
     `;
   }
 
-  return `
-    <div class="mm-forecast-panel">
-      <div class="mm-forecast-head">
-        <div>M6 Forecast</div>
-        <div>${m6.decision_mode} / ${m6.short_direction}</div>
-      </div>
-      <div class="mm-forecast-grid">
-        ${row("1D",f1d)}
-        ${row("1W",f1w)}
-        ${row("1M",f1m)}
-      </div>
-    </div>
-  `;
-}
-
-  function renderFinalBox(d) {
+  function renderFinalBox(d) {  function renderFinalBox(d) {
     return `
       <div class="mm-final-decision ${d.final.status}">
         <div>
