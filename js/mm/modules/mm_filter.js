@@ -1,7 +1,7 @@
 // ==========================================
-// MM FILTER ENGINE v3 FULL MODULE (SANDBOX / M7 v2 + C1 Cap unified)
+// MM FILTER ENGINE v3.3 FULL MODULE (M7 gate + C1 Decision Output + M6 Market Attractive ordering)
 // Path: js/mm/modules/mm_filter.js
-// Purpose: C1 Output -> Filter / Pool / Basket / Allocation v0 / M8 / Market Order Match
+// Purpose: M7 allow FCN -> C1-L1 Decision Output status/amount/strategy -> Category -> M6 Market Attractive ordering -> Basket / Allocation / M8 / Market Match
 // Notes:
 // - This is ES module version.
 // - Because this file is under js/mm/modules/, M8 import path must be ../../core/m8_batch_engine.js
@@ -91,7 +91,7 @@ const DEFAULT_STRUCTURE = {
 // IMPORTANT:
 // - M1 decides pool30 / stock universe.
 // - M7 v2 decides FCN candidate quality.
-// - Volatility decides short-term ordering inside categories.
+// - M6 Market Attractive decides today's market ordering inside categories.
 // - C1 decides how much can be traded.
 // Therefore max_addable_amt must respect the same cap exceptions used by C1.
 
@@ -163,9 +163,11 @@ export async function runMMFilterFull(input = {}) {
 
   // IMPORTANT: autoload canonical M7 v2 score source.
   // Source: data/m7_sandbox/m7_v2_scores.json
-  // This prevents C1/test input from accidentally using stale legacy m7_score / priority_score.
+  // This prevents C1/test input from accidentally using stale legacy m7_score.
   const m7Index = await loadM7V2Index(options);
-  const mergedStocks = mergeM7V2Rows(rawStocks, m7Index);
+  const m6Index = await loadM6ForecastIndex(options);
+  const mergedM7Stocks = mergeM7V2Rows(rawStocks, m7Index);
+  const mergedStocks = mergeM6ForecastRows(mergedM7Stocks, m6Index);
   const stocks = normalizeStocks(mergedStocks);
 
   // 1. Volatility v1
@@ -175,9 +177,15 @@ export async function runMMFilterFull(input = {}) {
     s.vol_band = getVolBand(s.vol_score);
     s.vol_components = vol.components;
 
-    // v3 priority: M7 v2 is the base; short-term volatility adjusts ordering.
-    // This prevents stale C1 priority_score from overriding canonical M7 v2.
-    s.priority_score = calcPriorityScoreV3(s);
+    // v3.2: Priority is deprecated. M6 Market Attractive is the only ordering score.
+    const m6Rank = calcM6MarketAttractiveScore(s);
+    s.m6_market_attractive_score = round2(m6Rank.score);
+    s.m6_market_attractive_components = m6Rank.components;
+    s.m6_direction = calcM6Direction(s);
+    s.m6_overheat_flag = calcM6OverheatFlag(s);
+    s.m6_market_explain = buildM6MarketExplain(s);
+    s.priority_score = null;
+    s.priority_deprecated = true;
   });
 
   // 2. Pool classification
@@ -206,7 +214,7 @@ export async function runMMFilterFull(input = {}) {
   const summary = buildSummary({ stocks, pools, category_map, baskets, allocation, market_match });
 
   return {
-    version: "mm_filter_v3_full_m7_v2_c1_cap_exclusive_pool",
+    version: "mm_filter_v3_3_c1_decision_m6_market_sort_no_priority",
     generated_at: new Date().toISOString(),
     summary,
     pools,
@@ -313,7 +321,10 @@ function mergeM7V2Rows(rawRows, m7Index = {}) {
         "data_warning",
         "warning_flag",
         "history_weeks",
-        "history_horizon_used"
+        "history_horizon_used",
+        "weekly_prices",
+        "weekly_returns",
+        "feature_snapshot"
       ]),
       m7_source_path: "data/m7_sandbox/m7_v2_scores.json",
       m7_source_loaded: true,
@@ -358,6 +369,101 @@ function firstString(values, d = "fallback") {
     if (typeof v === "string" && v.trim()) return v;
   }
   return d;
+}
+
+
+// ==========================================
+// M6 Price Forecast autoload / merge
+// ==========================================
+
+const M6_FORECAST_DEFAULT_SOURCE = "../../../data/m6/price_forecast_debug.json";
+
+async function loadM6ForecastIndex(options = {}) {
+  if (options.disable_m6_autoload === true) return {};
+
+  const directRows = Array.isArray(options.m6_rows)
+    ? options.m6_rows
+    : Array.isArray(options.m6_forecast_rows)
+      ? options.m6_forecast_rows
+      : null;
+
+  if (directRows) return buildM6ForecastIndex(directRows);
+
+  const source = options.m6_forecast_source || M6_FORECAST_DEFAULT_SOURCE;
+
+  try {
+    const url = new URL(source, import.meta.url);
+    const res = await fetch(url.toString(), { cache: "no-store" });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json = await res.json();
+    const rows = extractM6Rows(json);
+    return buildM6ForecastIndex(rows);
+  } catch (error) {
+    console.warn("[MM Filter] M6 forecast autoload failed. Fallback to input rows.", error);
+    return {};
+  }
+}
+
+function extractM6Rows(json) {
+  if (Array.isArray(json)) return json;
+  if (Array.isArray(json?.data)) return json.data;
+  if (Array.isArray(json?.rows)) return json.rows;
+  if (Array.isArray(json?.stocks)) return json.stocks;
+  if (json && typeof json === "object") {
+    return Object.entries(json).map(([symbol, row]) => ({ symbol, ...(row || {}) }));
+  }
+  return [];
+}
+
+function buildM6ForecastIndex(rows) {
+  const out = {};
+  (rows || []).forEach(row => {
+    const symbol = safeUpper(row.symbol || row.ticker || row.code);
+    if (!symbol) return;
+    out[symbol] = row;
+  });
+  return out;
+}
+
+function mergeM6ForecastRows(rawRows, m6Index = {}) {
+  return (rawRows || []).map(row => {
+    const symbol = safeUpper(row.symbol || row.ticker || row["股號"] || row.code);
+    const m6 = m6Index[symbol];
+    if (!m6) return row;
+
+    const flat = m6.flat || {};
+    const timing = m6.timing_structure || {};
+    const rawReturns = timing.raw_returns || {};
+    const dailyReturns = timing.daily_normalized_returns || {};
+
+    return {
+      ...row,
+      m6_source_path: "data/m6/price_forecast_debug.json",
+      m6_source_loaded: true,
+      m6_today_price: m6.today_price,
+      m6_decision_mode: firstString([flat.decision_mode, m6.decision_mode], null),
+      m6_decision_label: firstString([flat.decision_label, m6.decision_label], null),
+      m6_short_direction: firstString([flat.short_direction, m6.short_direction, timing.direction], null),
+      m6_timing_slope: firstFinite([flat.timing_slope, timing.slope], null),
+      m6_timing_dispersion: firstFinite([flat.timing_dispersion, timing.dispersion], null),
+      m6_timing_consistency_ratio: firstFinite([flat.timing_consistency_ratio, timing.consistency_ratio], null),
+      m6_same_sign: timing.same_sign === true,
+      m6_strength_consistent: timing.strength_consistent === true,
+      m6_dispersion_ok: timing.dispersion_ok === true,
+      m6_strength_ok: timing.strength_ok === true,
+      m6_weighted_upside_pct_1d: firstFinite([m6.weighted_upside_pct_1d, m6.forecast?.["1d"]?.final?.weighted_upside_pct_final], null),
+      m6_weighted_upside_pct_1w: firstFinite([m6.weighted_upside_pct_1w, m6.forecast?.["1w"]?.final?.weighted_upside_pct_final], null),
+      m6_weighted_upside_pct_1m: firstFinite([m6.weighted_upside_pct_1m, m6.forecast?.["1m"]?.final?.weighted_upside_pct_final], null),
+      m6_ret_1d_pct: firstFinite([rawReturns.ret_1d_pct, row.ret_1d], null),
+      m6_ret_1w_pct: firstFinite([rawReturns.ret_1w_pct, row.ret_1w], null),
+      m6_ret_2w_pct: firstFinite([rawReturns.ret_2w_pct, row.ret_2w], null),
+      m6_ret_1m_pct: firstFinite([rawReturns.ret_1m_pct, row.ret_1m], null),
+      m6_ret_1d_daily_pct: firstFinite([dailyReturns.ret_1d_daily_pct], null),
+      m6_ret_1w_daily_pct: firstFinite([dailyReturns.ret_1w_daily_pct], null),
+      m6_ret_1m_daily_pct: firstFinite([dailyReturns.ret_1m_daily_pct], null),
+      m6_debug_series: Array.isArray(m6.debug?.series) ? m6.debug.series : null
+    };
+  });
 }
 
 // ==========================================
@@ -475,7 +581,9 @@ export function normalizeStocks(rows) {
         category,
 
         // Scores
-        priority_score: round2(priorityScore),
+        priority_score: null,
+        priority_deprecated: true,
+        legacy_priority_score: nullableNumber(priorityScore),
         m1_score: m1Score === null ? null : round2(m1Score),
 
         // M7 v2 canonical fields
@@ -492,17 +600,14 @@ export function normalizeStocks(rows) {
         structure_score: nullableNumber(row.structure_score),
 
         // Returns / Vol inputs
-        ret_1d: firstFinite([row.ret_1d, row.delta_1d, row.ret_1d_pct, row["ret_1d_pct"]], 0),
+        ret_1d: firstFinite([row.m6_ret_1d_pct, row.ret_1d, row.delta_1d, row.ret_1d_pct, row["ret_1d_pct"]], 0),
         ret_2d: firstFinite([row.ret_2d, row.delta_2d, row.ret_d2, row["ret_2d_pct"]], 0),
-        ret_1w: firstFinite([row.ret_1w, row.delta_1w, row.ret_1w_pct, row["ret_1w_pct"]], 0),
-        ret_2w: firstFinite([row.ret_2w, row.delta_2w, row.ret_2w_pct, row["ret_2w_pct"]], 0),
-        ma_slope: firstFinite([
-          row.ma_slope,
-          row.ma_slope_pct,
-          row.ma30_slope_pct,
-          row.trend_ma_slope_pct,
-          row.trend_ma_annualized_pct
-        ], 0),
+        ret_1w: firstFinite([row.m6_ret_1w_pct, row.ret_1w, row.delta_1w, row.ret_1w_pct, row["ret_1w_pct"]], 0),
+        ret_2w: firstFinite([row.m6_ret_2w_pct, row.ret_2w, row.delta_2w, row.ret_2w_pct, row["ret_2w_pct"]], null),
+        // Formal short-term MA slope for Vol engine.
+        // DO NOT fallback to M7 long-horizon trend_ma_annualized_pct; that is annualized 10Y/3Y trend.
+        // This field is filled below in calcVolScoreV1() from weekly_prices / feature_snapshot.weekly_prices.
+        ma_slope: null,
 
         // M2
         m2_util: normalizeRatio(firstFinite([
@@ -516,7 +621,56 @@ export function normalizeStocks(rows) {
         m2_fcn_count: firstFinite([row.m2_fcn_count, row.fcn_count, row.fcnCount], 0),
 
         // M6
-        m6_timing: String(row.m6_timing || row.timing_mode || row.decision_mode || row.short_direction || "").toLowerCase(),
+        m6_timing: String(row.m6_timing || row.timing_mode || row.m6_decision_mode || row.decision_mode || row.m6_short_direction || row.short_direction || "").toLowerCase(),
+        m6_source_loaded: row.m6_source_loaded === true,
+        m6_decision_mode: row.m6_decision_mode || row.decision_mode || null,
+        m6_decision_label: row.m6_decision_label || row.decision_label || null,
+        m6_short_direction: row.m6_short_direction || row.short_direction || null,
+        m6_timing_slope: nullableNumber(row.m6_timing_slope),
+        m6_timing_dispersion: nullableNumber(row.m6_timing_dispersion),
+        m6_timing_consistency_ratio: nullableNumber(row.m6_timing_consistency_ratio),
+        m6_weighted_upside_pct_1d: nullableNumber(row.m6_weighted_upside_pct_1d || row.weighted_upside_pct_1d),
+        m6_weighted_upside_pct_1w: nullableNumber(row.m6_weighted_upside_pct_1w || row.weighted_upside_pct_1w),
+        m6_weighted_upside_pct_1m: nullableNumber(row.m6_weighted_upside_pct_1m || row.weighted_upside_pct_1m),
+        m6_ret_1d_pct: nullableNumber(row.m6_ret_1d_pct),
+        m6_ret_1w_pct: nullableNumber(row.m6_ret_1w_pct),
+        m6_ret_2w_pct: nullableNumber(row.m6_ret_2w_pct),
+        m6_ret_1m_pct: nullableNumber(row.m6_ret_1m_pct || row.ret_1m),
+
+        // C1-L1 structured decision source (single-stock decision brain)
+        c1_decision_text: firstText([
+          row.c1_decision_text,
+          row.c1_decision_output,
+          row.decision_output,
+          row.final_decision_text,
+          row.fcn_decision_note,
+          row.decision_reason
+        ]),
+        c1_decision_label: firstText([
+          row.c1_decision_label,
+          row.decision_label_c1,
+          row.fcn_decision_label,
+          row.trade_label
+        ]),
+        c1_decision_tier: normalizeC1DecisionTier(firstText([
+          row.c1_decision_tier,
+          row.c1_decision_label,
+          row.decision_label_c1,
+          row.fcn_decision_label,
+          row.trade_label,
+          row.c1_decision_text,
+          row.c1_decision_output,
+          row.decision_output,
+          row.final_decision_text,
+          row.fcn_decision_note,
+          row.decision_reason
+        ])),
+        c1_strategy: firstText([
+          row.c1_strategy,
+          row.fcn_strategy,
+          row.strategy,
+          row.trade_strategy
+        ]),
 
         // Amount / C1 cap
         amt_signal: round2(amtSignal),
@@ -528,6 +682,12 @@ export function normalizeStocks(rows) {
         fcn_cap_available_amt: capView.cap_available_amt,
 
         // Decision flags
+        m6_market_attractive_score: null,
+        m6_market_attractive_components: null,
+        m6_direction: null,
+        m6_overheat_flag: false,
+        m6_market_explain: null,
+
         allow_fcn: allowF,
         reject_reason: row.reject_reason || row.rejectReason || null,
         why_yes: Array.isArray(row.why_yes) ? row.why_yes : [],
@@ -543,11 +703,78 @@ export function normalizeStocks(rows) {
 // 0.05*abs(1D) + 0.10*abs(2D) + 0.40*abs(1W) + 0.35*abs(MA slope) + 0.10*abs(2W)
 // ==========================================
 
+function getWeeklyPricesForVol(stock = {}) {
+  const direct = Array.isArray(stock.weekly_prices) ? stock.weekly_prices : null;
+  const snapshot = Array.isArray(stock.feature_snapshot?.weekly_prices) ? stock.feature_snapshot.weekly_prices : null;
+  const nested = Array.isArray(stock.m7?.feature_snapshot?.weekly_prices) ? stock.m7.feature_snapshot.weekly_prices : null;
+  const prices = direct || snapshot || nested || [];
+  return prices.map(x => Number(x)).filter(x => Number.isFinite(x) && x > 0);
+}
+
+function avgLast(arr, n, offset = 0) {
+  const end = arr.length - offset;
+  const start = end - n;
+  if (start < 0 || end > arr.length || start >= end) return null;
+  const slice = arr.slice(start, end);
+  if (slice.length !== n) return null;
+  return slice.reduce((a, b) => a + b, 0) / n;
+}
+
+export function calcShortMaSlopePct(stock = {}, options = {}) {
+  const weeklyPrices = getWeeklyPricesForVol(stock);
+  const shortWeeks = Number(options.short_ma_weeks || stock.vol_ma_short_weeks || 6);   // ~30 trading days
+  const midWeeks = Number(options.mid_ma_weeks || stock.vol_ma_mid_weeks || 13);       // ~65 trading days
+
+  const maShortNow = avgLast(weeklyPrices, shortWeeks, 0);
+  const maShortPrev = avgLast(weeklyPrices, shortWeeks, shortWeeks);
+  const maMidNow = avgLast(weeklyPrices, midWeeks, 0);
+
+  const hasFormalData = maShortNow !== null && maShortPrev !== null && maMidNow !== null && maShortPrev > 0 && maMidNow > 0;
+  if (!hasFormalData) {
+    return {
+      value: 0,
+      source: "missing_weekly_prices",
+      method: "formal_ma_slope_missing_no_fallback",
+      warning: "missing_weekly_prices_for_formal_ma_slope",
+      weekly_count: weeklyPrices.length,
+      short_ma_weeks: shortWeeks,
+      mid_ma_weeks: midWeeks,
+      ma_short_now: maShortNow,
+      ma_short_prev: maShortPrev,
+      ma_mid_now: maMidNow
+    };
+  }
+
+  // Two formal, same-base components:
+  // 1) slope_pct: short MA change versus previous short window (~30 trading days vs prior ~30 trading days)
+  // 2) position_pct: short MA versus mid MA (~30D vs ~65D), captures whether the short MA is above/below trend base.
+  // Final MA slope used in Vol score is a transparent blend, still expressed in percent points.
+  const slopePct = (maShortNow / maShortPrev - 1) * 100;
+  const positionPct = (maShortNow / maMidNow - 1) * 100;
+  const value = 0.70 * slopePct + 0.30 * positionPct;
+
+  return {
+    value,
+    source: "m7_v2.feature_snapshot.weekly_prices",
+    method: "0.70*((MA6_now/MA6_prev)-1)*100 + 0.30*((MA6_now/MA13_now)-1)*100",
+    warning: null,
+    weekly_count: weeklyPrices.length,
+    short_ma_weeks: shortWeeks,
+    mid_ma_weeks: midWeeks,
+    ma_short_now: maShortNow,
+    ma_short_prev: maShortPrev,
+    ma_mid_now: maMidNow,
+    slope_pct: slopePct,
+    position_pct: positionPct
+  };
+}
+
 export function calcVolScoreV1(stock) {
   const d1 = Math.abs(num(stock.ret_1d));
   const d2 = Math.abs(num(stock.ret_2d));
   const w1 = Math.abs(num(stock.ret_1w));
-  const ma = Math.abs(num(stock.ma_slope));
+  const maView = calcShortMaSlopePct(stock);
+  const ma = Math.abs(num(maView.value));
   const w2 = Math.abs(num(stock.ret_2w));
 
   const score =
@@ -565,7 +792,10 @@ export function calcVolScoreV1(stock) {
       w1,
       ma,
       w2,
-      formula: "0.05*1D + 0.10*2D + 0.40*1W + 0.35*MA_slope + 0.10*2W"
+      formula: "0.05*1D + 0.10*2D + 0.40*1W + 0.35*MA_slope + 0.10*2W",
+      ma_slope: maView,
+      units: "all components are percent points; MA_slope is formal short-term MA percent slope",
+      base_check: maView.warning ? "MA_MISSING_FORMAL_DATA" : "OK_SAME_BASE_PERCENT_POINTS"
     }
   };
 }
@@ -579,18 +809,206 @@ export function getVolBand(v) {
 }
 
 // ==========================================
-// Priority v3
+// M6 Market Attractive Score (ordering only; not admission)
 // ==========================================
-// M7 v2 selects FCN-quality candidates. Volatility adjusts today's ordering.
-// Score scale = 0~100 for UI ranking. Extreme volatility is handled by pool rules, not by clamping M7.
-function calcPriorityScoreV3(s) {
-  const m7Base = clamp(num(s.m7_score) * 10, 0, 120);
-  const volBoost = clamp(num(s.vol_score), 0, 12) / 12 * 20;
-  const m2RoomBoost = clamp((1 - num(s.m2_util)) * 10, 0, 10);
-  const amountBoost = num(s.max_addable_amt) > 0 ? 5 : 0;
+// M7 decides if a stock can enter the FCN pool.
+// M6 Market Attractive decides ordering inside category/pools.
+// Direction and overheat are UI explanations only and do not change sorting.
 
-  const score = (0.75 * m7Base) + (0.15 * volBoost) + (0.10 * m2RoomBoost) + amountBoost;
-  return round2(clamp(score, 0, 120));
+export function calcM6MarketAttractiveScore(s = {}) {
+  const r1d = getM6ReturnPct(s, "1d");
+  const r1w = getM6ReturnPct(s, "1w");
+  const r2w = getM6ReturnPct(s, "2w");
+  const r1m = getM6ReturnPct(s, "1m");
+
+  const score =
+    0.10 * Math.abs(num(r1d.value)) +
+    0.50 * Math.abs(num(r1w.value)) +
+    0.25 * Math.abs(num(r2w.value)) +
+    0.15 * Math.abs(num(r1m.value));
+
+  return {
+    score,
+    components: {
+      ret_1d: r1d.value,
+      ret_1w: r1w.value,
+      ret_2w: r2w.value,
+      ret_1m: r1m.value,
+      ret_1d_source: r1d.source,
+      ret_1w_source: r1w.source,
+      ret_2w_source: r2w.source,
+      ret_1m_source: r1m.source,
+      formula: "0.10*abs(1D) + 0.50*abs(1W) + 0.25*abs(2W) + 0.15*abs(1M)",
+      units: "percent points; M6 score is market attractiveness / pricing sweetness, not FCN eligibility",
+      note: "M6 direction and overheat flag are explanation only; they do not change score or sorting."
+    }
+  };
+}
+
+function getM6ReturnPct(s = {}, horizon) {
+  if (horizon === "1d") {
+    return firstReturnPct([
+      [s.m6_ret_1d_pct, "m6.timing_structure.raw_returns.ret_1d_pct"],
+      [s.ret_1d, "runtime.ret_1d"]
+    ]);
+  }
+  if (horizon === "1w") {
+    return firstReturnPct([
+      [s.m6_ret_1w_pct, "m6.timing_structure.raw_returns.ret_1w_pct"],
+      [s.ret_1w, "runtime.ret_1w"]
+    ]);
+  }
+  if (horizon === "2w") {
+    const direct = firstReturnPct([
+      [s.m6_ret_2w_pct, "m6.timing_structure.raw_returns.ret_2w_pct"],
+      [s.ret_2w, "runtime.ret_2w"]
+    ], false);
+    if (direct.value !== null) return direct;
+
+    const derived = calcRet2wFromWeeklyPrices(s);
+    if (derived.value !== null) return derived;
+
+    return { value: 0, source: "missing_ret_2w_no_fallback" };
+  }
+  if (horizon === "1m") {
+    return firstReturnPct([
+      [s.m6_ret_1m_pct, "m6.timing_structure.raw_returns.ret_1m_pct"],
+      [s.ret_1m, "runtime.ret_1m"]
+    ]);
+  }
+  return { value: 0, source: "unknown_horizon" };
+}
+
+function firstReturnPct(pairs, defaultZero = true) {
+  for (const [v, source] of pairs || []) {
+    const x = nullableNumber(v);
+    if (x !== null) return { value: x, source };
+  }
+  return { value: defaultZero ? 0 : null, source: "missing" };
+}
+
+function calcRet2wFromWeeklyPrices(s = {}) {
+  const weekly = getWeeklyPricesForVol(s);
+  if (weekly.length < 3) return { value: null, source: "missing_weekly_prices_for_ret_2w" };
+  const now = weekly[weekly.length - 1];
+  const ref = weekly[weekly.length - 3];
+  if (!Number.isFinite(now) || !Number.isFinite(ref) || ref <= 0) {
+    return { value: null, source: "invalid_weekly_prices_for_ret_2w" };
+  }
+  return {
+    value: (now / ref - 1) * 100,
+    source: "m7_v2.feature_snapshot.weekly_prices:last_vs_2w_ago"
+  };
+}
+
+function calcM6Direction(s = {}) {
+  const dir = String(s.m6_short_direction || s.m6_direction || "").toLowerCase();
+  if (["up", "down", "sideways", "mixed"].includes(dir)) return dir;
+
+  const r1w = num(getM6ReturnPct(s, "1w").value);
+  const r2w = num(getM6ReturnPct(s, "2w").value);
+  if (r1w > 0 && r2w > 0) return "up";
+  if (r1w < 0 && r2w < 0) return "down";
+  if (Math.abs(r1w) < 0.5 && Math.abs(r2w) < 0.5) return "sideways";
+  return "mixed";
+}
+
+function calcM6OverheatFlag(s = {}) {
+  const r1w = num(getM6ReturnPct(s, "1w").value);
+  const r2w = num(getM6ReturnPct(s, "2w").value);
+  const r1m = num(getM6ReturnPct(s, "1m").value);
+  return (r1w >= 8 && r1m >= 20) || (r2w >= 15 && r1m >= 25) || r1m >= 35;
+}
+
+function buildM6MarketExplain(s = {}) {
+  const direction = calcM6Direction(s);
+  const overheat = calcM6OverheatFlag(s);
+  const score = nullableNumber(s.m6_market_attractive_score);
+  const parts = [];
+  if (score !== null) parts.push(`M6 market attractive=${round2(score)}`);
+  parts.push(`direction=${direction}`);
+  if (overheat) parts.push("⚠ overheat: 市場很甜但價格已加速，排序不扣分，需用 Strike/KI 控制風險");
+  return parts.join("｜");
+}
+
+function sortByM6Market(a, b) {
+  return (num(b.m6_market_attractive_score) - num(a.m6_market_attractive_score)) ||
+    (num(b.m7_score) - num(a.m7_score)) ||
+    (num(b.max_addable_amt) - num(a.max_addable_amt));
+}
+
+// ==========================================
+// C1-L1 Decision Output adapter
+// ==========================================
+// C1 is the single-stock decision source:
+// - M7 = FCN eligibility / quality gate
+// - C1-L1 = today status, amount, and strategy
+// - M6 = market attractive ordering and explanation only
+
+function firstText(values = []) {
+  for (const v of values) {
+    if (v === undefined || v === null) continue;
+    const txt = String(v).trim();
+    if (txt) return txt;
+  }
+  return null;
+}
+
+function normalizeC1DecisionTier(raw) {
+  const t = String(raw || "").toLowerCase();
+  if (!t) return "unknown";
+
+  // Explicit no-trade / reject states.
+  if (
+    t.includes("不可做") ||
+    t.includes("不做") ||
+    t.includes("暫停") ||
+    t.includes("reject") ||
+    t.includes("no trade") ||
+    t.includes("blocked")
+  ) return "no_trade";
+
+  // Add / highlight states.
+  if (
+    t.includes("加碼") ||
+    t.includes("提高") ||
+    t.includes("積極") ||
+    t.includes("highlight") ||
+    t.includes("add") ||
+    t.includes("increase") ||
+    t.includes("aggressive")
+  ) return "add";
+
+  // Standard / candidate states.
+  if (
+    t.includes("標準單") ||
+    t.includes("候選") ||
+    t.includes("可列") ||
+    t.includes("standard") ||
+    t.includes("candidate")
+  ) return "standard";
+
+  // Wait / watch states.
+  if (
+    t.includes("等待") ||
+    t.includes("觀察") ||
+    t.includes("不急") ||
+    t.includes("watch") ||
+    t.includes("wait")
+  ) return "watch";
+
+  return "unknown";
+}
+
+function classifyPoolByC1Decision(s = {}) {
+  const tier = normalizeC1DecisionTier(s.c1_decision_tier || s.c1_decision_label || s.c1_decision_text);
+
+  if (tier === "no_trade") return "reject";
+  if (tier === "add") return "highlight";
+  if (tier === "standard" || tier === "watch") return "watch";
+
+  // If no structured C1 tier exists, preserve old safe fallback.
+  return "simulation";
 }
 
 // ==========================================
@@ -605,7 +1023,6 @@ function classifyPools(stocks, options = {}) {
     reject: []
   };
 
-  const priorityCut = num(options.highlight_priority_cut, 75);
   const m2HotCut = num(options.highlight_m2_cut, 0.8);
   const m2RejectCut = num(options.reject_m2_cut, 0.95);
   const amtSignalCut = num(options.highlight_amt_signal_cut, 0.6);
@@ -625,56 +1042,55 @@ function classifyPools(stocks, options = {}) {
       continue;
     }
 
-    const timingHot = isTimingHot(s.m6_timing);
-    const isHighlight =
-      s.priority_score >= priorityCut &&
-      s.vol_band !== "extreme" &&
-      s.m2_util < m2HotCut &&
-      !timingHot &&
-      s.amt_signal > amtSignalCut &&
-      s.max_addable_amt > 0;
+    const c1Pool = classifyPoolByC1Decision(s);
+    const watchReasons = buildWatchReasons(s, { m2HotCut, amtSignalCut });
 
-    if (isHighlight) {
+    // v3.3: C1-L1 Decision Output is the single-stock decision source.
+    // M6 only orders candidates; it does not change the pool decision.
+    if (c1Pool === "highlight") {
       pools.highlight.push({
         ...s,
         pool: "highlight",
         reject_reasons: [],
-        why_yes: buildWhyYes(s)
+        why_yes: buildWhyYes(s),
+        c1_decision_source_used: true
       });
       continue;
     }
 
-    const watchReasons = buildWatchReasons(s, { priorityCut, m2HotCut, amtSignalCut });
-    const hasMajorWatch =
-      s.m2_util >= m2HotCut ||
-      timingHot ||
-      s.amt_signal <= amtSignalCut ||
-      s.priority_score < Math.min(priorityCut, 65);
-
-    if (hasMajorWatch) {
+    if (c1Pool === "watch") {
       pools.watch.push({
         ...s,
         pool: "watch",
         reject_reasons: [],
-        why_not: watchReasons
+        why_not: watchReasons,
+        c1_decision_source_used: true
       });
       continue;
     }
 
-    // Basket simulation candidates: not reject, amount available, but not today's highlight.
+    if (c1Pool === "reject") {
+      pools.reject.push({
+        ...s,
+        pool: "reject",
+        reject_reasons: ["c1_decision_no_trade"],
+        reject_level: "trade_reject",
+        c1_decision_source_used: true
+      });
+      continue;
+    }
+
+    // Fallback only when C1 decision tier is not available: not reject, amount available, basket simulation candidate.
     pools.simulation.push({
       ...s,
       pool: "simulation",
       reject_reasons: [],
-      why_not: watchReasons
+      why_not: watchReasons,
+      c1_decision_source_used: false
     });
   }
 
-  const sortFn = (a, b) =>
-    (b.priority_score || 0) - (a.priority_score || 0) ||
-    (b.max_addable_amt || 0) - (a.max_addable_amt || 0);
-
-  Object.keys(pools).forEach(k => pools[k].sort(sortFn));
+  Object.keys(pools).forEach(k => pools[k].sort(sortByM6Market));
   return pools;
 }
 
@@ -690,22 +1106,29 @@ function getRejectReasons(s, { m2RejectCut }) {
 
 function buildWhyYes(s) {
   const out = [];
-  if (s.priority_score >= 75) out.push("M7 priority 達標");
+  if (s.c1_decision_tier && s.c1_decision_tier !== "unknown") out.push(`C1=${s.c1_decision_tier}`);
+  if (s.c1_strategy) out.push(`策略=${s.c1_strategy}`);
+  if (s.single_suggest_amt > 0) out.push(`今日建議 ${money(s.single_suggest_amt)}`);
+  if (s.m7_score >= 6) out.push(`M7 可做 FCN (${round2(s.m7_score)})`);
+  if (s.m6_market_attractive_score !== null) out.push(`M6 market attractive ${round2(s.m6_market_attractive_score)}`);
+  if (s.m6_direction) out.push(`M6 direction=${s.m6_direction}`);
+  if (s.m6_overheat_flag) out.push("⚠ 過熱提示：排序不扣分，需用 Strike/KI 控制");
   if (s.vol_band !== "extreme") out.push(`波動率 ${s.vol_band}`);
   if (s.m2_util < 0.8) out.push("M2 曝險未過熱");
-  if (!isTimingHot(s.m6_timing)) out.push("M6 timing 非 hot");
   if (s.max_addable_amt > 0) out.push(`可加碼 ${money(s.max_addable_amt)}`);
   return out;
 }
 
-function buildWatchReasons(s, { priorityCut, m2HotCut, amtSignalCut }) {
+function buildWatchReasons(s, { m2HotCut, amtSignalCut }) {
   const out = [];
-  if (s.priority_score < priorityCut) out.push(`priority<${priorityCut}`);
+  if (s.c1_decision_tier && s.c1_decision_tier !== "unknown") out.push(`C1=${s.c1_decision_tier}`);
+  if (s.c1_strategy) out.push(`策略=${s.c1_strategy}`);
+  if (s.single_suggest_amt > 0) out.push(`今日建議 ${money(s.single_suggest_amt)}`);
   if (s.vol_band === "extreme") out.push("vol=extreme");
   if (s.m2_util >= m2HotCut) out.push(`m2_util>=${Math.round(m2HotCut * 100)}%`);
-  if (isTimingHot(s.m6_timing)) out.push("m6_timing=hot");
   if (s.amt_signal <= amtSignalCut) out.push(`amt_signal<=${amtSignalCut}`);
   if (s.max_addable_amt <= 0) out.push("amount=0");
+  if (s.m6_overheat_flag) out.push("m6_overheat_warning_only");
   return out;
 }
 
@@ -729,7 +1152,7 @@ function buildCategoryMap(stocks) {
   }
 
   Object.keys(map).forEach(k => {
-    map[k].sort((a, b) => (b.priority_score || 0) - (a.priority_score || 0));
+    map[k].sort(sortByM6Market);
   });
 
   return map;
@@ -742,14 +1165,14 @@ function buildCategoryMap(stocks) {
 async function buildAllBaskets({ pools, category_map, stocks, options }) {
   const baskets = [];
 
-  // 1. Priority Top
+  // 1. M6 Market Top
   const top = pools.highlight.slice(0, 4);
   if (top.length >= 2) {
     baskets.push(await buildBasket({
-      id: "PRIORITY_TOP",
+      id: "M6_MARKET_TOP",
       style: "rational",
       stocks: top.slice(0, 4),
-      structure: options.priority_structure || { KI: 55, Strike: 65, T: 6, type: "AKI", marketYield: 0 }
+      structure: options.market_top_structure || options.priority_structure || { KI: 55, Strike: 65, T: 6, type: "AKI", marketYield: 0 }
     }));
   }
 
@@ -813,7 +1236,7 @@ function buildConservativeSpecial(stocks) {
   const preferred = new Set(FCN_BASKET_RULES.conservative_special.preferred_symbols);
   const required = stocks
     .filter(s => ["NVDA", "TSM"].includes(s.symbol) && s.allow_fcn && s.max_addable_amt > 0)
-    .sort((a, b) => b.priority_score - a.priority_score);
+    .sort(sortByM6Market);
 
   const companions = stocks
     .filter(s =>
@@ -825,7 +1248,7 @@ function buildConservativeSpecial(stocks) {
     .sort((a, b) => {
       const volRank = volBandRank(a.vol_band) - volBandRank(b.vol_band);
       if (volRank !== 0) return volRank;
-      return b.priority_score - a.priority_score;
+      return sortByM6Market(a, b);
     });
 
   if (!required.length) return [];
@@ -835,9 +1258,9 @@ function buildConservativeSpecial(stocks) {
 function buildAggressiveMix(stocks) {
   const eligible = stocks.filter(s => s.allow_fcn && s.max_addable_amt > 0 && s.vol_band !== "extreme");
 
-  const high = eligible.filter(s => s.vol_band === "high").sort((a, b) => b.priority_score - a.priority_score).slice(0, 2);
-  const mid = eligible.filter(s => s.vol_band === "mid").sort((a, b) => b.priority_score - a.priority_score).slice(0, 2);
-  const low = eligible.filter(s => s.vol_band === "low").sort((a, b) => b.priority_score - a.priority_score).slice(0, 2);
+  const high = eligible.filter(s => s.vol_band === "high").sort(sortByM6Market).slice(0, 2);
+  const mid = eligible.filter(s => s.vol_band === "mid").sort(sortByM6Market).slice(0, 2);
+  const low = eligible.filter(s => s.vol_band === "low").sort(sortByM6Market).slice(0, 2);
 
   return uniqueBySymbol([...high, ...mid, ...low]);
 }
@@ -848,7 +1271,7 @@ async function buildBasket({ id, style, stocks, structure }) {
   const caps = clean.map(s => num(s.max_addable_amt));
   const basket_cap = caps.length ? Math.min(...caps) : 0;
 
-  const avg_score = avg(clean.map(s => s.priority_score));
+  const avg_score = avg(clean.map(s => s.m6_market_attractive_score));
   const avg_vol = avg(clean.map(s => s.vol_score));
   const avg_m2_util = avg(clean.map(s => s.m2_util));
   const vol_mix = countBy(clean, "vol_band");
@@ -879,7 +1302,7 @@ async function buildBasket({ id, style, stocks, structure }) {
       marketYield: structure.marketYield ?? 0
     },
     basket_cap,
-    avg_score: round2(avg_score),
+    avg_m6_market_attractive: round2(avg_score),
     avg_vol: round2(avg_vol),
     avg_m2_util: round2(avg_m2_util),
     vol_mix,
@@ -1166,7 +1589,7 @@ function buildOutlierAnalysis({ order, matched, rejected, m8 }) {
 // ==========================================
 
 function buildSummary({ stocks, pools, category_map, baskets, allocation, market_match }) {
-  const priorityArr = stocks.map(s => num(s.priority_score));
+  const m6MarketArr = stocks.map(s => num(s.m6_market_attractive_score));
   const volArr = stocks.map(s => num(s.vol_score));
   const m2Arr = stocks.map(s => num(s.m2_util));
 
@@ -1183,13 +1606,15 @@ function buildSummary({ stocks, pools, category_map, baskets, allocation, market
       with_m7_v2_score: stocks.filter(s => s.m7_v2_score !== null).length,
       m7_v2_primary: stocks.filter(s => s.m7_score_source === "m7_v2_score" || s.m7_score_source === "m7_effective_score").length,
       legacy_m7_fallback: stocks.filter(s => s.m7_score_source === "legacy_m7_score").length,
-      with_amount: stocks.filter(s => num(s.max_addable_amt) > 0).length
+      with_amount: stocks.filter(s => num(s.max_addable_amt) > 0).length,
+      with_m6_market_score: stocks.filter(s => nullableNumber(s.m6_market_attractive_score) !== null).length,
+      with_c1_decision_tier: stocks.filter(s => s.c1_decision_tier && s.c1_decision_tier !== "unknown").length
     },
 
     score_health: {
-      priority_mean: round2(avg(priorityArr)),
-      priority_std: round2(std(priorityArr)),
-      priority_cv: round2(cv(priorityArr)),
+      m6_market_mean: round2(avg(m6MarketArr)),
+      m6_market_std: round2(std(m6MarketArr)),
+      m6_market_cv: round2(cv(m6MarketArr)),
       vol_mean: round2(avg(volArr)),
       vol_std: round2(std(volArr)),
       vol_cv: round2(cv(volArr)),
@@ -1208,9 +1633,9 @@ function buildSummary({ stocks, pools, category_map, baskets, allocation, market
         k,
         {
           count: list.length,
-          mean_priority: round2(avg(list.map(x => x.priority_score))),
-          std_priority: round2(std(list.map(x => x.priority_score))),
-          cv_priority: round2(cv(list.map(x => x.priority_score))),
+          mean_m6_market: round2(avg(list.map(x => x.m6_market_attractive_score))),
+          std_m6_market: round2(std(list.map(x => x.m6_market_attractive_score))),
+          cv_m6_market: round2(cv(list.map(x => x.m6_market_attractive_score))),
           avg_vol: round2(avg(list.map(x => x.vol_score))),
           total_max_addable: list.reduce((sum, x) => sum + num(x.max_addable_amt), 0)
         }
@@ -1336,3 +1761,4 @@ function volBandRank(band) {
 function money(v) {
   return `USD ${Math.round(num(v)).toLocaleString()}`;
 }
+
