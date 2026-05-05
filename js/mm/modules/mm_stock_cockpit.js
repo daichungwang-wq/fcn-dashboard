@@ -2570,33 +2570,35 @@
           <div class="mm-l4-score-card ${scoreStatus}">
             <div class="mm-l4-k">M1 Quality</div>
             <div class="mm-l4-big">${fmtNum(d.m1Score, 2)}</div>
-            <div class="mm-l4-sub">${esc(status)}｜Source：${esc(d.m1.m1_source || "missing")}｜Rank：${d.m1.rank ?? "--"}</div>
+            <div class="mm-l4-sub">
+              ${esc(status)}｜Source：${esc(d.m1.m1_source || "missing")}｜Rank：${d.m1.rank ?? "--"}<br>
+              Coverage：${fmtPct(d.cc.score)}
+            </div>
           </div>
           <div class="mm-l4-score-card ${ccClass(String(ccRank).replace('CC-', ''))}">
-            <div class="mm-l4-k">EPS</div>
+            <div class="mm-l4-k">EPS Path</div>
             <div class="mm-l4-big small">CC ${fmtMaybe(ccScore, 1)}｜${esc(ccRank)}</div>
             <div class="mm-l4-sub">
-              ${esc(epsLabel)}<br>
+              Path：${esc(epsLabel)}｜Coverage：${fmtPct(d.cc.score)}<br>
               2025 EPS：${fmtMaybe(eps.eps_2025, 2)}｜2026：${fmtMaybe(eps.eps_2026, 2)}｜2027：${fmtMaybe(eps.eps_2027, 2)}
             </div>
           </div>
           <div class="mm-l4-score-card neutral">
             <div class="mm-l4-k">Runtime</div>
             <div class="mm-l4-big small">${esc(nullMeaning(runtimeScore, "N/A"))}</div>
-            <div class="mm-l4-sub">${esc(runtimeStatus)}</div>
+            <div class="mm-l4-sub">
+              ${esc(runtimeStatus)}<br>
+              runtime_cc_score：${esc(nullMeaning(runtimeScore, "N/A"))}
+            </div>
           </div>
           <div class="mm-l4-score-card neutral">
             <div class="mm-l4-k">Global</div>
             <div class="mm-l4-big small">${esc(nullMeaning(globalSource, "N/A"))}</div>
-            <div class="mm-l4-sub">${esc(globalStatus)}</div>
+            <div class="mm-l4-sub">
+              ${esc(globalStatus)}<br>
+              global_model_source：${esc(nullMeaning(globalSource, "N/A"))}
+            </div>
           </div>
-        </div>
-
-        <div class="mm-l4-pill-row">
-          ${renderCcPill("EPS Path", epsLabel, ccRank === "A" || ccRank === "B" ? "ok" : ccRank === "C" ? "warn" : "bad")}
-          ${renderCcPill("Runtime", runtimeStatus, runtimeScore === null && runtimeSource === null ? "warn" : "ok")}
-          ${renderCcPill("Global", globalStatus, globalSource === null ? "warn" : "ok")}
-          ${renderCcPill("Coverage", fmtPct(d.cc.score), d.cc.score >= 0.8 ? "ok" : d.cc.score >= 0.5 ? "warn" : "bad")}
         </div>
 
         <details class="mm-m2-subdetail" open>
