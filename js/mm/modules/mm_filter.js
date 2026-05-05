@@ -94,7 +94,12 @@ export async function runMMFilterFull(input = {}) {
   const marketOrders = Array.isArray(input.market_orders) ? input.market_orders : [];
   const options = input.options || {};
 
-  const stocks = normalizeStocks(rawStocks);
+  // IMPORTANT: autoload canonical M7 v2 score source.
+  // Source: data/m7_sandbox/m7_v2_scores.json
+  // This prevents C1/test input from accidentally using stale legacy m7_score / priority_score.
+  const m7Index = await loadM7V2Index(options);
+  const mergedStocks = mergeM7V2Rows(rawStocks, m7Index);
+  const stocks = normalizeStocks(mergedStocks);
 
   // 1. Volatility v1
   stocks.forEach(s => {
@@ -130,7 +135,7 @@ export async function runMMFilterFull(input = {}) {
   const summary = buildSummary({ stocks, pools, category_map, baskets, allocation, market_match });
 
   return {
-    version: "mm_filter_v4_1_module_sandbox_m7_v2_canonical",
+    version: "mm_filter_v4_2_module_sandbox_m7_v2_autoload",
     generated_at: new Date().toISOString(),
     summary,
     pools,
@@ -146,6 +151,142 @@ export async function runMarketOrderMatch(input = {}) {
   const orders = Array.isArray(input.orders) ? input.orders : [];
   const stocks = normalizeStocks(Array.isArray(input.stocks) ? input.stocks : []);
   return Promise.all(orders.map(order => evaluateMarketOrder(order, stocks)));
+}
+
+
+// ==========================================
+// M7 v2 canonical autoload / merge
+// ==========================================
+
+const M7_V2_DEFAULT_SOURCE = "../../../data/m7_sandbox/m7_v2_scores.json";
+
+async function loadM7V2Index(options = {}) {
+  if (options.disable_m7_v2_autoload === true) return {};
+
+  // Allow sandbox/test.html to pass already-loaded rows directly.
+  const directRows = Array.isArray(options.m7_v2_rows)
+    ? options.m7_v2_rows
+    : Array.isArray(options.m7_rows)
+      ? options.m7_rows
+      : null;
+
+  if (directRows) return buildM7V2Index(directRows);
+
+  const source = options.m7_v2_source || M7_V2_DEFAULT_SOURCE;
+
+  try {
+    const url = new URL(source, import.meta.url);
+    const res = await fetch(url.toString(), { cache: "no-store" });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json = await res.json();
+    const rows = extractM7Rows(json);
+    return buildM7V2Index(rows);
+  } catch (error) {
+    console.warn("[MM Filter] M7 v2 autoload failed. Fallback to input rows.", error);
+    return {};
+  }
+}
+
+function extractM7Rows(json) {
+  if (Array.isArray(json)) return json;
+  if (Array.isArray(json?.rows)) return json.rows;
+  if (Array.isArray(json?.data)) return json.data;
+  if (Array.isArray(json?.stocks)) return json.stocks;
+  if (json && typeof json === "object") {
+    return Object.entries(json).map(([symbol, row]) => ({ symbol, ...(row || {}) }));
+  }
+  return [];
+}
+
+function buildM7V2Index(rows) {
+  const out = {};
+  (rows || []).forEach(row => {
+    const symbol = safeUpper(row.symbol || row.ticker || row.code);
+    if (!symbol) return;
+    out[symbol] = row;
+  });
+  return out;
+}
+
+function mergeM7V2Rows(rawRows, m7Index = {}) {
+  return (rawRows || []).map(row => {
+    const symbol = safeUpper(row.symbol || row.ticker || row["股號"] || row.code);
+    const m7 = m7Index[symbol];
+    if (!m7) return row;
+
+    // v2 canonical data wins over legacy C1/test input for all M7-related fields.
+    // But explicit what-if / formula-test fields can still override display scoring.
+    return {
+      ...row,
+      ...pickDefined(m7, [
+        "m7_v2_score",
+        "m7_v2_score_unclamped",
+        "m7_effective_score",
+        "m7_effective_score_source",
+        "m7_v2_fallback_to_raw",
+        "m7_raw_score",
+        "m7_v2_formula",
+        "valuation_score",
+        "trend_score",
+        "structure_score",
+        "money_score",
+        "timing_score",
+        "best_structure_r2",
+        "best_structure_model",
+        "trend_linear_annualized_pct",
+        "trend_ma_annualized_pct",
+        "trend_acceleration_annualized_delta_pct",
+        "trend_reliability",
+        "trend_mode",
+        "coverage_pct",
+        "data_warning",
+        "warning_flag",
+        "history_weeks",
+        "history_horizon_used"
+      ]),
+      m7_source_path: "data/m7_sandbox/m7_v2_scores.json",
+      m7_source_loaded: true,
+
+      // Preserve original legacy values for audit.
+      legacy_m7_score: row.m7_score,
+      legacy_priority_score: row.priority_score,
+
+      // Force visible M7 score to canonical v2 unless formula-test override exists.
+      m7_score: firstFinite([
+        row.m7_whatif_score,
+        row.m7_new_score,
+        row.m7_adjusted_score,
+        m7.m7_effective_score,
+        m7.m7_v2_score,
+        m7.m7_v2_score_unclamped,
+        m7.m7_raw_score
+      ], row.m7_score),
+      m7_score_source: firstString([
+        row.m7_whatif_score !== undefined ? "formula_test_m7_whatif_score" : null,
+        row.m7_new_score !== undefined ? "formula_test_m7_new_score" : null,
+        row.m7_adjusted_score !== undefined ? "formula_test_m7_adjusted_score" : null,
+        m7.m7_effective_score_source,
+        m7.m7_effective_score !== undefined ? "m7_effective_score_from_v2_json" : null,
+        m7.m7_v2_score !== undefined ? "m7_v2_score_from_v2_json" : null,
+        "legacy_fallback"
+      ])
+    };
+  });
+}
+
+function pickDefined(obj, keys) {
+  const out = {};
+  keys.forEach(k => {
+    if (obj && obj[k] !== undefined) out[k] = obj[k];
+  });
+  return out;
+}
+
+function firstString(values, d = "fallback") {
+  for (const v of values || []) {
+    if (typeof v === "string" && v.trim()) return v;
+  }
+  return d;
 }
 
 // ==========================================
@@ -177,10 +318,13 @@ export function normalizeStocks(rows) {
       // Therefore m7_v2_score / m7_effective_score must win over legacy m7_score.
       // Legacy m7_score is only fallback when v2 fields are missing.
       const m7Score = firstFinite([
+        row.m7_whatif_score,
+        row.m7_new_score,
+        row.m7_adjusted_score,
+        row.m7_score,
         row.m7_effective_score,
         row.m7_v2_score,
         row.m7_v2_score_unclamped,
-        row.m7_score,
         row.m7_raw_score,
         row.today_score,
         row.total,
@@ -189,10 +333,14 @@ export function normalizeStocks(rows) {
       ], 0);
 
       const m7ScoreSource =
+        row.m7_score_source ||
         row.m7_effective_score_source ||
-        (Number.isFinite(Number(row.m7_effective_score)) ? "m7_effective_score" :
+        (Number.isFinite(Number(row.m7_whatif_score)) ? "formula_test_m7_whatif_score" :
+          Number.isFinite(Number(row.m7_new_score)) ? "formula_test_m7_new_score" :
+          Number.isFinite(Number(row.m7_adjusted_score)) ? "formula_test_m7_adjusted_score" :
+          Number.isFinite(Number(row.m7_effective_score)) ? "m7_effective_score" :
           Number.isFinite(Number(row.m7_v2_score)) ? "m7_v2_score" :
-          Number.isFinite(Number(row.m7_score)) ? "legacy_m7_score" :
+          Number.isFinite(Number(row.m7_score)) ? "m7_score" :
           "fallback");
 
       const priorityScore = firstFinite([
