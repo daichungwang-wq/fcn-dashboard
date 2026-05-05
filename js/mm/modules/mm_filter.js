@@ -1,61 +1,140 @@
 // ==========================================
-// MM FILTER ENGINE v3.0 SANDBOX
-// C1 Output -> Vol v1 -> Pool -> Basket -> Allocation v0 -> M8 -> Market Order Match
-// Path suggestion: js/mm/modules/mm_filter.js
-// NOTE: sandbox only. Do not modify formal MM dashboard / m7_basket.html yet.
+// MM FILTER ENGINE v4 MODULE (SANDBOX)
+// Path: js/mm/modules/mm_filter.js
+// Purpose: C1 Output -> Filter / Pool / Basket / Allocation v0 / M8 / Market Order Match
+// Notes:
+// - This is ES module version.
+// - Because this file is under js/mm/modules/, M8 import path must be ../../core/m8_batch_engine.js
+// - Sandbox only. Do not overwrite production engines unless confirmed.
 // ==========================================
 
-import { runM8Case } from "../core/m8_batch_engine.js";
+import { runM8Case } from "../../core/m8_batch_engine.js";
 
-// ------------------------------------------
-// Public API
-// ------------------------------------------
+// ==========================================
+// FCN Basket Rules v1
+// ==========================================
+
+export const FCN_BASKET_RULES = {
+  conservative: {
+    label: "保守單",
+    rate_min: 12,
+    rate_max: 16,
+    stock_count_min: 3,
+    stock_count_max: 5,
+    preferred_vol_bands: ["low", "mid"],
+    preferred_symbols: ["SMH", "QQQ", "LQD", "GOOG", "AAPL", "AMZN", "SPY"],
+    ki_min: 50,
+    ki_max: 55,
+    strike_min: 60,
+    strike_max: 65,
+    tenor_min: 6,
+    tenor_max: 12,
+    type: ["EKI"]
+  },
+  conservative_special: {
+    label: "保守特殊單",
+    rate_min: 12,
+    rate_max: 18,
+    stock_count_min: 4,
+    stock_count_max: 5,
+    required_any: ["TSM", "NVDA"],
+    preferred_symbols: ["GOOG", "AAPL", "SMH", "QQQ", "SPY", "AMZN", "LQD"],
+    ki_max: 75,
+    strike_equals_ki: true,
+    tenor_min: 9,
+    tenor_max: 12,
+    type: ["AKI", "DACN"],
+    guaranteed_coupon_months: 3
+  },
+  rational: {
+    label: "合理單",
+    rate_min: 15,
+    rate_max: 19,
+    stock_count_min: 3,
+    stock_count_max: 4,
+    preferred_vol_bands: ["mid", "high"],
+    ki_min: 50,
+    ki_base_max: 55,
+    ki_hard_max: 70,
+    strike: 65,
+    tenor_min: 6,
+    tenor_max: 9,
+    type: ["EKI", "AKI"]
+  },
+  aggressive: {
+    label: "積極單",
+    rate_min: 19,
+    rate_max: 25,
+    stock_count_min: 3,
+    stock_count_max: 5,
+    vol_mix: { high: [1, 2], mid: [1, 2], low: [1, 2] },
+    ki: 50,
+    strike: 65,
+    tenor_min: 7,
+    tenor_max: 9,
+    type: ["EKI"]
+  }
+};
+
+const CATEGORY_ORDER = ["core", "growth", "income", "defensive", "speculative"];
+const DEFAULT_STRUCTURE = {
+  KI: 55,
+  Strike: 65,
+  T: 6,
+  type: "AKI",
+  marketYield: 0
+};
+
+// ==========================================
+// Main API
+// ==========================================
+
 export async function runMMFilterFull(input = {}) {
-  const stocks = normalizeStocks(input.stocks || []);
-  const marketOrders = input.market_orders || [];
-  const options = normalizeOptions(input.options || {});
+  const rawStocks = Array.isArray(input.stocks) ? input.stocks : [];
+  const marketOrders = Array.isArray(input.market_orders) ? input.market_orders : [];
+  const options = input.options || {};
 
-  // 1) Volatility v1
-  stocks.forEach((s) => {
-    s.vol_inputs = getVolInputs(s);
-    s.vol_score = calcVolScoreV1(s);
+  const stocks = normalizeStocks(rawStocks);
+
+  // 1. Volatility v1
+  stocks.forEach(s => {
+    const vol = calcVolScoreV1(s);
+    s.vol_score = round2(vol.score);
     s.vol_band = getVolBand(s.vol_score);
+    s.vol_components = vol.components;
   });
 
-  // 2) Pool classification
-  const pools = buildPools(stocks, options);
+  // 2. Pool classification
+  const pools = classifyPools(stocks, options);
 
-  // 3) Category summary
+  // 3. Category
   const category_map = buildCategoryMap(stocks);
-  const category_summary = buildCategorySummary(category_map);
 
-  // 4) Basket candidates
-  const baskets = await buildBasketCandidates({ pools, category_map, options });
+  // 4. Basket build + M8
+  const baskets = await buildAllBaskets({ pools, category_map, stocks, options });
 
-  // 5) Allocation v0
-  const allocation = allocateV0({ stocks, baskets, options });
+  // 5. Allocation v0
+  const allocation = allocateBasketsV0({
+    baskets,
+    stocks,
+    totalCapacity: options.total_today_capacity
+  });
 
-  // 6) Market order match
-  const market_match = await Promise.all(
-    marketOrders.map((order, idx) => evaluateMarketOrder(order, stocks, options, idx))
-  );
+  // 6. Market order match + M8
+  const market_match = await runMarketOrderMatch({
+    orders: marketOrders,
+    stocks
+  });
 
-  // 7) Overall review
-  const summary = buildOverallSummary({ stocks, pools, baskets, allocation, market_match, category_summary });
+  // 7. Summary
+  const summary = buildSummary({ stocks, pools, category_map, baskets, allocation, market_match });
 
   return {
-    meta: {
-      engine: "mm_filter_v3_FULL_M8_MARKET_MATCH",
-      sandbox: true,
-      m8_engine: "../core/m8_batch_engine.js/runM8Case",
-      vol_formula: "0.05*abs(1D)+0.10*abs(2D)+0.40*abs(1W)+0.35*abs(MA slope)+0.10*abs(2W)",
-      allocation_rule: "basket_cap=min(stock max_addable_amt); final_alloc=min(basket_cap, remaining_capacity)",
-      generated_at: new Date().toISOString()
-    },
+    version: "mm_filter_v4_module_sandbox",
+    generated_at: new Date().toISOString(),
     summary,
     pools,
     category_map,
-    category_summary,
     baskets,
     allocation,
     market_match,
@@ -63,724 +142,899 @@ export async function runMMFilterFull(input = {}) {
   };
 }
 
-// Backward compatible alias for simple test pages.
-window.runMMFilterFull = runMMFilterFull;
-
-// ------------------------------------------
-// Options / Rules
-// ------------------------------------------
-function normalizeOptions(options) {
-  return {
-    today_total_capacity: num(options.today_total_capacity, null),
-    highlight_priority_min: num(options.highlight_priority_min, 75),
-    highlight_m2_util_max: num(options.highlight_m2_util_max, 0.8),
-    highlight_amt_signal_min: num(options.highlight_amt_signal_min, 0.6),
-    reject_m2_util_hard_max: num(options.reject_m2_util_hard_max, 0.95),
-    reject_extreme_vol: options.reject_extreme_vol !== false,
-    m8_default: {
-      KI: num(options?.m8_default?.KI, 55),
-      Strike: num(options?.m8_default?.Strike ?? options?.m8_default?.strike, 65),
-      T: num(options?.m8_default?.T ?? options?.m8_default?.tenor, 6),
-      type: String(options?.m8_default?.type || "AKI")
-    },
-    basket_rules: getBasketRules()
-  };
+export async function runMarketOrderMatch(input = {}) {
+  const orders = Array.isArray(input.orders) ? input.orders : [];
+  const stocks = normalizeStocks(Array.isArray(input.stocks) ? input.stocks : []);
+  return Promise.all(orders.map(order => evaluateMarketOrder(order, stocks)));
 }
 
-function getBasketRules() {
-  return {
-    conservative: {
-      label: "保守單",
-      rate_min: 12,
-      rate_max: 16,
-      stock_count_min: 3,
-      stock_count_max: 5,
-      preferred_vol_bands: ["low", "mid"],
-      preferred_symbols: ["SMH", "QQQ", "LQD", "GOOG", "AAPL", "AMZN", "SPY"],
-      KI_min: 50,
-      KI_max: 55,
-      Strike_min: 60,
-      Strike_max: 65,
-      T_min: 6,
-      T_max: 12,
-      type: ["EKI"]
-    },
-    conservative_special: {
-      label: "保守特殊單",
-      rate_min: 12,
-      rate_max: 18,
-      stock_count_min: 4,
-      stock_count_max: 5,
-      required_any: ["TSM", "NVDA"],
-      preferred_symbols: ["GOOG", "AAPL", "SMH", "QQQ", "SPY", "AMZN", "LQD"],
-      KI_max: 75,
-      strike_equals_ki: true,
-      T_min: 9,
-      T_max: 12,
-      type: ["AKI", "DACN"],
-      guaranteed_coupon_months: 3
-    },
-    rational: {
-      label: "合理單",
-      rate_min: 15,
-      rate_max: 19,
-      stock_count_min: 3,
-      stock_count_max: 4,
-      preferred_vol_bands: ["mid", "low"],
-      KI_min: 50,
-      KI_base_max: 55,
-      KI_hard_max: 70,
-      Strike: 65,
-      T_min: 6,
-      T_max: 9,
-      type: ["EKI", "AKI"]
-    },
-    aggressive: {
-      label: "積極單",
-      rate_min: 19,
-      rate_max: 25,
-      stock_count_min: 3,
-      stock_count_max: 5,
-      vol_mix: { high: [1, 2], mid: [1, 2], low: [1, 2] },
-      KI: 50,
-      Strike: 65,
-      T_min: 7,
-      T_max: 9,
-      type: ["EKI"]
-    }
-  };
-}
+// ==========================================
+// Normalize C1 rows
+// ==========================================
 
-// ------------------------------------------
-// Normalize C1 / M1 / M7 / M2 / M6 rows
-// ------------------------------------------
-function normalizeStocks(rows) {
+export function normalizeStocks(rows) {
   return rows
-    .map((r) => {
-      const symbol = safeUpper(r.symbol || r.ticker || r["股號"]);
+    .map((row, idx) => {
+      const symbol = safeUpper(
+        row.symbol ||
+        row.ticker ||
+        row["股號"] ||
+        row.code
+      );
+
       if (!symbol) return null;
 
-      const priorityScore = firstNumber(r.priority_score, r.today_score, r.m7_score, r.total, r.score, 0);
-      const m2Util = firstNumber(r.m2_util, r.m2_utilization, r.exposure_ratio, r?.m2?.utilization, 0);
-      const maxAddable = firstNumber(r.max_addable_amt, r.max_addable, r.suggested_cap, r?.amount?.max_addable_amt, 0);
-      const singleSuggest = firstNumber(r.single_suggest_amt, r.today_suggest_amt, r.today_suggest, r?.amount?.single_suggest_amt, 0);
-      const amtSignal = firstNumber(r.amt_signal, r.amount_strength, r.m6_amount_strength, r?.amount?.amt_signal, maxAddable > 0 ? 0.5 : 0);
+      const category = normalizeCategory(
+        row.category ||
+        row.m1_category ||
+        row.risk_category ||
+        row["category"] ||
+        "unknown"
+      );
 
-      const allowFCN = r.allow_fcn !== false && r.is_blocked !== true && r.isBlocked !== true;
-      const rejectReason = r.reject_reason || r.rejectReason || null;
+      const priorityScore = firstFinite([
+        row.priority_score,
+        row.c1_priority_score,
+        row.today_score,
+        row.m7_today_score,
+        row.m7_score,
+        row.total,
+        row["today_score"],
+        row["排名分數"]
+      ], 0);
+
+      const m7Score = firstFinite([
+        row.m7_score,
+        row.m7_v2_score,
+        row.today_score,
+        row.total,
+        row["today_score"]
+      ], priorityScore);
+
+      const m1Score = firstFinite([
+        row.m1_score,
+        row.m1_quality,
+        row["m1_score"]
+      ], null);
+
+      const maxAddable = firstFinite([
+        row.max_addable_amt,
+        row.addable_amt,
+        row.c1_max_addable_amt,
+        row.today_capacity_amt,
+        row.suggested_amt_cap
+      ], 0);
+
+      const singleSuggest = firstFinite([
+        row.single_suggest_amt,
+        row.today_suggest_amt,
+        row.c1_today_suggest_amt,
+        row.suggested_amt
+      ], 0);
+
+      const amtSignal = firstFinite([
+        row.amt_signal,
+        row.amount_strength,
+        row.m6_amount_strength
+      ], singleSuggest > 0 || maxAddable > 0 ? 0.7 : 0);
+
+      const allowF = row.allow_fcn !== false &&
+        row.is_blocked !== true &&
+        row.isRejected !== true &&
+        row.isRejected !== "true";
 
       return {
-        ...r,
+        ...row,
+        _row_index: idx,
         symbol,
-        name: r.name || r["股名"] || r.company || symbol,
-        category: normalizeCategory(r.category || r.m1_category || r.pool_category),
+        name: row.name || row["股名"] || row.company || symbol,
+        category,
 
-        m1_status: r.m1_status || (r.m1_score != null ? "ok" : "unknown"),
-        m1_score: firstNumber(r.m1_score, r.m1_quality, null),
+        // Scores
+        priority_score: round2(priorityScore),
+        m1_score: m1Score === null ? null : round2(m1Score),
+        m7_score: round2(m7Score),
+        valuation_score: nullableNumber(row.valuation_score),
+        trend_score: nullableNumber(row.trend_score),
+        structure_score: nullableNumber(row.structure_score),
 
-        m7_status: r.m7_status || r.m7_pool || "unknown",
-        m7_score: firstNumber(r.m7_score, r.today_score, r.total, null),
-        priority_score: priorityScore,
-        today_score: firstNumber(r.today_score, r.total, priorityScore),
-        valuation_score: firstNumber(r.valuation_score, r.valuation, null),
-        trend_score: firstNumber(r.trend_score, r.trend, null),
-        structure_score: firstNumber(r.structure_score, r.structure, null),
+        // Returns / Vol inputs
+        ret_1d: firstFinite([row.ret_1d, row.delta_1d, row.ret_1d_pct, row["ret_1d_pct"]], 0),
+        ret_2d: firstFinite([row.ret_2d, row.delta_2d, row.ret_d2, row["ret_2d_pct"]], 0),
+        ret_1w: firstFinite([row.ret_1w, row.delta_1w, row.ret_1w_pct, row["ret_1w_pct"]], 0),
+        ret_2w: firstFinite([row.ret_2w, row.delta_2w, row.ret_2w_pct, row["ret_2w_pct"]], 0),
+        ma_slope: firstFinite([
+          row.ma_slope,
+          row.ma_slope_pct,
+          row.ma30_slope_pct,
+          row.trend_ma_slope_pct,
+          row.trend_ma_annualized_pct
+        ], 0),
 
-        m2_util: m2Util,
-        m2_flag: r.m2_flag || r.m2_risk_flag || utilFlag(m2Util),
-        m2_exposure_amt: firstNumber(r.m2_exposure_amt, r.exposure_amt, r?.m2?.amount, 0),
-        m2_fcn_count: firstNumber(r.m2_fcn_count, r.fcn_count, r?.m2?.count, 0),
+        // M2
+        m2_util: normalizeRatio(firstFinite([
+          row.m2_util,
+          row.m2_utilization,
+          row.exposure_ratio,
+          row.exposureRatio,
+          row["投入資金比"]
+        ], 0)),
+        m2_exposure_amt: firstFinite([row.m2_exposure_amt, row.exposure_amt, row.active_fcn_amount], 0),
+        m2_fcn_count: firstFinite([row.m2_fcn_count, row.fcn_count, row.fcnCount], 0),
 
-        m6_timing: String(r.m6_timing || r.timing_mode || r.decision_label || r.decision_mode || "unknown").toLowerCase(),
-        m6_position: r.m6_position || r.price_position || "unknown",
+        // M6
+        m6_timing: String(row.m6_timing || row.timing_mode || row.decision_mode || row.short_direction || "").toLowerCase(),
 
-        amt_signal: amtSignal,
+        // Amount
+        amt_signal: round2(amtSignal),
         single_suggest_amt: singleSuggest,
         max_addable_amt: maxAddable,
 
-        allow_fcn: allowFCN,
-        reject_reason: rejectReason,
-        why_yes: Array.isArray(r.why_yes) ? r.why_yes : [],
-        why_not: Array.isArray(r.why_not) ? r.why_not : []
+        // Decision flags
+        allow_fcn: allowF,
+        reject_reason: row.reject_reason || row.rejectReason || null,
+        why_yes: Array.isArray(row.why_yes) ? row.why_yes : [],
+        why_not: Array.isArray(row.why_not) ? row.why_not : []
       };
     })
     .filter(Boolean);
 }
 
-function normalizeCategory(c) {
-  const x = String(c || "unknown").toLowerCase();
-  if (x === "defense") return "defensive";
-  if (x === "incoming") return "income";
-  if (["core", "growth", "income", "defensive", "speculative"].includes(x)) return x;
-  return "unknown";
-}
-
-// ------------------------------------------
+// ==========================================
 // Volatility v1
-// Formula: 0.05*1D + 0.10*2D + 0.40*1W + 0.35*MA slope + 0.10*2W
-// ------------------------------------------
-function getVolInputs(s) {
+// Formula:
+// 0.05*abs(1D) + 0.10*abs(2D) + 0.40*abs(1W) + 0.35*abs(MA slope) + 0.10*abs(2W)
+// ==========================================
+
+export function calcVolScoreV1(stock) {
+  const d1 = Math.abs(num(stock.ret_1d));
+  const d2 = Math.abs(num(stock.ret_2d));
+  const w1 = Math.abs(num(stock.ret_1w));
+  const ma = Math.abs(num(stock.ma_slope));
+  const w2 = Math.abs(num(stock.ret_2w));
+
+  const score =
+    0.05 * d1 +
+    0.10 * d2 +
+    0.40 * w1 +
+    0.35 * ma +
+    0.10 * w2;
+
   return {
-    d1: Math.abs(firstNumber(s.ret_1d, s.delta_1d, s.ret_1d_pct, s?.timing_structure?.raw_returns?.ret_1d_pct, 0)),
-    d2: Math.abs(firstNumber(s.ret_2d, s.delta_2d, s.ret_d2, estimate2D(s), 0)),
-    w1: Math.abs(firstNumber(s.ret_1w, s.delta_1w, s.ret_1w_pct, s?.timing_structure?.raw_returns?.ret_1w_pct, 0)),
-    w2: Math.abs(firstNumber(s.ret_2w, s.delta_2w, s.ret_2w_pct, 0)),
-    ma: Math.abs(firstNumber(s.ma_slope, s.ma_slope_pct, s.ma30_slope_pct, s.timing_slope_pct, slopeToPct(s.timing_slope), 0))
+    score,
+    components: {
+      d1,
+      d2,
+      w1,
+      ma,
+      w2,
+      formula: "0.05*1D + 0.10*2D + 0.40*1W + 0.35*MA_slope + 0.10*2W"
+    }
   };
 }
 
-function calcVolScoreV1(s) {
-  const v = s.vol_inputs || getVolInputs(s);
-  return round2(0.05 * v.d1 + 0.10 * v.d2 + 0.40 * v.w1 + 0.35 * v.ma + 0.10 * v.w2);
-}
-
-function getVolBand(v) {
-  const x = num(v, 0);
+export function getVolBand(v) {
+  const x = num(v);
   if (x < 3) return "low";
   if (x < 7) return "mid";
   if (x < 12) return "high";
   return "extreme";
 }
 
-function estimate2D(s) {
-  if (s.price_now && s.price_ref_d2) return ((num(s.price_now) / num(s.price_ref_d2)) - 1) * 100;
-  if (s.today_price && s.price_ref_d2) return ((num(s.today_price) / num(s.price_ref_d2)) - 1) * 100;
-  return 0;
-}
+// ==========================================
+// Pool classification
+// ==========================================
 
-function slopeToPct(x) {
-  const n = num(x, 0);
-  if (Math.abs(n) < 1) return n * 100;
-  return n;
-}
+function classifyPools(stocks, options = {}) {
+  const pools = {
+    highlight: [],
+    watch: [],
+    simulation: [],
+    reject: []
+  };
 
-// ------------------------------------------
-// Pools
-// ------------------------------------------
-function buildPools(stocks, options) {
-  const pools = { highlight: [], watch: [], simulation: [], reject: [] };
+  const priorityCut = num(options.highlight_priority_cut, 75);
+  const m2HotCut = num(options.highlight_m2_cut, 0.8);
+  const m2RejectCut = num(options.reject_m2_cut, 0.95);
+  const amtSignalCut = num(options.highlight_amt_signal_cut, 0.6);
 
-  stocks.forEach((s) => {
-    const hardReject = getHardRejectReason(s, options);
-    if (hardReject) {
-      s.c1_pool = "reject";
-      s.final_reject_reason = hardReject;
-      pools.reject.push(s);
-      return;
+  for (const s of stocks) {
+    const rejectReasons = getRejectReasons(s, { m2RejectCut });
+
+    if (rejectReasons.length) {
+      pools.reject.push({
+        ...s,
+        pool: "reject",
+        reject_reasons: rejectReasons
+      });
+      continue;
     }
 
-    pools.simulation.push(s);
+    const simRow = {
+      ...s,
+      pool: "simulation",
+      reject_reasons: []
+    };
 
+    pools.simulation.push(simRow);
+
+    const timingHot = isTimingHot(s.m6_timing);
     const isHighlight =
-      s.priority_score >= options.highlight_priority_min &&
+      s.priority_score >= priorityCut &&
       s.vol_band !== "extreme" &&
-      s.m2_util < options.highlight_m2_util_max &&
-      !isHotTiming(s.m6_timing) &&
-      s.amt_signal > options.highlight_amt_signal_min &&
+      s.m2_util < m2HotCut &&
+      !timingHot &&
+      s.amt_signal > amtSignalCut &&
       s.max_addable_amt > 0;
 
     if (isHighlight) {
-      s.c1_pool = "highlight";
-      pools.highlight.push(s);
+      pools.highlight.push({
+        ...simRow,
+        pool: "highlight",
+        why_yes: buildWhyYes(s)
+      });
     } else {
-      s.c1_pool = "watch";
-      s.watch_reason = buildWatchReason(s, options);
-      pools.watch.push(s);
+      pools.watch.push({
+        ...simRow,
+        pool: "watch",
+        why_not: buildWatchReasons(s, { priorityCut, m2HotCut, amtSignalCut })
+      });
     }
-  });
+  }
 
-  Object.keys(pools).forEach((k) => pools[k].sort(sortByPriority));
+  const sortFn = (a, b) =>
+    (b.priority_score || 0) - (a.priority_score || 0) ||
+    (b.max_addable_amt || 0) - (a.max_addable_amt || 0);
+
+  Object.keys(pools).forEach(k => pools[k].sort(sortFn));
   return pools;
 }
 
-function getHardRejectReason(s, options) {
-  if (!s.allow_fcn) return "allow_fcn=false / blocked";
-  if (s.reject_reason) return s.reject_reason;
-  if (s.m2_util >= options.reject_m2_util_hard_max) return "M2 utilization over hard cap";
-  if (options.reject_extreme_vol && s.vol_band === "extreme") return "Extreme volatility";
-  if (s.max_addable_amt <= 0) return "No addable amount";
-  return null;
-}
-
-function buildWatchReason(s, options) {
+function getRejectReasons(s, { m2RejectCut }) {
   const reasons = [];
-  if (s.priority_score < options.highlight_priority_min) reasons.push("M7 priority not high enough");
-  if (s.vol_band === "high") reasons.push("High volatility");
-  if (s.m2_util >= options.highlight_m2_util_max) reasons.push("M2 utilization high");
-  if (isHotTiming(s.m6_timing)) reasons.push("M6 timing hot");
-  if (s.amt_signal <= options.highlight_amt_signal_min) reasons.push("Amount signal weak");
-  if (!reasons.length) reasons.push("Available but not top priority today");
-  return reasons.join("; ");
+  if (!s.allow_fcn) reasons.push("allow_fcn=false");
+  if (s.reject_reason) reasons.push(String(s.reject_reason));
+  if (s.m2_util >= m2RejectCut) reasons.push(`m2_util>=${Math.round(m2RejectCut * 100)}%`);
+  if (s.vol_band === "extreme" && s.m2_util >= 0.8) reasons.push("extreme_vol_with_high_m2");
+  if (s.max_addable_amt <= 0) reasons.push("amount_unavailable");
+  return reasons;
 }
 
-function isHotTiming(x) {
-  const s = String(x || "").toLowerCase();
-  return s.includes("hot") || s.includes("overheat") || s.includes("chase");
-}
-
-function sortByPriority(a, b) {
-  return (b.priority_score || 0) - (a.priority_score || 0);
-}
-
-// ------------------------------------------
-// Category
-// ------------------------------------------
-function buildCategoryMap(stocks) {
-  const keys = ["core", "growth", "income", "defensive", "speculative", "unknown"];
-  const map = Object.fromEntries(keys.map((k) => [k, []]));
-  stocks.forEach((s) => map[s.category || "unknown"].push(s));
-  keys.forEach((k) => map[k].sort(sortByPriority));
-  return map;
-}
-
-function buildCategorySummary(categoryMap) {
-  const out = {};
-  for (const [category, rows] of Object.entries(categoryMap)) {
-    const scores = rows.map((x) => x.priority_score || 0);
-    const vols = rows.map((x) => x.vol_score || 0);
-    out[category] = {
-      count: rows.length,
-      ok_count: rows.filter((x) => x.c1_pool === "highlight").length,
-      watch_count: rows.filter((x) => x.c1_pool === "watch").length,
-      reject_count: rows.filter((x) => x.c1_pool === "reject").length,
-      mean_priority: round2(avg(scores)),
-      std_priority: round2(std(scores)),
-      cv_priority: round2(cv(scores)),
-      avg_vol: round2(avg(vols)),
-      total_single_suggest_amt: sum(rows.map((x) => x.single_suggest_amt || 0)),
-      total_max_addable_amt: sum(rows.map((x) => x.max_addable_amt || 0)),
-      avg_m2_util: round2(avg(rows.map((x) => x.m2_util || 0)))
-    };
-  }
+function buildWhyYes(s) {
+  const out = [];
+  if (s.priority_score >= 75) out.push("M7 priority 達標");
+  if (s.vol_band !== "extreme") out.push(`波動率 ${s.vol_band}`);
+  if (s.m2_util < 0.8) out.push("M2 曝險未過熱");
+  if (!isTimingHot(s.m6_timing)) out.push("M6 timing 非 hot");
+  if (s.max_addable_amt > 0) out.push(`可加碼 ${money(s.max_addable_amt)}`);
   return out;
 }
 
-// ------------------------------------------
-// Basket Builder
-// ------------------------------------------
-async function buildBasketCandidates({ pools, category_map, options }) {
+function buildWatchReasons(s, { priorityCut, m2HotCut, amtSignalCut }) {
+  const out = [];
+  if (s.priority_score < priorityCut) out.push(`priority<${priorityCut}`);
+  if (s.vol_band === "extreme") out.push("vol=extreme");
+  if (s.m2_util >= m2HotCut) out.push(`m2_util>=${Math.round(m2HotCut * 100)}%`);
+  if (isTimingHot(s.m6_timing)) out.push("m6_timing=hot");
+  if (s.amt_signal <= amtSignalCut) out.push(`amt_signal<=${amtSignalCut}`);
+  if (s.max_addable_amt <= 0) out.push("amount=0");
+  return out;
+}
+
+function isTimingHot(x) {
+  const v = String(x || "").toLowerCase();
+  return v.includes("hot") || v.includes("overheat") || v.includes("too_hot");
+}
+
+// ==========================================
+// Category
+// ==========================================
+
+function buildCategoryMap(stocks) {
+  const map = {};
+  CATEGORY_ORDER.forEach(c => map[c] = []);
+
+  for (const s of stocks) {
+    const c = map[s.category] ? s.category : "unknown";
+    if (!map[c]) map[c] = [];
+    map[c].push(s);
+  }
+
+  Object.keys(map).forEach(k => {
+    map[k].sort((a, b) => (b.priority_score || 0) - (a.priority_score || 0));
+  });
+
+  return map;
+}
+
+// ==========================================
+// Basket build
+// ==========================================
+
+async function buildAllBaskets({ pools, category_map, stocks, options }) {
   const baskets = [];
 
-  const priorityTop = pools.highlight.slice(0, 4);
-  if (priorityTop.length >= 2) {
-    baskets.push(await buildBasket("PRIORITY_TOP", "Priority Top", priorityTop, options, "standard"));
+  // 1. Priority Top
+  const top = pools.highlight.slice(0, 4);
+  if (top.length >= 2) {
+    baskets.push(await buildBasket({
+      id: "PRIORITY_TOP",
+      style: "rational",
+      stocks: top.slice(0, 4),
+      structure: options.priority_structure || { KI: 55, Strike: 65, T: 6, type: "AKI", marketYield: 0 }
+    }));
   }
 
-  const categoryBalanced = pickCategoryBalanced(category_map, 5);
-  if (categoryBalanced.length >= 3) {
-    baskets.push(await buildBasket("CATEGORY_BALANCED", "Category Balanced", categoryBalanced, options, "standard"));
+  // 2. Category Balanced
+  const balanced = [];
+  for (const c of CATEGORY_ORDER) {
+    const first = (category_map[c] || []).find(s => s.allow_fcn && s.max_addable_amt > 0);
+    if (first) balanced.push(first);
+  }
+  if (balanced.length >= 3) {
+    baskets.push(await buildBasket({
+      id: "CATEGORY_BALANCED",
+      style: "conservative",
+      stocks: balanced.slice(0, 5),
+      structure: options.balanced_structure || { KI: 55, Strike: 65, T: 9, type: "EKI", marketYield: 0 }
+    }));
   }
 
-  const hybrid = uniqueBySymbol([...pools.highlight.slice(0, 2), ...pools.watch.slice(0, 3)]).slice(0, 5);
+  // 3. Hybrid
+  const hybrid = uniqueBySymbol([
+    ...pools.highlight.slice(0, 2),
+    ...pools.watch.filter(x => x.max_addable_amt > 0).slice(0, 3)
+  ]).slice(0, 5);
+
   if (hybrid.length >= 3) {
-    baskets.push(await buildBasket("HYBRID", "Hybrid", hybrid, options, "standard"));
+    baskets.push(await buildBasket({
+      id: "HYBRID",
+      style: "rational",
+      stocks: hybrid,
+      structure: options.hybrid_structure || { KI: 55, Strike: 65, T: 6, type: "AKI", marketYield: 0 }
+    }));
   }
 
-  const conservative = pickConservative(category_map, pools, options);
-  if (conservative.length >= 3) {
-    baskets.push(await buildBasket("CONSERVATIVE", "保守單", conservative, options, "conservative"));
+  // 4. Conservative Special: NVDA/TSM + low vol large caps/ETF
+  const special = buildConservativeSpecial(stocks);
+  if (special.length >= 4) {
+    baskets.push(await buildBasket({
+      id: "CONSERVATIVE_SPECIAL",
+      style: "conservative_special",
+      stocks: special.slice(0, 5),
+      structure: options.special_structure || { KI: 70, Strike: 70, T: 9, type: "AKI", marketYield: 0 }
+    }));
   }
 
-  const rational = pickRational(category_map, pools, options);
-  if (rational.length >= 3) {
-    baskets.push(await buildBasket("RATIONAL", "合理單", rational, options, "rational"));
-  }
-
-  const aggressive = pickAggressive(category_map, pools, options);
+  // 5. Aggressive: high + mid + low vol mix
+  const aggressive = buildAggressiveMix(stocks);
   if (aggressive.length >= 3) {
-    baskets.push(await buildBasket("AGGRESSIVE", "積極單", aggressive, options, "aggressive"));
+    baskets.push(await buildBasket({
+      id: "AGGRESSIVE_MIX",
+      style: "aggressive",
+      stocks: aggressive.slice(0, 5),
+      structure: options.aggressive_structure || { KI: 50, Strike: 65, T: 7, type: "EKI", marketYield: 0 }
+    }));
   }
 
-  return baskets.sort((a, b) => (b.m8?.fair_yield || 0) - (a.m8?.fair_yield || 0));
+  return baskets;
 }
 
-function pickCategoryBalanced(categoryMap, maxCount) {
-  const order = ["core", "growth", "income", "defensive", "speculative"];
-  return uniqueBySymbol(order.map((k) => categoryMap[k]?.[0]).filter(Boolean)).slice(0, maxCount);
-}
+function buildConservativeSpecial(stocks) {
+  const preferred = new Set(FCN_BASKET_RULES.conservative_special.preferred_symbols);
+  const required = stocks
+    .filter(s => ["NVDA", "TSM"].includes(s.symbol) && s.allow_fcn && s.max_addable_amt > 0)
+    .sort((a, b) => b.priority_score - a.priority_score);
 
-function pickConservative(categoryMap, pools) {
-  const preferred = ["SMH", "QQQ", "LQD", "GOOG", "AAPL", "AMZN", "SPY"];
-  const all = uniqueBySymbol([...Object.values(categoryMap).flat(), ...pools.highlight, ...pools.watch]);
-  const preferredRows = preferred.map((sym) => all.find((x) => x.symbol === sym)).filter(Boolean);
-  const lowRows = all.filter((x) => ["low", "mid"].includes(x.vol_band)).sort(sortByPriority);
-  return uniqueBySymbol([...preferredRows, ...lowRows]).slice(0, 5);
-}
-
-function pickRational(categoryMap, pools) {
-  const core = categoryMap.core || [];
-  const growth = categoryMap.growth || [];
-  const incomeDef = [...(categoryMap.income || []), ...(categoryMap.defensive || [])].sort(sortByPriority);
-  return uniqueBySymbol([...core.slice(0, 2), ...growth.slice(0, 1), ...incomeDef.slice(0, 1), ...pools.highlight]).slice(0, 4);
-}
-
-function pickAggressive(categoryMap, pools) {
-  const high = pools.simulation.filter((x) => x.vol_band === "high").sort(sortByPriority).slice(0, 2);
-  const mid = pools.simulation.filter((x) => x.vol_band === "mid").sort(sortByPriority).slice(0, 2);
-  const low = pools.simulation.filter((x) => x.vol_band === "low").sort(sortByPriority).slice(0, 1);
-  return uniqueBySymbol([...high, ...mid, ...low, ...pools.highlight]).slice(0, 5);
-}
-
-async function buildBasket(id, label, stocks, options, style) {
-  const symbols = stocks.map((s) => s.symbol);
-  const basket_cap = Math.min(...stocks.map((s) => s.max_addable_amt || 0));
-  const avg_score = round2(avg(stocks.map((s) => s.priority_score || 0)));
-  const avg_vol = round2(avg(stocks.map((s) => s.vol_score || 0)));
-  const vol_mix = countBy(stocks.map((s) => s.vol_band));
-  const rule = getStructureForStyle(style, options);
-
-  let m8 = null;
-  try {
-    m8 = await runM8Case({
-      caseName: id,
-      symbols,
-      KI: rule.KI,
-      Strike: rule.Strike,
-      T: rule.T,
-      type: rule.type,
-      marketYield: 0
+  const companions = stocks
+    .filter(s =>
+      preferred.has(s.symbol) &&
+      s.allow_fcn &&
+      s.max_addable_amt > 0 &&
+      s.vol_band !== "extreme"
+    )
+    .sort((a, b) => {
+      const volRank = volBandRank(a.vol_band) - volBandRank(b.vol_band);
+      if (volRank !== 0) return volRank;
+      return b.priority_score - a.priority_score;
     });
-  } catch (err) {
-    m8 = { error: err.message || String(err) };
-    console.warn("M8 basket error", id, err);
-  }
 
-  return {
-    id,
-    label,
-    style,
+  if (!required.length) return [];
+  return uniqueBySymbol([required[0], ...companions]);
+}
+
+function buildAggressiveMix(stocks) {
+  const eligible = stocks.filter(s => s.allow_fcn && s.max_addable_amt > 0 && s.vol_band !== "extreme");
+
+  const high = eligible.filter(s => s.vol_band === "high").sort((a, b) => b.priority_score - a.priority_score).slice(0, 2);
+  const mid = eligible.filter(s => s.vol_band === "mid").sort((a, b) => b.priority_score - a.priority_score).slice(0, 2);
+  const low = eligible.filter(s => s.vol_band === "low").sort((a, b) => b.priority_score - a.priority_score).slice(0, 2);
+
+  return uniqueBySymbol([...high, ...mid, ...low]);
+}
+
+async function buildBasket({ id, style, stocks, structure }) {
+  const clean = uniqueBySymbol(stocks).filter(Boolean);
+  const symbols = clean.map(s => s.symbol);
+  const caps = clean.map(s => num(s.max_addable_amt));
+  const basket_cap = caps.length ? Math.min(...caps) : 0;
+
+  const avg_score = avg(clean.map(s => s.priority_score));
+  const avg_vol = avg(clean.map(s => s.vol_score));
+  const avg_m2_util = avg(clean.map(s => s.m2_util));
+  const vol_mix = countBy(clean, "vol_band");
+
+  const rule_check = checkBasketRule(style, clean, structure);
+
+  const m8 = await runM8Safe({
+    caseName: id,
     symbols,
-    stock_count: stocks.length,
-    basket_cap,
-    avg_score,
-    avg_vol,
-    vol_mix,
-    structure: rule,
-    rule_match: evaluateBasketRuleMatch(style, stocks, rule),
-    m8,
-    stocks
-  };
-}
-
-function getStructureForStyle(style, options) {
-  if (style === "conservative") return { KI: 55, Strike: 65, T: 9, type: "EKI" };
-  if (style === "rational") return { KI: 55, Strike: 65, T: 6, type: "AKI" };
-  if (style === "aggressive") return { KI: 50, Strike: 65, T: 7, type: "EKI" };
-  return options.m8_default;
-}
-
-function evaluateBasketRuleMatch(style, stocks, rule) {
-  const count = stocks.length;
-  const volBands = countBy(stocks.map((s) => s.vol_band));
-  const reasons = [];
-  let score = 100;
-
-  if (count < 3) { score -= 30; reasons.push("stock count < 3"); }
-  if (count > 5) { score -= 20; reasons.push("stock count > 5"); }
-
-  if (style === "conservative" && (volBands.high || volBands.extreme)) {
-    score -= 20;
-    reasons.push("保守單含 high/extreme vol");
-  }
-  if (style === "aggressive" && !(volBands.high || 0)) {
-    score -= 15;
-    reasons.push("積極單缺 high vol 收益來源");
-  }
-
-  return {
-    score: Math.max(0, score),
-    reasons
-  };
-}
-
-// ------------------------------------------
-// Allocation v0
-// ------------------------------------------
-function allocateV0({ stocks, baskets, options }) {
-  const derivedCapacity = Math.max(...stocks.map((s) => s.max_addable_amt || 0), 0);
-  const total_capacity = options.today_total_capacity ?? derivedCapacity;
-  let remaining = total_capacity;
-  const rows = [];
-
-  baskets.forEach((b, index) => {
-    if (remaining <= 0) return;
-    const suggested = suggestedBasketAmount(b, index);
-    const final_alloc = Math.min(b.basket_cap || 0, suggested, remaining);
-    if (final_alloc <= 0) return;
-
-    rows.push({
-      rank: index + 1,
-      basket_id: b.id,
-      basket_label: b.label,
-      symbols: b.symbols,
-      basket_cap: b.basket_cap,
-      suggested_amt: suggested,
-      final_alloc_amt: final_alloc,
-      remaining_before: remaining,
-      remaining_after: remaining - final_alloc,
-      reason: index === 0 ? "Optimal" : `${index + 1}nd candidate`
-    });
-    remaining -= final_alloc;
+    KI: structure.KI,
+    Strike: structure.Strike,
+    T: structure.T,
+    type: structure.type,
+    marketYield: structure.marketYield ?? 0
   });
 
   return {
-    total_capacity,
-    allocated: total_capacity - remaining,
+    id,
+    style,
+    style_label: FCN_BASKET_RULES[style]?.label || style,
+    symbols,
+    stocks: clean,
+    structure: {
+      KI: structure.KI,
+      Strike: structure.Strike,
+      T: structure.T,
+      type: structure.type,
+      marketYield: structure.marketYield ?? 0
+    },
+    basket_cap,
+    avg_score: round2(avg_score),
+    avg_vol: round2(avg_vol),
+    avg_m2_util: round2(avg_m2_util),
+    vol_mix,
+    rule_check,
+    m8,
+    fair_yield: m8?.fair_yield ?? null,
+    pricing_view: m8?.pricing_view ?? "unknown"
+  };
+}
+
+async function runM8Safe(args) {
+  try {
+    return await runM8Case(args);
+  } catch (error) {
+    console.warn("[MM Filter] M8 error:", args?.caseName, error);
+    return {
+      error: true,
+      message: error?.message || String(error),
+      fair_yield: null,
+      pricing_view: "m8_error"
+    };
+  }
+}
+
+function checkBasketRule(style, stocks, structure) {
+  const rule = FCN_BASKET_RULES[style] || {};
+  const reasons = [];
+  let pass = true;
+
+  if (rule.stock_count_min && stocks.length < rule.stock_count_min) {
+    pass = false;
+    reasons.push(`stocks<${rule.stock_count_min}`);
+  }
+  if (rule.stock_count_max && stocks.length > rule.stock_count_max) {
+    pass = false;
+    reasons.push(`stocks>${rule.stock_count_max}`);
+  }
+  if (rule.ki_min !== undefined && num(structure.KI) < rule.ki_min) {
+    pass = false;
+    reasons.push(`KI<${rule.ki_min}`);
+  }
+  if (rule.ki_max !== undefined && num(structure.KI) > rule.ki_max) {
+    pass = false;
+    reasons.push(`KI>${rule.ki_max}`);
+  }
+  if (rule.ki_hard_max !== undefined && num(structure.KI) > rule.ki_hard_max) {
+    pass = false;
+    reasons.push(`KI>${rule.ki_hard_max}`);
+  }
+  if (rule.strike_min !== undefined && num(structure.Strike) < rule.strike_min) {
+    pass = false;
+    reasons.push(`Strike<${rule.strike_min}`);
+  }
+  if (rule.strike_max !== undefined && num(structure.Strike) > rule.strike_max) {
+    pass = false;
+    reasons.push(`Strike>${rule.strike_max}`);
+  }
+  if (rule.strike !== undefined && num(structure.Strike) !== rule.strike) {
+    reasons.push(`Strike!=${rule.strike}`);
+  }
+  if (rule.strike_equals_ki && num(structure.Strike) !== num(structure.KI)) {
+    pass = false;
+    reasons.push("Strike!=KI");
+  }
+  if (rule.tenor_min !== undefined && num(structure.T) < rule.tenor_min) {
+    pass = false;
+    reasons.push(`Tenor<${rule.tenor_min}`);
+  }
+  if (rule.tenor_max !== undefined && num(structure.T) > rule.tenor_max) {
+    pass = false;
+    reasons.push(`Tenor>${rule.tenor_max}`);
+  }
+  if (Array.isArray(rule.type) && !rule.type.includes(String(structure.type || "").toUpperCase())) {
+    pass = false;
+    reasons.push(`Type not in ${rule.type.join("/")}`);
+  }
+  if (Array.isArray(rule.required_any) && rule.required_any.length) {
+    const symbols = new Set(stocks.map(s => s.symbol));
+    if (!rule.required_any.some(x => symbols.has(x))) {
+      pass = false;
+      reasons.push(`Missing required any: ${rule.required_any.join("/")}`);
+    }
+  }
+
+  return {
+    pass,
+    reasons,
+    rule_label: rule.label || style
+  };
+}
+
+// ==========================================
+// Allocation v0
+// ==========================================
+
+function allocateBasketsV0({ baskets, stocks, totalCapacity }) {
+  const inferredCapacity = Math.max(...stocks.map(s => num(s.max_addable_amt)), 0);
+  let remaining = Number.isFinite(Number(totalCapacity)) ? Number(totalCapacity) : inferredCapacity;
+
+  const rows = [];
+
+  baskets.forEach((basket, idx) => {
+    if (remaining <= 0) return;
+
+    const suggested = getDefaultBasketSuggestedAmount(basket, idx);
+    const finalAlloc = Math.max(0, Math.min(
+      num(basket.basket_cap),
+      num(suggested),
+      remaining
+    ));
+
+    rows.push({
+      rank: idx + 1,
+      basket_id: basket.id,
+      style: basket.style,
+      symbols: basket.symbols,
+      basket_cap: num(basket.basket_cap),
+      suggested_amt: suggested,
+      final_alloc_amt: finalAlloc,
+      remaining_before: remaining,
+      remaining_after: remaining - finalAlloc,
+      reason: idx === 0 ? "Optimal A" : `${idx + 1}nd basket`
+    });
+
+    remaining -= finalAlloc;
+  });
+
+  return {
+    total_capacity: Number.isFinite(Number(totalCapacity)) ? Number(totalCapacity) : inferredCapacity,
+    allocated: rows.reduce((sum, r) => sum + num(r.final_alloc_amt), 0),
     remaining,
     rows
   };
 }
 
-function suggestedBasketAmount(basket, index) {
-  if (index === 0) return Math.min(30000, basket.basket_cap || 0);
-  return Math.min(10000, basket.basket_cap || 0);
+function getDefaultBasketSuggestedAmount(basket, idx) {
+  if (idx === 0) return Math.min(30000, num(basket.basket_cap));
+  return Math.min(10000, num(basket.basket_cap));
 }
 
-// ------------------------------------------
+// ==========================================
 // Market Order Match + M8
-// ------------------------------------------
-export async function runMarketOrderMatch(input = {}) {
-  const stocks = normalizeStocks(input.stocks || []);
-  const options = normalizeOptions(input.options || {});
-  const orders = input.orders || input.market_orders || [];
-  return Promise.all(orders.map((order, idx) => evaluateMarketOrder(order, stocks, options, idx)));
-}
-window.runMarketOrderMatch = runMarketOrderMatch;
+// ==========================================
 
-async function evaluateMarketOrder(order, stocks, options, idx = 0) {
-  const symbols = (order.symbols || order.basket || []).map(safeUpper).filter(Boolean);
-  const stockMap = Object.fromEntries(stocks.map((s) => [s.symbol, s]));
+async function evaluateMarketOrder(order, stocks) {
+  const normalizedOrder = normalizeOrder(order);
+  const stockMap = Object.fromEntries(stocks.map(s => [s.symbol, s]));
 
   const matched = [];
   const rejected = [];
 
-  symbols.forEach((sym) => {
+  normalizedOrder.symbols.forEach(sym => {
     const s = stockMap[sym];
+
     if (!s) {
-      rejected.push({ symbol: sym, reason: "not_in_m1_pool_or_c1_output" });
+      rejected.push({ symbol: sym, reason: "not_in_c1_pool" });
       return;
     }
-    const hardReject = getHardRejectReason(s, options);
-    if (hardReject) {
-      rejected.push({ symbol: sym, reason: hardReject });
+
+    const stockReasons = getRejectReasons(s, { m2RejectCut: 0.95 });
+    if (stockReasons.length) {
+      rejected.push({ symbol: sym, reason: stockReasons.join(",") });
       return;
     }
+
     matched.push(s);
   });
 
-  const match_pct = symbols.length ? round2((matched.length / symbols.length) * 100) : 0;
-  const orderStructure = normalizeOrderStructure(order);
+  const matchPct = normalizedOrder.symbols.length
+    ? (matched.length / normalizedOrder.symbols.length) * 100
+    : 0;
 
-  let m8 = null;
-  try {
-    m8 = await runM8Case({
-      caseName: order.caseName || `MARKET_ORDER_${idx + 1}`,
-      symbols,
-      KI: orderStructure.KI,
-      Strike: orderStructure.Strike,
-      T: orderStructure.T,
-      type: orderStructure.type,
-      marketYield: orderStructure.marketYield
-    });
-  } catch (err) {
-    m8 = { error: err.message || String(err) };
-    console.warn("M8 market order error", order, err);
-  }
+  const m8 = await runM8Safe({
+    caseName: normalizedOrder.order_id || "MARKET_ORDER",
+    symbols: normalizedOrder.symbols,
+    KI: normalizedOrder.KI,
+    Strike: normalizedOrder.Strike,
+    T: normalizedOrder.T,
+    type: normalizedOrder.type,
+    marketYield: normalizedOrder.marketYield
+  });
 
-  const fair = m8?.fair_yield ?? null;
-  const market = orderStructure.marketYield;
-  const pricing_delta = fair == null || market == null ? null : round2(market - fair);
-  const pricing_view = pricingViewFromDelta(pricing_delta);
-  const action = decideMarketAction({ match_pct, pricing_delta, rejected, m8 });
-  const suggested_amt = suggestMarketOrderAmount({ action, matched });
-  const outliers = buildOutlierAnalysis({ symbols, matched, rejected, m8 });
+  const fair = nullableNumber(m8?.fair_yield);
+  const market = nullableNumber(normalizedOrder.marketYield);
+  const delta = fair === null || market === null ? null : round2(market - fair);
+
+  const pricingView = delta === null
+    ? "unknown"
+    : delta >= 2 ? "cheap"
+    : delta >= 0.5 ? "slightly_cheap"
+    : delta > -0.5 ? "fair"
+    : delta > -2 ? "rich"
+    : "very_rich";
+
+  const action = decideMarketOrderAction({ matchPct, pricingView, rejected });
+  const basketCap = matched.length ? Math.min(...matched.map(s => num(s.max_addable_amt))) : 0;
+  const suggestedAmt = decideMarketOrderAmount({ action, basketCap });
 
   return {
-    order_id: order.order_id || order.id || `ORDER_${idx + 1}`,
-    bank: order.bank || order.broker || "UNKNOWN",
-    symbols,
-    structure: orderStructure,
-    match_pct,
-    matched: matched.map((s) => s.symbol),
+    order: normalizedOrder,
+    match_pct: round2(matchPct),
+    matched: matched.map(s => s.symbol),
     rejected,
-    outliers,
-    fair_yield: fair == null ? null : round2(fair),
+    basket_cap: basketCap,
+    fair_yield: fair,
     market_yield: market,
-    pricing_delta,
-    pricing_view,
+    pricing_delta: delta,
+    pricing_view: pricingView,
     action,
-    suggested_amt,
-    m8
+    suggested_amt: suggestedAmt,
+    m8,
+    outliers: buildOutlierAnalysis({ order: normalizedOrder, matched, rejected, m8 })
   };
 }
 
-function normalizeOrderStructure(order) {
+function normalizeOrder(order) {
   return {
-    KI: num(order.KI ?? order.ki, 55),
-    Strike: num(order.Strike ?? order.strike, 65),
-    T: num(order.T ?? order.tenor ?? order.period, 6),
-    type: String(order.type || "AKI").toUpperCase(),
-    marketYield: num(order.marketYield ?? order.market_yield ?? order.rate, 0)
+    order_id: order.order_id || order.id || `ORDER_${Math.random().toString(36).slice(2, 7)}`,
+    bank: order.bank || order.broker || "BANK",
+    symbols: (order.symbols || order.basket || [])
+      .map(safeUpper)
+      .filter(Boolean),
+    KI: firstFinite([order.KI, order.ki], 55),
+    Strike: firstFinite([order.Strike, order.strike], 65),
+    T: firstFinite([order.T, order.tenor, order.period], 6),
+    type: String(order.type || "EKI").toUpperCase(),
+    marketYield: firstFinite([order.marketYield, order.market_yield, order.rate, order.coupon], 0),
+    notional: firstFinite([order.notional, order.amount], 0)
   };
 }
 
-function pricingViewFromDelta(delta) {
-  if (delta == null) return "unknown";
-  if (delta >= 2) return "cheap";
-  if (delta >= 0.5) return "slightly_cheap";
-  if (delta > -0.5) return "fair";
-  if (delta > -2) return "rich";
-  return "very_rich";
-}
-
-function decideMarketAction({ match_pct, pricing_delta, rejected, m8 }) {
-  if (m8?.error) return "REVIEW_M8_ERROR";
-  if (rejected.length > 0 && match_pct < 100) return "REJECT_OR_REBUILD";
-  if (pricing_delta == null) return "REVIEW";
-  if (match_pct === 100 && pricing_delta >= 1) return "FOLLOW";
-  if (match_pct >= 70 && pricing_delta >= 0) return "NEGOTIATE";
-  if (pricing_delta < -1) return "REJECT";
+function decideMarketOrderAction({ matchPct, pricingView, rejected }) {
+  if (rejected.length > 0 && matchPct < 100) return "REVIEW";
+  if (matchPct === 100 && ["cheap", "slightly_cheap"].includes(pricingView)) return "FOLLOW";
+  if (matchPct >= 80 && pricingView === "fair") return "NEGOTIATE";
+  if (["rich", "very_rich"].includes(pricingView)) return "REJECT";
   return "REVIEW";
 }
 
-function suggestMarketOrderAmount({ action, matched }) {
-  if (!matched.length) return 0;
-  const cap = Math.min(...matched.map((s) => s.max_addable_amt || 0));
-  if (!Number.isFinite(cap) || cap <= 0) return 0;
-  if (action === "FOLLOW") return cap;
-  if (action === "NEGOTIATE") return Math.floor(cap * 0.5);
-  if (action === "REVIEW") return Math.floor(cap * 0.25);
+function decideMarketOrderAmount({ action, basketCap }) {
+  if (action === "FOLLOW") return basketCap;
+  if (action === "NEGOTIATE") return Math.floor(basketCap * 0.5);
   return 0;
 }
 
-function buildOutlierAnalysis({ symbols, matched, rejected, m8 }) {
-  const notes = [];
-  rejected.forEach((r) => notes.push(`${r.symbol}: ${r.reason}`));
-  matched
-    .filter((s) => s.vol_band === "extreme" || s.m2_util >= 0.8)
-    .forEach((s) => notes.push(`${s.symbol}: ${s.vol_band} vol / M2 ${(s.m2_util * 100).toFixed(0)}%`));
-  if (m8?.stock_sources) {
-    m8.stock_sources
-      .filter((x) => x.today_score < 60)
-      .forEach((x) => notes.push(`${x.symbol}: M8 today_score low (${x.today_score})`));
+function buildOutlierAnalysis({ order, matched, rejected, m8 }) {
+  const out = [];
+
+  rejected.forEach(r => {
+    out.push({
+      symbol: r.symbol,
+      type: "stock_reject",
+      reason: r.reason
+    });
+  });
+
+  const highM2 = matched.filter(s => s.m2_util >= 0.8);
+  highM2.forEach(s => out.push({
+    symbol: s.symbol,
+    type: "m2_hot",
+    reason: `m2_util=${round2(s.m2_util * 100)}%`
+  }));
+
+  const extremeVol = matched.filter(s => s.vol_band === "extreme");
+  extremeVol.forEach(s => out.push({
+    symbol: s.symbol,
+    type: "vol_extreme",
+    reason: `vol_score=${s.vol_score}`
+  }));
+
+  if (m8?.error) {
+    out.push({
+      symbol: "BASKET",
+      type: "m8_error",
+      reason: m8.message
+    });
   }
-  if (!notes.length) notes.push("No major outlier from current C1/M8 checks");
-  return notes;
+
+  return out;
 }
 
-// ------------------------------------------
+// ==========================================
 // Summary
-// ------------------------------------------
-function buildOverallSummary({ stocks, pools, baskets, allocation, market_match, category_summary }) {
+// ==========================================
+
+function buildSummary({ stocks, pools, category_map, baskets, allocation, market_match }) {
+  const priorityArr = stocks.map(s => num(s.priority_score));
+  const volArr = stocks.map(s => num(s.vol_score));
+  const m2Arr = stocks.map(s => num(s.m2_util));
+
+  const marketMatchFull = market_match.filter(x => x.match_pct === 100).length;
+  const marketFollow = market_match.filter(x => x.action === "FOLLOW").length;
+
   return {
+    total_stocks: stocks.length,
+
     data_coverage: {
-      input_stocks: stocks.length,
-      c1_ready: stocks.filter((s) => s.priority_score != null && s.max_addable_amt != null).length,
-      m7_available: stocks.filter((s) => s.m7_score != null || s.today_score != null).length,
-      m2_available: stocks.filter((s) => s.m2_util != null).length,
-      m6_available: stocks.filter((s) => s.m6_timing && s.m6_timing !== "unknown").length
+      c1_ready: stocks.length,
+      with_m1_score: stocks.filter(s => s.m1_score !== null).length,
+      with_m7_score: stocks.filter(s => s.m7_score !== null).length,
+      with_amount: stocks.filter(s => num(s.max_addable_amt) > 0).length
     },
-    c1_pool_health: {
+
+    score_health: {
+      priority_mean: round2(avg(priorityArr)),
+      priority_std: round2(std(priorityArr)),
+      priority_cv: round2(cv(priorityArr)),
+      vol_mean: round2(avg(volArr)),
+      vol_std: round2(std(volArr)),
+      vol_cv: round2(cv(volArr)),
+      m2_mean: round2(avg(m2Arr))
+    },
+
+    pools: {
       highlight: pools.highlight.length,
       watch: pools.watch.length,
       simulation: pools.simulation.length,
-      reject: pools.reject.length,
-      avg_priority: round2(avg(stocks.map((s) => s.priority_score || 0))),
-      std_priority: round2(std(stocks.map((s) => s.priority_score || 0))),
-      cv_priority: round2(cv(stocks.map((s) => s.priority_score || 0)))
+      reject: pools.reject.length
     },
-    basket_feasibility: {
-      generated_baskets: baskets.length,
-      m8_success: baskets.filter((b) => b.m8 && !b.m8.error).length,
-      best_fair_yield: round2(Math.max(...baskets.map((b) => num(b.m8?.fair_yield, 0)), 0))
+
+    category: Object.fromEntries(
+      Object.entries(category_map).map(([k, list]) => [
+        k,
+        {
+          count: list.length,
+          mean_priority: round2(avg(list.map(x => x.priority_score))),
+          std_priority: round2(std(list.map(x => x.priority_score))),
+          cv_priority: round2(cv(list.map(x => x.priority_score))),
+          avg_vol: round2(avg(list.map(x => x.vol_score))),
+          total_max_addable: list.reduce((sum, x) => sum + num(x.max_addable_amt), 0)
+        }
+      ])
+    ),
+
+    baskets: {
+      generated: baskets.length,
+      m8_runnable: baskets.filter(b => !b.m8?.error).length,
+      best_fair_yield: round2(Math.max(...baskets.map(b => num(b.fair_yield)), 0))
     },
-    market_order_match: {
-      input_orders: market_match.length,
-      follow: market_match.filter((x) => x.action === "FOLLOW").length,
-      negotiate: market_match.filter((x) => x.action === "NEGOTIATE").length,
-      reject: market_match.filter((x) => String(x.action).includes("REJECT")).length,
-      best_match_pct: round2(Math.max(...market_match.map((x) => x.match_pct || 0), 0))
-    },
-    final_allocation: {
-      today_capacity: allocation.total_capacity,
+
+    allocation: {
+      total_capacity: allocation.total_capacity,
       allocated: allocation.allocated,
       remaining: allocation.remaining
     },
-    category_summary
+
+    market_order_match: {
+      input_orders: market_match.length,
+      full_match: marketMatchFull,
+      follow: marketFollow,
+      outliers: market_match.reduce((sum, x) => sum + (x.outliers?.length || 0), 0)
+    }
   };
 }
 
-// ------------------------------------------
+// ==========================================
 // Utilities
-// ------------------------------------------
-function num(x, d = 0) {
-  const n = Number(x);
-  return Number.isFinite(n) ? n : d;
+// ==========================================
+
+function num(v, d = 0) {
+  const x = Number(v);
+  return Number.isFinite(x) ? x : d;
 }
 
-function firstNumber(...vals) {
-  for (const v of vals) {
-    if (v === null || v === undefined || v === "") continue;
-    const n = Number(v);
-    if (Number.isFinite(n)) return n;
+function nullableNumber(v) {
+  const x = Number(v);
+  return Number.isFinite(x) ? x : null;
+}
+
+function firstFinite(values, d = 0) {
+  for (const v of values) {
+    const x = Number(v);
+    if (Number.isFinite(x)) return x;
   }
-  return null;
+  return d;
+}
+
+function normalizeRatio(v) {
+  const x = num(v, 0);
+  return x > 1 ? x / 100 : x;
+}
+
+function normalizeCategory(x) {
+  const s = String(x || "").trim().toLowerCase();
+  if (s === "defense") return "defensive";
+  if (s === "incoming") return "income";
+  if (CATEGORY_ORDER.includes(s)) return s;
+  return "unknown";
 }
 
 function safeUpper(x) {
   return String(x || "").trim().toUpperCase();
 }
 
-function round2(x) {
-  const n = Number(x);
-  return Number.isFinite(n) ? Math.round(n * 100) / 100 : null;
-}
-
 function avg(arr) {
-  const xs = arr.map((x) => Number(x)).filter(Number.isFinite);
-  if (!xs.length) return 0;
-  return xs.reduce((a, b) => a + b, 0) / xs.length;
-}
-
-function sum(arr) {
-  return arr.map((x) => Number(x)).filter(Number.isFinite).reduce((a, b) => a + b, 0);
+  const clean = arr.map(Number).filter(Number.isFinite);
+  if (!clean.length) return 0;
+  return clean.reduce((a, b) => a + b, 0) / clean.length;
 }
 
 function std(arr) {
-  const xs = arr.map((x) => Number(x)).filter(Number.isFinite);
-  if (xs.length <= 1) return 0;
-  const m = avg(xs);
-  const v = avg(xs.map((x) => Math.pow(x - m, 2)));
+  const clean = arr.map(Number).filter(Number.isFinite);
+  if (clean.length <= 1) return 0;
+  const m = avg(clean);
+  const v = avg(clean.map(x => Math.pow(x - m, 2)));
   return Math.sqrt(v);
 }
 
 function cv(arr) {
   const m = avg(arr);
   if (!m) return 0;
-  return std(arr) / Math.abs(m);
+  return std(arr) / m;
 }
 
-function countBy(arr) {
-  return arr.reduce((acc, x) => {
-    acc[x] = (acc[x] || 0) + 1;
+function round2(v) {
+  const x = Number(v);
+  return Number.isFinite(x) ? Math.round(x * 100) / 100 : null;
+}
+
+function uniqueBySymbol(list) {
+  const seen = new Set();
+  const out = [];
+  for (const item of list || []) {
+    const sym = item?.symbol;
+    if (!sym || seen.has(sym)) continue;
+    seen.add(sym);
+    out.push(item);
+  }
+  return out;
+}
+
+function countBy(list, key) {
+  return (list || []).reduce((acc, x) => {
+    const k = x?.[key] || "unknown";
+    acc[k] = (acc[k] || 0) + 1;
     return acc;
   }, {});
 }
 
-function uniqueBySymbol(rows) {
-  const seen = new Set();
-  return rows.filter((r) => {
-    if (!r?.symbol || seen.has(r.symbol)) return false;
-    seen.add(r.symbol);
-    return true;
-  });
+function volBandRank(band) {
+  const map = { low: 1, mid: 2, high: 3, extreme: 4 };
+  return map[band] || 9;
 }
 
-function utilFlag(util) {
-  const u = num(util, 0);
-  if (u >= 1) return "critical";
-  if (u >= 0.9) return "too_hot";
-  if (u >= 0.7) return "high";
-  if (u >= 0.5) return "normal";
-  return "low";
+function money(v) {
+  return `USD ${Math.round(num(v)).toLocaleString()}`;
 }
