@@ -1,5 +1,5 @@
 // ==========================================
-// MM FILTER ENGINE v4.1 MODULE (SANDBOX / M7 v2 canonical)
+// MM FILTER ENGINE v3 FULL MODULE (SANDBOX / M7 v2 + C1 Cap unified)
 // Path: js/mm/modules/mm_filter.js
 // Purpose: C1 Output -> Filter / Pool / Basket / Allocation v0 / M8 / Market Order Match
 // Notes:
@@ -86,6 +86,73 @@ const DEFAULT_STRUCTURE = {
 };
 
 // ==========================================
+// C1 FCN Cap Rules (must match mm_stock_cockpit.js)
+// ==========================================
+// IMPORTANT:
+// - M1 decides pool30 / stock universe.
+// - M7 v2 decides FCN candidate quality.
+// - Volatility decides short-term ordering inside categories.
+// - C1 decides how much can be traded.
+// Therefore max_addable_amt must respect the same cap exceptions used by C1.
+
+export const FCN_CAP_RULES = {
+  core: 500000,
+  growth: 300000,
+  defensive: 300000,
+  defense: 300000,
+  income: 200000,
+  incoming: 200000,
+  speculative: 30000
+};
+
+export const FCN_CAP_EXCEPTIONS = {
+  NVDA: 700000,
+  TSM: 700000,
+  SMH: 700000,
+  GOOG: 700000
+};
+
+function getFcnBaseCapFromRow(row = {}) {
+  const sym = safeUpper(row.symbol || row.ticker || row.code);
+  if (FCN_CAP_EXCEPTIONS[sym]) {
+    return { amount: FCN_CAP_EXCEPTIONS[sym], source: "exception", reason: "例外上限" };
+  }
+
+  const category = normalizeCategory(
+    row.category ||
+    row.m1_category ||
+    row.risk_category ||
+    row.runtime_category ||
+    "core"
+  );
+
+  const amount = FCN_CAP_RULES[category] || FCN_CAP_RULES.core;
+  return { amount, source: "category", reason: category || "core/default" };
+}
+
+function applyC1CapRule(row = {}, rawMaxAddable = 0, m2ExposureAmt = 0) {
+  const cap = getFcnBaseCapFromRow(row);
+  const capAvailable = Math.max(0, num(cap.amount) - num(m2ExposureAmt));
+  const raw = Number(rawMaxAddable);
+
+  // Preserve positive C1 amount if it already exists.
+  // If amount is missing/0 and the symbol is an exception, rescue it with C1 cap exception.
+  const finalMax = raw > 0
+    ? raw
+    : cap.source === "exception"
+      ? capAvailable
+      : Math.max(0, raw || 0);
+
+  return {
+    cap_amount: cap.amount,
+    cap_source: cap.source,
+    cap_reason: cap.reason,
+    cap_available_amt: capAvailable,
+    max_addable_amt: finalMax
+  };
+}
+
+// ==========================================
 // Main API
 // ==========================================
 
@@ -107,6 +174,10 @@ export async function runMMFilterFull(input = {}) {
     s.vol_score = round2(vol.score);
     s.vol_band = getVolBand(s.vol_score);
     s.vol_components = vol.components;
+
+    // v3 priority: M7 v2 is the base; short-term volatility adjusts ordering.
+    // This prevents stale C1 priority_score from overriding canonical M7 v2.
+    s.priority_score = calcPriorityScoreV3(s);
   });
 
   // 2. Pool classification
@@ -135,7 +206,7 @@ export async function runMMFilterFull(input = {}) {
   const summary = buildSummary({ stocks, pools, category_map, baskets, allocation, market_match });
 
   return {
-    version: "mm_filter_v4_2_module_sandbox_m7_v2_autoload",
+    version: "mm_filter_v3_full_m7_v2_c1_cap_exclusive_pool",
     generated_at: new Date().toISOString(),
     summary,
     pools,
@@ -365,13 +436,18 @@ export function normalizeStocks(rows) {
         row["m1_score"]
       ], null);
 
-      const maxAddable = firstFinite([
+      const m2ExposureAmt = firstFinite([row.m2_exposure_amt, row.exposure_amt, row.active_fcn_amount], 0);
+
+      const rawMaxAddable = firstFinite([
         row.max_addable_amt,
         row.addable_amt,
         row.c1_max_addable_amt,
         row.today_capacity_amt,
         row.suggested_amt_cap
       ], 0);
+
+      const capView = applyC1CapRule(row, rawMaxAddable, m2ExposureAmt);
+      const maxAddable = capView.max_addable_amt;
 
       const singleSuggest = firstFinite([
         row.single_suggest_amt,
@@ -436,16 +512,20 @@ export function normalizeStocks(rows) {
           row.exposureRatio,
           row["投入資金比"]
         ], 0)),
-        m2_exposure_amt: firstFinite([row.m2_exposure_amt, row.exposure_amt, row.active_fcn_amount], 0),
+        m2_exposure_amt: m2ExposureAmt,
         m2_fcn_count: firstFinite([row.m2_fcn_count, row.fcn_count, row.fcnCount], 0),
 
         // M6
         m6_timing: String(row.m6_timing || row.timing_mode || row.decision_mode || row.short_direction || "").toLowerCase(),
 
-        // Amount
+        // Amount / C1 cap
         amt_signal: round2(amtSignal),
         single_suggest_amt: singleSuggest,
         max_addable_amt: maxAddable,
+        fcn_cap_amount: capView.cap_amount,
+        fcn_cap_source: capView.cap_source,
+        fcn_cap_reason: capView.cap_reason,
+        fcn_cap_available_amt: capView.cap_available_amt,
 
         // Decision flags
         allow_fcn: allowF,
@@ -499,6 +579,21 @@ export function getVolBand(v) {
 }
 
 // ==========================================
+// Priority v3
+// ==========================================
+// M7 v2 selects FCN-quality candidates. Volatility adjusts today's ordering.
+// Score scale = 0~100 for UI ranking. Extreme volatility is handled by pool rules, not by clamping M7.
+function calcPriorityScoreV3(s) {
+  const m7Base = clamp(num(s.m7_score) * 10, 0, 120);
+  const volBoost = clamp(num(s.vol_score), 0, 12) / 12 * 20;
+  const m2RoomBoost = clamp((1 - num(s.m2_util)) * 10, 0, 10);
+  const amountBoost = num(s.max_addable_amt) > 0 ? 5 : 0;
+
+  const score = (0.75 * m7Base) + (0.15 * volBoost) + (0.10 * m2RoomBoost) + amountBoost;
+  return round2(clamp(score, 0, 120));
+}
+
+// ==========================================
 // Pool classification
 // ==========================================
 
@@ -518,22 +613,17 @@ function classifyPools(stocks, options = {}) {
   for (const s of stocks) {
     const rejectReasons = getRejectReasons(s, { m2RejectCut });
 
+    // v3: pools are exclusive buckets.
+    // A stock must appear in exactly one of highlight/watch/simulation/reject.
     if (rejectReasons.length) {
       pools.reject.push({
         ...s,
         pool: "reject",
-        reject_reasons: rejectReasons
+        reject_reasons: rejectReasons,
+        reject_level: rejectReasons.some(r => String(r).includes("amount_unavailable")) ? "trade_reject" : "hard_reject"
       });
       continue;
     }
-
-    const simRow = {
-      ...s,
-      pool: "simulation",
-      reject_reasons: []
-    };
-
-    pools.simulation.push(simRow);
 
     const timingHot = isTimingHot(s.m6_timing);
     const isHighlight =
@@ -546,17 +636,38 @@ function classifyPools(stocks, options = {}) {
 
     if (isHighlight) {
       pools.highlight.push({
-        ...simRow,
+        ...s,
         pool: "highlight",
+        reject_reasons: [],
         why_yes: buildWhyYes(s)
       });
-    } else {
-      pools.watch.push({
-        ...simRow,
-        pool: "watch",
-        why_not: buildWatchReasons(s, { priorityCut, m2HotCut, amtSignalCut })
-      });
+      continue;
     }
+
+    const watchReasons = buildWatchReasons(s, { priorityCut, m2HotCut, amtSignalCut });
+    const hasMajorWatch =
+      s.m2_util >= m2HotCut ||
+      timingHot ||
+      s.amt_signal <= amtSignalCut ||
+      s.priority_score < Math.min(priorityCut, 65);
+
+    if (hasMajorWatch) {
+      pools.watch.push({
+        ...s,
+        pool: "watch",
+        reject_reasons: [],
+        why_not: watchReasons
+      });
+      continue;
+    }
+
+    // Basket simulation candidates: not reject, amount available, but not today's highlight.
+    pools.simulation.push({
+      ...s,
+      pool: "simulation",
+      reject_reasons: [],
+      why_not: watchReasons
+    });
   }
 
   const sortFn = (a, b) =>
@@ -660,7 +771,8 @@ async function buildAllBaskets({ pools, category_map, stocks, options }) {
   // 3. Hybrid
   const hybrid = uniqueBySymbol([
     ...pools.highlight.slice(0, 2),
-    ...pools.watch.filter(x => x.max_addable_amt > 0).slice(0, 3)
+    ...pools.simulation.filter(x => x.max_addable_amt > 0).slice(0, 3),
+    ...pools.watch.filter(x => x.max_addable_amt > 0).slice(0, 2)
   ]).slice(0, 5);
 
   if (hybrid.length >= 3) {
@@ -1129,6 +1241,12 @@ function buildSummary({ stocks, pools, category_map, baskets, allocation, market
 // ==========================================
 // Utilities
 // ==========================================
+
+function clamp(v, min, max) {
+  const x = num(v, min);
+  return Math.max(min, Math.min(max, x));
+}
+
 
 function num(v, d = 0) {
   const x = Number(v);
