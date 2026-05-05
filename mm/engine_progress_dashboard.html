@@ -541,6 +541,9 @@ th{background:#f8fafc}
 
       <!-- B LEFT -->
       <aside class="left-summary">
+        <!-- B Zone v3 / Portfolio Brain -->
+        <div id="b-zone"></div>
+
         <div class="module-card compact-module">
           <h3>B1 M2 / FCN 全貌</h3>
           <div id="b1-m2-summary"></div>
@@ -818,5 +821,29 @@ th{background:#f8fafc}
 <script src="../js/mm/modules/mm_alert_engine.js"></script>
 <script src="../js/mm/modules/mm_all_stock_radar.js"></script>
 <script src="../js/mm/modules/mm_dashboard_app.js"></script>
+<script src="../js/mm/modules/mm_b_zone_v3.js"></script>
+
+<script>
+(function(){
+  function pickData(){
+    const mm = window.MM_DATA || window.MM_DASHBOARD_DATA || window.mmDashboardData || {};
+    return {
+      fcn_pool: mm.fcn_pool || mm.fcnPool || mm.FCN_POOL || window.fcn_pool_data || [],
+      m1_scores: mm.m1_scores || mm.m1Scores || window.m1_scores_data || {}
+    };
+  }
+
+  function runBZone(){
+    if (typeof window.renderBZone !== "function") return;
+    window.renderBZone(pickData());
+  }
+
+  document.addEventListener("DOMContentLoaded", function(){
+    runBZone();
+    setTimeout(runBZone, 500);
+    setTimeout(runBZone, 1500);
+  });
+})();
+</script>
 </body>
 </html>
