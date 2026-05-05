@@ -2,261 +2,665 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<!-- IMPORTANT:
+     This base makes M8 engine fetch("data/m7/...") resolve from repo root,
+     not from /mm/. It also means JS imports below should use ./js/... -->
+<base href="../">
 <title>MM Sandbox Test</title>
 <style>
-
-body {
-  font-family: Arial;
-  background: #0f1115;
-  color: #eee;
-  padding: 20px;
+:root{
+  --bg:#0f1115;
+  --panel:#181c24;
+  --panel2:#202634;
+  --line:#30384a;
+  --text:#f4f7fb;
+  --muted:#aab5c8;
+  --blue:#4da3ff;
+  --green:#34d399;
+  --yellow:#fbbf24;
+  --orange:#fb923c;
+  --red:#f87171;
 }
-
-h2 {
-  margin-top: 30px;
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,"Noto Sans TC",sans-serif;
+  background:var(--bg);
+  color:var(--text);
 }
-
-.card {
-  background: #1a1d24;
-  padding: 15px;
-  border-radius: 10px;
-  margin-bottom: 15px;
+.app{max-width:1440px;margin:0 auto;padding:24px}
+.hero{
+  background:linear-gradient(135deg,#10233f,#1d4ed8);
+  border-radius:24px;
+  padding:24px 28px;
+  margin-bottom:20px;
+  box-shadow:0 18px 48px rgba(0,0,0,.35);
 }
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
+.hero h1{margin:0 0 8px;font-size:34px}
+.hero p{margin:0;color:#dbeafe;font-weight:700}
+.section{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:18px;
+  margin:18px 0;
+  overflow:hidden;
 }
-
-.badge {
-  padding: 3px 8px;
-  border-radius: 6px;
-  font-size: 12px;
+.section summary{
+  cursor:pointer;
+  padding:16px 20px;
+  font-size:20px;
+  font-weight:900;
+  border-bottom:1px solid var(--line);
 }
-
-.low { background:#2e7d32; }
-.mid { background:#f9a825; }
-.high { background:#ef6c00; }
-.extreme { background:#c62828; }
-
-.table {
-  width:100%;
-  border-collapse: collapse;
+.section-body{padding:18px}
+.grid{display:grid;gap:14px}
+.kpi-grid{grid-template-columns:repeat(7,minmax(120px,1fr))}
+.pool-grid{grid-template-columns:repeat(4,1fr)}
+.cat-grid{grid-template-columns:repeat(5,1fr)}
+.basket-grid{grid-template-columns:repeat(3,1fr)}
+.market-grid{grid-template-columns:repeat(2,1fr)}
+.card{
+  background:var(--panel2);
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:14px;
 }
-
-.table th, .table td {
-  border-bottom:1px solid #333;
-  padding:6px;
+.card h3{margin:0 0 10px}
+.kpi-title{font-size:12px;color:var(--muted);font-weight:800}
+.kpi-value{font-size:24px;font-weight:900;margin-top:6px}
+.small{font-size:12px;color:var(--muted)}
+.badge{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  padding:3px 8px;
+  border-radius:999px;
   font-size:12px;
-  text-align:left;
+  font-weight:900;
+  border:1px solid var(--line);
 }
-
+.badge.low{background:rgba(52,211,153,.12);color:var(--green)}
+.badge.mid{background:rgba(251,191,36,.12);color:var(--yellow)}
+.badge.high{background:rgba(251,146,60,.12);color:var(--orange)}
+.badge.extreme{background:rgba(248,113,113,.12);color:var(--red)}
+.badge.good{background:rgba(52,211,153,.12);color:var(--green)}
+.badge.warn{background:rgba(251,191,36,.12);color:var(--yellow)}
+.badge.bad{background:rgba(248,113,113,.12);color:var(--red)}
+.stock-line{
+  padding:8px 0;
+  border-bottom:1px dashed var(--line);
+  font-size:13px;
+}
+.stock-line:last-child{border-bottom:0}
+.stock-main{display:flex;justify-content:space-between;gap:8px;font-weight:900}
+.stock-sub{color:var(--muted);font-size:12px;margin-top:4px}
+.table-wrap{overflow:auto;max-height:560px;border:1px solid var(--line);border-radius:14px}
+table{width:100%;border-collapse:collapse;background:var(--panel2)}
+th,td{border-bottom:1px solid var(--line);padding:8px;font-size:12px;text-align:left;white-space:nowrap}
+th{position:sticky;top:0;background:#111827;z-index:1}
+.controls{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px}
+.controls select,.controls input{
+  background:#111827;
+  color:var(--text);
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:9px 10px;
+}
+.note{
+  background:#111827;
+  border:1px dashed var(--line);
+  border-radius:14px;
+  padding:12px;
+  color:var(--muted);
+}
+.error{
+  background:rgba(248,113,113,.12);
+  border:1px solid rgba(248,113,113,.5);
+  color:#fecaca;
+  border-radius:14px;
+  padding:12px;
+  margin:12px 0;
+}
+pre{
+  background:#090b10;
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:12px;
+  overflow:auto;
+  max-height:520px;
+}
+@media(max-width:1100px){
+  .kpi-grid,.pool-grid,.cat-grid,.basket-grid,.market-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:760px){
+  .kpi-grid,.pool-grid,.cat-grid,.basket-grid,.market-grid{grid-template-columns:1fr}
+}
 </style>
 </head>
-
 <body>
+<div class="app">
+  <div class="hero">
+    <h1>MM Sandbox Test</h1>
+    <p>C1 Output → Filter → Basket → M8 → Allocation → Market Order Match</p>
+  </div>
 
-<h1>MM Sandbox Test</h1>
+  <div id="error"></div>
 
-<!-- ===================== -->
-<!-- SUMMARY -->
-<!-- ===================== -->
-<h2>Overall Summary</h2>
-<div id="summary" class="grid"></div>
+  <details class="section" open>
+    <summary>1. Overall Review / 全流程總覽</summary>
+    <div class="section-body">
+      <div id="summary" class="grid kpi-grid"></div>
+    </div>
+  </details>
 
-<!-- ===================== -->
-<!-- POOLS -->
-<!-- ===================== -->
-<h2>Stock Pools</h2>
+  <details class="section" open>
+    <summary>2. M7 / C1 Stock Pool Review</summary>
+    <div class="section-body">
+      <div class="grid pool-grid">
+        <div class="card"><h3>🔥 Today Highlight</h3><div id="pool-highlight"></div></div>
+        <div class="card"><h3>👀 Watch</h3><div id="pool-watch"></div></div>
+        <div class="card"><h3>🧪 Simulation</h3><div id="pool-simulation"></div></div>
+        <div class="card"><h3>❌ Reject</h3><div id="pool-reject"></div></div>
+      </div>
+    </div>
+  </details>
 
-<div class="card">
-  <h3>🔥 Highlight</h3>
-  <div id="highlight"></div>
+  <details class="section" open>
+    <summary>3. 五大類排序 / Category Distribution</summary>
+    <div class="section-body">
+      <div id="category" class="grid cat-grid"></div>
+    </div>
+  </details>
+
+  <details class="section" open>
+    <summary>4. Basket Candidate + M8 + Allocation v0</summary>
+    <div class="section-body">
+      <h3>Basket Candidates</h3>
+      <div id="basket" class="grid basket-grid"></div>
+      <h3 style="margin-top:18px">Allocation v0</h3>
+      <div id="allocation"></div>
+    </div>
+  </details>
+
+  <details class="section" open>
+    <summary>5. Market FCN Order Match</summary>
+    <div class="section-body">
+      <div id="market" class="grid market-grid"></div>
+    </div>
+  </details>
+
+  <details class="section" open>
+    <summary>6. C1 Stock Output Summary</summary>
+    <div class="section-body">
+      <div class="controls">
+        <input id="search" placeholder="Search symbol..." />
+        <select id="filterPool">
+          <option value="">All pools</option>
+          <option value="highlight">Highlight</option>
+          <option value="watch">Watch</option>
+          <option value="simulation">Simulation</option>
+          <option value="reject">Reject</option>
+        </select>
+        <select id="filterVol">
+          <option value="">All vol</option>
+          <option value="low">Low</option>
+          <option value="mid">Mid</option>
+          <option value="high">High</option>
+          <option value="extreme">Extreme</option>
+        </select>
+        <select id="filterCat">
+          <option value="">All category</option>
+          <option value="core">Core</option>
+          <option value="growth">Growth</option>
+          <option value="income">Income</option>
+          <option value="defensive">Defensive</option>
+          <option value="speculative">Speculative</option>
+        </select>
+      </div>
+      <div class="table-wrap">
+        <table id="stockTable"></table>
+      </div>
+    </div>
+  </details>
+
+  <details class="section">
+    <summary>7. Debug JSON</summary>
+    <div class="section-body">
+      <pre id="debug"></pre>
+    </div>
+  </details>
 </div>
-
-<div class="card">
-  <h3>👀 Watch</h3>
-  <div id="watch"></div>
-</div>
-
-<div class="card">
-  <h3>🧪 Simulation</h3>
-  <div id="simulation"></div>
-</div>
-
-<div class="card">
-  <h3>❌ Reject</h3>
-  <div id="reject"></div>
-</div>
-
-<!-- ===================== -->
-<!-- CATEGORY -->
-<!-- ===================== -->
-<h2>Category Distribution</h2>
-<div id="category"></div>
-
-<!-- ===================== -->
-<!-- BASKET -->
-<!-- ===================== -->
-<h2>Basket Candidates</h2>
-<div id="basket"></div>
-
-<!-- ===================== -->
-<!-- ALLOCATION -->
-<!-- ===================== -->
-<h2>Allocation v0</h2>
-<div id="allocation"></div>
-
-<!-- ===================== -->
-<!-- RAW TABLE -->
-<!-- ===================== -->
-<h2>All Stocks</h2>
-<table class="table" id="table"></table>
 
 <script type="module">
-import { runMMFilterFull } from "../js/mm/modules/mm_filter.js";
+import { runMMFilterFull } from "./js/mm/modules/mm_filter.js";
 
-const res = await runMMFilterFull({
-  stocks: window.mock || []
-});
-
-console.log(res);
-</script>
-
-<script>
-
-// ===== MOCK DATA（之後換 C1_OUTPUT）=====
-const mock = [
-  {symbol:"NVDA",category:"core",priority_score:90,ret_1d:1,ret_2d:2,ret_1w:5,ret_2w:3,ma_slope:6,m2_util:0.7,m6_timing:"sideways",amt_signal:0.8,max_addable_amt:50000,allow_fcn:true},
-  {symbol:"TSM",category:"core",priority_score:80,ret_1d:1,ret_2d:1,ret_1w:4,ret_2w:2,ma_slope:5,m2_util:0.6,m6_timing:"sideways",amt_signal:0.7,max_addable_amt:20000,allow_fcn:true},
-  {symbol:"GOOG",category:"core",priority_score:75,ret_1d:0.5,ret_2d:1,ret_1w:3,ret_2w:2,ma_slope:4,m2_util:0.5,m6_timing:"sideways",amt_signal:0.6,max_addable_amt:10000,allow_fcn:true},
-  {symbol:"PLTR",category:"growth",priority_score:85,ret_1d:3,ret_2d:5,ret_1w:10,ret_2w:8,ma_slope:9,m2_util:0.4,m6_timing:"sideways",amt_signal:0.9,max_addable_amt:30000,allow_fcn:true}
-];
-
-const res = await runMMFilterFull({stocks: mock});
-
-// =====================
-// SUMMARY
-// =====================
-document.getElementById("summary").innerHTML = `
-<div class="card">Stocks: ${res.summary.total_stocks}</div>
-<div class="card">Highlight: ${res.summary.highlight}</div>
-<div class="card">Watch: ${res.summary.watch}</div>
-<div class="card">Reject: ${res.summary.reject}</div>
-<div class="card">Capacity: ${res.summary.total_capacity}</div>
-<div class="card">Allocated: ${res.summary.allocated}</div>
-<div class="card">Remaining: ${res.summary.remaining}</div>
-`;
-
-// =====================
-// POOLS
-// =====================
-["highlight","watch","simulation","reject"].forEach(p=>{
-  document.getElementById(p).innerHTML =
-    res.pools[p].map(s=>renderStock(s)).join("");
-});
-
-// =====================
-// CATEGORY
-// =====================
-let catHTML="";
-Object.keys(res.category_map).forEach(c=>{
-  const list = res.category_map[c];
-  if(!list.length) return;
-  catHTML += `<div class="card"><b>${c}</b> (${list.length})</div>`;
-});
-document.getElementById("category").innerHTML = catHTML;
-
-// =====================
-// BASKET
-// =====================
-document.getElementById("basket").innerHTML =
-  res.baskets.map(b=>`
-  <div class="card">
-    <b>${b.id}</b><br/>
-    Symbols: ${b.symbols.join(", ")}<br/>
-    Basket Cap: ${b.basket_cap}<br/>
-    Avg Score: ${b.avg_score.toFixed(1)}<br/>
-    Avg Vol: ${b.avg_vol.toFixed(1)}
-  </div>
-`).join("");
-
-// =====================
-// ALLOCATION
-// =====================
-document.getElementById("allocation").innerHTML =
-  res.allocation.map(a=>`
-  <div class="card">
-    ${a.basket_id} → ${a.alloc} (剩 ${a.remaining_after})
-  </div>
-`).join("");
-
-// =====================
-// TABLE
-// =====================
-document.getElementById("table").innerHTML = `
-<tr>
-<th>Symbol</th>
-<th>Cat</th>
-<th>Score</th>
-<th>Vol</th>
-<th>Band</th>
-<th>M2</th>
-<th>Amt</th>
-</tr>
-` + res.raw.map(s=>`
-<tr>
-<td>${s.symbol}</td>
-<td>${s.category}</td>
-<td>${s.priority_score}</td>
-<td>${s.vol_score.toFixed(1)}</td>
-<td><span class="badge ${s.vol_band}">${s.vol_band}</span></td>
-<td>${(s.m2_util*100).toFixed(0)}%</td>
-<td>${s.max_addable_amt}</td>
-</tr>
-`).join("");
-
-function renderStock(s){
-  return `
-  <div>
-    ${s.symbol} | score:${s.priority_score}
-    | vol:${s.vol_score.toFixed(1)}
-    | amt:${s.max_addable_amt}
-  </div>
-  `;
-}
-
-</script>
-<script type="module">
-
-import { runMMFilterFull } from "../js/mm/modules/mm_filter.js";
-
-const mock = [
+const MARKET_ORDERS = [
   {
-    symbol:"NVDA",
-    category:"core",
-    priority_score:90,
-    ret_1d:1,
-    ret_2d:2,
-    ret_1w:5,
-    ret_2w:3,
-    ma_slope:6,
-    m2_util:0.7,
-    m6_timing:"sideways",
-    amt_signal:0.8,
-    max_addable_amt:50000,
-    allow_fcn:true
+    order_id: "BANK_A_SAMPLE",
+    bank: "Bank-A",
+    symbols: ["NVDA","TSM","GOOG"],
+    KI: 65,
+    strike: 65,
+    tenor: 9,
+    type: "AKI",
+    market_yield: 16.5,
+    notional: 20000
+  },
+  {
+    order_id: "BANK_B_SAMPLE",
+    bank: "Bank-B",
+    symbols: ["MU","PLTR","TSM","SMH"],
+    KI: 50,
+    strike: 65,
+    tenor: 7,
+    type: "EKI",
+    market_yield: 22,
+    notional: 20000
   }
 ];
 
-const res = await runMMFilterFull({
-  stocks: mock,
-  market_orders: []
-});
+async function main(){
+  try{
+    const stocks = await loadC1LikeStocks();
 
-console.log(res);
+    const result = await runMMFilterFull({
+      stocks,
+      market_orders: MARKET_ORDERS,
+      options: {
+        total_today_capacity: undefined
+      }
+    });
 
+    window.__MM_FILTER_RESULT__ = result;
+    renderAll(result);
+  }catch(err){
+    console.error(err);
+    document.getElementById("error").innerHTML =
+      `<div class="error"><b>載入失敗：</b>${escapeHtml(err.message || String(err))}</div>`;
+  }
+}
+
+async function loadC1LikeStocks(){
+  // Priority 1: future real C1 output
+  const c1 = await tryLoadJson("./data/mm/c1_output.json");
+  if(Array.isArray(c1)) return c1;
+  if(Array.isArray(c1?.data)) return c1.data;
+  if(Array.isArray(c1?.stocks)) return c1.stocks;
+
+  // Priority 2: adapt M7 today + optional M6 forecast
+  const today = await tryLoadJson("./data/m7/m7_new_stock_today.json");
+  const pool = await tryLoadJson("./data/m7/m7_new_stock_pool.json");
+  const m6 = await tryLoadJson("./data/m6/price_forecast_debug.json");
+
+  if(today){
+    const rows = adaptM7TodayToC1(today, pool, m6);
+    if(rows.length) return rows;
+  }
+
+  // Priority 3: mock fallback, so page never blank
+  return mockStocks();
+}
+
+async function tryLoadJson(path){
+  try{
+    const res = await fetch(path + "?v=" + Date.now());
+    if(!res.ok) return null;
+    return await res.json();
+  }catch(e){
+    return null;
+  }
+}
+
+function adaptM7TodayToC1(today, pool, m6){
+  const m7Rows = [
+    ...(today?.today_highlight_pool || []),
+    ...(today?.simulation_pool || []),
+    ...(today?.watch_pool || []),
+    ...(today?.reject_pool || []),
+    ...(today?.aggressive_recommend || []),
+    ...(today?.watch_list || []),
+    ...(today?.all || [])
+  ];
+
+  const poolMap = buildPoolMap(pool);
+  const m6Map = buildM6Map(m6);
+  const seen = new Set();
+
+  return m7Rows.map((row, idx)=>{
+    const symbol = String(row.symbol || row["股號"] || "").toUpperCase();
+    if(!symbol || seen.has(symbol)) return null;
+    seen.add(symbol);
+
+    const meta = poolMap.get(symbol) || {};
+    const f6 = m6Map.get(symbol) || {};
+
+    const todayScore = Number(row.today_score ?? row.total ?? row["today_score"] ?? 0);
+    const category = String(meta.category || row.category || "unknown").toLowerCase();
+
+    const ret1d = Number(
+      f6?.timing_structure?.raw_returns?.ret_1d_pct ??
+      row.ret_1d ??
+      row.ret_1d_pct ??
+      0
+    );
+    const ret1w = Number(
+      f6?.timing_structure?.raw_returns?.ret_1w_pct ??
+      row.ret_1w ??
+      row.ret_1w_pct ??
+      0
+    );
+    const ret2d = Number(row.ret_2d ?? 0);
+    const ret2w = Number(row.ret_2w ?? 0);
+    const maSlope = Number(
+      row.ma_slope ??
+      row.ma_slope_pct ??
+      row.trend_ma_annualized_pct ??
+      ((f6?.flat?.timing_slope || 0) * 100)
+    );
+
+    const exposureRatio = Number(
+      row?.["持倉曝險"]?.["投入資金比"] ??
+      row.exposureRatio ??
+      row.m2_util ??
+      0
+    );
+
+    const maxAddable = inferAddableAmount({ symbol, category, exposureRatio, todayScore });
+    const isRejected = !!row.reject_type || meta.allow_fcn === false || meta["是否納入新股票池"] === false;
+
+    return {
+      symbol,
+      name: row.name || row["股名"] || meta.name || meta["名稱"] || symbol,
+      category,
+      priority_score: todayScore,
+      m7_score: todayScore,
+      m1_score: meta.m1_score ?? null,
+      valuation_score: row.valuation_score,
+      trend_score: row.trend_score,
+      structure_score: row.structure_score,
+
+      ret_1d: ret1d,
+      ret_2d: ret2d,
+      ret_1w: ret1w,
+      ret_2w: ret2w,
+      ma_slope: maSlope,
+
+      m2_util: exposureRatio,
+      m2_exposure_amt: Number(row?.["持倉曝險"]?.["投入金額"] ?? 0),
+      m2_fcn_count: Number(row?.["持倉曝險"]?.["FCN數量"] ?? 0),
+
+      m6_timing: String(f6?.decision_mode || row.m6_timing || "").toLowerCase(),
+      amt_signal: todayScore >= 80 ? 0.8 : todayScore >= 70 ? 0.6 : 0.3,
+      single_suggest_amt: maxAddable > 0 ? 20000 : 0,
+      max_addable_amt: maxAddable,
+      allow_fcn: !isRejected,
+      reject_reason: isRejected ? (row.reject_type || "attribute_reject") : null,
+      why_yes: row.why_yes || [],
+      why_not: row.why_no || []
+    };
+  }).filter(Boolean);
+}
+
+function buildPoolMap(pool){
+  const map = new Map();
+  if(pool?.data && typeof pool.data === "object"){
+    Object.values(pool.data).forEach(row=>{
+      const sym = String(row.symbol || row["股號"] || "").toUpperCase();
+      if(sym) map.set(sym,row);
+    });
+  }else if(Array.isArray(pool)){
+    pool.forEach(row=>{
+      const sym = String(row.symbol || row["股號"] || "").toUpperCase();
+      if(sym) map.set(sym,row);
+    });
+  }
+  return map;
+}
+
+function buildM6Map(m6){
+  const map = new Map();
+  const rows = Array.isArray(m6?.data) ? m6.data : Array.isArray(m6) ? m6 : [];
+  rows.forEach(row=>{
+    const sym = String(row.symbol || "").toUpperCase();
+    if(sym) map.set(sym,row);
+  });
+  return map;
+}
+
+function inferAddableAmount({ symbol, category, exposureRatio, todayScore }){
+  const caps = {
+    core: 50000,
+    growth: 30000,
+    defensive: 30000,
+    defense: 30000,
+    income: 20000,
+    incoming: 20000,
+    speculative: 3000
+  };
+  const exception = new Set(["NVDA","TSM","SMH","GOOG"]);
+  const base = exception.has(symbol) ? 70000 : (caps[category] || 10000);
+  const util = Number(exposureRatio || 0);
+  if(util >= 1) return 0;
+  if(util >= 0.9) return Math.min(10000, base);
+  if(todayScore >= 80) return Math.min(50000, base);
+  if(todayScore >= 70) return Math.min(20000, base);
+  return Math.min(10000, base);
+}
+
+function mockStocks(){
+  return [
+    {symbol:"NVDA",name:"NVIDIA",category:"core",priority_score:90,ret_1d:1,ret_2d:2,ret_1w:5,ret_2w:3,ma_slope:6,m2_util:0.7,m6_timing:"sideways",amt_signal:0.8,max_addable_amt:50000,allow_fcn:true},
+    {symbol:"TSM",name:"TSMC",category:"core",priority_score:82,ret_1d:1,ret_2d:1,ret_1w:4,ret_2w:2,ma_slope:4,m2_util:0.6,m6_timing:"sideways",amt_signal:0.7,max_addable_amt:20000,allow_fcn:true},
+    {symbol:"GOOG",name:"Alphabet",category:"core",priority_score:78,ret_1d:.5,ret_2d:1,ret_1w:3,ret_2w:2,ma_slope:3,m2_util:0.4,m6_timing:"sideways",amt_signal:0.7,max_addable_amt:10000,allow_fcn:true},
+    {symbol:"MU",name:"Micron",category:"growth",priority_score:84,ret_1d:3,ret_2d:5,ret_1w:9,ret_2w:7,ma_slope:8,m2_util:0.3,m6_timing:"sideways",amt_signal:.9,max_addable_amt:30000,allow_fcn:true},
+    {symbol:"PLTR",name:"Palantir",category:"growth",priority_score:80,ret_1d:4,ret_2d:5,ret_1w:10,ret_2w:6,ma_slope:9,m2_util:0.5,m6_timing:"sideways",amt_signal:.8,max_addable_amt:20000,allow_fcn:true},
+    {symbol:"LQD",name:"LQD",category:"income",priority_score:72,ret_1d:.1,ret_2d:.2,ret_1w:.5,ret_2w:.7,ma_slope:.2,m2_util:0.1,m6_timing:"sideways",amt_signal:.5,max_addable_amt:20000,allow_fcn:true}
+  ];
+}
+
+function renderAll(res){
+  renderSummary(res.summary);
+  renderPools(res.pools);
+  renderCategories(res.summary.category, res.category_map);
+  renderBaskets(res.baskets);
+  renderAllocation(res.allocation);
+  renderMarket(res.market_match);
+  setupTable(res);
+  document.getElementById("debug").textContent = JSON.stringify(res, null, 2);
+}
+
+function renderSummary(s){
+  const cards = [
+    ["Input Stocks", s.total_stocks],
+    ["Highlight", s.pools.highlight],
+    ["Simulation", s.pools.simulation],
+    ["Reject", s.pools.reject],
+    ["Basket Gen", s.baskets.generated],
+    ["Allocated", money(s.allocation.allocated)],
+    ["Market Follow", s.market_order_match.follow]
+  ];
+  document.getElementById("summary").innerHTML = cards.map(([t,v])=>`
+    <div class="card">
+      <div class="kpi-title">${t}</div>
+      <div class="kpi-value">${v}</div>
+    </div>
+  `).join("");
+}
+
+function renderPools(pools){
+  renderPool("pool-highlight", pools.highlight);
+  renderPool("pool-watch", pools.watch);
+  renderPool("pool-simulation", pools.simulation.slice(0,8));
+  renderPool("pool-reject", pools.reject);
+}
+
+function renderPool(id, list){
+  const el = document.getElementById(id);
+  if(!list.length){
+    el.innerHTML = `<div class="small">目前無資料</div>`;
+    return;
+  }
+  el.innerHTML = list.slice(0,8).map(stockLine).join("");
+}
+
+function stockLine(s){
+  return `
+    <div class="stock-line">
+      <div class="stock-main">
+        <span>${s.symbol}</span>
+        <span>${money(s.max_addable_amt)}</span>
+      </div>
+      <div class="stock-sub">
+        score ${fmt(s.priority_score)} ｜ vol ${fmt(s.vol_score)}
+        <span class="badge ${s.vol_band}">${s.vol_band}</span>
+        ｜ M2 ${fmt((s.m2_util||0)*100)}%
+      </div>
+    </div>
+  `;
+}
+
+function renderCategories(catSummary, catMap){
+  document.getElementById("category").innerHTML = Object.keys(catMap).map(cat=>{
+    const summary = catSummary[cat] || {};
+    const rows = (catMap[cat] || []).slice(0,5);
+    return `
+      <div class="card">
+        <h3>${cat.toUpperCase()} (${summary.count || 0})</h3>
+        <div class="small">mean ${fmt(summary.mean_priority)} ｜ std ${fmt(summary.std_priority)} ｜ CV ${fmt(summary.cv_priority)}</div>
+        <div class="small">avg vol ${fmt(summary.avg_vol)} ｜ cap ${money(summary.total_max_addable || 0)}</div>
+        <hr style="border-color:var(--line)">
+        ${rows.length ? rows.map(stockLine).join("") : `<div class="small">無</div>`}
+      </div>
+    `;
+  }).join("");
+}
+
+function renderBaskets(baskets){
+  document.getElementById("basket").innerHTML = baskets.map(b=>`
+    <div class="card">
+      <h3>${b.id}</h3>
+      <div><span class="badge good">${b.style_label}</span></div>
+      <p class="small">${b.symbols.join(" / ")}</p>
+      <div>Basket Cap：<b>${money(b.basket_cap)}</b></div>
+      <div>Avg Score：${fmt(b.avg_score)} ｜ Avg Vol：${fmt(b.avg_vol)}</div>
+      <div>KI ${b.structure.KI}% ｜ Strike ${b.structure.Strike}% ｜ ${b.structure.T}M ｜ ${b.structure.type}</div>
+      <hr style="border-color:var(--line)">
+      <div>Fair Yield：<b>${fmt(b.m8?.fair_yield)}%</b></div>
+      <div>BasketVol：${fmt(b.m8?.basket_vol)} ｜ VolAdj：${fmt(b.m8?.vol_adj)}</div>
+      <div>Pricing：${pricingBadge(b.m8?.pricing_view || b.pricing_view)}</div>
+      <div class="small">Rule：${b.rule_check?.pass ? "PASS" : "CHECK"} ${b.rule_check?.reasons?.join(", ") || ""}</div>
+    </div>
+  `).join("") || `<div class="note">目前沒有產出 basket。</div>`;
+}
+
+function renderAllocation(allocation){
+  const rows = allocation.rows || [];
+  document.getElementById("allocation").innerHTML = `
+    <div class="card">
+      <div>Today Capacity：<b>${money(allocation.total_capacity)}</b></div>
+      <div>Allocated：<b>${money(allocation.allocated)}</b></div>
+      <div>Remaining：<b>${money(allocation.remaining)}</b></div>
+    </div>
+    <div class="table-wrap" style="margin-top:12px">
+      <table>
+        <tr><th>Rank</th><th>Basket</th><th>Cap</th><th>Suggested</th><th>Final</th><th>Remaining</th><th>Reason</th></tr>
+        ${rows.map(r=>`
+          <tr>
+            <td>${r.rank}</td><td>${r.basket_id}</td><td>${money(r.basket_cap)}</td>
+            <td>${money(r.suggested_amt)}</td><td>${money(r.final_alloc_amt)}</td>
+            <td>${money(r.remaining_after)}</td><td>${r.reason}</td>
+          </tr>
+        `).join("")}
+      </table>
+    </div>
+  `;
+}
+
+function renderMarket(list){
+  document.getElementById("market").innerHTML = list.map(o=>`
+    <div class="card">
+      <h3>${o.order.bank}｜${o.order.order_id}</h3>
+      <div class="small">${o.order.symbols.join(" / ")}</div>
+      <div>Match：<b>${fmt(o.match_pct)}%</b></div>
+      <div>Matched：${o.matched.join(", ") || "-"}</div>
+      <div>Rejected：${o.rejected.map(r=>`${r.symbol}(${r.reason})`).join(", ") || "-"}</div>
+      <hr style="border-color:var(--line)">
+      <div>Fair：${fmt(o.fair_yield)}% ｜ Market：${fmt(o.market_yield)}%</div>
+      <div>Delta：${fmt(o.pricing_delta)}% ｜ ${pricingBadge(o.pricing_view)}</div>
+      <div>Action：<b>${o.action}</b></div>
+      <div>Suggested：<b>${money(o.suggested_amt)}</b></div>
+      <div class="small">Outliers：${o.outliers.map(x=>`${x.symbol}:${x.type}`).join(", ") || "-"}</div>
+    </div>
+  `).join("") || `<div class="note">尚未輸入 market orders。</div>`;
+}
+
+function setupTable(res){
+  const allRows = [];
+  Object.entries(res.pools).forEach(([pool, rows])=>{
+    rows.forEach(r=>allRows.push({...r, pool}));
+  });
+
+  const render = ()=>{
+    const q = document.getElementById("search").value.trim().toUpperCase();
+    const p = document.getElementById("filterPool").value;
+    const v = document.getElementById("filterVol").value;
+    const c = document.getElementById("filterCat").value;
+
+    const rows = allRows.filter(r=>
+      (!q || r.symbol.includes(q)) &&
+      (!p || r.pool === p) &&
+      (!v || r.vol_band === v) &&
+      (!c || r.category === c)
+    );
+
+    document.getElementById("stockTable").innerHTML = `
+      <tr>
+        <th>Pool</th><th>Symbol</th><th>Category</th><th>Priority</th><th>M7</th>
+        <th>Vol</th><th>Band</th><th>M2</th><th>M6</th><th>Stock Amt</th><th>Reason</th>
+      </tr>
+      ${rows.map(r=>`
+        <tr>
+          <td>${r.pool}</td><td><b>${r.symbol}</b></td><td>${r.category}</td>
+          <td>${fmt(r.priority_score)}</td><td>${fmt(r.m7_score)}</td>
+          <td>${fmt(r.vol_score)}</td><td><span class="badge ${r.vol_band}">${r.vol_band}</span></td>
+          <td>${fmt((r.m2_util||0)*100)}%</td><td>${r.m6_timing || "-"}</td>
+          <td>${money(r.max_addable_amt)}</td>
+          <td>${[...(r.why_yes||[]),...(r.why_not||[]),...(r.reject_reasons||[])].join(" / ")}</td>
+        </tr>
+      `).join("")}
+    `;
+  };
+
+  ["search","filterPool","filterVol","filterCat"].forEach(id=>{
+    document.getElementById(id).addEventListener("input", render);
+  });
+  render();
+}
+
+function pricingBadge(v){
+  const s = String(v || "unknown");
+  const cls = ["cheap","slightly_cheap","便宜","略便宜"].includes(s) ? "good"
+    : ["rich","very_rich","偏貴","明顯偏貴"].includes(s) ? "bad" : "warn";
+  return `<span class="badge ${cls}">${s}</span>`;
+}
+
+function money(v){
+  const x = Number(v);
+  if(!Number.isFinite(x)) return "-";
+  return "USD " + Math.round(x).toLocaleString();
+}
+
+function fmt(v){
+  const x = Number(v);
+  return Number.isFinite(x) ? x.toFixed(2) : "-";
+}
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, m=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[m]));
+}
+
+main();
 </script>
 </body>
 </html>
