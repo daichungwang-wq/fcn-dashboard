@@ -1,9 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8"/>
+<title>MM Sandbox Test</title>
+<style>
+
+body {
+  font-family: Arial;
+  background: #0f1115;
+  color: #eee;
+  padding: 20px;
+}
+
+h2 {
+  margin-top: 30px;
+}
+
+.card {
+  background: #1a1d24;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.badge {
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+.low { background:#2e7d32; }
+.mid { background:#f9a825; }
+.high { background:#ef6c00; }
+.extreme { background:#c62828; }
+
+.table {
+  width:100%;
+  border-collapse: collapse;
+}
+
+.table th, .table td {
+  border-bottom:1px solid #333;
+  padding:6px;
+  font-size:12px;
+  text-align:left;
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>MM Sandbox Test</h1>
+
+<!-- ===================== -->
+<!-- SUMMARY -->
+<!-- ===================== -->
+<h2>Overall Summary</h2>
+<div id="summary" class="grid"></div>
+
+<!-- ===================== -->
+<!-- POOLS -->
+<!-- ===================== -->
+<h2>Stock Pools</h2>
+
+<div class="card">
+  <h3>🔥 Highlight</h3>
+  <div id="highlight"></div>
+</div>
+
+<div class="card">
+  <h3>👀 Watch</h3>
+  <div id="watch"></div>
+</div>
+
+<div class="card">
+  <h3>🧪 Simulation</h3>
+  <div id="simulation"></div>
+</div>
+
+<div class="card">
+  <h3>❌ Reject</h3>
+  <div id="reject"></div>
+</div>
+
+<!-- ===================== -->
+<!-- CATEGORY -->
+<!-- ===================== -->
+<h2>Category Distribution</h2>
+<div id="category"></div>
+
+<!-- ===================== -->
+<!-- BASKET -->
+<!-- ===================== -->
+<h2>Basket Candidates</h2>
+<div id="basket"></div>
+
+<!-- ===================== -->
+<!-- ALLOCATION -->
+<!-- ===================== -->
+<h2>Allocation v0</h2>
+<div id="allocation"></div>
+
+<!-- ===================== -->
+<!-- RAW TABLE -->
+<!-- ===================== -->
+<h2>All Stocks</h2>
+<table class="table" id="table"></table>
+
 <script src="../js/mm/modules/mm_filter.js"></script>
 
 <script>
-const result = runMMFilter({
-  stocks: window.C1_OUTPUT   // 你接的資料
+
+// ===== MOCK DATA（之後換 C1_OUTPUT）=====
+const mock = [
+  {symbol:"NVDA",category:"core",priority_score:90,ret_1d:1,ret_2d:2,ret_1w:5,ret_2w:3,ma_slope:6,m2_util:0.7,m6_timing:"sideways",amt_signal:0.8,max_addable_amt:50000,allow_fcn:true},
+  {symbol:"TSM",category:"core",priority_score:80,ret_1d:1,ret_2d:1,ret_1w:4,ret_2w:2,ma_slope:5,m2_util:0.6,m6_timing:"sideways",amt_signal:0.7,max_addable_amt:20000,allow_fcn:true},
+  {symbol:"GOOG",category:"core",priority_score:75,ret_1d:0.5,ret_2d:1,ret_1w:3,ret_2w:2,ma_slope:4,m2_util:0.5,m6_timing:"sideways",amt_signal:0.6,max_addable_amt:10000,allow_fcn:true},
+  {symbol:"PLTR",category:"growth",priority_score:85,ret_1d:3,ret_2d:5,ret_1w:10,ret_2w:8,ma_slope:9,m2_util:0.4,m6_timing:"sideways",amt_signal:0.9,max_addable_amt:30000,allow_fcn:true}
+];
+
+const res = runMMFilter({stocks: mock});
+
+// =====================
+// SUMMARY
+// =====================
+document.getElementById("summary").innerHTML = `
+<div class="card">Stocks: ${res.summary.total_stocks}</div>
+<div class="card">Highlight: ${res.summary.highlight}</div>
+<div class="card">Watch: ${res.summary.watch}</div>
+<div class="card">Reject: ${res.summary.reject}</div>
+<div class="card">Capacity: ${res.summary.total_capacity}</div>
+<div class="card">Allocated: ${res.summary.allocated}</div>
+<div class="card">Remaining: ${res.summary.remaining}</div>
+`;
+
+// =====================
+// POOLS
+// =====================
+["highlight","watch","simulation","reject"].forEach(p=>{
+  document.getElementById(p).innerHTML =
+    res.pools[p].map(s=>renderStock(s)).join("");
 });
 
-console.log(result);
+// =====================
+// CATEGORY
+// =====================
+let catHTML="";
+Object.keys(res.category_map).forEach(c=>{
+  const list = res.category_map[c];
+  if(!list.length) return;
+  catHTML += `<div class="card"><b>${c}</b> (${list.length})</div>`;
+});
+document.getElementById("category").innerHTML = catHTML;
+
+// =====================
+// BASKET
+// =====================
+document.getElementById("basket").innerHTML =
+  res.baskets.map(b=>`
+  <div class="card">
+    <b>${b.id}</b><br/>
+    Symbols: ${b.symbols.join(", ")}<br/>
+    Basket Cap: ${b.basket_cap}<br/>
+    Avg Score: ${b.avg_score.toFixed(1)}<br/>
+    Avg Vol: ${b.avg_vol.toFixed(1)}
+  </div>
+`).join("");
+
+// =====================
+// ALLOCATION
+// =====================
+document.getElementById("allocation").innerHTML =
+  res.allocation.map(a=>`
+  <div class="card">
+    ${a.basket_id} → ${a.alloc} (剩 ${a.remaining_after})
+  </div>
+`).join("");
+
+// =====================
+// TABLE
+// =====================
+document.getElementById("table").innerHTML = `
+<tr>
+<th>Symbol</th>
+<th>Cat</th>
+<th>Score</th>
+<th>Vol</th>
+<th>Band</th>
+<th>M2</th>
+<th>Amt</th>
+</tr>
+` + res.raw.map(s=>`
+<tr>
+<td>${s.symbol}</td>
+<td>${s.category}</td>
+<td>${s.priority_score}</td>
+<td>${s.vol_score.toFixed(1)}</td>
+<td><span class="badge ${s.vol_band}">${s.vol_band}</span></td>
+<td>${(s.m2_util*100).toFixed(0)}%</td>
+<td>${s.max_addable_amt}</td>
+</tr>
+`).join("");
+
+function renderStock(s){
+  return `
+  <div>
+    ${s.symbol} | score:${s.priority_score}
+    | vol:${s.vol_score.toFixed(1)}
+    | amt:${s.max_addable_amt}
+  </div>
+  `;
+}
+
 </script>
+
+</body>
+</html>
