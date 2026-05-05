@@ -214,7 +214,7 @@ export async function runMMFilterFull(input = {}) {
   const summary = buildSummary({ stocks, pools, category_map, baskets, allocation, market_match });
 
   return {
-    version: "mm_filter_v3_3_c1_decision_m6_market_sort_no_priority",
+    version: "mm_filter_v3_4_m7_selected_c1_amount_m6_sort_no_priority",
     generated_at: new Date().toISOString(),
     summary,
     pools,
@@ -498,11 +498,13 @@ export function normalizeStocks(rows) {
         row.m7_whatif_score,
         row.m7_new_score,
         row.m7_adjusted_score,
-        row.m7_score,
+        // v3.4 FIX: v2 canonical scores must be checked before legacy row.m7_score.
+        // Some C1/test rows carry m7_score=0 as placeholder; if it is checked first, UI shows score 0.00.
         row.m7_effective_score,
         row.m7_v2_score,
         row.m7_v2_score_unclamped,
         row.m7_raw_score,
+        row.m7_score,
         row.today_score,
         row.total,
         row["today_score"],
@@ -588,6 +590,12 @@ export function normalizeStocks(rows) {
 
         // M7 v2 canonical fields
         m7_score: round2(m7Score),
+        // UI compatibility: existing mm/test.html cards may render row.score.
+        // score is M7 score, not Priority.
+        score: round2(m7Score),
+        m7_selected: round2(m7Score) >= num(row.m7_fcn_min_score || row.m7_min_score, 6),
+        m7_pass: round2(m7Score) >= num(row.m7_fcn_min_score || row.m7_min_score, 6),
+        m7_selection_reason: round2(m7Score) >= 8 ? "m7_high_score" : (round2(m7Score) >= 6 ? "m7_pass" : "m7_below_threshold"),
         m7_v2_score: nullableNumber(row.m7_v2_score),
         m7_raw_score: nullableNumber(row.m7_raw_score),
         m7_effective_score: nullableNumber(row.m7_effective_score),
@@ -1026,82 +1034,119 @@ function classifyPools(stocks, options = {}) {
   const m2HotCut = num(options.highlight_m2_cut, 0.8);
   const m2RejectCut = num(options.reject_m2_cut, 0.95);
   const amtSignalCut = num(options.highlight_amt_signal_cut, 0.6);
+  const m7PassCut = num(options.m7_pass_cut, 6.0);
+  const m7HighlightCut = num(options.m7_highlight_cut, 8.0);
 
   for (const s of stocks) {
-    const rejectReasons = getRejectReasons(s, { m2RejectCut });
+    const rejectReasons = getRejectReasons(s, { m2RejectCut, m7PassCut });
 
-    // v3: pools are exclusive buckets.
-    // A stock must appear in exactly one of highlight/watch/simulation/reject.
+    // v3.4 pool meaning:
+    // M7 / C1 Stock Pool Review is NOT an amount gate.
+    // It shows which stocks M7 selected today and how much C1 says can be done.
+    // Therefore amount_unavailable is a C1 amount status, not a Reject reason.
     if (rejectReasons.length) {
       pools.reject.push({
         ...s,
         pool: "reject",
         reject_reasons: rejectReasons,
-        reject_level: rejectReasons.some(r => String(r).includes("amount_unavailable")) ? "trade_reject" : "hard_reject"
+        reject_level: "hard_reject",
+        pool_condition: "Hard reject: allow_fcn=false, explicit reject, M7 below threshold, or M2 over hard limit. Amount=0 alone is not reject."
       });
       continue;
     }
 
-    const c1Pool = classifyPoolByC1Decision(s);
+    const c1Tier = normalizeC1DecisionTier(s.c1_decision_tier || s.c1_decision_label || s.c1_decision_text);
+    const m7Score = num(s.m7_score);
+    const hasAmount = num(s.max_addable_amt) > 0 || num(s.single_suggest_amt) > 0;
+    const amountNote = hasAmount ? "c1_amount_available" : "c1_amount_unavailable_display_only";
     const watchReasons = buildWatchReasons(s, { m2HotCut, amtSignalCut });
 
-    // v3.3: C1-L1 Decision Output is the single-stock decision source.
-    // M6 only orders candidates; it does not change the pool decision.
-    if (c1Pool === "highlight") {
+    // Today Highlight: M7 selected/high-score names. C1 amount may be 0; still show it here.
+    if (m7Score >= m7HighlightCut || c1Tier === "add") {
       pools.highlight.push({
         ...s,
         pool: "highlight",
         reject_reasons: [],
+        amount_status: amountNote,
         why_yes: buildWhyYes(s),
-        c1_decision_source_used: true
+        pool_condition: `Today Highlight: M7 score >= ${m7HighlightCut} or C1=add; M6 score sorts order; C1 amount is displayed only.`,
+        c1_decision_source_used: c1Tier !== "unknown"
       });
       continue;
     }
 
-    if (c1Pool === "watch") {
+    // Watch: M7 pass but not high-score / or C1 says standard/watch.
+    if (m7Score >= m7PassCut || c1Tier === "standard" || c1Tier === "watch") {
       pools.watch.push({
         ...s,
         pool: "watch",
         reject_reasons: [],
+        amount_status: amountNote,
         why_not: watchReasons,
-        c1_decision_source_used: true
+        pool_condition: `Watch: M7 score >= ${m7PassCut} but below highlight, or C1=standard/watch; M6 score sorts order.`,
+        c1_decision_source_used: c1Tier !== "unknown"
       });
       continue;
     }
 
-    if (c1Pool === "reject") {
-      pools.reject.push({
-        ...s,
-        pool: "reject",
-        reject_reasons: ["c1_decision_no_trade"],
-        reject_level: "trade_reject",
-        c1_decision_source_used: true
-      });
-      continue;
-    }
-
-    // Fallback only when C1 decision tier is not available: not reject, amount available, basket simulation candidate.
+    // Simulation: data is usable for basket testing but not selected by M7 today.
     pools.simulation.push({
       ...s,
       pool: "simulation",
       reject_reasons: [],
+      amount_status: amountNote,
       why_not: watchReasons,
-      c1_decision_source_used: false
+      pool_condition: "Simulation: not hard reject, but not selected by M7 today; keep for basket experiments.",
+      c1_decision_source_used: c1Tier !== "unknown"
     });
   }
 
   Object.keys(pools).forEach(k => pools[k].sort(sortByM6Market));
+  pools._stats = buildPoolStats(pools);
+  pools._conditions = {
+    highlight: `M7 score >= ${m7HighlightCut} OR C1 tier=add; amount can be 0 but remains visible.`,
+    watch: `M7 score >= ${m7PassCut} but < ${m7HighlightCut}, OR C1 tier=standard/watch.`,
+    simulation: "Not hard reject, but not selected by M7 today; basket experiment material.",
+    reject: `Hard reject only: allow_fcn=false / explicit reject / M7 < ${m7PassCut} / M2 >= ${Math.round(m2RejectCut * 100)}%. Amount=0 is NOT reject.`
+  };
   return pools;
 }
 
-function getRejectReasons(s, { m2RejectCut }) {
+function getRejectReasons(s, { m2RejectCut, m7PassCut = 6 }) {
   const reasons = [];
   if (!s.allow_fcn) reasons.push("allow_fcn=false");
   if (s.reject_reason) reasons.push(String(s.reject_reason));
+  if (num(s.m7_score) < m7PassCut) reasons.push(`m7_score<${m7PassCut}`);
   if (s.m2_util >= m2RejectCut) reasons.push(`m2_util>=${Math.round(m2RejectCut * 100)}%`);
   if (s.vol_band === "extreme" && s.m2_util >= 0.8) reasons.push("extreme_vol_with_high_m2");
-  if (s.max_addable_amt <= 0) reasons.push("amount_unavailable");
+  // v3.4: max_addable_amt <= 0 is NOT reject here.
+  // It is an amount status displayed in the pool, so high-M7 names with no room remain visible.
   return reasons;
+}
+
+function buildPoolStats(pools = {}) {
+  const statOne = (list = []) => {
+    const m7 = list.map(x => num(x.m7_score));
+    const m6 = list.map(x => num(x.m6_market_attractive_score));
+    const amt = list.map(x => num(x.max_addable_amt));
+    return {
+      count: list.length,
+      mean_m7: round2(avg(m7)),
+      std_m7: round2(std(m7)),
+      cv_m7: round2(cv(m7)),
+      mean_m6_market: round2(avg(m6)),
+      std_m6_market: round2(std(m6)),
+      cv_m6_market: round2(cv(m6)),
+      total_max_addable_amt: amt.reduce((a, b) => a + b, 0),
+      no_amount_count: list.filter(x => num(x.max_addable_amt) <= 0).length
+    };
+  };
+  return {
+    highlight: statOne(pools.highlight),
+    watch: statOne(pools.watch),
+    simulation: statOne(pools.simulation),
+    reject: statOne(pools.reject)
+  };
 }
 
 function buildWhyYes(s) {
@@ -1155,6 +1200,8 @@ function buildCategoryMap(stocks) {
     map[k].sort(sortByM6Market);
   });
 
+  // Non-enumerable-like compatibility is not available in JSON, so expose stats separately
+  // through summary.category_stats; category_map itself still contains FULL lists, not top-5.
   return map;
 }
 
@@ -1627,6 +1674,8 @@ function buildSummary({ stocks, pools, category_map, baskets, allocation, market
       simulation: pools.simulation.length,
       reject: pools.reject.length
     },
+    pool_conditions: pools._conditions || {},
+    pool_stats: pools._stats || {},
 
     category: Object.fromEntries(
       Object.entries(category_map).map(([k, list]) => [
