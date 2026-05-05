@@ -1,5 +1,5 @@
 /* ==========================================================================
-   MM × M1 × M2 × M6 Integration — C1 Single Stock Cockpit / FCN Amount Allocation + Price Forecast UI
+   MM × M1 × M2 × M6 Integration — C1 Single Stock Cockpit / v5 L4 Professional Evidence + Forecast Fair Price
    File: js/mm/modules/mm_stock_cockpit.js
 
    Goal:
@@ -1660,16 +1660,17 @@
     `;
   }
 
-  function getM6PriceRange(m6) {
+  function getM6PriceRange(m6, fairPrice = null) {
     if (!m6) return null;
 
+    const fair = firstNum(fairPrice);
     const today = firstNum(m6.today_price, m6.price, m6.current_price);
     const f1d = firstNum(getM6Final(m6, "1d").weighted_price_final);
     const f1w = firstNum(getM6Final(m6, "1w").weighted_price_final);
     const f1m = firstNum(getM6Final(m6, "1m").weighted_price_final);
     const before1m = firstNum(getM6BeforeDecision(m6, "1m").weighted_price);
 
-    const prices = [today, f1d, f1w, f1m, before1m].filter(v => v !== null);
+    const prices = [today, f1d, f1w, f1m, before1m, fair].filter(v => v !== null);
     if (!prices.length) return null;
 
     const min = Math.min(...prices) * 0.98;
@@ -1681,12 +1682,12 @@
       return 18 + ((n - min) / (max - min)) * 64;
     }
 
-    return { today, f1d, f1w, f1m, before1m, min, max, pos };
+    return { today, f1d, f1w, f1m, before1m, fair, min, max, pos };
   }
 
   function renderM6ForecastBar(d) {
     const m6 = d.m6;
-    const r = getM6PriceRange(m6);
+    const r = getM6PriceRange(m6, d.fairPrice);
 
     if (!r) {
       return renderPositionPanelFallback(d);
@@ -1718,14 +1719,19 @@
               <div class="mm-m6-marker-label" style="bottom:8px;">Before</div>
             </div>
           ` : ""}
+          ${safeNum(r.fair) !== null ? `
+            <div class="mm-m6-forecast-marker fair" style="left:${r.pos(r.fair)}%;">
+              <div class="mm-m6-marker-label" style="bottom:28px;">Fair</div>
+            </div>
+          ` : ""}
           <div class="mm-m6-forecast-marker today" style="left:${r.pos(r.today)}%;">
             <div class="mm-m6-marker-label">TODAY</div>
           </div>
         </div>
         <div class="mm-m6-forecast-bar-foot">
           <span>Today：${r.today === null ? "--" : "$" + fmtNum(r.today, 2)}</span>
+          <span>Fair：${r.fair === null ? "--" : "$" + fmtNum(r.fair, 2)}</span>
           <span>1D：${r.f1d === null ? "--" : "$" + fmtNum(r.f1d, 2)}</span>
-          <span>1W：${r.f1w === null ? "--" : "$" + fmtNum(r.f1w, 2)}</span>
           <span>1M：${r.f1m === null ? "--" : "$" + fmtNum(r.f1m, 2)}</span>
         </div>
       </div>
@@ -2468,20 +2474,85 @@
     `;
   }
 
-  function renderL4(d) {
-    const ccRows = [
-      ["EPS Quality", d.cc.eps_status || (d.cc.epsOk ? "Full / Partial EPS" : "Fallback / Missing"), d.cc.epsOk ? "ok" : "warn"],
-      ["Runtime", d.cc.runtimeOk ? "OK" : "Missing", d.cc.runtimeOk ? "ok" : "bad"],
-      ["Global / Fundamental", d.cc.globalOk ? "OK" : "Missing", d.cc.globalOk ? "ok" : "warn"],
-      ["Quality Flags", Array.isArray(d.cc.eps_quality_flags) && d.cc.eps_quality_flags.length ? d.cc.eps_quality_flags.join(" / ") : "--", "neutral"],
-      ["Missing / Watch", d.cc.missing && d.cc.missing.length ? d.cc.missing.join(" / ") : "--", d.cc.missing && d.cc.missing.length ? "warn" : "ok"],
-      ["CC Grade", d.cc.text, ccClass(d.cc.grade)],
-      ["Coverage Score", fmtPct(d.cc.score), d.cc.score >= 0.8 ? "ok" : d.cc.score >= 0.5 ? "warn" : "bad"]
-    ].map(([k, v, cls]) => `<tr><td>${esc(k)}</td><td><span class="mm-status-text ${esc(cls)}">${esc(v)}</span></td></tr>`).join("");
+  function getEpsEngine(d) {
+    return (d.m1 && d.m1.eps_engine) ||
+           (d.m7 && d.m7.eps_engine) ||
+           (d.eps && d.eps.eps_engine) ||
+           {};
+  }
 
+  function fmtMaybe(v, digits = 2) {
+    const n = safeNum(v);
+    if (n === null) return "N/A";
+    return fmtNum(n, digits);
+  }
+
+  function nullMeaning(v, labelIfNull = "N/A｜not used by current scoring path") {
+    if (v === null || v === undefined || v === "") return labelIfNull;
+    return String(v);
+  }
+
+  function renderProfessionalTextBlock(title, text, emptyText = "尚未建立此段專業資料。") {
+    const t = cleanText(text);
+    return `
+      <div class="mm-pro-info-block">
+        <div class="mm-pro-info-title">${esc(title)}</div>
+        <div class="mm-pro-info-text">${esc(t || emptyText)}</div>
+      </div>
+    `;
+  }
+
+  function renderRiskOpportunity(ro) {
+    if (!ro || typeof ro !== "object") return renderProfessionalTextBlock("Risk / Opportunity", "");
+    const risks = Array.isArray(ro.risk) ? ro.risk : [];
+    const ops = Array.isArray(ro.opportunity) ? ro.opportunity : [];
+    return `
+      <div class="mm-pro-info-block">
+        <div class="mm-pro-info-title">Risk / Opportunity</div>
+        <div class="mm-pro-two-col">
+          <div><b>Risk</b>${risks.length ? risks.map(x => `<p>${esc(cleanText(x))}</p>`).join("") : "<p>尚未建立風險資料。</p>"}</div>
+          <div><b>Opportunity</b>${ops.length ? ops.map(x => `<p>${esc(cleanText(x))}</p>`).join("") : "<p>尚未建立機會資料。</p>"}</div>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderRawJsonDetail(title, obj) {
+    let txt = "{}";
+    try { txt = JSON.stringify(obj || {}, null, 2); } catch (e) { txt = "{}"; }
+    return `
+      <details class="mm-raw-json-detail">
+        <summary>${esc(title)}</summary>
+        <pre>${esc(txt)}</pre>
+      </details>
+    `;
+  }
+
+  function renderL4(d) {
+    const eps = getEpsEngine(d);
     const status = m1StatusText(d);
     const scoreStatus = d.m1Score !== null && d.m1Score >= 8 ? "ok" : d.m1Score !== null && d.m1Score >= 7 ? "warn" : "bad";
-    const ccStatus = ccClass(d.cc.grade);
+    const ccRank = firstVal(eps.cc_rank, d.m1.eps_coverage_grade, d.cc.grade, "--");
+    const ccScore = firstNum(eps.cc_score, d.cc.score !== null ? d.cc.score * 10 : null);
+    const epsLabel = firstVal(eps.cc_rank_label, eps.eps_status, d.cc.eps_status, "N/A");
+
+    const runtimeScore = firstVal(eps.runtime_cc_score, d.m1.runtime_cc_score, null);
+    const runtimeSource = firstVal(eps.runtime_fundamental_source, d.m1.runtime_fundamental_source, null);
+    const globalSource = firstVal(eps.global_model_source, d.m1.global_model_source, null);
+    const globalR2 = firstVal(eps.global_model_r2, d.m1.global_model_r2, null);
+
+    const runtimeStatus = runtimeScore === null && runtimeSource === null
+      ? "N/A｜not used by current scoring path"
+      : `score ${fmtMaybe(runtimeScore)}｜${nullMeaning(runtimeSource, "source N/A")}`;
+    const globalStatus = globalSource === null && globalR2 === null
+      ? "N/A｜not used by current scoring path"
+      : `${nullMeaning(globalSource, "source N/A")}｜R² ${fmtMaybe(globalR2)}`;
+
+    const profile = d.profile || {};
+    const companyOverview = pickText(d.m1.company_overview, d.m1.company_positioning, profile.company_overview, profile.company_positioning, profile.one_line, profile.summary);
+    const customerSummary = pickText(d.m1.customer_analysis && d.m1.customer_analysis.summary, d.m1.customer_analysis, profile.customer_analysis && profile.customer_analysis.summary, profile.customer_analysis);
+    const competitionSummary = pickText(d.m1.competition && d.m1.competition.summary, d.m1.competition, profile.competition && profile.competition.summary, profile.competition);
+    const finalView = pickText(d.m1.final_view, d.m1.final_decision, profile.final_view, profile.final_decision, d.m1.valuation_and_timing && d.m1.valuation_and_timing.valuation_view);
 
     return `
       <details open class="mm-l4-quality-detail">
@@ -2495,39 +2566,57 @@
           ])}
         </summary>
 
-        <div class="mm-l4-hero">
+        <div class="mm-l4-hero mm-l4-hero-four">
           <div class="mm-l4-score-card ${scoreStatus}">
             <div class="mm-l4-k">M1 Quality</div>
             <div class="mm-l4-big">${fmtNum(d.m1Score, 2)}</div>
             <div class="mm-l4-sub">${esc(status)}｜Source：${esc(d.m1.m1_source || "missing")}｜Rank：${d.m1.rank ?? "--"}</div>
           </div>
-          <div class="mm-l4-score-card ${ccStatus}">
-            <div class="mm-l4-k">CC Source</div>
-            <div class="mm-l4-big">${esc(d.cc.text)}</div>
-            <div class="mm-l4-sub">${esc(d.cc.eps_status || d.cc.note)}${d.cc.missing && d.cc.missing.length ? "｜" + esc(d.cc.missing.join(" / ")) : ""}</div>
+          <div class="mm-l4-score-card ${ccClass(String(ccRank).replace('CC-', ''))}">
+            <div class="mm-l4-k">EPS</div>
+            <div class="mm-l4-big small">CC ${fmtMaybe(ccScore, 1)}｜${esc(ccRank)}</div>
+            <div class="mm-l4-sub">
+              ${esc(epsLabel)}<br>
+              2025 EPS：${fmtMaybe(eps.eps_2025, 2)}｜2026：${fmtMaybe(eps.eps_2026, 2)}｜2027：${fmtMaybe(eps.eps_2027, 2)}
+            </div>
           </div>
           <div class="mm-l4-score-card neutral">
-            <div class="mm-l4-k">Category</div>
-            <div class="mm-l4-big small">${esc(firstVal(d.m1.category, "--"))}</div>
-            <div class="mm-l4-sub">${esc(firstVal(d.m1.category_sub, "--"))}</div>
+            <div class="mm-l4-k">Runtime</div>
+            <div class="mm-l4-big small">${esc(nullMeaning(runtimeScore, "N/A"))}</div>
+            <div class="mm-l4-sub">${esc(runtimeStatus)}</div>
+          </div>
+          <div class="mm-l4-score-card neutral">
+            <div class="mm-l4-k">Global</div>
+            <div class="mm-l4-big small">${esc(nullMeaning(globalSource, "N/A"))}</div>
+            <div class="mm-l4-sub">${esc(globalStatus)}</div>
           </div>
         </div>
 
         <div class="mm-l4-pill-row">
-          ${renderCcPill("EPS", d.cc.eps_status || "--", d.cc.epsOk ? "ok" : "warn")}
-          ${renderCcPill("Runtime", d.cc.runtimeOk ? "OK" : "Missing", d.cc.runtimeOk ? "ok" : "bad")}
-          ${renderCcPill("Global", d.cc.globalOk ? "OK" : "Missing", d.cc.globalOk ? "ok" : "warn")}
+          ${renderCcPill("EPS Path", epsLabel, ccRank === "A" || ccRank === "B" ? "ok" : ccRank === "C" ? "warn" : "bad")}
+          ${renderCcPill("Runtime", runtimeStatus, runtimeScore === null && runtimeSource === null ? "warn" : "ok")}
+          ${renderCcPill("Global", globalStatus, globalSource === null ? "warn" : "ok")}
           ${renderCcPill("Coverage", fmtPct(d.cc.score), d.cc.score >= 0.8 ? "ok" : d.cc.score >= 0.5 ? "warn" : "bad")}
         </div>
 
-        <details class="mm-m2-subdetail">
-          <summary>Source Layer Detail / 資料來源明細</summary>
-          <div class="table-wrap mm-small-table mm-l4-source-table">
-            <table>
-              <thead><tr><th>Source Layer</th><th>Status</th></tr></thead>
-              <tbody>${ccRows}</tbody>
-            </table>
+        <details class="mm-m2-subdetail" open>
+          <summary>Source Layer Detail / 個股專業訊息</summary>
+          <div class="mm-pro-info-grid">
+            ${renderProfessionalTextBlock("Company Positioning", companyOverview)}
+            ${renderProfessionalTextBlock("Customer Analysis", customerSummary)}
+            ${renderProfessionalTextBlock("Competition", competitionSummary)}
+            ${renderRiskOpportunity(d.m1.risk_opportunity || profile.risk_opportunity)}
+            ${renderProfessionalTextBlock("Final View", finalView)}
           </div>
+        </details>
+
+        <details class="mm-m2-subdetail">
+          <summary>Raw M1 Score Fields / 原始資料欄位</summary>
+          ${renderRawJsonDetail("eps_engine", eps)}
+          ${renderRawJsonDetail("competitive_scope", d.m1.competitive_scope)}
+          ${renderRawJsonDetail("source_trace", d.m1.source_trace)}
+          ${renderRawJsonDetail("problem_flags", d.m1.problem_flags)}
+          ${renderRawJsonDetail("breakdown", d.m1.breakdown)}
         </details>
       </details>
     `;
@@ -2640,6 +2729,8 @@
         .mm-m6-forecast-marker.m7 .mm-m6-marker-label{color:#166534;background:#f0fdf4;border-color:#bbf7d0}
         .mm-m6-forecast-marker.before{background:#f97316}
         .mm-m6-forecast-marker.before .mm-m6-marker-label{color:#9a3412;background:#fff7ed;border-color:#fed7aa}
+        .mm-m6-forecast-marker.fair{background:#2563eb}
+        .mm-m6-forecast-marker.fair .mm-m6-marker-label{color:#1d4ed8;background:#eff6ff;border-color:#bfdbfe}
         .mm-m6-forecast-marker.today{width:3px;background:#111827}
         .mm-m6-forecast-marker.today .mm-m6-marker-label{top:33px;color:#111827;background:#fff;border-color:#111827}
         .mm-m6-forecast-bar-foot{
@@ -2734,11 +2825,22 @@
         .mm-broker-risk-table th:nth-child(6),.mm-broker-risk-table td:nth-child(6){background:#f7fff9}
         .mm-l4-quality-detail{background:linear-gradient(180deg,#f9fbff,#ffffff)!important}
         .mm-l4-hero{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:10px 0}
+        .mm-l4-hero-four{grid-template-columns:1fr 1.2fr 1fr 1fr}
         .mm-l4-score-card{border:1px solid #e4edf6;border-radius:16px;background:#fff;padding:14px;box-shadow:0 8px 18px rgba(16,24,40,.035)}
         .mm-l4-score-card.ok{background:var(--good-bg);border-color:#ccead9}
         .mm-l4-score-card.warn{background:var(--warn-bg);border-color:#f1dfb5}
         .mm-l4-score-card.bad{background:var(--bad-bg);border-color:#f0cfcf}
         .mm-l4-score-card.neutral{background:#f8fbff;border-color:#dfeaf5}
+        .mm-pro-info-grid{display:grid;grid-template-columns:1fr;gap:10px;margin-top:10px}
+        .mm-pro-info-block{border:1px solid #e4edf6;border-radius:14px;background:#fff;padding:12px}
+        .mm-pro-info-title{font-size:12px;font-weight:1000;color:#334155;margin-bottom:6px}
+        .mm-pro-info-text{font-size:12px;line-height:1.65;color:#334155;font-weight:700}
+        .mm-pro-two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:12px;line-height:1.55;color:#334155}
+        .mm-pro-two-col b{display:block;margin-bottom:4px;color:#0f172a}
+        .mm-pro-two-col p{margin:4px 0}
+        .mm-raw-json-detail{border:1px dashed #d8e4ef;border-radius:12px;background:#f8fafc;padding:8px 10px;margin-top:8px}
+        .mm-raw-json-detail summary{font-size:12px;font-weight:900;cursor:pointer}
+        .mm-raw-json-detail pre{white-space:pre-wrap;font-size:11px;line-height:1.45;color:#334155;max-height:260px;overflow:auto}
         .mm-l4-k{font-size:11px;color:var(--muted);font-weight:1000;text-transform:uppercase;letter-spacing:.02em}
         .mm-l4-big{font-size:30px;font-weight:1000;line-height:1.05;margin-top:7px;color:#0f172a}
         .mm-l4-big.small{font-size:20px;line-height:1.2;word-break:break-word}
@@ -2757,6 +2859,8 @@
         .mm-pos{color:var(--good)!important}
         .mm-neg{color:var(--bad)!important}
         @media(max-width:1180px){
+          .mm-l4-hero-four{grid-template-columns:1fr 1fr}
+          .mm-pro-two-col{grid-template-columns:1fr}
           .mm-engine-flow{grid-template-columns:repeat(2,1fr)}
           .mm-detail-grid{grid-template-columns:repeat(2,1fr)}
           .mm-trace{grid-template-columns:repeat(3,1fr)}
@@ -2767,6 +2871,7 @@
           .mm-l4-hero,.mm-l4-pill-row{grid-template-columns:1fr}
         }
         @media(max-width:720px){
+          .mm-l4-hero-four{grid-template-columns:1fr}
           .mm-engine-flow,.mm-detail-grid,.mm-trace{grid-template-columns:1fr}
         }
       </style>
