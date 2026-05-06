@@ -1,239 +1,239 @@
 {
-  "updated_at": "2026-05-05 00:13",
+  "updated_at": "2026-05-06 00:11",
   "summary": {
     "active_fcn_count": 24,
     "top_risk_code": "FCN710H",
     "worst_of": "ORCL",
-    "market_env": "保守做",
-    "main_conclusion": "今天可保守做 FCN，建議以 TSM / MSFT 為主，避免進攻型標的過重。"
+    "market_env": "觀望",
+    "main_conclusion": "今天較適合觀望或只做防守型 FCN，先避開高波動與風險集中的標的。"
   },
   "morning_brief": {
     "international_news": [
       {
-        "title": "Rangers fire Wolf Pack head coach in major AHL shake up",
-        "summary": "Hartford finished last in the Atlantic Division with 60 points this season and missed the Calder Cup Playoffs…",
-        "content": "The Rangers offseason changes have reached the AHL Hartford staff. Head coach Grant Potulny, assistant coach Jamie Tardif and assistant coach Paul Mara were all fired by the Wolf Pack, the Blueshirt… [+2303 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "With a beer in hand, dads tackle hairdressing",
+        "summary": "These dads are spending a night at the pub learning how to braid.",
+        "content": "A night at the pub and a crash course in hair styling might not seem like a common pairing, but with the help of social media the trend is catching on globally including in rural Australia. \"Beers a… [+3705 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Mets bounce-back on West Coast, take series from Angels",
-        "summary": "ANAHEIM, Calif. — A series win against one of the only teams that have a worse record than the New York Mets…",
-        "content": "ANAHEIM, Calif. A series win against one of the only teams that have a worse record than the New York Mets might not seem like much of a victory, especially since they didnt look particularly good in… [+4366 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "The throngs of unwelcome visitors ruining Britain's most beautiful places: from ancient towns to scenic villages and a…",
-        "summary": "Britain might be in the doldrums, but people from around the world still flock to these shores - around 45mil…",
-        "content": "Britain might be in the doldrums, but people from around the world still flock to these shores around 45million a year, in fact. The trouble is that most of them end up in the same places. Never min… [+9785 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "At 62, I broke my SPINE doing Pilates. It turned out I was facing osteoporosis and my GP should have spotted it. Here a…",
-        "summary": "I was kneeling on my mat in a Pilates class. 'Now let's move into a bird-dog rotation,' said the teacher. I d…",
-        "content": "I was kneeling on my mat in a Pilates class. Now lets move into a bird-dog rotation, said the teacher. I beg your pardon? I dutifully copied her, bringing one knee to the opposite elbow and out again… [+10359 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Atiku flags insecurity, economic collapse ahead of US trip",
-        "summary": "Former VP Atiku Abubakar confirms his planned US trip to draw global attention to Nigeria’s worsening insecur…",
-        "content": "Former Vice President Atiku Abubakar has confirmed his planned visit to the United States to draw international attention to Nigerias worsening insecurity, economic hardship, and declining governance… [+6447 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "DAN HODGES: I've been watching Zack Polanski closely and I've worked out his plan. Something deeply sinister is happeni…",
-        "summary": "Zack Polanski has been leader of the Green Party for just seven months. And he's already been found out. His…",
-        "content": "Zack Polanski has been leader of the Green Party for just seven months. And he's already been found out. On yesterday's media round, his mealy-mouthed attempt to minimise the new anti-Jewish terror … [+5329 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "How will Trump escort Hormuz-bound ships? #world",
-        "summary": "What the US plan is President Donald Trump said the United States will help “ free ” cargo ships stranded bec…",
-        "content": "What the US plan is President Donald Trump said the United States will help free cargo ships stranded because of Strait of Hormuz closure and that the effort would begin Monday morning (Middle East … [+1474 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
+        "title": "Trump threatens to 'blow Iran off face of the Earth' after shots fired at ships after declaring 'Project Freedom' to en…",
+        "summary": "After he confirmed Iran had fired 'shots' at vessels, the US President warned Tehran it would be 'blown off t…",
+        "content": "Donald Trump's bid to reopen the Strait of Hormuz yesterday risked reigniting the war in the Middle East. After he confirmed Iran had fired 'shots' at vessels, the US President warned Tehran it woul… [+5396 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
         "affects_fcn": true,
         "impact_score": -1
       },
       {
-        "title": "Why was Gen V canceled during The Boys final season? #entertainment",
-        "summary": "Gen V cancellation timing during The Boys’ endgame Amazon has canceled Gen V amid The Boys ’ fifth and final…",
-        "content": "Amazon has canceled Gen V amid The Boys fifth-and-final season, and the storys central point is the scheduling: the announcement came while key events from the parent series were already unfolding. … [+1516 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "Banking, insurance stocks dip despite market rally",
+        "summary": "Discover why banking and insurance stocks dipped in Nigeria despite a 7.33% market surge. Learn about sectora…",
+        "content": "The Nigerian equities market sustained its aggressive climb for a fifth consecutive week, though a sharp divergence in sectoral performance left investors navigating a polarised landscape. While the … [+2422 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Bizarre way Channel Nine staff learned of more job cuts after 9News announces bombshell restructure: 'Morale isn't good'",
-        "summary": "Channel Nine is set to cut 20 jobs in Melbourne next year as its news division prepares to undergo a major re…",
-        "content": "Channel Nine is set to cut 20 jobs in Melbourne next year as its news division prepares to undergo a major restructure. Staff were reportedly briefed on the changes last Thursday, when they learned… [+3810 chars]｜分類：全球經濟｜解讀：利率壓力若下降，FCN 環境通常較有利",
-        "affects_fcn": true,
-        "impact_score": 1
-      },
-      {
-        "title": "Access Holdings posts N1tn PBT, equity hits N4.33tn",
-        "summary": "Access Holdings reports a record N1tn PBT for 2025. Discover their financial results, fortress-like balance s…",
-        "content": "Access Holdings Plcs audited financial results for the year ended 31 December 2025 revealed a fortress-like balance sheet, with shareholders funds climbing 15 per cent to N4.33tn, signalling a defini… [+2805 chars]｜分類：全球經濟｜解讀：影響有限",
+        "title": "China's Wu Yize wins World Snooker Championship for first time",
+        "summary": "China's Wu Yize won the World Snooker Championship for the first time with a dramatic 18-17 victory over Shau…",
+        "content": "China's Wu Yize won the World Snooker Championship for the first time with a dramatic 18-17 victory over Shaun Murphy in the final on Monday. Wu held his nerve to seal his thrilling triumph in a ten… [+3029 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Lagos marks Noise Awareness Day with student debate",
-        "summary": "Lagos State confronts noise pollution with a student debate for International Noise Awareness Day, highlighti…",
-        "content": "The Lagos State Environmental Protection Agency last week held the finals of its inter-district essay and debate competition to mark the 2026 International Noise Awareness Day, reaffirming its commit… [+2829 chars]｜分類：全球經濟｜解讀：影響有限",
+        "title": "FinTechs Race to Fix the Middle Market’s Finance Gap",
+        "summary": "Enterprise resource planning (ERP) systems act as the organizing backbone of corporate finance, yet their lim…",
+        "content": "Enterprise resource planning (ERP) systems act as the organizing backbone of corporate finance, yet their limits are showing. In many cases, they arrive too late in a companys lifecycle, often after … [+4670 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Why shoppers - including top Aussie athletes - can't stop talking about the item that sold out EIGHT TIMES: 'It lives u…",
-        "summary": "An Aussie business has been struggling to keep up with demand, with its products flying off shelves every min…",
-        "content": "Daily Mail journalists select and curate the products that feature on our site. If you make a purchase via links on this page we will earn commission - learn more It's one of the most-loved staples … [+8492 chars]｜分類：全球經濟｜解讀：影響有限",
+        "title": "Why did NATO Europe react to US troop drawdown? #world",
+        "summary": "Europe reacts to US troop drawdown from Germany European leaders responded with renewed attention to NATO pla…",
+        "content": "European leaders responded with renewed attention to NATO planning after the United States announced it would reduce troop deployments on the continent, particularly in Germany. The reported reaction… [+1584 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "The West’s Bubble of Illusion About Israel – and About Itself – Is Finally Being Burst",
+        "summary": "For decades, two irreconcilable narratives about Israel and its motivations have existed in parallel. On the…",
+        "content": "For decades, two irreconcilable narratives about Israel and its motivations have existed in parallel. On the one side, an official western narrative portrays a plucky, besieged Jewish state of Israe… [+17372 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Florida GOP candidate reveals why 'amazing' fundraising haul and key Trump moves suggest midterm 'optimism'",
+        "summary": "GOP congressional candidate Scott Singer says he outraised incumbent Jared Moskowitz by nearly 3-to-1 and pre…",
+        "content": "Scott Singer, the former Republican mayor of Boca Raton and a candidate for Congress in Florida, is touting a significant campaign fundraising haul while outlining to Fox News Digital the reasons why… [+4249 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Surveyors induct 30 fellows, urge public service",
+        "summary": "The Nigerian Institution of Surveyors (NIS) inducts 30 new fellows, urging them to uphold professional integr…",
+        "content": "The Nigerian Institution of Surveyors has inducted no fewer than 30 new fellows, with a charged on them to uphold the integrity of the institution in a bid to ensure that it continues to serve the Ni… [+7832 chars]｜分類：全球經濟｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "National Cold War Center Teams With Maryland University To Enhance Historical Programming",
+        "summary": "“The Cold War shaped every aspect of modern life—from global politics to technology and culture,” said Christ…",
+        "content": "BLYTHEVILLE, Ark. (KAIT) - The National Cold War Center in Blytheville announced it is partnering with the University of Maryland School of Public Policy to expand its global reach. The partnership,… [+1139 chars]｜分類：全球經濟｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "What Happens When Inventors Migrate?",
+        "summary": "When inventors migrate, productivity rises—not just where they land, but in the countries they left behind.",
+        "content": "Key takeaways High-skilled migration can lead to brain drain, but it also fosters international knowledge transfers that boost productivity in both origin and destination countries. The most ef… [+6078 chars]｜分類：全球經濟｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "6 of the best ancestral wellness practices from around the world",
+        "summary": "From consulting shamans in Indonesia to Maya cleansing ceremonies in Mexico, these rituals offer travellers a…",
+        "content": "This article was produced by National Geographic Traveller (UK). The idea of a wellness escape is evolving. Todays travellers are looking beyond traditional spa experiences towards nature, cultural … [+7471 chars]｜分類：全球經濟｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       }
     ],
     "financial_news": [
       {
-        "title": "US Stock Market: Traders grapple with tail risk as stocks regain highs",
-        "summary": "US equities are nearing previous highs despite ongoing concerns about higher energy prices stemming from the…",
-        "content": "New York: With equities back to their highs after a V-shaped recovery from the Iran oil shock, investors are increasingly caught between left and right tail risks: The tireless AI and semiconductor r… [+4189 chars]｜分類：Fed / 利率｜解讀：地緣風險升高，需留意市場波動擴大",
+        "title": "Asian Stocks Set to Fall as Gulf Tensions Lift Oil: Markets Wrap",
+        "summary": "Stocks in Asia were set to fall Tuesday as a surge in oil prices dragged US equities and bonds lower, with es…",
+        "content": "(Bloomberg) Stocks in Asia were set to fall Tuesday as a surge in oil prices dragged US equities and bonds lower, with escalating tensions around the Strait of Hormuz raising fresh fears about high e… [+4967 chars]｜分類：Fed / 利率｜解讀：地緣風險升高，需留意市場波動擴大",
         "affects_fcn": true,
         "impact_score": -1
       },
       {
-        "title": "Bond Traders Look to Treasury Refunding, Fed Speakers and Jobs",
-        "summary": "US bond traders will focus on this week’s announcement of the Treasury Department’s borrowing plans for the n…",
-        "content": "(Bloomberg) US bond traders will focus on this weeks announcement of the Treasury Departments borrowing plans for the next three months, an array of Federal Reserve speakers and a loaded calendar of … [+5745 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
+        "title": "Trading Day: The oil, bonds tango",
+        "summary": "ORLANDO, Florida, May 4 : Oil prices jumped further above the $100-a-barrel mark on Monday as Iran controls t…",
+        "content": "ORLANDO, Florida, May 4 : Oil prices jumped further above the $100-a-barrel mark on Monday as Iran controls the Strait of Hormuz, despite U.S. efforts to free up shipping, pushing U.S. Treasury yield… [+4426 chars]｜分類：Fed / 利率｜解讀：地緣風險升高，需留意市場波動擴大",
         "affects_fcn": true,
-        "impact_score": 1
+        "impact_score": -1
       },
       {
-        "title": "Trump Crackdown Yields Results: Illegal Aliens Sentenced for Drugs, Guns Trafficking, SNAP Fraud",
-        "summary": "As the Trump administration cracks down on illegal immigration, the Justice Department this week advanced cas…",
-        "content": "As the Trump administration cracks down on illegal immigration, the Justice Department this week advanced cases against illegal aliens running criminal enterprisesincluding a gun trafficking scheme o… [+4776 chars]｜分類：Fed / 利率｜解讀：影響有限",
-        "affects_fcn": true,
-        "impact_score": 0
-      },
-      {
-        "title": "7 Reasons Why Wall Street May Regret Trump Nominating Kevin Warsh for Fed Chair",
-        "summary": "For years, Wall Street operated under one central assumption: when markets wobble, the Federal Reserve eventu…",
-        "content": "Quick Read <ul><li>Morgan Stanley (MS) banker Kevin Warsh, nominated as the next Federal Reserve chair, has criticized the Feds massive balance sheet, forward guidance, and market interventions, pot… [+7927 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
-        "affects_fcn": true,
-        "impact_score": 1
-      },
-      {
-        "title": "Saylor pauses Bitcoin buys amid macro uncertainty, eyes on $68K threshold",
-        "summary": "Saylor's cautious Bitcoin strategy highlights macroeconomic risks, potentially influencing market sentiment a…",
-        "content": "## Market Snapshot Bitcoin Price Predictions for May 2026: Currently priced at 28% YES for reaching $115,000. Bitcoin Price Above on May 3: Priced at 99.9% YES for being above $68,000. ## Key Takea… [+2205 chars]｜分類：Fed / 利率｜解讀：影響有限",
+        "title": "What factors determine your mortgage rate?",
+        "summary": "Use the factors you have control over to help you secure a better rate",
+        "content": "If you need to take out a mortgage to purchase a house, the rate you get makes a major difference in how much you ultimately pay over time. Even just a percentage-point contrast can mean shelling out… [+3832 chars]｜分類：Fed / 利率｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Traders Grapple With Two-Sided Tail Risk as Stocks Regain Highs",
-        "summary": "With equities back to their highs after a V-shaped recovery from the Iran oil shock, investors are increasing…",
-        "content": "(Bloomberg) With equities back to their highs after a V-shaped recovery from the Iran oil shock, investors are increasingly caught between left and right tail risks: The tireless AI and semiconductor… [+5201 chars]｜分類：Fed / 利率｜解讀：地緣風險升高，需留意市場波動擴大",
-        "affects_fcn": true,
-        "impact_score": -1
-      },
-      {
-        "title": "Traders grapple with two-sided tail risk as stocks regain highs",
-        "summary": "(Bloomberg) -- With equities back to their highs after a V-shaped recovery from the Iran oil shock, investors…",
-        "content": "(Bloomberg) -- With equities back to their highs after a V-shaped recovery from the Iran oil shock, investors are increasingly caught between left and right tail risks: The tireless AI and semiconduc… [+4613 chars]｜分類：Fed / 利率｜解讀：地緣風險升高，需留意市場波動擴大",
-        "affects_fcn": true,
-        "impact_score": -1
-      },
-      {
-        "title": "US-Iran war impacts credit markets, dims 2026 Fed rate cut prospects",
-        "summary": "The US-Iran conflict heightens economic volatility, potentially delaying Fed rate cuts due to inflationary pr…",
-        "content": "## Market Snapshot The Fed rate cuts predictions market currently shows uncertainty, with relevant pricing suggesting a decrease in the likelihood of rate cuts in 2026. The observed impact is consis… [+2151 chars]｜分類：Fed / 利率｜解讀：波動升高，FCN 敲入風險增加",
-        "affects_fcn": true,
-        "impact_score": -2
-      },
-      {
-        "title": "Spirit Airlines’ death is entirely on the Biden administration — and specifically faux-populism",
-        "summary": "Saturday’s Spirit Airlines shutdown is entirely on the Biden administration — and more specifically, on the f…",
-        "content": "Saturdays Spirit Airlines shutdown is entirely on the Biden administration and more specifically, on the faux-populism of its Federal Trade Commission chief, Lina Khan. On top of all the travelers l… [+1685 chars]｜分類：通膨 / 就業｜解讀：利率壓力若下降，FCN 環境通常較有利",
-        "affects_fcn": true,
-        "impact_score": 1
-      },
-      {
-        "title": "Bessent Warns of Threat of AI-Powered Bank Account Hacks",
-        "summary": "Treasury Secretary Scott Bessent says American banks are working to safeguard against AI-related cyberthreats…",
-        "content": "Treasury Secretary Scott Bessent says American banks are working to safeguard against AI-related cyberthreats.Bessent addressed the issue Sunday (May 3) in an interview with Fox News, coming in the w… [+2440 chars]｜分類：通膨 / 就業｜解讀：影響有限",
-        "affects_fcn": true,
+        "title": "Norwegian Cruise Line Holdings Ltd. Investigated for Securities Fraud Violations by Block & Leviton: NCLH Investors Sho…",
+        "summary": "Block & Leviton is investigating Norwegian Cruise Line Holdings (NYSE: NCLH) for potential securities law vio…",
+        "content": "BOSTON, May 04, 2026 (GLOBE NEWSWIRE) -- Block &amp; Leviton is investigating Norwegian Cruise Line Holdings Ltd. (NYSE: NCLH) for potential securities law violations. Investors who have lost money i… [+2682 chars]｜分類：Fed / 利率｜解讀：影響有限",
+        "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Bizarre way Channel Nine staff learned of more job cuts after 9News announces bombshell restructure: 'Morale isn't good'",
-        "summary": "Channel Nine is set to cut 20 jobs in Melbourne next year as its news division prepares to undergo a major re…",
-        "content": "Channel Nine is set to cut 20 jobs in Melbourne next year as its news division prepares to undergo a major restructure. Staff were reportedly briefed on the changes last Thursday, when they learned… [+3810 chars]｜分類：通膨 / 就業｜解讀：利率壓力若下降，FCN 環境通常較有利",
+        "title": "Trump slams Fed Chair Jerome Powell as ‘Disaster’ as Mortgage rates Stay above 6.5% and 10-year yield nears 4.5%",
+        "summary": "US interest rates are still high and causing problems for home buyers. Donald Trump criticized Fed Chair Jero…",
+        "content": "The US President Donald Trump called Fed Chair Jerome Powell a disaster for America and said interest rates are too high, as posted by The Kobeissi Letter on X. At the same time, the 10-year US Treas… [+3310 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
         "affects_fcn": true,
         "impact_score": 1
       },
       {
-        "title": "‘There’s Fun in Fascism!’ White Nationalists Tells 60 Minutes They Use ‘Disaster Tourism’ As a Recruitment Tool",
-        "summary": "White nationalist groups have been descending on storm-ravaged areas across the U.S. to help rebuild communit…",
-        "content": "White nationalist groups like Patriot Front and others have been descending on storm-ravaged areas across the U.S. to help rebuild communities and recruit new members, according to a 60 Minutes repor… [+2727 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "title": "What could cause mortgage rates to decline this May?",
+        "summary": "Mortgage rates can move, even without a Fed meeting on the calendar. Here's what could push them lower this M…",
+        "content": "Mortgage rates don't move only when the Fed acts, and numerous forces could still shift significantly in May. Shutjane/Getty Images Mortgage rates have spent much of this year on an unpredictable c… [+5562 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
+        "affects_fcn": true,
+        "impact_score": 1
+      },
+      {
+        "title": "Gold Plunges Over 2% to $4,527 as Pullback Deepens in Volatile 2026 Market",
+        "summary": "NEW YORK — Gold prices tumbled more than 2% on Tuesday, May 5, 2026, with spot gold hitting $4,527.26 per oun…",
+        "content": "NEW YORK — Gold prices tumbled more than 2% on Tuesday, May 5, 2026, with spot gold hitting $4,527.26 per ounce, down $102.63 or 2.22% from the previous close, extending a broader correction from rec… [+5310 chars]｜分類：Fed / 利率｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "US stock market today: Why Dow Jones is down while S&P 500 and Nasdaq rise today — Dow crashes over 160 points as oil s…",
+        "summary": "US stock market today shows a sharp split. The Dow Jones Industrial Average falls over 160 points. Oil prices…",
+        "content": "US stock market today: Why Dow Jones is down while S&amp;P 500 and Nasdaq rise? On Monday morning, the Dow Jones Industrial Average slipped to 49,351, down about 0.3%. At the same time, the S&amp;P 5… [+11083 chars]｜分類：Fed / 利率｜解讀：地緣風險升高，需留意市場波動擴大",
+        "affects_fcn": true,
+        "impact_score": -1
+      },
+      {
+        "title": "Edwards cleared to play for Timberwolves in series opener against Spurs after expedited rehab",
+        "summary": "Minnesota Timberwolves All-Star Anthony Edwards has been cleared to play Monday night against the San Antonio…",
+        "content": "SAN ANTONIO (AP) Minnesota Timberwolves All-Star Anthony Edwards has been cleared to play Monday night against the San Antonio Spurs in Game 1 of the Western Conference semifinals, returning 10 days … [+1593 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Amplifai Health Secures SFDA Approval for the World’s First Software as a Medical Device for Diabetic Foot Screening an…",
+        "summary": "New multicentre findings show AI-powered thermal imaging can identify early diabetic foot risk patterns in re…",
+        "content": "Riyadh, Saudi Arabia February 3, 2025 Amplifai Health has officially secured medical device marketing authorization from the Saudi Food and Drug Authority (SFDA) for Thermal Foot Scan (TFscan). This… [+5575 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Secret Service agent accused of exposing himself at hotel near Trump Doral: report",
+        "summary": "A Secret Service agent was arrested on allegations of engaging in obscene behavior in the hallway of a Double…",
+        "content": "A Secret Service agent was arrested on allegations of engaging in obscene behavior in the hallway of a DoubleTree hotel in South Florida, according to Sheldon Fox of 7News. The agent, identified as … [+1136 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "NNPC posts N276bn profit amid pipeline disruptions",
+        "summary": "NNPC reports a N276bn profit in March 2026, doubling its earnings due to rising gas production and efficiency…",
+        "content": "The Nigerian National Petroleum Company Limited recorded a profit after tax of N276bn in March 2026, more than doubling its February earnings, as rising gas production and improved operational effici… [+4300 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       }
     ],
     "ai_trend": [
       {
-        "title": "getmnemo 0.1.0",
-        "summary": "Python SDK for Mnemo Memory — long-term memory infrastructure for AI agents.",
+        "title": "memanto 0.0.8",
+        "summary": "Memory that AI Agents Love!",
         "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "getmnemo added to PyPI",
-        "summary": "Python SDK for Mnemo Memory — long-term memory infrastructure for AI agents.",
+        "title": "astrocyte 0.13.0",
+        "summary": "Open-source memory framework for AI agents",
         "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "What is New in SQL Server 2025",
-        "summary": "Learn about the latest version of SQL Server and get help installing it on your system. The post What is New…",
-        "content": "Introduction In this article, we will check some new features in SQL Server 2025. We will mention some nice AI features, new functions, data types, and more. At the end, we will show in the Appendix… [+10950 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "waggle-mail 1.9.16",
+        "summary": "Full email client for AI agents: send, list, read, reply, move, download attachments. IMAP + SMTP, Markdown t…",
+        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "How Infosys is adapting as GCCs move outsourcing work in-house",
-        "summary": "The Bengaluru-based IT major has mandated dedicated GCC offerings with embedded AI capabilities across its de…",
-        "content": "The Bengaluru-based IT major has mandated dedicated GCC offerings with embedded AI capabilities across its delivery centres, while also setting aside capacity within its campuses to incubate client-o… [+4568 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "Google Cloud Introduces Event-Driven Webhooks for AI Agents",
+        "summary": "Google Cloud launches Event-Driven Webhooks, enabling AI agents to react in real-time to asynchronous events…",
+        "content": "Google Cloud has announced a major update to its AI infrastructure with the introduction of Event-Driven Webhooks. This new capability allows AI agents to move beyond simple request-response interact… [+2545 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Simple, affordable unsupervised agentic coding from my phone with Claude Code in Github Actions",
-        "summary": "Podcasts and the blogosphere are awash with people talking about building software while away from their desk…",
-        "content": "If you’re following the AI hype train, you’ll have heard serious software people talk about building software (without needing to code) while they take their kids to the park. This is obviously appea… [+9618 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "Give AI agents safe access to your cluster: Model Context Protocol server for Red Hat OpenShift is now in technology pr…",
+        "summary": "As organizations embrace agentic AI for cluster operations, the central challenge shifts from whether or not…",
+        "content": "As organizations embrace agentic AI for cluster operations, the central challenge shifts from whether or not AI can control a cluster to whether it can do it safely and with accountability. How do la… [+6278 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "How IT leaders can measure the ROI of agentic AI initiatives",
-        "summary": "Gartner® estimates that over 70% of agentic AI use cases will fail to deliver the expected value. Traditional…",
-        "content": "As organizations move from generative AI experimentation to operational deployments, a new opportunity is coming into focus: agentic AI. Capable of perceiving, deciding, and acting, AI agents are gai… [+9206 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "Senior Machine Learning Scientist – Advanced AI & Automation",
+        "summary": "We are looking for a Senior Machine Learning Scientist to join the Corporate Reserach department at Sartorius…",
+        "content": "We are looking for a Senior Machine Learning Scientist to join the Corporate Reserach department at Sartorius. You will use your expertise in modern machine learning, computer vision and robotics to … [+5373 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "chibi-bot 1.8.0",
-        "summary": "Your Digital Companion. Self-hosted Telegram bot orchestrating multiple AI providers (OpenAI, Anthropic, Goog…",
-        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "Absci Announces Inducement Grant Under Nasdaq Listing Rule 5635(c)(4)",
+        "summary": "VANCOUVER, Wash. and NEW YORK, May 04, 2026 (GLOBE NEWSWIRE) -- Absci Corporation (Nasdaq: ABSI), a clinical-…",
+        "content": "VANCOUVER, Wash. and NEW YORK, May 04, 2026 (GLOBE NEWSWIRE) -- Absci Corporation (Nasdaq: ABSI), a clinical-stage biopharmaceutical company advancing breakthrough therapeutics designed with generati… [+2944 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：ARM｜建議：觀察池",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "feather-agent-os 0.1.0",
-        "summary": "A lightweight personal AI agent operating system",
-        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "Amplifai Health Secures SFDA Approval for the World’s First Software as a Medical Device for Diabetic Foot Screening an…",
+        "summary": "New multicentre findings show AI-powered thermal imaging can identify early diabetic foot risk patterns in re…",
+        "content": "Riyadh, Saudi Arabia February 3, 2025 Amplifai Health has officially secured medical device marketing authorization from the Saudi Food and Drug Authority (SFDA) for Thermal Foot Scan (TFscan). This… [+5575 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       }
@@ -254,14 +254,14 @@
         "impact_score": 1
       },
       {
-        "title": "VIX：16.99（+0.10）",
+        "title": "VIX：18.29（+1.30）",
         "summary": "VIX 上升代表 FCN 敲入風險上升。",
         "content": "VIX 是你每日要看的核心指標。",
         "affects_fcn": true,
         "impact_score": -2
       },
       {
-        "title": "10Y / 20Y：4.39%（-0.01%） / 4.96%（-0.01%）",
+        "title": "10Y / 20Y：N/A / 5.01%（+0.05%）",
         "summary": "中長期利率上升會壓抑科技估值。",
         "content": "科技與 AI 核心股會受中長債殖利率影響。",
         "affects_fcn": true,
@@ -275,7 +275,7 @@
         "impact_score": -1
       },
       {
-        "title": "失業率：4.30%（-0.10%）｜S&P500：7200.75（-29.37）",
+        "title": "失業率：4.30%（-0.10%）｜S&P500：N/A",
         "summary": "就業與股市穩定度共同反映風險偏好。",
         "content": "若就業惡化且股市回落，FCN 需更保守。",
         "affects_fcn": true,
@@ -310,7 +310,7 @@
     },
     {
       "label": "總經環境",
-      "text": "總經環境中性，FCN 可做但需偏保守，優先核心股。"
+      "text": "總經壓力偏高，建議降低進攻型 FCN。"
     },
     {
       "label": "今日推薦",
@@ -330,12 +330,12 @@
     },
     {
       "label": "VIX 壓力",
-      "value": 33,
+      "value": 36,
       "type": "watch"
     },
     {
       "label": "AI 核心股安全度",
-      "value": 62,
+      "value": 45,
       "type": "watch"
     }
   ],
@@ -687,25 +687,14 @@
   },
   "scenario_suggestions": [
     {
-      "name": "穩定收息",
+      "name": "避險觀望",
       "targets": [
-        "TSM",
         "MSFT",
         "UNH"
       ],
       "eki": "80%–85%",
-      "tenor": "6–12個月",
-      "goal": "防守優先"
-    },
-    {
-      "name": "平衡收益",
-      "targets": [
-        "NVDA",
-        "AVGO"
-      ],
-      "eki": "75%–80%",
-      "tenor": "3–6個月",
-      "goal": "只留主力池"
+      "tenor": "短中期",
+      "goal": "只保留低波動核心"
     }
   ]
 }
