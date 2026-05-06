@@ -214,7 +214,7 @@ export async function runMMFilterFull(input = {}) {
   const summary = buildSummary({ stocks, pools, category_map, baskets, allocation, market_match });
 
   return {
-    version: "mm_filter_v3_4_m7_selected_c1_amount_m6_sort_no_priority",
+    version: "mm_filter_v3_5_m7_autoload_fix_ui_aliases",
     generated_at: new Date().toISOString(),
     summary,
     pools,
@@ -222,7 +222,21 @@ export async function runMMFilterFull(input = {}) {
     baskets,
     allocation,
     market_match,
-    raw: stocks
+    raw: stocks,
+    // UI compatibility aliases for mm/test.html renderers.
+    stocks,
+    rows: stocks,
+    c1_rows: stocks,
+    c1_output_summary: stocks,
+    debug_json: {
+      stocks,
+      pools,
+      category_map,
+      baskets,
+      allocation,
+      market_match,
+      summary
+    }
   };
 }
 
@@ -238,6 +252,13 @@ export async function runMarketOrderMatch(input = {}) {
 // ==========================================
 
 const M7_V2_DEFAULT_SOURCE = "../../../data/m7_sandbox/m7_v2_scores.json";
+const M7_V2_FALLBACK_SOURCES = [
+  "../../../data/m7_sandbox/m7_v2_scores.json",       // normal module path: js/mm/modules -> repo root
+  "/fcn-dashboard/data/m7_sandbox/m7_v2_scores.json", // GitHub Pages absolute repo path
+  "../../data/m7_sandbox/m7_v2_scores.json",          // fallback if module is served one level higher
+  "../data/m7_sandbox/m7_v2_scores.json",             // fallback for direct mm/test path
+  "data/m7_sandbox/m7_v2_scores.json"                 // fallback for root-relative test runners
+];
 
 async function loadM7V2Index(options = {}) {
   if (options.disable_m7_v2_autoload === true) return {};
@@ -251,25 +272,42 @@ async function loadM7V2Index(options = {}) {
 
   if (directRows) return buildM7V2Index(directRows);
 
-  const source = options.m7_v2_source || M7_V2_DEFAULT_SOURCE;
+  const sources = options.m7_v2_source
+    ? [options.m7_v2_source, ...M7_V2_FALLBACK_SOURCES]
+    : M7_V2_FALLBACK_SOURCES;
 
-  try {
-    const url = new URL(source, import.meta.url);
-    const res = await fetch(url.toString(), { cache: "no-store" });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const json = await res.json();
-    const rows = extractM7Rows(json);
-    return buildM7V2Index(rows);
-  } catch (error) {
-    console.warn("[MM Filter] M7 v2 autoload failed. Fallback to input rows.", error);
-    return {};
+  const tried = [];
+  for (const source of [...new Set(sources)]) {
+    try {
+      const url = source.startsWith("/")
+        ? new URL(source, window.location.origin)
+        : new URL(source, import.meta.url);
+      tried.push(url.toString());
+      const res = await fetch(url.toString(), { cache: "no-store" });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const json = await res.json();
+      const rows = extractM7Rows(json);
+      const idx = buildM7V2Index(rows);
+      if (Object.keys(idx).length) {
+        console.info(`[MM Filter] M7 v2 loaded: ${Object.keys(idx).length} rows from ${url.toString()}`);
+        return idx;
+      }
+    } catch (error) {
+      // Try next source.
+    }
   }
+
+  console.warn("[MM Filter] M7 v2 autoload failed. Tried:", tried);
+  return {};
 }
 
 function extractM7Rows(json) {
   if (Array.isArray(json)) return json;
   if (Array.isArray(json?.rows)) return json.rows;
   if (Array.isArray(json?.data)) return json.data;
+  if (json?.data && typeof json.data === "object") {
+    return Object.entries(json.data).map(([symbol, row]) => ({ symbol, ...(row || {}) }));
+  }
   if (Array.isArray(json?.stocks)) return json.stocks;
   if (json && typeof json === "object") {
     return Object.entries(json).map(([symbol, row]) => ({ symbol, ...(row || {}) }));
@@ -367,8 +405,7 @@ function pickDefined(obj, keys) {
 function firstString(values, d = "fallback") {
   for (const v of values || []) {
     if (typeof v === "string" && v.trim()) return v;
-  }
-  return d;
+  };
 }
 
 
@@ -1810,4 +1847,5 @@ function volBandRank(band) {
 function money(v) {
   return `USD ${Math.round(num(v)).toLocaleString()}`;
 }
+
 
