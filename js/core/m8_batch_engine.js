@@ -456,8 +456,9 @@ function getOptionField(stock, key, def = null) {
 function calcStockRatePressureScore(stock) {
   const direct = getOptionField(stock, "rate_pressure_score", null);
   if (direct !== null && direct !== "") {
-    const n = toNum(direct, 0);
-    return n <= 10 ? n * 10 : n;
+    // option_runtime.py already outputs rate_pressure_score on 0~10 scale.
+    // Do NOT multiply by 10 again.
+    return toNum(direct, 0);
   }
 
   const ivScore = getOptionField(stock, "iv_score", null);
@@ -467,10 +468,11 @@ function calcStockRatePressureScore(stock) {
   const hasAny = ivScore !== null || skewScore !== null || demandScore !== null;
   if (!hasAny) return null;
 
+  // iv_score / skew_score / demand_score are also 0~10 scale.
   return (
-    0.45 * toNum(ivScore, 0) * 10 +
-    0.30 * toNum(skewScore, 0) * 10 +
-    0.20 * toNum(demandScore, 0) * 10
+    0.45 * toNum(ivScore, 0) +
+    0.30 * toNum(skewScore, 0) +
+    0.20 * toNum(demandScore, 0)
   );
 }
 
@@ -478,8 +480,7 @@ function calcRatePressureAdj(stockList = []) {
   const items = (stockList || [])
     .map(stock => ({
       symbol: getSymbol(stock),
-      // Internal scale is 0~100 for basket aggregation.
-      // Display can divide by 10 to show 0~10.
+      // 0~10 scale, same as option_runtime.py.
       rate_pressure_score: calcStockRatePressureScore(stock),
       iv_score: getOptionField(stock, "iv_score", null),
       skew_score: getOptionField(stock, "skew_score", null),
@@ -517,14 +518,13 @@ function calcRatePressureAdj(stockList = []) {
     0.20 * second
   );
 
-  // Convert 0~100 internal score back to 0~10 for the yield curve.
-  const RP10 = RP / 10;
-
-  // Market curve v2:
+  // Market curve v3:
+  // RP is already 0~10.
   // - max impact = +2.5%
   // - center = 5 on 0~10 scale
   // - slope = 1.5
-  // This makes MU / high-IV baskets more visible than the old conservative avg curve.
+  // This makes MU / high-IV baskets visible without double-scaling errors.
+  const RP10 = RP;
   const adj = 2.5 / (1 + Math.exp(-(RP10 - 5) / 1.5));
 
   return {
@@ -535,7 +535,7 @@ function calcRatePressureAdj(stockList = []) {
     rate_pressure_second: second,
     rate_pressure_avg: avgRP,
     rate_pressure_stocks: items,
-    rate_pressure_source: "option_runtime_market_curve_v2"
+    rate_pressure_source: "option_runtime_market_curve_v3_scale_fixed"
   };
 }
 
@@ -606,7 +606,7 @@ export function getM8Blueprint() {
       "Tenor：1–3慢、3–10加速、10–12放緩（max=2）",
       "BasketVol = 0.5×s1 + 0.3×s2 + 0.2×avgSwing",
       "VolAdj 採平滑函數",
-      "RatePressureAdj 改用 market curve v2；HighRateBrake 保留用來抑制極端高利率失真",
+      "RatePressureAdj 改用 market curve v3；修正 0~10 / 0~100 尺度錯誤；HighRateBrake 保留用來抑制極端高利率失真",
       "Anchor-based Yield Proxy：以當次輸入最高 M7_v2 品質股票當 anchor"
     ],
     formulas: {
@@ -625,7 +625,7 @@ export function getM8Blueprint() {
       vol_adj: "分段平滑函數",
       brake: "HighRateBrake: 18以下不煞，18~22二次煞，22~26強二次煞，26以上線性強煞",
       final_yield: "FairYield = Base + BasketPremium + TailAdj + StructureTotal + VolAdj + RatePressureAdj - HighRateBrake(PreRate)",
-      rate_pressure: "BasketRP = 0.50×worst + 0.30×avg + 0.20×secondWorst；RatePressureAdj = 2.5 / (1 + exp(-((BasketRP/10)-5)/1.5))",
+      rate_pressure: "BasketRP = 0.50×worst + 0.30×avg + 0.20×secondWorst；RatePressureAdj = 2.5 / (1 + exp(-(BasketRP-5)/1.5))",
       anchor_proxy: "anchor + target 的 pair_fair_yield 與 normalized_proxy"
     },
     parameters: {
@@ -730,7 +730,7 @@ export async function runM8Case({
       m7_v2_score: round2(getM7V2Score(s) || 0),
       quality_score: round2(getTodayScore(s)),
       today_score: round2(getTodayScore(s)),
-      rate_pressure_score: round2(calcStockRatePressureScore(s) !== null ? calcStockRatePressureScore(s) / 10 : 0),
+      rate_pressure_score: round2(calcStockRatePressureScore(s) !== null ? calcStockRatePressureScore(s) : 0),
       iv_30d_atm_pct: round2(getOptionField(s, "iv_30d_atm_pct", 0)),
       put_skew_30d_vol_points: round2(getOptionField(s, "put_skew_30d_vol_points", 0)),
       demand_score: round2(getOptionField(s, "demand_score", 0))
