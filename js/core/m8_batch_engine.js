@@ -453,26 +453,43 @@ function getOptionField(stock, key, def = null) {
 }
 
 function calcStockRatePressureScore(stock) {
-  const direct = getOptionField(stock, "rate_pressure_score", null);
-  if (direct !== null && direct !== "") {
-    // option_runtime.py already outputs rate_pressure_score on 0~10 scale.
-    // Do NOT multiply by 10 again.
-    return toNum(direct, 0);
-  }
+  const ivPct = toNum(getOptionField(stock, "iv_30d_atm_pct", 0), 0);
+  const skewRaw = toNum(getOptionField(stock, "put_skew_30d_vol_points", 0), 0);
+  const demandRaw = toNum(getOptionField(stock, "demand_score", 0), 0);
 
-  const ivScore = getOptionField(stock, "iv_score", null);
-  const skewScore = getOptionField(stock, "skew_score", null);
-  const demandScore = getOptionField(stock, "demand_score", null);
+  // ==========================================
+  // M8 Pool30 Baseline v1
+  // ==========================================
+  // IV baseline = 1.17
+  // Skew baseline = 5.08
+  // Demand cap = 4
+  // Core idea:
+  // Pool30 is the FCN baseline, not whole-market 138 stocks.
+  // ==========================================
 
-  const hasAny = ivScore !== null || skewScore !== null || demandScore !== null;
-  if (!hasAny) return null;
+  const ivScoreAdj =
+    Math.min(10, (ivPct / 1.17) * 5);
 
-  // iv_score / skew_score / demand_score are also 0~10 scale.
-  return (
-    0.45 * toNum(ivScore, 0) +
-    0.30 * toNum(skewScore, 0) +
-    0.20 * toNum(demandScore, 0)
-  );
+  const skewScoreAdj =
+    Math.min(10, (Math.max(0, skewRaw) / 5.08) * 5);
+
+  const demandScoreAdj =
+    Math.min(5, (Math.min(demandRaw, 4) / 4) * 5);
+
+  // ==========================================
+  // RP v1
+  // IV 60%
+  // Skew 25%
+  // Demand 15%
+  // Event removed
+  // ==========================================
+
+  const rp =
+    0.60 * ivScoreAdj +
+    0.25 * skewScoreAdj +
+    0.15 * demandScoreAdj;
+
+  return round2(rp);
 }
 
 function calcRatePressureAdj(stockList = []) {
@@ -912,7 +929,7 @@ export async function runM8Case({
       rate_pressure_score: round2(x.rate_pressure_score),
       rate_pressure_score_0_100: round2(x.rate_pressure_score * 10),
       rate_pressure_formula_text:
-        `0.45*IV(${round2(toNum(x.iv_score, 0))}) + 0.30*Skew(${round2(toNum(x.skew_score, 0))}) + 0.20*Demand(${round2(toNum(x.demand_score, 0))})`
+        `0.60*IV + 0.25*Skew + 0.15*Demand (Pool30 Baseline v1)`
     })),
 
     market_yield: round2(marketYield),
