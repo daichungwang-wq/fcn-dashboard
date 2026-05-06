@@ -20,11 +20,12 @@ Coverage logic v2:
   3. data/m7_sandbox/m7_v2_scores.json high-score supplement
   4. DEFAULT_SYMBOLS fallback
 
-Important fix v3:
-  Spot / option strike scale normalization.
-  Some data sources may return price scale inconsistent with option strikes
-  e.g. MU spot=640 while option strikes are around 60~70.
-  If spot is outside option strike range, adjust by /10 or *10 before ATM lookup.
+Important fix v4:
+  Keep raw spot as primary truth.
+  Do NOT auto divide MU 640 by 10.
+  Fix the real problem: ATM IV selection.
+  Use liquidity-aware / IV-sanity / strike-tolerance selection.
+  If no good ATM IV exists, fallback to liquid chain median IV, then 25D proxy IV.
 
 Pilot source:
   yfinance option chain.
@@ -336,11 +337,15 @@ def normalize_spot_to_strike_scale(
     max_strike: Optional[float],
 ) -> Tuple[Optional[float], Dict[str, Any]]:
     """
-    Fix scale mismatch:
-      raw_spot 640 but strikes 50~80  -> spot / 10
-      raw_spot 6.4 but strikes 50~80  -> spot * 10
+    v4 policy:
+      Keep raw spot.
+      Do not automatically /10 or *10.
 
-    We only apply conservative x10 / /10 adjustments.
+    Why:
+      In 2026 runtime, high-price stocks such as MU can legitimately trade
+      around 640 USD. Auto /10 created wrong ATM mapping.
+
+    We still output diagnostics so the UI can flag suspicious cases.
     """
     debug = {
         "spot_raw": round_or_none(raw_spot, 6),
@@ -348,7 +353,8 @@ def normalize_spot_to_strike_scale(
         "min_strike": round_or_none(min_strike, 6),
         "max_strike": round_or_none(max_strike, 6),
         "adjustment": "none",
-        "reason": None,
+        "reason": "v4_keep_raw_spot",
+        "spot_vs_strike_warning": None,
     }
 
     if raw_spot is None or raw_spot <= 0:
@@ -359,38 +365,131 @@ def normalize_spot_to_strike_scale(
         debug["reason"] = "missing_strike_range"
         return raw_spot, debug
 
-    spot = raw_spot
+    if raw_spot > max_strike * 1.25:
+        debug["spot_vs_strike_warning"] = "spot_above_available_strike_range"
+    elif raw_spot < min_strike * 0.75:
+        debug["spot_vs_strike_warning"] = "spot_below_available_strike_range"
 
-    # Case A: spot is far above option strike range.
-    # Example: MU raw 640 vs strikes around 60~70.
-    if spot > max_strike * 1.5:
-        candidate = spot / 10.0
-
-        if min_strike * 0.5 <= candidate <= max_strike * 1.5:
-            spot = candidate
-            debug["adjustment"] = "divide_by_10"
-            debug["reason"] = "raw_spot_above_strike_range"
-
-    # Case B: spot is far below option strike range.
-    elif spot < min_strike / 1.5:
-        candidate = spot * 10.0
-
-        if min_strike * 0.5 <= candidate <= max_strike * 1.5:
-            spot = candidate
-            debug["adjustment"] = "multiply_by_10"
-            debug["reason"] = "raw_spot_below_strike_range"
-
-    debug["spot_adjusted"] = round_or_none(spot, 6)
-    return spot, debug
+    return raw_spot, debug
 
 
 def valid_iv(v: Optional[float]) -> bool:
     """
-    Basic IV sanity check.
-    0.0002 means 0.02%, almost always broken for equity options.
-    6.0 means 600%, possible but suspicious; keep broad upper bound.
+    Equity option IV sanity check.
+    yfinance can return near-zero garbage values such as 0.000254.
+    Treat anything below 0.5% as invalid for FCN pricing runtime.
+
+    IV is decimal:
+      0.30 = 30%
+      1.20 = 120%
     """
-    return v is not None and 0.01 <= v <= 6.0
+    return v is not None and 0.005 <= v <= 6.0
+
+
+def valid_liquidity(row: Any, min_volume: float = 1.0, min_open_interest: float = 0.0) -> bool:
+    if row is None:
+        return False
+
+    try:
+        volume = safe_float(row.get("volume"))
+        oi = safe_float(row.get("openInterest"))
+        bid = safe_float(row.get("bid"))
+        ask = safe_float(row.get("ask"))
+
+        has_trade_liq = (volume is not None and volume >= min_volume) or (oi is not None and oi >= min_open_interest)
+        has_quote = bid is not None and ask is not None and bid >= 0 and ask >= 0
+
+        return bool(has_trade_liq or has_quote)
+    except Exception:
+        return False
+
+
+def strike_distance_pct(row: Any, spot: float) -> Optional[float]:
+    if row is None or spot is None or spot <= 0:
+        return None
+
+    strike = safe_float(row.get("strike"))
+    if strike is None:
+        return None
+
+    return abs(strike - spot) / spot
+
+
+def select_best_option_by_moneyness(
+    df,
+    target_strike: float,
+    spot: float,
+    max_distance_pct: float = 0.12,
+    min_volume: float = 1.0,
+):
+    """
+    Pick best option near target strike with:
+      1. valid IV
+      2. reasonable distance to spot / target
+      3. basic liquidity / quote presence
+
+    If no option passes strict filters, return the nearest row as raw fallback
+    but caller should not trust its IV unless valid_iv() passes.
+    """
+    if df is None or len(df) == 0:
+        return None, {
+            "selected": None,
+            "reason": "empty_chain",
+            "candidates": 0,
+            "valid_candidates": 0,
+        }
+
+    try:
+        tmp = df.copy()
+        tmp["__strike"] = tmp["strike"].astype(float)
+        tmp["__dist_to_target"] = (tmp["__strike"] - target_strike).abs()
+        tmp["__dist_pct_to_spot"] = (tmp["__strike"] - spot).abs() / spot
+        tmp["__iv"] = tmp["impliedVolatility"].apply(safe_float) if "impliedVolatility" in tmp.columns else None
+        tmp["__volume"] = tmp["volume"].apply(lambda x: safe_float(x) or 0) if "volume" in tmp.columns else 0
+        tmp["__oi"] = tmp["openInterest"].apply(lambda x: safe_float(x) or 0) if "openInterest" in tmp.columns else 0
+
+        valid = tmp[
+            tmp["__iv"].apply(valid_iv) &
+            (tmp["__dist_pct_to_spot"] <= max_distance_pct)
+        ].copy()
+
+        if len(valid) > 0:
+            valid["__liq_score"] = valid["__volume"] + 0.1 * valid["__oi"]
+            valid = valid.sort_values(["__dist_to_target", "__liq_score"], ascending=[True, False])
+            row = valid.iloc[0]
+            return row, {
+                "selected": "strict_valid_iv_distance",
+                "reason": "valid_iv_and_distance",
+                "candidates": int(len(tmp)),
+                "valid_candidates": int(len(valid)),
+                "strike": round_or_none(safe_float(row.get("strike")), 4),
+                "iv": round_or_none(safe_float(row.get("impliedVolatility")), 6),
+                "distance_pct_to_spot": round_or_none(safe_float(row.get("__dist_pct_to_spot")) * 100, 2),
+                "volume": round_or_none(safe_float(row.get("volume")), 0),
+                "openInterest": round_or_none(safe_float(row.get("openInterest")), 0),
+            }
+
+        # fallback row for diagnostics only
+        nearest = tmp.sort_values("__dist_to_target").iloc[0]
+        return nearest, {
+            "selected": "nearest_fallback",
+            "reason": "no_strict_valid_candidate",
+            "candidates": int(len(tmp)),
+            "valid_candidates": 0,
+            "strike": round_or_none(safe_float(nearest.get("strike")), 4),
+            "iv": round_or_none(safe_float(nearest.get("impliedVolatility")), 6),
+            "distance_pct_to_spot": round_or_none(safe_float(nearest.get("__dist_pct_to_spot")) * 100, 2),
+            "volume": round_or_none(safe_float(nearest.get("volume")), 0),
+            "openInterest": round_or_none(safe_float(nearest.get("openInterest")), 0),
+        }
+
+    except Exception as exc:
+        return None, {
+            "selected": None,
+            "reason": f"selection_error: {exc}",
+            "candidates": 0,
+            "valid_candidates": 0,
+        }
 
 
 def median_valid_iv(calls, puts) -> Optional[float]:
@@ -411,12 +510,46 @@ def median_valid_iv(calls, puts) -> Optional[float]:
     return statistics.median(vals)
 
 
+def liquid_median_valid_iv(calls, puts, spot: Optional[float] = None) -> Optional[float]:
+    """
+    Median IV fallback with filters:
+      - valid IV
+      - prefer strikes within 25% of spot when spot is available
+      - avoid illiquid garbage when possible
+    """
+    vals = []
+
+    for df in [calls, puts]:
+        if df is None or len(df) == 0 or "impliedVolatility" not in df.columns:
+            continue
+
+        for _, row in df.iterrows():
+            iv = safe_float(row.get("impliedVolatility"))
+            if not valid_iv(iv):
+                continue
+
+            if spot is not None and spot > 0:
+                dist = strike_distance_pct(row, spot)
+                if dist is not None and dist > 0.25:
+                    continue
+
+            # Do not require liquidity strictly here because median fallback
+            # is already a fallback, but prefer not to include obviously empty rows.
+            vals.append(iv)
+
+    if vals:
+        return statistics.median(vals)
+
+    return median_valid_iv(calls, puts)
+
+
+
 def score_iv(iv: Optional[float]) -> float:
     if iv is None:
         return 0.0
 
-    # 10% -> 0, 75%+ -> 10
-    return round(clamp((iv - 0.10) / 0.65 * 10.0, 0.0, 10.0), 2)
+    # 0.5% -> 0, 50%+ -> 10
+    return round(clamp((iv - 0.005) / 0.495 * 10.0, 0.0, 10.0), 2)
 
 
 def score_skew(put_skew: Optional[float]) -> float:
@@ -457,6 +590,10 @@ def weighted_rate_pressure(
 
 
 def nearest_by_moneyness(df, option_type: str, spot: float):
+    """
+    Backward-compatible wrapper.
+    v4 uses select_best_option_by_moneyness() with IV sanity + distance filter.
+    """
     if df is None or len(df) == 0:
         return None
 
@@ -467,13 +604,8 @@ def nearest_by_moneyness(df, option_type: str, spot: float):
     else:
         target_strike = spot
 
-    try:
-        tmp = df.copy()
-        tmp["__dist"] = (tmp["strike"].astype(float) - target_strike).abs()
-        tmp = tmp.sort_values("__dist")
-        return tmp.iloc[0]
-    except Exception:
-        return None
+    row, _debug = select_best_option_by_moneyness(df, target_strike, spot)
+    return row
 
 
 def sum_numeric(df, col: str) -> Optional[float]:
@@ -565,10 +697,10 @@ def fetch_option_chain_yfinance(symbol: str) -> Dict[str, Any]:
         min_strike, max_strike = get_strike_range(calls, puts)
         spot, spot_scale_debug = normalize_spot_to_strike_scale(raw_spot, min_strike, max_strike)
 
-        atm_call = nearest_by_moneyness(calls, "atm", spot)
-        atm_put = nearest_by_moneyness(puts, "atm", spot)
-        put_25 = nearest_by_moneyness(puts, "put_25d_proxy", spot)
-        call_25 = nearest_by_moneyness(calls, "call_25d_proxy", spot)
+        atm_call, atm_call_debug = select_best_option_by_moneyness(calls, spot, spot, max_distance_pct=0.12)
+        atm_put, atm_put_debug = select_best_option_by_moneyness(puts, spot, spot, max_distance_pct=0.12)
+        put_25, put_25_debug = select_best_option_by_moneyness(puts, spot * 0.90, spot, max_distance_pct=0.25)
+        call_25, call_25_debug = select_best_option_by_moneyness(calls, spot * 1.10, spot, max_distance_pct=0.25)
 
         atm_call_iv = safe_float(atm_call.get("impliedVolatility")) if atm_call is not None else None
         atm_put_iv = safe_float(atm_put.get("impliedVolatility")) if atm_put is not None else None
@@ -577,14 +709,14 @@ def fetch_option_chain_yfinance(symbol: str) -> Dict[str, Any]:
 
         iv_vals = [v for v in [atm_call_iv, atm_put_iv] if valid_iv(v)]
         iv_30d_atm = statistics.mean(iv_vals) if iv_vals else None
-        iv_source = "atm_call_put_avg"
+        iv_source = "atm_liquid_valid_call_put_avg"
 
         # Fallback if ATM IV is broken.
         if not valid_iv(iv_30d_atm):
-            chain_median_iv = median_valid_iv(calls, puts)
+            chain_median_iv = liquid_median_valid_iv(calls, puts, spot)
             if valid_iv(chain_median_iv):
                 iv_30d_atm = chain_median_iv
-                iv_source = "chain_median_iv"
+                iv_source = "liquid_chain_median_iv"
             else:
                 fallback_vals = [v for v in [put_25_iv, call_25_iv] if valid_iv(v)]
                 if fallback_vals:
@@ -621,11 +753,15 @@ def fetch_option_chain_yfinance(symbol: str) -> Dict[str, Any]:
         event_s = 0.0
         rate_s = weighted_rate_pressure(iv_s, skew_s, demand_s, event_s)
 
-        data_warning = None
-        if spot_scale_debug.get("adjustment") != "none":
-            data_warning = "spot_strike_scale_adjusted"
-        elif iv_source != "atm_call_put_avg":
-            data_warning = "atm_iv_fallback_used"
+        data_warnings = []
+        if spot_scale_debug.get("spot_vs_strike_warning"):
+            data_warnings.append(spot_scale_debug.get("spot_vs_strike_warning"))
+        if iv_source != "atm_liquid_valid_call_put_avg":
+            data_warnings.append("atm_iv_fallback_used")
+        if not valid_iv(iv_30d_atm):
+            data_warnings.append("iv_missing_or_invalid")
+
+        data_warning = "|".join(data_warnings) if data_warnings else None
 
         return {
             "symbol": symbol,
@@ -676,13 +812,19 @@ def fetch_option_chain_yfinance(symbol: str) -> Dict[str, Any]:
             "data_warning": data_warning,
 
             "debug": {
-                "atm_method": "nearest strike to adjusted spot",
-                "put_25d_proxy_method": "nearest strike to 90% adjusted spot",
-                "call_25d_proxy_method": "nearest strike to 110% adjusted spot",
+                "atm_method": "liquidity-aware valid IV nearest strike to raw spot",
+                "put_25d_proxy_method": "valid IV nearest strike to 90% raw spot",
+                "call_25d_proxy_method": "valid IV nearest strike to 110% raw spot",
                 "spot_scale": spot_scale_debug,
                 "strike_range": {
                     "min": round_or_none(min_strike, 4),
                     "max": round_or_none(max_strike, 4),
+                },
+                "selection": {
+                    "atm_call": atm_call_debug,
+                    "atm_put": atm_put_debug,
+                    "put_25": put_25_debug,
+                    "call_25": call_25_debug,
                 },
                 "warning": "pilot proxy: not real 25-delta; use production options API for Greeks",
             },
@@ -748,7 +890,7 @@ def build_runtime(symbols: Optional[List[str]] = None) -> Dict[str, Any]:
             "coverage": coverage_meta,
             "purpose": "FCN rate pressure: IV + skew + demand",
             "rate_pressure_formula": "0.45*iv_score + 0.30*skew_score + 0.20*demand_score + 0.05*event_score",
-            "important_fix": "spot/option-strike scale normalization + ATM IV fallback",
+            "important_fix": "raw spot preserved + liquidity-aware ATM IV selection + chain median fallback",
         },
         "data": rows,
     }
@@ -775,3 +917,4 @@ def main(argv: List[str]) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main(sys.argv))
+
