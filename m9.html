@@ -380,7 +380,7 @@
               <h4>系統設定</h4>
               <div class="rows">
                 <div class="row-item asset-row">
-                  <input id="usdRate" type="number" value="33" oninput="recalc()" placeholder="USD/TWD 匯率" />
+                  <input id="usdRate" type="number" value="33" oninput="handleUsdRateChange()" placeholder="USD/TWD 匯率" />
                   <input value="USD/TWD 匯率" disabled />
                   <input value="用於換算存款與美元資產" disabled />
                   <input value="自動保存" disabled />
@@ -535,14 +535,19 @@
                   <th>項次</th>
                   <th>FCN</th>
                   <th>銀行</th>
+                  <th>Record Date</th>
+                  <th>估算 Entry</th>
+                  <th>首次入帳</th>
+                  <th>到期日</th>
                   <th>本月</th>
                   <th>次月</th>
                   <th>次次月</th>
                   <th>狀態</th>
+                  <th>0 利息原因</th>
                 </tr>
               </thead>
               <tbody id="fcnTableBody">
-                <tr><td colspan="7">載入中...</td></tr>
+                <tr><td colspan="12">載入中...</td></tr>
               </tbody>
             </table>
           </div>
@@ -566,6 +571,8 @@
     const PIE_COLORS = ["#2563eb","#16a34a","#f59e0b","#7c3aed"];
     let autoSaveTimer = null;
     let allFcnOpen = true;
+    let m9FcnMonthlyIncome = 0;
+    let m9FcnPoolCache = [];
 
     function formatNum(v){ return Number(v || 0).toLocaleString("zh-Hant-TW", { maximumFractionDigits: 0 }); }
     function formatNum2(v){ return Number(v || 0).toLocaleString("zh-Hant-TW", { maximumFractionDigits: 2 }); }
@@ -902,7 +909,9 @@
       const debtRatio = totalAssets > 0 ? totalDebt / totalAssets : 0;
       const monthlyDebtPay = liabilities.reduce((s,x)=>s+x.monthlyPrincipal+x.monthlyInterest,0);
       const monthlyExpense = expenses.reduce((s,x)=>s+monthlyValue(x.amount,x.freq),0);
-      const monthlyIncome = incomes.reduce((s,x)=>s+monthlyValue(x.amount,x.freq),0);
+      const manualMonthlyIncome = incomes.reduce((s,x)=>s+monthlyValue(x.amount,x.freq),0);
+      const fcnMonthlyIncome = Number(m9FcnMonthlyIncome || 0);
+      const monthlyIncome = manualMonthlyIncome + fcnMonthlyIncome;
       const monthlyNet = monthlyIncome - monthlyExpense - monthlyDebtPay;
 
       document.getElementById("sumAssets").textContent = formatNum(totalAssets);
@@ -932,7 +941,13 @@
 
       fillTableBody("liabilityTable", liabilities.map(x => [x.name || "未命名", formatNum(x.principal), x.rate ? x.rate + "%" : "—", formatNum(x.monthlyPrincipal), formatNum(x.monthlyInterest), formatNum(x.monthlyPrincipal + x.monthlyInterest)]));
       fillTableBody("depositTable", deposits.map(x => [x.currency, x.account || "未命名", x.currency === "USD" ? x.balance.toLocaleString("zh-Hant-TW", {maximumFractionDigits:0}) : formatNum(x.balance), formatNum(x.currency === "USD" ? x.balance * usdRate : x.balance)]));
-      fillTableBody("incomeTable", incomes.map(x => [x.name || "未命名", freqText(x.freq), formatNum(x.amount), formatNum(monthlyValue(x.amount, x.freq))]));
+      const incomeTableRows = incomes.map(x => [x.name || "未命名", freqText(x.freq), formatNum(x.amount), formatNum(monthlyValue(x.amount, x.freq))]);
+      if (fcnMonthlyIncome > 0) {
+        incomeTableRows.push(["FCN 利息入帳", "本月", formatNum(fcnMonthlyIncome), formatNum(fcnMonthlyIncome)]);
+      } else {
+        incomeTableRows.push(["FCN 利息入帳", "本月", "0", "0"]);
+      }
+      fillTableBody("incomeTable", incomeTableRows);
       fillTableBody("expenseTable", expenses.map(x => [x.name || "未命名", freqText(x.freq), formatNum(x.amount), formatNum(monthlyValue(x.amount, x.freq))]));
 
       renderPieChart([{label:"FCN資產", value:fcnSum},{label:"股票資產", value:stockSum},{label:"存款", value:depositSum},{label:"其他資產", value:otherAssetSum}]);
@@ -940,7 +955,6 @@
 
       buildAdvice({totalAssets,totalDebt,netWorth,debtRatio,monthlyDebtPay,monthlyExpense,monthlyIncome,monthlyNet,fcnSum,stockSum,depositSum,otherAssetSum});
 
-      refreshFcnSection();
     }
 
     function getCollapsedState(){ return panelList().map(p => p.classList.contains("collapsed")); }
@@ -1076,19 +1090,28 @@
       const usd = Number(document.getElementById("usdRate")?.value || 33);
       if(!window.M9_FCN){
         document.getElementById("fcnSummaryBox").innerHTML = "FCN engine 尚未載入";
-        document.getElementById("fcnTableBody").innerHTML = `<tr><td colspan="7">FCN engine 尚未載入</td></tr>`;
+        document.getElementById("fcnTableBody").innerHTML = `<tr><td colspan="12">FCN engine 尚未載入</td></tr>`;
         document.getElementById("fcnCashflowChart").innerHTML = `<div class="muted">FCN engine 尚未載入</div>`;
+        m9FcnMonthlyIncome = 0;
         return;
       }
 
       const pool = await window.M9_FCN.loadFcnPool();
+      m9FcnPoolCache = pool;
       const s = window.M9_FCN.buildFcnSummary(pool, usd);
       const rows = window.M9_FCN.buildFcnTable(pool, usd);
       const chart = window.M9_FCN.buildCashflow12M(pool, usd);
 
+      m9FcnMonthlyIncome = Number(s.total?.thisMonth || 0);
       renderFcnSummary(s);
       renderFcnTable(rows);
       renderFcnChart(chart);
+    }
+
+    async function handleUsdRateChange(){
+      await refreshFcnSection();
+      recalc();
+      triggerAutoSave();
     }
 
     function renderFcnSummary(s){
@@ -1107,6 +1130,8 @@
       el.innerHTML = `
         <div style="line-height:1.9;">
           <div><b>FCN 檔數：</b> ${s.count || 0}</div>
+          <div><b>收入併入：</b> 本月 FCN 利息已併入「每月收入 / 每月淨現金流」</div>
+          <div><b>首次入帳邏輯：</b> record date + 49 天（估算 entry + 首次配息 + 入帳 + buffer）</div>
           <div><b>本月：</b> ${formatNum2(s.total?.thisMonth || 0)}</div>
           <div><b>次月：</b> ${formatNum2(s.total?.nextMonth || 0)}</div>
           <div><b>次次月：</b> ${formatNum2(s.total?.thirdMonth || 0)}</div>
@@ -1122,20 +1147,26 @@
 
       tbody.innerHTML = "";
       if(!rows.length){
-        tbody.innerHTML = `<tr><td colspan="7">目前無 active FCN</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="12">目前無 active FCN</td></tr>`;
         return;
       }
 
       rows.forEach((r,i)=>{
         const tr=document.createElement("tr");
+        const zeroReason = Number(r.thisMonth || 0) > 0 ? "—" : (r.zeroReason || "—");
         tr.innerHTML = `
           <td>${i+1}</td>
           <td>${r.id}</td>
           <td>${r.bank}</td>
+          <td>${r.recordDate || "—"}</td>
+          <td>${r.estimatedEntryDate || "—"}</td>
+          <td>${r.firstCouponDepositDate || "—"}</td>
+          <td>${r.maturityDate || "—"}</td>
           <td>${formatNum2(r.thisMonth)}</td>
           <td>${formatNum2(r.nextMonth)}</td>
           <td>${formatNum2(r.thirdMonth)}</td>
-          <td>${r.earlyExit ? "🟢 即將出場" : "持有中"}</td>
+          <td>${r.statusText || "持有中"}</td>
+          <td>${zeroReason}</td>
         `;
         tbody.appendChild(tr);
       });
@@ -1186,9 +1217,11 @@
 
       loadFcnFoldState();
       await refreshFcnSection();
+      recalc();
     }
 
     init();
   </script>
 </body>
 </html>
+
