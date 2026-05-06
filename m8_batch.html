@@ -685,7 +685,7 @@
   </div>
 
   <script type="module">
-    import { runM8Case, getM8Blueprint, runM8AnchorProxy } from "./js/core/m8_batch_engine.js";
+    import { runM8Case, getM8Blueprint, runM8AnchorProxy } from "./js/core/m8_batch_engine.js?v=20260506_rpfix";
 
     const $ = (id) => document.getElementById(id);
     const STORAGE_KEY = "fcn_quote_history_v3";
@@ -2153,7 +2153,7 @@
     }
 
     document.addEventListener("DOMContentLoaded", () => {
-      console.log("m8_batch html loaded");
+      console.log("m8_batch html loaded - rpfix 20260506");
 
       $("inquiryDate").value = todayStr();
       refreshInquiryNo();
@@ -2163,6 +2163,8 @@
       renderHistory();
       renderBasketCompare();
       setupInputMode();
+      loadRuntimeDashboard();
+      loadAllStocksPool();
 
       $("inquiryDate").addEventListener("change", () => {
         if (!currentEditingInquiryNo) refreshInquiryNo();
