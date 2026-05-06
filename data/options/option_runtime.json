@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated_at": "2026-05-06T12:00:31.754483+00:00",
+    "generated_at": "2026-05-06T12:47:45.554672+00:00",
     "source": "yfinance",
     "source_quality": "pilot_proxy",
     "symbol_count": 140,
@@ -32,7 +32,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:31.269000+00:00",
+      "updated_at": "2026-05-06T12:46:43.038371+00:00",
       "spot": 196.5,
       "spot_raw": 196.5,
       "spot_scale_adjustment": "none",
@@ -133,7 +133,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:32.067152+00:00",
+      "updated_at": "2026-05-06T12:46:43.506756+00:00",
       "spot": 411.38,
       "spot_raw": 411.38,
       "spot_scale_adjustment": "none",
@@ -150,16 +150,16 @@
       "call_skew_30d": 0.050781,
       "call_skew_30d_vol_points": 5.08,
       "put_call_volume_ratio": 0.7581,
-      "put_call_oi_ratio": 0.8139,
+      "put_call_oi_ratio": 0.5165,
       "put_volume": 2561.0,
       "call_volume": 3378.0,
       "put_open_interest": 8286.0,
-      "call_open_interest": 10181.0,
+      "call_open_interest": 16043.0,
       "iv_score": 0.46,
       "skew_score": 2.54,
-      "demand_score": 1.14,
+      "demand_score": 0.55,
       "event_score": 0.0,
-      "rate_pressure_score": 1.2,
+      "rate_pressure_score": 1.08,
       "rate_pressure_formula": "0.45*iv_score + 0.30*skew_score + 0.20*demand_score + 0.05*event_score",
       "rate_driver_label": "LOW_PRESSURE",
       "data_warning": null,
@@ -190,7 +190,7 @@
             "iv": 0.007822,
             "distance_pct_to_spot": 0.88,
             "volume": 509.0,
-            "openInterest": 0.0
+            "openInterest": 659.0
           },
           "atm_put": {
             "selected": "strict_valid_iv_distance",
@@ -223,7 +223,7 @@
             "iv": 0.062509,
             "distance_pct_to_spot": 10.6,
             "volume": 81.0,
-            "openInterest": 0.0
+            "openInterest": 340.0
           }
         },
         "warning": "pilot proxy: not real 25-delta; use production options API for Greeks"
@@ -234,7 +234,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:32.386542+00:00",
+      "updated_at": "2026-05-06T12:46:43.910654+00:00",
       "spot": 384.27,
       "spot_raw": 384.27,
       "spot_scale_adjustment": "none",
@@ -335,7 +335,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:32.739823+00:00",
+      "updated_at": "2026-05-06T12:46:44.437987+00:00",
       "spot": 273.55,
       "spot_raw": 273.55,
       "spot_scale_adjustment": "none",
@@ -436,7 +436,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:33.308117+00:00",
+      "updated_at": "2026-05-06T12:46:44.937770+00:00",
       "spot": 604.96,
       "spot_raw": 604.96,
       "spot_scale_adjustment": "none",
@@ -453,16 +453,16 @@
       "call_skew_30d": 0.054687,
       "call_skew_30d_vol_points": 5.47,
       "put_call_volume_ratio": 0.9066,
-      "put_call_oi_ratio": 0.2829,
+      "put_call_oi_ratio": 0.8738,
       "put_volume": 3282.0,
       "call_volume": 3620.0,
-      "put_open_interest": 3542.0,
+      "put_open_interest": 10939.0,
       "call_open_interest": 12519.0,
       "iv_score": 0.31,
       "skew_score": 2.73,
-      "demand_score": 0.81,
+      "demand_score": 1.56,
       "event_score": 0.0,
-      "rate_pressure_score": 1.12,
+      "rate_pressure_score": 1.27,
       "rate_pressure_formula": "0.45*iv_score + 0.30*skew_score + 0.20*demand_score + 0.05*event_score",
       "rate_driver_label": "LOW_PRESSURE",
       "data_warning": null,
@@ -515,7 +515,7 @@
             "iv": 0.062509,
             "distance_pct_to_spot": 9.91,
             "volume": 80.0,
-            "openInterest": 0.0
+            "openInterest": 197.0
           },
           "call_25": {
             "selected": "strict_valid_iv_distance",
@@ -537,7 +537,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:33.823288+00:00",
+      "updated_at": "2026-05-06T12:46:45.273900+00:00",
       "spot": 394.41,
       "spot_raw": 394.41,
       "spot_scale_adjustment": "none",
@@ -638,7 +638,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:34.154512+00:00",
+      "updated_at": "2026-05-06T12:46:45.667906+00:00",
       "spot": 427.36,
       "spot_raw": 427.36,
       "spot_scale_adjustment": "none",
@@ -655,18 +655,18 @@
       "call_skew_30d": 0.046875,
       "call_skew_30d_vol_points": 4.69,
       "put_call_volume_ratio": 0.7209,
-      "put_call_oi_ratio": 3.2256,
+      "put_call_oi_ratio": 0.6832,
       "put_volume": 2415.0,
       "call_volume": 3350.0,
       "put_open_interest": 6935.0,
-      "call_open_interest": 2150.0,
+      "call_open_interest": 10151.0,
       "iv_score": 0.61,
       "skew_score": 2.34,
-      "demand_score": 5.44,
+      "demand_score": 0.81,
       "event_score": 0.0,
-      "rate_pressure_score": 2.06,
+      "rate_pressure_score": 1.14,
       "rate_pressure_formula": "0.45*iv_score + 0.30*skew_score + 0.20*demand_score + 0.05*event_score",
-      "rate_driver_label": "DEMAND_DRIVEN",
+      "rate_driver_label": "LOW_PRESSURE",
       "data_warning": null,
       "debug": {
         "atm_method": "liquidity-aware valid IV nearest strike to raw spot",
@@ -695,7 +695,7 @@
             "iv": 0.015635,
             "distance_pct_to_spot": 1.79,
             "volume": 69.0,
-            "openInterest": 0.0
+            "openInterest": 238.0
           },
           "atm_put": {
             "selected": "strict_valid_iv_distance",
@@ -728,7 +728,7 @@
             "iv": 0.062509,
             "distance_pct_to_spot": 9.98,
             "volume": 174.0,
-            "openInterest": 0.0
+            "openInterest": 367.0
           }
         },
         "warning": "pilot proxy: not real 25-delta; use production options API for Greeks"
@@ -739,7 +739,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:34.493180+00:00",
+      "updated_at": "2026-05-06T12:46:46.033901+00:00",
       "spot": 284.18,
       "spot_raw": 284.18,
       "spot_scale_adjustment": "none",
@@ -840,7 +840,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:34.934815+00:00",
+      "updated_at": "2026-05-06T12:46:46.379789+00:00",
       "spot": 255.62,
       "spot_raw": 255.62,
       "spot_scale_adjustment": "none",
@@ -857,16 +857,16 @@
       "call_skew_30d": 0.046875,
       "call_skew_30d_vol_points": 4.69,
       "put_call_volume_ratio": 2.1887,
-      "put_call_oi_ratio": 1.9033,
+      "put_call_oi_ratio": 1.8254,
       "put_volume": 1867.0,
       "call_volume": 853.0,
       "put_open_interest": 6159.0,
-      "call_open_interest": 3236.0,
+      "call_open_interest": 3374.0,
       "iv_score": 0.61,
       "skew_score": 2.34,
-      "demand_score": 6.18,
+      "demand_score": 6.03,
       "event_score": 0.0,
-      "rate_pressure_score": 2.21,
+      "rate_pressure_score": 2.18,
       "rate_pressure_formula": "0.45*iv_score + 0.30*skew_score + 0.20*demand_score + 0.05*event_score",
       "rate_driver_label": "DEMAND_DRIVEN",
       "data_warning": null,
@@ -930,7 +930,7 @@
             "iv": 0.062509,
             "distance_pct_to_spot": 9.54,
             "volume": 31.0,
-            "openInterest": 0.0
+            "openInterest": 72.0
           }
         },
         "warning": "pilot proxy: not real 25-delta; use production options API for Greeks"
@@ -941,7 +941,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:35.340924+00:00",
+      "updated_at": "2026-05-06T12:46:46.692197+00:00",
       "spot": 186.99,
       "spot_raw": 186.99,
       "spot_scale_adjustment": "none",
@@ -1042,7 +1042,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:35.793116+00:00",
+      "updated_at": "2026-05-06T12:46:47.050139+00:00",
       "spot": 92.01,
       "spot_raw": 92.01,
       "spot_scale_adjustment": "none",
@@ -1143,7 +1143,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:36.374540+00:00",
+      "updated_at": "2026-05-06T12:46:47.483743+00:00",
       "spot": 355.26,
       "spot_raw": 355.26,
       "spot_scale_adjustment": "none",
@@ -1244,7 +1244,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:36.885418+00:00",
+      "updated_at": "2026-05-06T12:46:47.834586+00:00",
       "spot": 168.75,
       "spot_raw": 168.75,
       "spot_scale_adjustment": "none",
@@ -1261,16 +1261,16 @@
       "call_skew_30d": 0.054687,
       "call_skew_30d_vol_points": 5.47,
       "put_call_volume_ratio": 0.8283,
-      "put_call_oi_ratio": 1.0024,
+      "put_call_oi_ratio": 0.8119,
       "put_volume": 1563.0,
       "call_volume": 1887.0,
-      "put_open_interest": 848.0,
-      "call_open_interest": 846.0,
+      "put_open_interest": 2456.0,
+      "call_open_interest": 3025.0,
       "iv_score": 0.31,
       "skew_score": 2.73,
-      "demand_score": 1.66,
+      "demand_score": 1.28,
       "event_score": 0.0,
-      "rate_pressure_score": 1.29,
+      "rate_pressure_score": 1.21,
       "rate_pressure_formula": "0.45*iv_score + 0.30*skew_score + 0.20*demand_score + 0.05*event_score",
       "rate_driver_label": "LOW_PRESSURE",
       "data_warning": null,
@@ -1301,7 +1301,7 @@
             "iv": 0.007822,
             "distance_pct_to_spot": 0.74,
             "volume": 21.0,
-            "openInterest": 0.0
+            "openInterest": 158.0
           },
           "atm_put": {
             "selected": "strict_valid_iv_distance",
@@ -1312,7 +1312,7 @@
             "iv": 0.007822,
             "distance_pct_to_spot": 0.74,
             "volume": 4.0,
-            "openInterest": 0.0
+            "openInterest": 14.0
           },
           "put_25": {
             "selected": "strict_valid_iv_distance",
@@ -1334,7 +1334,7 @@
             "iv": 0.062509,
             "distance_pct_to_spot": 9.63,
             "volume": 4.0,
-            "openInterest": 0.0
+            "openInterest": 93.0
           }
         },
         "warning": "pilot proxy: not real 25-delta; use production options API for Greeks"
@@ -1345,7 +1345,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:37.281040+00:00",
+      "updated_at": "2026-05-06T12:46:48.341555+00:00",
       "spot": 410.82,
       "spot_raw": 410.82,
       "spot_scale_adjustment": "none",
@@ -1446,7 +1446,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:37.607430+00:00",
+      "updated_at": "2026-05-06T12:46:48.941377+00:00",
       "spot": 275.8,
       "spot_raw": 275.8,
       "spot_scale_adjustment": "none",
@@ -1547,7 +1547,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:38.112802+00:00",
+      "updated_at": "2026-05-06T12:46:49.459654+00:00",
       "spot": 1732.9,
       "spot_raw": 1732.9,
       "spot_scale_adjustment": "none",
@@ -1648,7 +1648,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:38.520635+00:00",
+      "updated_at": "2026-05-06T12:46:49.837946+00:00",
       "spot": 1442.92,
       "spot_raw": 1442.92,
       "spot_scale_adjustment": "none",
@@ -1749,7 +1749,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:38.938145+00:00",
+      "updated_at": "2026-05-06T12:46:50.242229+00:00",
       "spot": 102.67,
       "spot_raw": 102.67,
       "spot_scale_adjustment": "none",
@@ -1850,7 +1850,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:39.340561+00:00",
+      "updated_at": "2026-05-06T12:46:50.678335+00:00",
       "spot": 208.84,
       "spot_raw": 208.84,
       "spot_scale_adjustment": "none",
@@ -1951,7 +1951,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:39.873259+00:00",
+      "updated_at": "2026-05-06T12:46:51.333525+00:00",
       "spot": 640.2,
       "spot_raw": 640.2,
       "spot_scale_adjustment": "none",
@@ -2052,7 +2052,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:40.255926+00:00",
+      "updated_at": "2026-05-06T12:46:51.708150+00:00",
       "spot": 135.91,
       "spot_raw": 135.91,
       "spot_scale_adjustment": "none",
@@ -2069,16 +2069,16 @@
       "call_skew_30d": 0.054687,
       "call_skew_30d_vol_points": 5.47,
       "put_call_volume_ratio": 1.2424,
-      "put_call_oi_ratio": 0.5082,
+      "put_call_oi_ratio": 1.0373,
       "put_volume": 8790.0,
       "call_volume": 7075.0,
-      "put_open_interest": 3789.0,
-      "call_open_interest": 7456.0,
+      "put_open_interest": 13769.0,
+      "call_open_interest": 13274.0,
       "iv_score": 0.31,
       "skew_score": 2.73,
-      "demand_score": 1.5,
+      "demand_score": 2.56,
       "event_score": 0.0,
-      "rate_pressure_score": 1.26,
+      "rate_pressure_score": 1.47,
       "rate_pressure_formula": "0.45*iv_score + 0.30*skew_score + 0.20*demand_score + 0.05*event_score",
       "rate_driver_label": "LOW_PRESSURE",
       "data_warning": null,
@@ -2120,7 +2120,7 @@
             "iv": 0.007822,
             "distance_pct_to_spot": 0.67,
             "volume": 595.0,
-            "openInterest": 0.0
+            "openInterest": 548.0
           },
           "put_25": {
             "selected": "strict_valid_iv_distance",
@@ -2131,7 +2131,7 @@
             "iv": 0.062509,
             "distance_pct_to_spot": 8.76,
             "volume": 327.0,
-            "openInterest": 0.0
+            "openInterest": 256.0
           },
           "call_25": {
             "selected": "strict_valid_iv_distance",
@@ -2142,7 +2142,7 @@
             "iv": 0.062509,
             "distance_pct_to_spot": 10.37,
             "volume": 692.0,
-            "openInterest": 0.0
+            "openInterest": 1510.0
           }
         },
         "warning": "pilot proxy: not real 25-delta; use production options API for Greeks"
@@ -2153,7 +2153,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:40.591244+00:00",
+      "updated_at": "2026-05-06T12:46:52.032496+00:00",
       "spot": 141.71,
       "spot_raw": 141.71,
       "spot_scale_adjustment": "none",
@@ -2254,7 +2254,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:40.919067+00:00",
+      "updated_at": "2026-05-06T12:46:52.498874+00:00",
       "spot": 183.98,
       "spot_raw": 183.98,
       "spot_scale_adjustment": "none",
@@ -2355,7 +2355,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:41.256942+00:00",
+      "updated_at": "2026-05-06T12:46:52.925472+00:00",
       "spot": 476.53,
       "spot_raw": 476.53,
       "spot_scale_adjustment": "none",
@@ -2456,7 +2456,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:41.950567+00:00",
+      "updated_at": "2026-05-06T12:46:53.222303+00:00",
       "spot": 141.36,
       "spot_raw": 141.36,
       "spot_scale_adjustment": "none",
@@ -2557,7 +2557,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:42.401554+00:00",
+      "updated_at": "2026-05-06T12:46:53.735048+00:00",
       "spot": 244.43,
       "spot_raw": 244.43,
       "spot_scale_adjustment": "none",
@@ -2658,7 +2658,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:42.803594+00:00",
+      "updated_at": "2026-05-06T12:46:54.168085+00:00",
       "spot": 185.35,
       "spot_raw": 185.35,
       "spot_scale_adjustment": "none",
@@ -2759,7 +2759,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:43.137200+00:00",
+      "updated_at": "2026-05-06T12:46:54.481902+00:00",
       "spot": 72.95,
       "spot_raw": 72.95,
       "spot_scale_adjustment": "none",
@@ -2860,7 +2860,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:43.472610+00:00",
+      "updated_at": "2026-05-06T12:46:54.801498+00:00",
       "spot": 107.63,
       "spot_raw": 107.63,
       "spot_scale_adjustment": "none",
@@ -2961,7 +2961,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:43.840732+00:00",
+      "updated_at": "2026-05-06T12:46:55.204913+00:00",
       "spot": 389.37,
       "spot_raw": 389.37,
       "spot_scale_adjustment": "none",
@@ -3062,7 +3062,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:44.170962+00:00",
+      "updated_at": "2026-05-06T12:46:55.519465+00:00",
       "spot": 14.6,
       "spot_raw": 14.6,
       "spot_scale_adjustment": "none",
@@ -3163,7 +3163,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:44.499005+00:00",
+      "updated_at": "2026-05-06T12:46:55.879350+00:00",
       "spot": 6.25,
       "spot_raw": 6.25,
       "spot_scale_adjustment": "none",
@@ -3264,7 +3264,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:44.864059+00:00",
+      "updated_at": "2026-05-06T12:46:56.309509+00:00",
       "spot": 197.75,
       "spot_raw": 197.75,
       "spot_scale_adjustment": "none",
@@ -3365,7 +3365,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:45.281850+00:00",
+      "updated_at": "2026-05-06T12:46:56.654489+00:00",
       "spot": 77.03,
       "spot_raw": 77.03,
       "spot_scale_adjustment": "none",
@@ -3466,7 +3466,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:45.703116+00:00",
+      "updated_at": "2026-05-06T12:46:56.990995+00:00",
       "spot": 16.02,
       "spot_raw": 16.02,
       "spot_scale_adjustment": "none",
@@ -3567,7 +3567,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:46.307869+00:00",
+      "updated_at": "2026-05-06T12:46:57.305502+00:00",
       "spot": 20.35,
       "spot_raw": 20.35,
       "spot_scale_adjustment": "none",
@@ -3668,7 +3668,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:46.835767+00:00",
+      "updated_at": "2026-05-06T12:46:57.597953+00:00",
       "spot": 12.16,
       "spot_raw": 12.16,
       "spot_scale_adjustment": "none",
@@ -3769,7 +3769,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:47.459160+00:00",
+      "updated_at": "2026-05-06T12:46:58.121921+00:00",
       "spot": 25.77,
       "spot_raw": 25.77,
       "spot_scale_adjustment": "none",
@@ -3870,7 +3870,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:47.865600+00:00",
+      "updated_at": "2026-05-06T12:46:58.436748+00:00",
       "spot": 12.37,
       "spot_raw": 12.37,
       "spot_scale_adjustment": "none",
@@ -3971,7 +3971,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:48.178488+00:00",
+      "updated_at": "2026-05-06T12:46:58.734224+00:00",
       "spot": 93.67,
       "spot_raw": 93.67,
       "spot_scale_adjustment": "none",
@@ -4072,7 +4072,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:48.531126+00:00",
+      "updated_at": "2026-05-06T12:46:59.164658+00:00",
       "spot": 70.86,
       "spot_raw": 70.86,
       "spot_scale_adjustment": "none",
@@ -4089,18 +4089,18 @@
       "call_skew_30d": 0.046875,
       "call_skew_30d_vol_points": 4.69,
       "put_call_volume_ratio": 1.3495,
-      "put_call_oi_ratio": 1.3389,
+      "put_call_oi_ratio": 1.0816,
       "put_volume": 139.0,
       "call_volume": 103.0,
-      "put_open_interest": 399.0,
-      "call_open_interest": 298.0,
+      "put_open_interest": 530.0,
+      "call_open_interest": 490.0,
       "iv_score": 0.61,
       "skew_score": 2.34,
-      "demand_score": 3.38,
+      "demand_score": 2.86,
       "event_score": 0.0,
-      "rate_pressure_score": 1.65,
+      "rate_pressure_score": 1.55,
       "rate_pressure_formula": "0.45*iv_score + 0.30*skew_score + 0.20*demand_score + 0.05*event_score",
-      "rate_driver_label": "DEMAND_DRIVEN",
+      "rate_driver_label": "LOW_PRESSURE",
       "data_warning": null,
       "debug": {
         "atm_method": "liquidity-aware valid IV nearest strike to raw spot",
@@ -4129,7 +4129,7 @@
             "iv": 0.015635,
             "distance_pct_to_spot": 1.61,
             "volume": 3.0,
-            "openInterest": 0.0
+            "openInterest": 6.0
           },
           "atm_put": {
             "selected": "strict_valid_iv_distance",
@@ -4140,7 +4140,7 @@
             "iv": 0.015635,
             "distance_pct_to_spot": 1.21,
             "volume": 5.0,
-            "openInterest": 0.0
+            "openInterest": 19.0
           },
           "put_25": {
             "selected": "strict_valid_iv_distance",
@@ -4173,7 +4173,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:48.849845+00:00",
+      "updated_at": "2026-05-06T12:46:59.486402+00:00",
       "spot": 52.26,
       "spot_raw": 52.26,
       "spot_scale_adjustment": "none",
@@ -4274,7 +4274,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:49.269524+00:00",
+      "updated_at": "2026-05-06T12:46:59.819631+00:00",
       "spot": 106.24,
       "spot_raw": 106.24,
       "spot_scale_adjustment": "none",
@@ -4375,7 +4375,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:49.654869+00:00",
+      "updated_at": "2026-05-06T12:47:00.298835+00:00",
       "spot": 154.88,
       "spot_raw": 154.88,
       "spot_scale_adjustment": "none",
@@ -4392,16 +4392,16 @@
       "call_skew_30d": 0.03125,
       "call_skew_30d_vol_points": 3.12,
       "put_call_volume_ratio": 3.4371,
-      "put_call_oi_ratio": 4.2996,
+      "put_call_oi_ratio": 1.1661,
       "put_volume": 574.0,
       "call_volume": 167.0,
-      "put_open_interest": 1105.0,
-      "call_open_interest": 257.0,
+      "put_open_interest": 1973.0,
+      "call_open_interest": 1692.0,
       "iv_score": 1.18,
       "skew_score": 1.56,
-      "demand_score": 10.0,
+      "demand_score": 6.33,
       "event_score": 0.0,
-      "rate_pressure_score": 3.0,
+      "rate_pressure_score": 2.27,
       "rate_pressure_formula": "0.45*iv_score + 0.30*skew_score + 0.20*demand_score + 0.05*event_score",
       "rate_driver_label": "DEMAND_DRIVEN",
       "data_warning": null,
@@ -4432,7 +4432,7 @@
             "iv": 0.03126,
             "distance_pct_to_spot": 3.31,
             "volume": 36.0,
-            "openInterest": 0.0
+            "openInterest": 195.0
           },
           "atm_put": {
             "selected": "strict_valid_iv_distance",
@@ -4454,7 +4454,7 @@
             "iv": 0.062509,
             "distance_pct_to_spot": 9.61,
             "volume": 11.0,
-            "openInterest": 0.0
+            "openInterest": 152.0
           },
           "call_25": {
             "selected": "strict_valid_iv_distance",
@@ -4465,7 +4465,7 @@
             "iv": 0.062509,
             "distance_pct_to_spot": 9.76,
             "volume": 22.0,
-            "openInterest": 0.0
+            "openInterest": 408.0
           }
         },
         "warning": "pilot proxy: not real 25-delta; use production options API for Greeks"
@@ -4476,7 +4476,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:50.047312+00:00",
+      "updated_at": "2026-05-06T12:47:00.803207+00:00",
       "spot": 192.64,
       "spot_raw": 192.64,
       "spot_scale_adjustment": "none",
@@ -4577,7 +4577,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:50.458834+00:00",
+      "updated_at": "2026-05-06T12:47:01.193968+00:00",
       "spot": 123.32,
       "spot_raw": 123.32,
       "spot_scale_adjustment": "none",
@@ -4678,7 +4678,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:50.933405+00:00",
+      "updated_at": "2026-05-06T12:47:01.633223+00:00",
       "spot": 59.34,
       "spot_raw": 59.34,
       "spot_scale_adjustment": "none",
@@ -4779,7 +4779,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:51.474228+00:00",
+      "updated_at": "2026-05-06T12:47:02.272095+00:00",
       "spot": 904.59,
       "spot_raw": 904.59,
       "spot_scale_adjustment": "none",
@@ -4880,7 +4880,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:51.948347+00:00",
+      "updated_at": "2026-05-06T12:47:02.729188+00:00",
       "spot": 575.79,
       "spot_raw": 575.79,
       "spot_scale_adjustment": "none",
@@ -4897,16 +4897,16 @@
       "call_skew_30d": 0.054687,
       "call_skew_30d_vol_points": 5.47,
       "put_call_volume_ratio": 15.0811,
-      "put_call_oi_ratio": 1.6833,
+      "put_call_oi_ratio": 5.6508,
       "put_volume": 558.0,
       "call_volume": 37.0,
-      "put_open_interest": 101.0,
-      "call_open_interest": 60.0,
+      "put_open_interest": 356.0,
+      "call_open_interest": 63.0,
       "iv_score": 0.31,
       "skew_score": 2.73,
-      "demand_score": 7.37,
+      "demand_score": 10.0,
       "event_score": 0.0,
-      "rate_pressure_score": 2.43,
+      "rate_pressure_score": 2.96,
       "rate_pressure_formula": "0.45*iv_score + 0.30*skew_score + 0.20*demand_score + 0.05*event_score",
       "rate_driver_label": "DEMAND_DRIVEN",
       "data_warning": null,
@@ -4970,7 +4970,7 @@
             "iv": 0.062509,
             "distance_pct_to_spot": 12.02,
             "volume": 1.0,
-            "openInterest": 0.0
+            "openInterest": 1.0
           }
         },
         "warning": "pilot proxy: not real 25-delta; use production options API for Greeks"
@@ -4981,7 +4981,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:52.456424+00:00",
+      "updated_at": "2026-05-06T12:47:03.245444+00:00",
       "spot": 286.68,
       "spot_raw": 286.68,
       "spot_scale_adjustment": "none",
@@ -5082,7 +5082,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:52.819522+00:00",
+      "updated_at": "2026-05-06T12:47:03.698449+00:00",
       "spot": 224.38,
       "spot_raw": 224.38,
       "spot_scale_adjustment": "none",
@@ -5099,16 +5099,16 @@
       "call_skew_30d": 0.046875,
       "call_skew_30d_vol_points": 4.69,
       "put_call_volume_ratio": 0.4316,
-      "put_call_oi_ratio": 1.6709,
+      "put_call_oi_ratio": 1.1244,
       "put_volume": 328.0,
       "call_volume": 760.0,
-      "put_open_interest": 1193.0,
-      "call_open_interest": 714.0,
+      "put_open_interest": 2025.0,
+      "call_open_interest": 1801.0,
       "iv_score": 0.61,
       "skew_score": 2.34,
-      "demand_score": 2.34,
+      "demand_score": 1.25,
       "event_score": 0.0,
-      "rate_pressure_score": 1.44,
+      "rate_pressure_score": 1.23,
       "rate_pressure_formula": "0.45*iv_score + 0.30*skew_score + 0.20*demand_score + 0.05*event_score",
       "rate_driver_label": "LOW_PRESSURE",
       "data_warning": null,
@@ -5139,7 +5139,7 @@
             "iv": 0.015635,
             "distance_pct_to_spot": 2.5,
             "volume": 63.0,
-            "openInterest": 0.0
+            "openInterest": 100.0
           },
           "atm_put": {
             "selected": "strict_valid_iv_distance",
@@ -5172,7 +5172,7 @@
             "iv": 0.062509,
             "distance_pct_to_spot": 9.19,
             "volume": 1.0,
-            "openInterest": 0.0
+            "openInterest": 200.0
           }
         },
         "warning": "pilot proxy: not real 25-delta; use production options API for Greeks"
@@ -5183,7 +5183,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:53.208949+00:00",
+      "updated_at": "2026-05-06T12:47:04.095526+00:00",
       "spot": 1016.42,
       "spot_raw": 1016.42,
       "spot_scale_adjustment": "none",
@@ -5284,7 +5284,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:53.675412+00:00",
+      "updated_at": "2026-05-06T12:47:04.815964+00:00",
       "spot": 130.79,
       "spot_raw": 130.79,
       "spot_scale_adjustment": "none",
@@ -5385,7 +5385,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:54.092759+00:00",
+      "updated_at": "2026-05-06T12:47:05.330781+00:00",
       "spot": 128.82,
       "spot_raw": 128.82,
       "spot_scale_adjustment": "none",
@@ -5486,7 +5486,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:54.503470+00:00",
+      "updated_at": "2026-05-06T12:47:06.051310+00:00",
       "spot": 144.9,
       "spot_raw": 144.9,
       "spot_scale_adjustment": "none",
@@ -5503,16 +5503,16 @@
       "call_skew_30d": 0.054687,
       "call_skew_30d_vol_points": 5.47,
       "put_call_volume_ratio": 0.977,
-      "put_call_oi_ratio": 0.5776,
+      "put_call_oi_ratio": 0.7119,
       "put_volume": 255.0,
       "call_volume": 261.0,
-      "put_open_interest": 268.0,
-      "call_open_interest": 464.0,
+      "put_open_interest": 719.0,
+      "call_open_interest": 1010.0,
       "iv_score": 0.31,
       "skew_score": 2.73,
-      "demand_score": 1.11,
+      "demand_score": 1.38,
       "event_score": 0.0,
-      "rate_pressure_score": 1.18,
+      "rate_pressure_score": 1.23,
       "rate_pressure_formula": "0.45*iv_score + 0.30*skew_score + 0.20*demand_score + 0.05*event_score",
       "rate_driver_label": "LOW_PRESSURE",
       "data_warning": null,
@@ -5543,7 +5543,7 @@
             "iv": 0.007822,
             "distance_pct_to_spot": 0.76,
             "volume": 51.0,
-            "openInterest": 0.0
+            "openInterest": 5.0
           },
           "atm_put": {
             "selected": "strict_valid_iv_distance",
@@ -5565,7 +5565,7 @@
             "iv": 0.062509,
             "distance_pct_to_spot": 10.28,
             "volume": 2.0,
-            "openInterest": 0.0
+            "openInterest": 4.0
           },
           "call_25": {
             "selected": "strict_valid_iv_distance",
@@ -5587,7 +5587,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:55.045656+00:00",
+      "updated_at": "2026-05-06T12:47:06.621770+00:00",
       "spot": 78.48,
       "spot_raw": 78.48,
       "spot_scale_adjustment": "none",
@@ -5688,7 +5688,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:55.600805+00:00",
+      "updated_at": "2026-05-06T12:47:07.047978+00:00",
       "spot": 155.04,
       "spot_raw": 155.04,
       "spot_scale_adjustment": "none",
@@ -5705,16 +5705,16 @@
       "call_skew_30d": 0.03125,
       "call_skew_30d_vol_points": 3.12,
       "put_call_volume_ratio": 0.4002,
-      "put_call_oi_ratio": 0.624,
+      "put_call_oi_ratio": 0.964,
       "put_volume": 341.0,
       "call_volume": 852.0,
-      "put_open_interest": 614.0,
-      "call_open_interest": 984.0,
+      "put_open_interest": 992.0,
+      "call_open_interest": 1029.0,
       "iv_score": 1.18,
       "skew_score": 1.56,
-      "demand_score": 0.25,
+      "demand_score": 0.93,
       "event_score": 0.0,
-      "rate_pressure_score": 1.05,
+      "rate_pressure_score": 1.19,
       "rate_pressure_formula": "0.45*iv_score + 0.30*skew_score + 0.20*demand_score + 0.05*event_score",
       "rate_driver_label": "LOW_PRESSURE",
       "data_warning": null,
@@ -5767,7 +5767,7 @@
             "iv": 0.062509,
             "distance_pct_to_spot": 9.7,
             "volume": 7.0,
-            "openInterest": 0.0
+            "openInterest": 32.0
           },
           "call_25": {
             "selected": "strict_valid_iv_distance",
@@ -5778,7 +5778,7 @@
             "iv": 0.062509,
             "distance_pct_to_spot": 9.65,
             "volume": 31.0,
-            "openInterest": 0.0
+            "openInterest": 43.0
           }
         },
         "warning": "pilot proxy: not real 25-delta; use production options API for Greeks"
@@ -5789,7 +5789,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:56.013378+00:00",
+      "updated_at": "2026-05-06T12:47:07.757025+00:00",
       "spot": 225.55,
       "spot_raw": 225.55,
       "spot_scale_adjustment": "none",
@@ -5890,7 +5890,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:56.434916+00:00",
+      "updated_at": "2026-05-06T12:47:08.182888+00:00",
       "spot": 26.45,
       "spot_raw": 26.45,
       "spot_scale_adjustment": "none",
@@ -5907,16 +5907,16 @@
       "call_skew_30d": 0.046875,
       "call_skew_30d_vol_points": 4.69,
       "put_call_volume_ratio": 0.8109,
-      "put_call_oi_ratio": 1.3005,
+      "put_call_oi_ratio": 0.561,
       "put_volume": 579.0,
       "call_volume": 714.0,
-      "put_open_interest": 1069.0,
-      "call_open_interest": 822.0,
+      "put_open_interest": 1118.0,
+      "call_open_interest": 1993.0,
       "iv_score": 0.61,
       "skew_score": 2.34,
-      "demand_score": 2.22,
+      "demand_score": 0.74,
       "event_score": 0.0,
-      "rate_pressure_score": 1.42,
+      "rate_pressure_score": 1.12,
       "rate_pressure_formula": "0.45*iv_score + 0.30*skew_score + 0.20*demand_score + 0.05*event_score",
       "rate_driver_label": "LOW_PRESSURE",
       "data_warning": null,
@@ -5947,7 +5947,7 @@
             "iv": 0.015635,
             "distance_pct_to_spot": 2.08,
             "volume": 323.0,
-            "openInterest": 0.0
+            "openInterest": 567.0
           },
           "atm_put": {
             "selected": "strict_valid_iv_distance",
@@ -5991,7 +5991,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:56.752358+00:00",
+      "updated_at": "2026-05-06T12:47:08.515114+00:00",
       "spot": 206.11,
       "spot_raw": 206.11,
       "spot_scale_adjustment": "none",
@@ -6092,7 +6092,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:57.222104+00:00",
+      "updated_at": "2026-05-06T12:47:09.016001+00:00",
       "spot": 363.87,
       "spot_raw": 363.87,
       "spot_scale_adjustment": "none",
@@ -6109,16 +6109,16 @@
       "call_skew_30d": 0.050781,
       "call_skew_30d_vol_points": 5.08,
       "put_call_volume_ratio": 4.3101,
-      "put_call_oi_ratio": 2.1744,
+      "put_call_oi_ratio": 1.8153,
       "put_volume": 1237.0,
       "call_volume": 287.0,
-      "put_open_interest": 1696.0,
-      "call_open_interest": 780.0,
+      "put_open_interest": 3213.0,
+      "call_open_interest": 1770.0,
       "iv_score": 0.46,
       "skew_score": 2.54,
-      "demand_score": 8.35,
+      "demand_score": 7.63,
       "event_score": 0.0,
-      "rate_pressure_score": 2.64,
+      "rate_pressure_score": 2.5,
       "rate_pressure_formula": "0.45*iv_score + 0.30*skew_score + 0.20*demand_score + 0.05*event_score",
       "rate_driver_label": "DEMAND_DRIVEN",
       "data_warning": null,
@@ -6193,7 +6193,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:57.680431+00:00",
+      "updated_at": "2026-05-06T12:47:09.523526+00:00",
       "spot": 309.4,
       "spot_raw": 309.4,
       "spot_scale_adjustment": "none",
@@ -6294,7 +6294,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:58.280271+00:00",
+      "updated_at": "2026-05-06T12:47:10.141990+00:00",
       "spot": 918.89,
       "spot_raw": 918.89,
       "spot_scale_adjustment": "none",
@@ -6395,7 +6395,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:58.734330+00:00",
+      "updated_at": "2026-05-06T12:47:10.633020+00:00",
       "spot": 189.25,
       "spot_raw": 189.25,
       "spot_scale_adjustment": "none",
@@ -6412,16 +6412,16 @@
       "call_skew_30d": 0.039062,
       "call_skew_30d_vol_points": 3.91,
       "put_call_volume_ratio": 0.1294,
-      "put_call_oi_ratio": 0.3195,
+      "put_call_oi_ratio": 0.9061,
       "put_volume": 22.0,
       "call_volume": 170.0,
-      "put_open_interest": 54.0,
-      "call_open_interest": 169.0,
+      "put_open_interest": 444.0,
+      "call_open_interest": 490.0,
       "iv_score": 0.9,
       "skew_score": 1.95,
-      "demand_score": 0.0,
+      "demand_score": 0.81,
       "event_score": 0.0,
-      "rate_pressure_score": 0.99,
+      "rate_pressure_score": 1.15,
       "rate_pressure_formula": "0.45*iv_score + 0.30*skew_score + 0.20*demand_score + 0.05*event_score",
       "rate_driver_label": "LOW_PRESSURE",
       "data_warning": null,
@@ -6474,7 +6474,7 @@
             "iv": 0.062509,
             "distance_pct_to_spot": 10.17,
             "volume": 5.0,
-            "openInterest": 0.0
+            "openInterest": 31.0
           },
           "call_25": {
             "selected": "strict_valid_iv_distance",
@@ -6485,7 +6485,7 @@
             "iv": 0.062509,
             "distance_pct_to_spot": 10.96,
             "volume": 2.0,
-            "openInterest": 0.0
+            "openInterest": 4.0
           }
         },
         "warning": "pilot proxy: not real 25-delta; use production options API for Greeks"
@@ -6496,7 +6496,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:59.186573+00:00",
+      "updated_at": "2026-05-06T12:47:11.161912+00:00",
       "spot": 1048.91,
       "spot_raw": 1048.91,
       "spot_scale_adjustment": "none",
@@ -6597,7 +6597,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T11:59:59.619220+00:00",
+      "updated_at": "2026-05-06T12:47:11.679813+00:00",
       "spot": 681.61,
       "spot_raw": 681.61,
       "spot_scale_adjustment": "none",
@@ -6614,18 +6614,18 @@
       "call_skew_30d": 0.054687,
       "call_skew_30d_vol_points": 5.47,
       "put_call_volume_ratio": 1.1858,
-      "put_call_oi_ratio": 1.1201,
+      "put_call_oi_ratio": 1.3259,
       "put_volume": 14414.0,
       "call_volume": 12156.0,
-      "put_open_interest": 35193.0,
+      "put_open_interest": 41661.0,
       "call_open_interest": 31420.0,
       "iv_score": 0.31,
       "skew_score": 2.73,
-      "demand_score": 2.61,
+      "demand_score": 3.02,
       "event_score": 0.0,
-      "rate_pressure_score": 1.48,
+      "rate_pressure_score": 1.56,
       "rate_pressure_formula": "0.45*iv_score + 0.30*skew_score + 0.20*demand_score + 0.05*event_score",
-      "rate_driver_label": "LOW_PRESSURE",
+      "rate_driver_label": "DEMAND_DRIVEN",
       "data_warning": null,
       "debug": {
         "atm_method": "liquidity-aware valid IV nearest strike to raw spot",
@@ -6698,7 +6698,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:00.138097+00:00",
+      "updated_at": "2026-05-06T12:47:12.191757+00:00",
       "spot": 723.77,
       "spot_raw": 723.77,
       "spot_scale_adjustment": "none",
@@ -6799,7 +6799,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:00.639133+00:00",
+      "updated_at": "2026-05-06T12:47:12.737373+00:00",
       "spot": 492.96,
       "spot_raw": 492.96,
       "spot_scale_adjustment": "none",
@@ -6816,16 +6816,16 @@
       "call_skew_30d": 0.054687,
       "call_skew_30d_vol_points": 5.47,
       "put_call_volume_ratio": 2.2189,
-      "put_call_oi_ratio": 1.0425,
+      "put_call_oi_ratio": 1.3947,
       "put_volume": 446.0,
       "call_volume": 201.0,
-      "put_open_interest": 663.0,
-      "call_open_interest": 636.0,
+      "put_open_interest": 1258.0,
+      "call_open_interest": 902.0,
       "iv_score": 0.31,
       "skew_score": 2.73,
-      "demand_score": 4.52,
+      "demand_score": 5.23,
       "event_score": 0.0,
-      "rate_pressure_score": 1.86,
+      "rate_pressure_score": 2.0,
       "rate_pressure_formula": "0.45*iv_score + 0.30*skew_score + 0.20*demand_score + 0.05*event_score",
       "rate_driver_label": "DEMAND_DRIVEN",
       "data_warning": null,
@@ -6878,7 +6878,7 @@
             "iv": 0.062509,
             "distance_pct_to_spot": 9.73,
             "volume": 2.0,
-            "openInterest": 0.0
+            "openInterest": 61.0
           },
           "call_25": {
             "selected": "strict_valid_iv_distance",
@@ -6889,7 +6889,7 @@
             "iv": 0.062509,
             "distance_pct_to_spot": 7.51,
             "volume": null,
-            "openInterest": 0.0
+            "openInterest": 1.0
           }
         },
         "warning": "pilot proxy: not real 25-delta; use production options API for Greeks"
@@ -6900,7 +6900,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:01.020237+00:00",
+      "updated_at": "2026-05-06T12:47:13.399918+00:00",
       "spot": 282.56,
       "spot_raw": 282.56,
       "spot_scale_adjustment": "none",
@@ -6917,16 +6917,16 @@
       "call_skew_30d": 0.054687,
       "call_skew_30d_vol_points": 5.47,
       "put_call_volume_ratio": 0.9548,
-      "put_call_oi_ratio": 0.6037,
+      "put_call_oi_ratio": 0.3788,
       "put_volume": 2133.0,
       "call_volume": 2234.0,
-      "put_open_interest": 7499.0,
-      "call_open_interest": 12421.0,
+      "put_open_interest": 9264.0,
+      "call_open_interest": 24455.0,
       "iv_score": 0.31,
       "skew_score": 2.73,
-      "demand_score": 1.12,
+      "demand_score": 0.91,
       "event_score": 0.0,
-      "rate_pressure_score": 1.18,
+      "rate_pressure_score": 1.14,
       "rate_pressure_formula": "0.45*iv_score + 0.30*skew_score + 0.20*demand_score + 0.05*event_score",
       "rate_driver_label": "LOW_PRESSURE",
       "data_warning": null,
@@ -6990,7 +6990,7 @@
             "iv": 0.062509,
             "distance_pct_to_spot": 9.71,
             "volume": 23.0,
-            "openInterest": 0.0
+            "openInterest": 79.0
           }
         },
         "warning": "pilot proxy: not real 25-delta; use production options API for Greeks"
@@ -7001,7 +7001,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:01.418406+00:00",
+      "updated_at": "2026-05-06T12:47:14.037078+00:00",
       "spot": 522.69,
       "spot_raw": 522.69,
       "spot_scale_adjustment": "none",
@@ -7018,16 +7018,16 @@
       "call_skew_30d": 0.050781,
       "call_skew_30d_vol_points": 5.08,
       "put_call_volume_ratio": 1.1554,
-      "put_call_oi_ratio": 1.1155,
+      "put_call_oi_ratio": 1.2188,
       "put_volume": 1338.0,
       "call_volume": 1158.0,
-      "put_open_interest": 3293.0,
+      "put_open_interest": 3598.0,
       "call_open_interest": 2952.0,
       "iv_score": 0.46,
       "skew_score": 2.54,
-      "demand_score": 2.54,
+      "demand_score": 2.75,
       "event_score": 0.0,
-      "rate_pressure_score": 1.48,
+      "rate_pressure_score": 1.52,
       "rate_pressure_formula": "0.45*iv_score + 0.30*skew_score + 0.20*demand_score + 0.05*event_score",
       "rate_driver_label": "LOW_PRESSURE",
       "data_warning": null,
@@ -7102,7 +7102,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:01.752434+00:00",
+      "updated_at": "2026-05-06T12:47:14.361669+00:00",
       "spot": 51.59,
       "spot_raw": 51.59,
       "spot_scale_adjustment": "none",
@@ -7203,7 +7203,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:02.198728+00:00",
+      "updated_at": "2026-05-06T12:47:14.805548+00:00",
       "spot": 145.3,
       "spot_raw": 145.3,
       "spot_scale_adjustment": "none",
@@ -7304,7 +7304,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:02.562429+00:00",
+      "updated_at": "2026-05-06T12:47:15.144623+00:00",
       "spot": 59.45,
       "spot_raw": 59.45,
       "spot_scale_adjustment": "none",
@@ -7405,7 +7405,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:02.879235+00:00",
+      "updated_at": "2026-05-06T12:47:15.551387+00:00",
       "spot": 84.06,
       "spot_raw": 84.06,
       "spot_scale_adjustment": "none",
@@ -7506,7 +7506,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:03.179728+00:00",
+      "updated_at": "2026-05-06T12:47:16.252954+00:00",
       "spot": 108.65,
       "spot_raw": 108.65,
       "spot_scale_adjustment": "none",
@@ -7607,7 +7607,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:03.561143+00:00",
+      "updated_at": "2026-05-06T12:47:16.686784+00:00",
       "spot": 43.06,
       "spot_raw": 43.06,
       "spot_scale_adjustment": "none",
@@ -7708,7 +7708,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:04.038780+00:00",
+      "updated_at": "2026-05-06T12:47:17.068659+00:00",
       "spot": 100.48,
       "spot_raw": 100.48,
       "spot_scale_adjustment": "none",
@@ -7809,7 +7809,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:04.515191+00:00",
+      "updated_at": "2026-05-06T12:47:17.572743+00:00",
       "spot": 87.89,
       "spot_raw": 87.89,
       "spot_scale_adjustment": "none",
@@ -7826,14 +7826,14 @@
       "call_skew_30d": 0.050781,
       "call_skew_30d_vol_points": 5.08,
       "put_call_volume_ratio": 0.3441,
-      "put_call_oi_ratio": 0.5116,
+      "put_call_oi_ratio": 0.314,
       "put_volume": 2193.0,
       "call_volume": 6373.0,
       "put_open_interest": 4891.0,
-      "call_open_interest": 9560.0,
+      "call_open_interest": 15575.0,
       "iv_score": 0.46,
       "skew_score": 2.54,
-      "demand_score": 0.02,
+      "demand_score": 0.0,
       "event_score": 0.0,
       "rate_pressure_score": 0.97,
       "rate_pressure_formula": "0.45*iv_score + 0.30*skew_score + 0.20*demand_score + 0.05*event_score",
@@ -7866,7 +7866,7 @@
             "iv": 0.015635,
             "distance_pct_to_spot": 1.26,
             "volume": 659.0,
-            "openInterest": 0.0
+            "openInterest": 368.0
           },
           "atm_put": {
             "selected": "strict_valid_iv_distance",
@@ -7910,7 +7910,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:05.139831+00:00",
+      "updated_at": "2026-05-06T12:47:18.118353+00:00",
       "spot": 108.15,
       "spot_raw": 108.15,
       "spot_scale_adjustment": "none",
@@ -7927,18 +7927,18 @@
       "call_skew_30d": 0.054687,
       "call_skew_30d_vol_points": 5.47,
       "put_call_volume_ratio": 1.3293,
-      "put_call_oi_ratio": 0.8312,
+      "put_call_oi_ratio": 1.4208,
       "put_volume": 12303.0,
       "call_volume": 9255.0,
-      "put_open_interest": 3900.0,
-      "call_open_interest": 4692.0,
+      "put_open_interest": 22022.0,
+      "call_open_interest": 15500.0,
       "iv_score": 0.31,
       "skew_score": 2.73,
-      "demand_score": 2.32,
+      "demand_score": 3.5,
       "event_score": 0.0,
-      "rate_pressure_score": 1.42,
+      "rate_pressure_score": 1.66,
       "rate_pressure_formula": "0.45*iv_score + 0.30*skew_score + 0.20*demand_score + 0.05*event_score",
-      "rate_driver_label": "LOW_PRESSURE",
+      "rate_driver_label": "DEMAND_DRIVEN",
       "data_warning": null,
       "debug": {
         "atm_method": "liquidity-aware valid IV nearest strike to raw spot",
@@ -7967,7 +7967,7 @@
             "iv": 0.007822,
             "distance_pct_to_spot": 0.79,
             "volume": 184.0,
-            "openInterest": 0.0
+            "openInterest": 142.0
           },
           "atm_put": {
             "selected": "strict_valid_iv_distance",
@@ -7978,7 +7978,7 @@
             "iv": 0.007822,
             "distance_pct_to_spot": 1.06,
             "volume": 119.0,
-            "openInterest": 0.0
+            "openInterest": 111.0
           },
           "put_25": {
             "selected": "strict_valid_iv_distance",
@@ -7989,7 +7989,7 @@
             "iv": 0.062509,
             "distance_pct_to_spot": 10.31,
             "volume": 36.0,
-            "openInterest": 0.0
+            "openInterest": 43.0
           },
           "call_25": {
             "selected": "strict_valid_iv_distance",
@@ -8011,7 +8011,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:05.643019+00:00",
+      "updated_at": "2026-05-06T12:47:18.630941+00:00",
       "spot": 186.55,
       "spot_raw": 186.55,
       "spot_scale_adjustment": "none",
@@ -8028,11 +8028,11 @@
       "call_skew_30d": 0.050781,
       "call_skew_30d_vol_points": 5.08,
       "put_call_volume_ratio": 0.1252,
-      "put_call_oi_ratio": 0.4043,
+      "put_call_oi_ratio": 0.3466,
       "put_volume": 543.0,
       "call_volume": 4338.0,
-      "put_open_interest": 1097.0,
-      "call_open_interest": 2713.0,
+      "put_open_interest": 2140.0,
+      "call_open_interest": 6175.0,
       "iv_score": 0.46,
       "skew_score": 2.54,
       "demand_score": 0.0,
@@ -8079,7 +8079,7 @@
             "iv": 0.007822,
             "distance_pct_to_spot": 0.83,
             "volume": 7.0,
-            "openInterest": 0.0
+            "openInterest": 12.0
           },
           "put_25": {
             "selected": "strict_valid_iv_distance",
@@ -8090,7 +8090,7 @@
             "iv": 0.062509,
             "distance_pct_to_spot": 10.21,
             "volume": 5.0,
-            "openInterest": 0.0
+            "openInterest": 7.0
           },
           "call_25": {
             "selected": "strict_valid_iv_distance",
@@ -8112,7 +8112,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:06.180378+00:00",
+      "updated_at": "2026-05-06T12:47:19.095989+00:00",
       "spot": 281.0,
       "spot_raw": 281.0,
       "spot_scale_adjustment": "none",
@@ -8213,7 +8213,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:06.491299+00:00",
+      "updated_at": "2026-05-06T12:47:19.398997+00:00",
       "spot": 132.26,
       "spot_raw": 132.26,
       "spot_scale_adjustment": "none",
@@ -8230,16 +8230,16 @@
       "call_skew_30d": 0.050781,
       "call_skew_30d_vol_points": 5.08,
       "put_call_volume_ratio": 2.0252,
-      "put_call_oi_ratio": 0.9306,
+      "put_call_oi_ratio": 0.8496,
       "put_volume": 482.0,
       "call_volume": 238.0,
-      "put_open_interest": 496.0,
-      "call_open_interest": 533.0,
+      "put_open_interest": 1288.0,
+      "call_open_interest": 1516.0,
       "iv_score": 0.46,
       "skew_score": 2.54,
-      "demand_score": 3.91,
+      "demand_score": 3.75,
       "event_score": 0.0,
-      "rate_pressure_score": 1.75,
+      "rate_pressure_score": 1.72,
       "rate_pressure_formula": "0.45*iv_score + 0.30*skew_score + 0.20*demand_score + 0.05*event_score",
       "rate_driver_label": "DEMAND_DRIVEN",
       "data_warning": null,
@@ -8270,7 +8270,7 @@
             "iv": 0.007822,
             "distance_pct_to_spot": 0.56,
             "volume": 22.0,
-            "openInterest": 0.0
+            "openInterest": 22.0
           },
           "atm_put": {
             "selected": "strict_valid_iv_distance",
@@ -8292,7 +8292,7 @@
             "iv": 0.062509,
             "distance_pct_to_spot": 10.03,
             "volume": 1.0,
-            "openInterest": 0.0
+            "openInterest": 2.0
           },
           "call_25": {
             "selected": "strict_valid_iv_distance",
@@ -8303,7 +8303,7 @@
             "iv": 0.062509,
             "distance_pct_to_spot": 9.63,
             "volume": 1.0,
-            "openInterest": 0.0
+            "openInterest": 21.0
           }
         },
         "warning": "pilot proxy: not real 25-delta; use production options API for Greeks"
@@ -8314,7 +8314,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:06.981898+00:00",
+      "updated_at": "2026-05-06T12:47:19.690830+00:00",
       "spot": 96.75,
       "spot_raw": 96.75,
       "spot_scale_adjustment": "none",
@@ -8331,16 +8331,16 @@
       "call_skew_30d": 0.050781,
       "call_skew_30d_vol_points": 5.08,
       "put_call_volume_ratio": 3.2917,
-      "put_call_oi_ratio": 2.7578,
+      "put_call_oi_ratio": 3.9628,
       "put_volume": 474.0,
       "call_volume": 144.0,
-      "put_open_interest": 1241.0,
-      "call_open_interest": 450.0,
+      "put_open_interest": 2342.0,
+      "call_open_interest": 591.0,
       "iv_score": 0.46,
       "skew_score": 2.54,
-      "demand_score": 9.52,
+      "demand_score": 10.0,
       "event_score": 0.0,
-      "rate_pressure_score": 2.87,
+      "rate_pressure_score": 2.97,
       "rate_pressure_formula": "0.45*iv_score + 0.30*skew_score + 0.20*demand_score + 0.05*event_score",
       "rate_driver_label": "DEMAND_DRIVEN",
       "data_warning": null,
@@ -8382,7 +8382,7 @@
             "iv": 0.007822,
             "distance_pct_to_spot": 0.78,
             "volume": 1.0,
-            "openInterest": 0.0
+            "openInterest": 46.0
           },
           "put_25": {
             "selected": "strict_valid_iv_distance",
@@ -8415,7 +8415,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:07.415477+00:00",
+      "updated_at": "2026-05-06T12:47:19.990173+00:00",
       "spot": 702.27,
       "spot_raw": 702.27,
       "spot_scale_adjustment": "none",
@@ -8516,7 +8516,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:08.088588+00:00",
+      "updated_at": "2026-05-06T12:47:20.397706+00:00",
       "spot": 424.36,
       "spot_raw": 424.36,
       "spot_scale_adjustment": "none",
@@ -8617,7 +8617,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:08.539471+00:00",
+      "updated_at": "2026-05-06T12:47:20.732226+00:00",
       "spot": 451.38,
       "spot_raw": 451.38,
       "spot_scale_adjustment": "none",
@@ -8718,7 +8718,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:08.916078+00:00",
+      "updated_at": "2026-05-06T12:47:21.163288+00:00",
       "spot": 77.79,
       "spot_raw": 77.79,
       "spot_scale_adjustment": "none",
@@ -8819,7 +8819,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:09.443253+00:00",
+      "updated_at": "2026-05-06T12:47:21.684377+00:00",
       "spot": 56.95,
       "spot_raw": 56.95,
       "spot_scale_adjustment": "none",
@@ -8920,7 +8920,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:09.848900+00:00",
+      "updated_at": "2026-05-06T12:47:22.172578+00:00",
       "spot": 127.58,
       "spot_raw": 127.58,
       "spot_scale_adjustment": "none",
@@ -9021,7 +9021,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:10.252051+00:00",
+      "updated_at": "2026-05-06T12:47:22.616424+00:00",
       "spot": 96.28,
       "spot_raw": 96.28,
       "spot_scale_adjustment": "none",
@@ -9122,7 +9122,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:10.651842+00:00",
+      "updated_at": "2026-05-06T12:47:23.021511+00:00",
       "spot": 95.9,
       "spot_raw": 95.9,
       "spot_scale_adjustment": "none",
@@ -9223,7 +9223,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:10.985627+00:00",
+      "updated_at": "2026-05-06T12:47:23.438924+00:00",
       "spot": 63.57,
       "spot_raw": 63.57,
       "spot_scale_adjustment": "none",
@@ -9324,7 +9324,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:11.303670+00:00",
+      "updated_at": "2026-05-06T12:47:24.051053+00:00",
       "spot": 140.27,
       "spot_raw": 140.27,
       "spot_scale_adjustment": "none",
@@ -9340,10 +9340,10 @@
       "put_skew_30d_vol_points": 3.12,
       "call_skew_30d": 0.03125,
       "call_skew_30d_vol_points": 3.12,
-      "put_call_volume_ratio": 0.3661,
+      "put_call_volume_ratio": 0.372,
       "put_call_oi_ratio": 0.6394,
       "put_volume": 93.0,
-      "call_volume": 254.0,
+      "call_volume": 250.0,
       "put_open_interest": 5981.0,
       "call_open_interest": 9354.0,
       "iv_score": 1.18,
@@ -9425,7 +9425,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:11.632963+00:00",
+      "updated_at": "2026-05-06T12:47:24.471494+00:00",
       "spot": 178.12,
       "spot_raw": 178.12,
       "spot_scale_adjustment": "none",
@@ -9526,7 +9526,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:12.164524+00:00",
+      "updated_at": "2026-05-06T12:47:24.811846+00:00",
       "spot": 315.42,
       "spot_raw": 315.42,
       "spot_scale_adjustment": "none",
@@ -9627,7 +9627,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:12.589581+00:00",
+      "updated_at": "2026-05-06T12:47:25.312849+00:00",
       "spot": 225.23,
       "spot_raw": 225.23,
       "spot_scale_adjustment": "none",
@@ -9728,7 +9728,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:12.942214+00:00",
+      "updated_at": "2026-05-06T12:47:25.645083+00:00",
       "spot": 104.94,
       "spot_raw": 104.94,
       "spot_scale_adjustment": "none",
@@ -9829,7 +9829,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:13.439955+00:00",
+      "updated_at": "2026-05-06T12:47:26.032385+00:00",
       "spot": 285.17,
       "spot_raw": 285.17,
       "spot_scale_adjustment": "none",
@@ -9930,7 +9930,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:13.800348+00:00",
+      "updated_at": "2026-05-06T12:47:26.627239+00:00",
       "spot": 167.63,
       "spot_raw": 167.63,
       "spot_scale_adjustment": "none",
@@ -10031,7 +10031,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:14.147314+00:00",
+      "updated_at": "2026-05-06T12:47:27.056507+00:00",
       "spot": 139.73,
       "spot_raw": 139.73,
       "spot_scale_adjustment": "none",
@@ -10048,18 +10048,18 @@
       "call_skew_30d": 0.050781,
       "call_skew_30d_vol_points": 5.08,
       "put_call_volume_ratio": 0.7799,
-      "put_call_oi_ratio": 2.1677,
+      "put_call_oi_ratio": 1.6648,
       "put_volume": 574.0,
       "call_volume": 736.0,
-      "put_open_interest": 362.0,
-      "call_open_interest": 167.0,
+      "put_open_interest": 591.0,
+      "call_open_interest": 355.0,
       "iv_score": 0.46,
       "skew_score": 2.54,
-      "demand_score": 3.9,
+      "demand_score": 2.89,
       "event_score": 0.0,
-      "rate_pressure_score": 1.75,
+      "rate_pressure_score": 1.55,
       "rate_pressure_formula": "0.45*iv_score + 0.30*skew_score + 0.20*demand_score + 0.05*event_score",
-      "rate_driver_label": "DEMAND_DRIVEN",
+      "rate_driver_label": "LOW_PRESSURE",
       "data_warning": null,
       "debug": {
         "atm_method": "liquidity-aware valid IV nearest strike to raw spot",
@@ -10099,7 +10099,7 @@
             "iv": 0.015635,
             "distance_pct_to_spot": 1.24,
             "volume": 1.0,
-            "openInterest": 0.0
+            "openInterest": 2.0
           },
           "put_25": {
             "selected": "strict_valid_iv_distance",
@@ -10121,7 +10121,7 @@
             "iv": 0.062509,
             "distance_pct_to_spot": 10.93,
             "volume": 416.0,
-            "openInterest": 0.0
+            "openInterest": 54.0
           }
         },
         "warning": "pilot proxy: not real 25-delta; use production options API for Greeks"
@@ -10132,7 +10132,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:14.495175+00:00",
+      "updated_at": "2026-05-06T12:47:27.396966+00:00",
       "spot": 362.75,
       "spot_raw": 362.75,
       "spot_scale_adjustment": "none",
@@ -10233,7 +10233,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:14.885455+00:00",
+      "updated_at": "2026-05-06T12:47:27.760101+00:00",
       "spot": 98.07,
       "spot_raw": 98.07,
       "spot_scale_adjustment": "none",
@@ -10250,16 +10250,16 @@
       "call_skew_30d": 0.054687,
       "call_skew_30d_vol_points": 5.47,
       "put_call_volume_ratio": 0.4156,
-      "put_call_oi_ratio": 0.9646,
+      "put_call_oi_ratio": 1.2145,
       "put_volume": 219.0,
       "call_volume": 527.0,
-      "put_open_interest": 654.0,
-      "call_open_interest": 678.0,
+      "put_open_interest": 1529.0,
+      "call_open_interest": 1259.0,
       "iv_score": 0.31,
       "skew_score": 2.73,
-      "demand_score": 0.93,
+      "demand_score": 1.43,
       "event_score": 0.0,
-      "rate_pressure_score": 1.14,
+      "rate_pressure_score": 1.24,
       "rate_pressure_formula": "0.45*iv_score + 0.30*skew_score + 0.20*demand_score + 0.05*event_score",
       "rate_driver_label": "LOW_PRESSURE",
       "data_warning": null,
@@ -10290,7 +10290,7 @@
             "iv": 0.007822,
             "distance_pct_to_spot": 0.95,
             "volume": 11.0,
-            "openInterest": 0.0
+            "openInterest": 27.0
           },
           "atm_put": {
             "selected": "strict_valid_iv_distance",
@@ -10301,7 +10301,7 @@
             "iv": 0.007822,
             "distance_pct_to_spot": 1.09,
             "volume": 9.0,
-            "openInterest": 0.0
+            "openInterest": 30.0
           },
           "put_25": {
             "selected": "strict_valid_iv_distance",
@@ -10312,7 +10312,7 @@
             "iv": 0.062509,
             "distance_pct_to_spot": 10.27,
             "volume": 23.0,
-            "openInterest": 0.0
+            "openInterest": 65.0
           },
           "call_25": {
             "selected": "strict_valid_iv_distance",
@@ -10323,7 +10323,7 @@
             "iv": 0.062509,
             "distance_pct_to_spot": 10.13,
             "volume": 3.0,
-            "openInterest": 0.0
+            "openInterest": 36.0
           }
         },
         "warning": "pilot proxy: not real 25-delta; use production options API for Greeks"
@@ -10334,7 +10334,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:15.394914+00:00",
+      "updated_at": "2026-05-06T12:47:28.160850+00:00",
       "spot": 410.86,
       "spot_raw": 410.86,
       "spot_scale_adjustment": "none",
@@ -10435,7 +10435,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:15.757697+00:00",
+      "updated_at": "2026-05-06T12:47:28.656454+00:00",
       "spot": 872.69,
       "spot_raw": 872.69,
       "spot_scale_adjustment": "none",
@@ -10536,7 +10536,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:16.290805+00:00",
+      "updated_at": "2026-05-06T12:47:29.051930+00:00",
       "spot": 142.82,
       "spot_raw": 142.82,
       "spot_scale_adjustment": "none",
@@ -10637,7 +10637,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:16.802795+00:00",
+      "updated_at": "2026-05-06T12:47:29.676153+00:00",
       "spot": 92.4,
       "spot_raw": 92.4,
       "spot_scale_adjustment": "none",
@@ -10738,7 +10738,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:17.299436+00:00",
+      "updated_at": "2026-05-06T12:47:30.284368+00:00",
       "spot": 315.95,
       "spot_raw": 315.95,
       "spot_scale_adjustment": "none",
@@ -10839,7 +10839,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:17.641162+00:00",
+      "updated_at": "2026-05-06T12:47:30.810603+00:00",
       "spot": 322.03,
       "spot_raw": 322.03,
       "spot_scale_adjustment": "none",
@@ -10940,7 +10940,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:18.031893+00:00",
+      "updated_at": "2026-05-06T12:47:31.334119+00:00",
       "spot": 497.08,
       "spot_raw": 497.08,
       "spot_scale_adjustment": "none",
@@ -11041,7 +11041,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:18.354304+00:00",
+      "updated_at": "2026-05-06T12:47:31.620900+00:00",
       "spot": 24.61,
       "spot_raw": 24.61,
       "spot_scale_adjustment": "none",
@@ -11142,7 +11142,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:18.686548+00:00",
+      "updated_at": "2026-05-06T12:47:32.052103+00:00",
       "spot": 124.41,
       "spot_raw": 124.41,
       "spot_scale_adjustment": "none",
@@ -11243,7 +11243,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:18.969136+00:00",
+      "updated_at": "2026-05-06T12:47:32.352608+00:00",
       "spot": 6.11,
       "spot_raw": 6.11,
       "spot_scale_adjustment": "none",
@@ -11344,7 +11344,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:19.268089+00:00",
+      "updated_at": "2026-05-06T12:47:32.648420+00:00",
       "spot": 109.1,
       "spot_raw": 109.1,
       "spot_scale_adjustment": "none",
@@ -11361,11 +11361,11 @@
       "call_skew_30d": 0.027343,
       "call_skew_30d_vol_points": 2.73,
       "put_call_volume_ratio": 0.2417,
-      "put_call_oi_ratio": 0.4153,
+      "put_call_oi_ratio": 0.3974,
       "put_volume": 174.0,
       "call_volume": 720.0,
       "put_open_interest": 304.0,
-      "call_open_interest": 732.0,
+      "call_open_interest": 765.0,
       "iv_score": 1.31,
       "skew_score": 1.37,
       "demand_score": 0.0,
@@ -11445,7 +11445,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:19.681133+00:00",
+      "updated_at": "2026-05-06T12:47:32.950311+00:00",
       "spot": 48.38,
       "spot_raw": 48.38,
       "spot_scale_adjustment": "none",
@@ -11546,7 +11546,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:20.195558+00:00",
+      "updated_at": "2026-05-06T12:47:33.473616+00:00",
       "spot": 195.58,
       "spot_raw": 195.58,
       "spot_scale_adjustment": "none",
@@ -11647,7 +11647,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:20.706155+00:00",
+      "updated_at": "2026-05-06T12:47:33.766861+00:00",
       "spot": 77.75,
       "spot_raw": 77.75,
       "spot_scale_adjustment": "none",
@@ -11748,7 +11748,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:21.090009+00:00",
+      "updated_at": "2026-05-06T12:47:34.299124+00:00",
       "spot": 145.73,
       "spot_raw": 145.73,
       "spot_scale_adjustment": "none",
@@ -11765,16 +11765,16 @@
       "call_skew_30d": 0.039062,
       "call_skew_30d_vol_points": 3.91,
       "put_call_volume_ratio": 0.8333,
-      "put_call_oi_ratio": 1.2954,
+      "put_call_oi_ratio": 1.4209,
       "put_volume": 115.0,
       "call_volume": 138.0,
-      "put_open_interest": 421.0,
-      "call_open_interest": 325.0,
+      "put_open_interest": 503.0,
+      "call_open_interest": 354.0,
       "iv_score": 0.9,
       "skew_score": 1.95,
-      "demand_score": 2.26,
+      "demand_score": 2.51,
       "event_score": 0.0,
-      "rate_pressure_score": 1.44,
+      "rate_pressure_score": 1.49,
       "rate_pressure_formula": "0.45*iv_score + 0.30*skew_score + 0.20*demand_score + 0.05*event_score",
       "rate_driver_label": "LOW_PRESSURE",
       "data_warning": null,
@@ -11805,7 +11805,7 @@
             "iv": 0.03126,
             "distance_pct_to_spot": 2.93,
             "volume": 4.0,
-            "openInterest": 0.0
+            "openInterest": 23.0
           },
           "atm_put": {
             "selected": "strict_valid_iv_distance",
@@ -11849,7 +11849,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:21.476614+00:00",
+      "updated_at": "2026-05-06T12:47:34.619759+00:00",
       "spot": 266.68,
       "spot_raw": 266.68,
       "spot_scale_adjustment": "none",
@@ -11950,7 +11950,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:21.835121+00:00",
+      "updated_at": "2026-05-06T12:47:35.021509+00:00",
       "spot": 428.79,
       "spot_raw": 428.79,
       "spot_scale_adjustment": "none",
@@ -12051,7 +12051,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:22.252210+00:00",
+      "updated_at": "2026-05-06T12:47:35.602769+00:00",
       "spot": 275.66,
       "spot_raw": 275.66,
       "spot_scale_adjustment": "none",
@@ -12068,16 +12068,16 @@
       "call_skew_30d": 0.03125,
       "call_skew_30d_vol_points": 3.12,
       "put_call_volume_ratio": 5.1429,
-      "put_call_oi_ratio": 1.9375,
+      "put_call_oi_ratio": 1.5161,
       "put_volume": 36.0,
       "call_volume": 7.0,
-      "put_open_interest": 31.0,
-      "call_open_interest": 16.0,
+      "put_open_interest": 47.0,
+      "call_open_interest": 31.0,
       "iv_score": 1.18,
       "skew_score": 1.56,
-      "demand_score": 7.88,
+      "demand_score": 7.03,
       "event_score": 0.0,
-      "rate_pressure_score": 2.58,
+      "rate_pressure_score": 2.41,
       "rate_pressure_formula": "0.45*iv_score + 0.30*skew_score + 0.20*demand_score + 0.05*event_score",
       "rate_driver_label": "DEMAND_DRIVEN",
       "data_warning": null,
@@ -12108,7 +12108,7 @@
             "iv": 0.03126,
             "distance_pct_to_spot": 3.39,
             "volume": 1.0,
-            "openInterest": 0.0
+            "openInterest": 11.0
           },
           "atm_put": {
             "selected": "strict_valid_iv_distance",
@@ -12119,7 +12119,7 @@
             "iv": 0.03126,
             "distance_pct_to_spot": 3.87,
             "volume": 2.0,
-            "openInterest": 0.0
+            "openInterest": 5.0
           },
           "put_25": {
             "selected": "strict_valid_iv_distance",
@@ -12130,7 +12130,7 @@
             "iv": 0.062509,
             "distance_pct_to_spot": 9.31,
             "volume": null,
-            "openInterest": 0.0
+            "openInterest": 3.0
           },
           "call_25": {
             "selected": "strict_valid_iv_distance",
@@ -12152,7 +12152,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:22.612204+00:00",
+      "updated_at": "2026-05-06T12:47:35.936969+00:00",
       "spot": 369.07,
       "spot_raw": 369.07,
       "spot_scale_adjustment": "none",
@@ -12253,7 +12253,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:23.068154+00:00",
+      "updated_at": "2026-05-06T12:47:36.327504+00:00",
       "spot": 466.76,
       "spot_raw": 466.76,
       "spot_scale_adjustment": "none",
@@ -12354,7 +12354,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:23.479070+00:00",
+      "updated_at": "2026-05-06T12:47:36.757984+00:00",
       "spot": 174.63,
       "spot_raw": 174.63,
       "spot_scale_adjustment": "none",
@@ -12371,11 +12371,11 @@
       "call_skew_30d": 0.03125,
       "call_skew_30d_vol_points": 3.12,
       "put_call_volume_ratio": 0.64,
-      "put_call_oi_ratio": 6.9149,
+      "put_call_oi_ratio": 5.7368,
       "put_volume": 16.0,
       "call_volume": 25.0,
-      "put_open_interest": 325.0,
-      "call_open_interest": 47.0,
+      "put_open_interest": 327.0,
+      "call_open_interest": 57.0,
       "iv_score": 1.18,
       "skew_score": 4.69,
       "demand_score": 5.28,
@@ -12444,7 +12444,7 @@
             "iv": 0.062509,
             "distance_pct_to_spot": 8.8,
             "volume": 9.0,
-            "openInterest": 0.0
+            "openInterest": 10.0
           }
         },
         "warning": "pilot proxy: not real 25-delta; use production options API for Greeks"
@@ -12455,7 +12455,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:24.095186+00:00",
+      "updated_at": "2026-05-06T12:47:37.119957+00:00",
       "spot": 303.93,
       "spot_raw": 303.93,
       "spot_scale_adjustment": "none",
@@ -12556,7 +12556,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:24.597543+00:00",
+      "updated_at": "2026-05-06T12:47:37.613230+00:00",
       "spot": 500.29,
       "spot_raw": 500.29,
       "spot_scale_adjustment": "none",
@@ -12657,7 +12657,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:24.962600+00:00",
+      "updated_at": "2026-05-06T12:47:37.961479+00:00",
       "spot": 257.65,
       "spot_raw": 257.65,
       "spot_scale_adjustment": "none",
@@ -12758,7 +12758,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:25.730553+00:00",
+      "updated_at": "2026-05-06T12:47:38.440746+00:00",
       "spot": 988.87,
       "spot_raw": 988.87,
       "spot_scale_adjustment": "none",
@@ -12775,18 +12775,18 @@
       "call_skew_30d": 0.054687,
       "call_skew_30d_vol_points": 5.47,
       "put_call_volume_ratio": 1.2345,
-      "put_call_oi_ratio": 2.1897,
+      "put_call_oi_ratio": 0.9725,
       "put_volume": 479.0,
       "call_volume": 388.0,
-      "put_open_interest": 1143.0,
-      "call_open_interest": 522.0,
+      "put_open_interest": 1449.0,
+      "call_open_interest": 1490.0,
       "iv_score": 0.31,
       "skew_score": 2.73,
-      "demand_score": 4.85,
+      "demand_score": 2.41,
       "event_score": 0.0,
-      "rate_pressure_score": 1.93,
+      "rate_pressure_score": 1.44,
       "rate_pressure_formula": "0.45*iv_score + 0.30*skew_score + 0.20*demand_score + 0.05*event_score",
-      "rate_driver_label": "DEMAND_DRIVEN",
+      "rate_driver_label": "LOW_PRESSURE",
       "data_warning": null,
       "debug": {
         "atm_method": "liquidity-aware valid IV nearest strike to raw spot",
@@ -12815,7 +12815,7 @@
             "iv": 0.007822,
             "distance_pct_to_spot": 1.13,
             "volume": 11.0,
-            "openInterest": 0.0
+            "openInterest": 58.0
           },
           "atm_put": {
             "selected": "strict_valid_iv_distance",
@@ -12859,7 +12859,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:26.192748+00:00",
+      "updated_at": "2026-05-06T12:47:39.189738+00:00",
       "spot": 44.87,
       "spot_raw": 44.87,
       "spot_scale_adjustment": "none",
@@ -12876,16 +12876,16 @@
       "call_skew_30d": 0.039062,
       "call_skew_30d_vol_points": 3.91,
       "put_call_volume_ratio": 0.2484,
-      "put_call_oi_ratio": 0.3352,
+      "put_call_oi_ratio": 0.7405,
       "put_volume": 199.0,
       "call_volume": 801.0,
-      "put_open_interest": 550.0,
-      "call_open_interest": 1641.0,
+      "put_open_interest": 1781.0,
+      "call_open_interest": 2405.0,
       "iv_score": 0.9,
       "skew_score": 5.08,
-      "demand_score": 0.0,
+      "demand_score": 0.48,
       "event_score": 0.0,
-      "rate_pressure_score": 1.93,
+      "rate_pressure_score": 2.02,
       "rate_pressure_formula": "0.45*iv_score + 0.30*skew_score + 0.20*demand_score + 0.05*event_score",
       "rate_driver_label": "SKEW_DRIVEN",
       "data_warning": null,
@@ -12916,7 +12916,7 @@
             "iv": 0.03126,
             "distance_pct_to_spot": 2.52,
             "volume": 13.0,
-            "openInterest": 0.0
+            "openInterest": 88.0
           },
           "atm_put": {
             "selected": "strict_valid_iv_distance",
@@ -12966,7 +12966,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:28.257543+00:00",
+      "updated_at": "2026-05-06T12:47:40.702208+00:00",
       "spot": 320.42,
       "spot_raw": 320.42,
       "spot_scale_adjustment": "none",
@@ -13067,7 +13067,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:28.608408+00:00",
+      "updated_at": "2026-05-06T12:47:41.154242+00:00",
       "spot": 160.38,
       "spot_raw": 160.38,
       "spot_scale_adjustment": "none",
@@ -13168,7 +13168,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:29.094060+00:00",
+      "updated_at": "2026-05-06T12:47:41.658385+00:00",
       "spot": 46.37,
       "spot_raw": 46.37,
       "spot_scale_adjustment": "none",
@@ -13269,7 +13269,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:29.408789+00:00",
+      "updated_at": "2026-05-06T12:47:42.178686+00:00",
       "spot": 200.54,
       "spot_raw": 200.54,
       "spot_scale_adjustment": "none",
@@ -13286,16 +13286,16 @@
       "call_skew_30d": -0.147551,
       "call_skew_30d_vol_points": -14.76,
       "put_call_volume_ratio": 0.2101,
-      "put_call_oi_ratio": 0.1172,
+      "put_call_oi_ratio": 0.8211,
       "put_volume": 29.0,
       "call_volume": 138.0,
-      "put_open_interest": 17.0,
-      "call_open_interest": 145.0,
+      "put_open_interest": 257.0,
+      "call_open_interest": 313.0,
       "iv_score": 5.68,
       "skew_score": 0.0,
-      "demand_score": 0.0,
+      "demand_score": 0.64,
       "event_score": 0.0,
-      "rate_pressure_score": 2.56,
+      "rate_pressure_score": 2.68,
       "rate_pressure_formula": "0.45*iv_score + 0.30*skew_score + 0.20*demand_score + 0.05*event_score",
       "rate_driver_label": "IV_DRIVEN",
       "data_warning": null,
@@ -13348,7 +13348,7 @@
             "iv": 0.062509,
             "distance_pct_to_spot": 10.24,
             "volume": 8.0,
-            "openInterest": 0.0
+            "openInterest": 221.0
           },
           "call_25": {
             "selected": "strict_valid_iv_distance",
@@ -13359,7 +13359,7 @@
             "iv": 0.062509,
             "distance_pct_to_spot": 9.7,
             "volume": 60.0,
-            "openInterest": 0.0
+            "openInterest": 66.0
           }
         },
         "warning": "pilot proxy: not real 25-delta; use production options API for Greeks"
@@ -13386,7 +13386,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:30.018144+00:00",
+      "updated_at": "2026-05-06T12:47:43.390118+00:00",
       "spot": 41.14,
       "spot_raw": 41.14,
       "spot_scale_adjustment": "none",
@@ -13403,11 +13403,11 @@
       "call_skew_30d": -0.007812,
       "call_skew_30d_vol_points": -0.78,
       "put_call_volume_ratio": 0.0909,
-      "put_call_oi_ratio": 0.0,
+      "put_call_oi_ratio": 0.0047,
       "put_volume": 1.0,
       "call_volume": 11.0,
-      "put_open_interest": 0.0,
-      "call_open_interest": 4.0,
+      "put_open_interest": 1.0,
+      "call_open_interest": 212.0,
       "iv_score": 0.9,
       "skew_score": 0.39,
       "demand_score": 0.0,
@@ -13443,7 +13443,7 @@
             "iv": 0.015635,
             "distance_pct_to_spot": 2.09,
             "volume": 1.0,
-            "openInterest": 0.0
+            "openInterest": 175.0
           },
           "atm_put": {
             "selected": "strict_valid_iv_distance",
@@ -13454,7 +13454,7 @@
             "iv": 0.03126,
             "distance_pct_to_spot": 5.2,
             "volume": 1.0,
-            "openInterest": 0.0
+            "openInterest": 1.0
           },
           "put_25": {
             "selected": "strict_valid_iv_distance",
@@ -13465,7 +13465,7 @@
             "iv": 0.03126,
             "distance_pct_to_spot": 5.2,
             "volume": 1.0,
-            "openInterest": 0.0
+            "openInterest": 1.0
           },
           "call_25": {
             "selected": "strict_valid_iv_distance",
@@ -13476,7 +13476,7 @@
             "iv": 0.015635,
             "distance_pct_to_spot": 2.09,
             "volume": 1.0,
-            "openInterest": 0.0
+            "openInterest": 175.0
           }
         },
         "warning": "pilot proxy: not real 25-delta; use production options API for Greeks"
@@ -13487,7 +13487,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:30.304234+00:00",
+      "updated_at": "2026-05-06T12:47:43.936238+00:00",
       "spot": 46.49,
       "spot_raw": 46.49,
       "spot_scale_adjustment": "none",
@@ -13588,7 +13588,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:30.828950+00:00",
+      "updated_at": "2026-05-06T12:47:44.448824+00:00",
       "spot": 193.57,
       "spot_raw": 193.57,
       "spot_scale_adjustment": "none",
@@ -13689,7 +13689,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:31.305708+00:00",
+      "updated_at": "2026-05-06T12:47:45.065541+00:00",
       "spot": 215.69,
       "spot_raw": 215.69,
       "spot_scale_adjustment": "none",
@@ -13790,7 +13790,7 @@
       "status": "ok",
       "data_source": "yfinance",
       "source_quality": "pilot_proxy",
-      "updated_at": "2026-05-06T12:00:31.754299+00:00",
+      "updated_at": "2026-05-06T12:47:45.554470+00:00",
       "spot": 82.85,
       "spot_raw": 82.85,
       "spot_scale_adjustment": "none",
@@ -13881,2197 +13881,10 @@
             "distance_pct_to_spot": 8.63,
             "volume": 3.0,
             "openInterest": 42.0
-```html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>M8 FCN 定價模型</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 20px;
-      font-family: Arial, "Noto Sans TC", sans-serif;
-      background: #f5f7fb;
-      color: #222;
-    }
-
-    .page {
-      max-width: 1680px;
-      margin: 0 auto;
-    }
-
-    h1 {
-      margin: 0 0 18px;
-      font-size: 28px;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: 480px 1fr;
-      gap: 18px;
-    }
-
-    .card {
-      background: #fff;
-      border-radius: 16px;
-      padding: 18px;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
-      border: 1px solid #e8ebf2;
-    }
-
-    .card h2 {
-      margin: 0 0 14px;
-      font-size: 20px;
-    }
-
-    .form-group {
-      margin-bottom: 12px;
-    }
-
-    .form-group label {
-      display: block;
-      font-size: 14px;
-      margin-bottom: 6px;
-      color: #444;
-      font-weight: 600;
-    }
-
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
-      width: 100%;
-      box-sizing: border-box;
-      padding: 10px 12px;
-      border: 1px solid #cfd6e4;
-      border-radius: 10px;
-      font-size: 14px;
-      background: #fff;
-    }
-
-    .form-group textarea {
-      min-height: 90px;
-      resize: vertical;
-    }
-
-    .btn-row {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 14px;
-    }
-
-    button {
-      border: none;
-      border-radius: 10px;
-      padding: 10px 14px;
-      font-size: 14px;
-      cursor: pointer;
-      font-weight: 700;
-    }
-
-    .btn-primary { background: #2f6fed; color: #fff; }
-    .btn-secondary { background: #eef2ff; color: #2447b2; }
-    .btn-danger { background: #ffe8e8; color: #b42318; }
-    .btn-success { background: #ecfdf3; color: #027a48; }
-
-    .muted {
-      color: #667085;
-      font-size: 13px;
-    }
-
-    .result-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 14px;
-      flex-wrap: wrap;
-    }
-
-    .pill {
-      display: inline-block;
-      padding: 6px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    .pill.ok { background: #ecfdf3; color: #027a48; }
-    .pill.warn { background: #fff7ed; color: #b54708; }
-    .pill.bad { background: #fef3f2; color: #b42318; }
-    .pill.info { background: #eff8ff; color: #175cd3; }
-
-    .summary-grid {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 12px;
-      margin-bottom: 16px;
-    }
-
-    .summary-box {
-      border: 1px solid #e5e7eb;
-      border-radius: 12px;
-      padding: 12px;
-      background: #fafafa;
-    }
-
-    .summary-box .k {
-      font-size: 12px;
-      color: #667085;
-      margin-bottom: 6px;
-    }
-
-    .summary-box .v {
-      font-size: 22px;
-      font-weight: 800;
-      color: #111827;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 14px;
-      background: #fff;
-    }
-
-    th, td {
-      border: 1px solid #e5e7eb;
-      padding: 10px 10px;
-      text-align: left;
-      vertical-align: top;
-    }
-
-    th {
-      background: #f8fafc;
-      font-weight: 700;
-    }
-
-    .section-title {
-      margin: 18px 0 10px;
-      font-size: 16px;
-      font-weight: 800;
-      color: #1d2939;
-    }
-
-    .mono {
-      font-family: Consolas, Monaco, monospace;
-      white-space: pre-wrap;
-      word-break: break-word;
-      line-height: 1.5;
-    }
-
-    .blueprint-card {
-      margin-top: 18px;
-    }
-
-    .bp-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .bp-block {
-      margin-top: 14px;
-    }
-
-    .bp-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 8px;
-      font-size: 14px;
-    }
-
-    .bp-table th,
-    .bp-table td {
-      border: 1px solid #ddd;
-      padding: 8px 10px;
-      text-align: left;
-      vertical-align: top;
-    }
-
-    .bp-table th {
-      width: 220px;
-      background: #f7f7f7;
-    }
-
-    .empty {
-      padding: 24px;
-      text-align: center;
-      color: #667085;
-      border: 1px dashed #cbd5e1;
-      border-radius: 12px;
-      background: #fff;
-    }
-
-    .explain-box {
-      border: 1px solid #e5e7eb;
-      border-radius: 12px;
-      background: #fafafa;
-      padding: 14px;
-      margin-top: 12px;
-    }
-
-    .explain-box .row {
-      margin-bottom: 12px;
-    }
-
-    .explain-box .label {
-      font-weight: 700;
-      color: #344054;
-      margin-bottom: 4px;
-    }
-
-    .small-note {
-      font-size: 12px;
-      color: #667085;
-      margin-top: 6px;
-    }
-
-    .split-2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    .split-3 {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 10px;
-    }
-
-    .sticky-box {
-      max-height: 360px;
-      overflow: auto;
-      border: 1px solid #e5e7eb;
-      border-radius: 12px;
-      background: #fff;
-    }
-
-    .history-meta {
-      font-size: 12px;
-      color: #667085;
-      line-height: 1.5;
-    }
-
-    @media (max-width: 1180px) {
-      .grid {
-        grid-template-columns: 1fr;
-      }
-
-      .summary-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .split-2,
-      .split-3 {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    @media (max-width: 640px) {
-      body {
-        padding: 12px;
-      }
-
-      .summary-grid {
-        grid-template-columns: 1fr;
-      }
-
-      th, td {
-        font-size: 13px;
-        padding: 8px;
-      }
-    }
-  </style>
-</head>
-<body>
-  <div class="page">
-    <h1>FCN M8 定價模型（詢價單管理版）</h1>
-
-    <div class="grid">
-      <section class="card">
-        <h2>詢價單輸入</h2>
-
-        <div class="split-2">
-          <div class="form-group">
-            <label for="inquiryDate">詢價日期</label>
-            <input id="inquiryDate" type="date" />
-          </div>
-
-          <div class="form-group">
-            <label for="inquiryNo">詢價單號</label>
-            <input id="inquiryNo" type="text" readonly />
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="inputMode">輸入模式</label>
-          <select id="inputMode">
-            <option value="single">單筆輸入</option>
-            <option value="batch">整批輸入</option>
-          </select>
-        </div>
-
-        <div id="singleInputPanel">
-          <div class="split-2">
-            <div class="form-group">
-              <label for="issuer">承做機構</label>
-              <select id="issuer">
-                <option value="">請選擇</option>
-                <option value="富邦">富邦</option>
-                <option value="永豐">永豐</option>
-                <option value="中信">中信</option>
-                <option value="國泰">國泰</option>
-                <option value="台新">台新</option>
-                <option value="星展">星展</option>
-                <option value="元大">元大</option>
-                <option value="第一">第一</option>
-                <option value="其他">其他</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label for="upstreamBank">上手銀行</label>
-              <select id="upstreamBank">
-                <option value="">請選擇</option>
-                <option value="NATIXIS">NATIXIS｜法國外貿銀行</option>
-                <option value="UBS">UBS｜瑞士銀行</option>
-                <option value="NOMURA">NOMURA｜野村銀行</option>
-                <option value="GS">GS｜高盛</option>
-                <option value="BARCLAYS">BARCLAYS｜巴克萊銀行</option>
-                <option value="DBS">DBS｜星展銀行</option>
-                <option value="HSBC">HSBC｜香港上海匯豐銀行</option>
-                <option value="CA">CA｜法國農業信貸銀行</option>
-                <option value="BBVA">BBVA｜西班牙對外銀行</option>
-                <option value="MS">MS｜摩根士丹利</option>
-                <option value="SG">SG｜法國興業銀行</option>
-                <option value="BNP">BNP｜法國巴黎銀行</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="split-2">
-            <div class="form-group">
-              <label for="rm">RM / 聯絡人</label>
-              <input id="rm" type="text" placeholder="例如：王小姐" />
-            </div>
-
-            <div class="form-group">
-              <label for="caseName">案例名稱</label>
-              <input id="caseName" type="text" value="Case 1" />
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="symbols">股票代號（逗號分隔，2~5 檔）</label>
-            <textarea id="symbols">TSM,AAPL,MSFT,LQD</textarea>
-          </div>
-
-          <div class="split-2">
-            <div class="form-group">
-              <label for="ki">KI</label>
-              <input id="ki" type="number" value="55" />
-            </div>
-
-            <div class="form-group">
-              <label for="strike">Strike</label>
-              <input id="strike" type="number" value="65" />
-            </div>
-          </div>
-
-          <div class="split-2">
-            <div class="form-group">
-              <label for="tenor">Tenor（月）</label>
-              <input id="tenor" type="number" value="6" />
-            </div>
-
-            <div class="form-group">
-              <label for="type">Type</label>
-              <select id="type">
-                <option value="EKI">EKI</option>
-                <option value="DACN">DACN</option>
-                <option value="AKI">AKI</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="split-2">
-            <div class="form-group">
-              <label for="marketYield">Market Yield (%)</label>
-              <input id="marketYield" type="number" step="0.01" value="14" />
-            </div>
-
-            <div class="form-group">
-              <label for="note">備註</label>
-              <input id="note" type="text" placeholder="例如：核心科技籃子" />
-            </div>
-          </div>
-
-          <div class="btn-row">
-            <button class="btn-primary" id="runBtn">執行 M8 並留存</button>
-            <button class="btn-secondary" id="demoBtn">載入示範案例</button>
-            <button class="btn-danger" id="clearBtn">清空結果</button>
-          </div>
-        </div>
-
-        <div id="batchInputPanel" style="display:none;">
-          <div class="form-group">
-            <label for="batchInput">整批貼上</label>
-            <textarea id="batchInput" placeholder="承做機構,上手銀行,RM,CaseName,股票1|股票2|股票3,KI,Strike,Tenor,Type,MarketYield,備註
-富邦,NATIXIS,王小姐,Case1,TSM|AAPL|MSFT|LQD,55,65,6,EKI,14,核心科技
-永豐,UBS,陳先生,Case2,NVDA|AMD|AVGO|TSM,60,70,9,AKI,18.5,AI高波動"></textarea>
-            <div class="small-note">新格式：承做機構,上手銀行,RM,CaseName,股票1|股票2|股票3,KI,Strike,Tenor,Type,MarketYield,備註</div>
-            <div class="small-note">舊格式也相容：CaseName,股票1|股票2|股票3,KI,Strike,Tenor,Type,MarketYield</div>
-          </div>
-
-          <div class="btn-row">
-            <button class="btn-success" id="importBatchBtn">匯入整批詢價單並執行 M8</button>
-          </div>
-        </div>
-
-        <p class="muted" style="margin-top:12px;">
-          說明：Vol 模組已正式納入，不再另外加 ResonanceAdj。這版 storage 已升級為統一 schema，可供後續 M2 / M3 使用。
-        </p>
-
-        <div class="section-title">Anchor-based Yield Proxy</div>
-
-        <div class="form-group">
-          <label for="proxySymbols">股票代號（逗號分隔，至少 2 檔）</label>
-          <textarea id="proxySymbols" placeholder="例如：GOOG,AAPL,TSM,QQQ,MRVL"></textarea>
-          <div class="small-note">系統會自動找出 today_score 最高者當 anchor。</div>
-        </div>
-
-        <div class="split-2">
-          <div class="form-group">
-            <label for="proxyKi">KI</label>
-            <input id="proxyKi" type="number" value="55" />
-          </div>
-
-          <div class="form-group">
-            <label for="proxyStrike">Strike</label>
-            <input id="proxyStrike" type="number" value="65" />
-          </div>
-        </div>
-
-        <div class="split-2">
-          <div class="form-group">
-            <label for="proxyTenor">Tenor（月）</label>
-            <input id="proxyTenor" type="number" value="6" />
-          </div>
-
-          <div class="form-group">
-            <label for="proxyType">Type</label>
-            <select id="proxyType">
-              <option value="EKI">EKI</option>
-              <option value="DACN">DACN</option>
-              <option value="AKI" selected>AKI</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="btn-row">
-          <button class="btn-success" id="runProxyBtn">產出 Anchor Proxy</button>
-        </div>
-
-        <div class="sticky-box" style="margin-top:10px;">
-          <div id="proxyResult" class="muted" style="padding:12px;">尚未執行</div>
-        </div>
-
-        <div class="section-title">歷史詢價單</div>
-        <div class="btn-row" style="margin-bottom:10px;">
-          <button class="btn-secondary" id="exportJsonBtn">匯出 JSON</button>
-          <button class="btn-secondary" id="exportCsvBtn">匯出 CSV</button>
-          <button class="btn-danger" id="clearHistoryBtn">清空全部</button>
-        </div>
-        <div class="sticky-box">
-          <div id="historyList" class="muted" style="padding:12px;">尚無資料</div>
-        </div>
-
-        <div class="section-title">同 Basket 歷史比較</div>
-        <div class="sticky-box">
-          <div id="basketCompare" class="muted" style="padding:12px;">尚無資料</div>
-        </div>
-      </section>
-
-      <section class="card">
-        <div class="result-top">
-          <h2 style="margin:0;">M8 結果</h2>
-          <span id="pricingBadge" class="pill ok">尚未執行</span>
-        </div>
-
-        <div id="resultArea">
-          <div class="empty">請先輸入案例後，按「執行 M8 並留存」</div>
-        </div>
-      </section>
-    </div>
-
-    <section class="card blueprint-card">
-      <div class="bp-header">
-        <h2 style="margin:0;">M8 Market Runtime Dashboard</h2>
-      </div>
-
-      <div style="margin-top:14px;">
-        <div class="summary-grid">
-          <div class="summary-box">
-            <div class="k">Symbols</div>
-            <div class="v" id="rtSymbolCount">-</div>
-          </div>
-
-          <div class="summary-box">
-            <div class="k">Avg RP</div>
-            <div class="v" id="rtAvgRP">-</div>
-          </div>
-
-          <div class="summary-box">
-            <div class="k">High RP</div>
-            <div class="v" id="rtHighRP">-</div>
-          </div>
-
-          <div class="summary-box">
-            <div class="k">Avg IV%</div>
-            <div class="v" id="rtAvgIV">-</div>
-          </div>
-
-          <div class="summary-box">
-            <div class="k">Extreme Skew</div>
-            <div class="v" id="rtHighSkew">-</div>
-          </div>
-        </div>
-
-        <div class="split-3" style="margin-bottom:12px;">
-          <div class="form-group">
-            <label>Symbol Filter</label>
-            <input id="runtimeFilterSymbol" type="text" placeholder="NVDA" />
-          </div>
-
-          <div class="form-group">
-            <label>Driver Filter</label>
-            <select id="runtimeFilterDriver">
-              <option value="">ALL</option>
-              <option value="IV_DRIVEN">IV_DRIVEN</option>
-              <option value="SKEW_DRIVEN">SKEW_DRIVEN</option>
-              <option value="DEMAND_DRIVEN">DEMAND_DRIVEN</option>
-              <option value="LOW_PRESSURE">LOW_PRESSURE</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label>Sort</label>
-            <select id="runtimeSort">
-              <option value="rp_desc">RP High → Low</option>
-              <option value="iv_desc">IV High → Low</option>
-              <option value="skew_desc">Skew High → Low</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="sticky-box">
-          <div id="runtimeDashboardTable" style="padding:12px;">
-            尚未載入
-          </div>
-        </div>
-      </div>
-    </section>
-
-
-
-    <section class="card blueprint-card">
-      <div class="bp-header">
-        <h2 style="margin:0;">M8 All Stocks Pool / Option Runtime 全市場池</h2>
-        <span class="muted">檢查 IV / Skew / Demand / RP 的 scale 與排序是否合理</span>
-      </div>
-
-      <div style="margin-top:14px;">
-        <div class="summary-grid">
-          <div class="summary-box"><div class="k">Symbols</div><div class="v" id="allPoolSymbolCount">-</div></div>
-          <div class="summary-box"><div class="k">Avg IVScore</div><div class="v" id="allPoolAvgIVScore">-</div></div>
-          <div class="summary-box"><div class="k">Avg SkewScore</div><div class="v" id="allPoolAvgSkewScore">-</div></div>
-          <div class="summary-box"><div class="k">Avg Demand</div><div class="v" id="allPoolAvgDemand">-</div></div>
-          <div class="summary-box"><div class="k">Avg RP</div><div class="v" id="allPoolAvgRP">-</div></div>
-        </div>
-
-        <div class="split-3" style="margin-bottom:12px;">
-          <div class="form-group">
-            <label>Symbol Filter</label>
-            <input id="allPoolFilterSymbol" type="text" placeholder="NVDA / MU / AAPL" />
-          </div>
-          <div class="form-group">
-            <label>Driver Filter</label>
-            <select id="allPoolFilterDriver">
-              <option value="">ALL</option>
-              <option value="IV_DRIVEN">IV_DRIVEN</option>
-              <option value="SKEW_DRIVEN">SKEW_DRIVEN</option>
-              <option value="DEMAND_DRIVEN">DEMAND_DRIVEN</option>
-              <option value="LOW_PRESSURE">LOW_PRESSURE</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Sort</label>
-            <select id="allPoolSort">
-              <option value="rp_desc">RP High → Low</option>
-              <option value="ivscore_desc">IV Score High → Low</option>
-              <option value="iv_desc">IV% High → Low</option>
-              <option value="skewscore_desc">Skew Score High → Low</option>
-              <option value="demand_desc">Demand High → Low</option>
-              <option value="symbol_asc">Symbol A → Z</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="split-3" style="margin-bottom:12px;">
-          <div class="form-group">
-            <label>Min IV Score</label>
-            <input id="allPoolMinIVScore" type="number" step="0.1" value="0" />
-          </div>
-          <div class="form-group">
-            <label>Min RP</label>
-            <input id="allPoolMinRP" type="number" step="0.1" value="0" />
-          </div>
-          <div class="form-group">
-            <label>Warning Filter</label>
-            <select id="allPoolWarningFilter">
-              <option value="">ALL</option>
-              <option value="with_warning">With warning</option>
-              <option value="no_warning">No warning</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="explain-box">
-          <div class="label">Rate Pressure Formula</div>
-          <div class="mono">RP = 0.45 × IVScore + 0.30 × SkewScore + 0.20 × DemandScore + 0.05 × EventScore</div>
-          <div class="small-note">
-            這張表不是做單結果，而是檢查全市場 option_runtime.json 的 IVScore / SkewScore / DemandScore 是否同量級。
-          </div>
-        </div>
-
-        <div class="sticky-box" style="margin-top:12px; max-height:520px;">
-          <div id="allStocksPoolTable" style="padding:12px;">尚未載入</div>
-        </div>
-      </div>
-    </section>
-
-
-    <section class="card blueprint-card">      <div class="bp-header">
-        <h2 style="margin:0;">M8 Blueprint（完整邏輯 / 公式 / 參數）</h2>
-        <button id="toggleBlueprintBtn" class="btn-secondary" type="button">一鍵展開</button>
-      </div>
-
-      <div id="blueprintPanel" style="display:none; margin-top:12px;">
-        <div id="blueprintContent"></div>
-      </div>
-    </section>
-  </div>
-
-  <script type="module">
-    import { runM8Case, getM8Blueprint, runM8AnchorProxy } from "./js/core/m8_batch_engine.js";
-
-    const $ = (id) => document.getElementById(id);
-    const STORAGE_KEY = "fcn_quote_history_v3";
-    let currentEditingInquiryNo = null;
-
-    function badgeClass(view) {
-      if (view === "便宜" || view === "略便宜") return "pill ok";
-      if (view === "合理") return "pill.warn";
-      if (view === "尚未執行") return "pill info";
-      return "pill bad";
-    }
-
-    function num(v) {
-      const n = Number(v);
-      return Number.isFinite(n) ? n : 0;
-    }
-
-    function fmt(v) {
-      return Number(num(v).toFixed(2));
-    }
-
-    function parseSymbols(text) {
-      return String(text || "")
-        .split(",")
-        .map(s => s.trim().toUpperCase())
-        .filter(Boolean);
-    }
-
-    function todayStr() {
-      const d = new Date();
-      const y = d.getFullYear();
-      const m = String(d.getMonth() + 1).padStart(2, "0");
-      const day = String(d.getDate()).padStart(2, "0");
-      return `${y}-${m}-${day}`;
-    }
-
-    function generateInquiryNo(dateStr) {
-      const key = `fcn_inquiry_seq_${dateStr}`;
-      let seq = Number(localStorage.getItem(key) || "0") + 1;
-      localStorage.setItem(key, String(seq));
-
-      const pureDate = dateStr.replaceAll("-", "");
-      const seq3 = String(seq).padStart(3, "0");
-      return `FCN${pureDate}${seq3}`;
-    }
-
-    function previewInquiryNo(dateStr) {
-      const key = `fcn_inquiry_seq_${dateStr}`;
-      const seq = Number(localStorage.getItem(key) || "0") + 1;
-      const pureDate = dateStr.replaceAll("-", "");
-      return `FCN${pureDate}${String(seq).padStart(3, "0")}`;
-    }
-
-    function refreshInquiryNo() {
-      const dateStr = $("inquiryDate").value || todayStr();
-      if (currentEditingInquiryNo) {
-        $("inquiryNo").value = currentEditingInquiryNo;
-      } else {
-        $("inquiryNo").value = previewInquiryNo(dateStr);
-      }
-    }
-
-    function normalizeBasket(symbols) {
-      return [...(symbols || [])].map(s => String(s).toUpperCase()).sort().join("|");
-    }
-
-    function getInquiryStore() {
-      return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-    }
-
-    function saveInquiryStore(rows) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(rows));
-    }
-
-    function getUpstreamBankLabel(code) {
-      const map = {
-        NATIXIS: "NATIXIS｜法國外貿銀行",
-        UBS: "UBS｜瑞士銀行",
-        NOMURA: "NOMURA｜野村銀行",
-        GS: "GS｜高盛",
-        BARCLAYS: "BARCLAYS｜巴克萊銀行",
-        DBS: "DBS｜星展銀行",
-        HSBC: "HSBC｜香港上海匯豐銀行",
-        CA: "CA｜法國農業信貸銀行",
-        BBVA: "BBVA｜西班牙對外銀行",
-        MS: "MS｜摩根士丹利",
-        SG: "SG｜法國興業銀行",
-        BNP: "BNP｜法國巴黎銀行"
-      };
-      return map[code] || code || "";
-    }
-
-    function getMarketContext(basketVol) {
-      const v = num(basketVol);
-      if (v > 6) return "高波動";
-      if (v > 3) return "中波動";
-      return "低波動";
-    }
-
-    function getActionPriority(edge, basketVol) {
-      if (edge < -1 || basketVol > 6) return "高";
-      if (edge <= 1) return "中";
-      return "低";
-    }
-
-    function getSuggestedAction(edge, pricingView, basketVol) {
-      if (edge < -1) return "考慮調整或轉倉";
-      if (basketVol > 6) return "提高警覺 / 留意波動";
-      if (pricingView === "便宜" || pricingView === "略便宜") return "可持有觀察";
-      return "正常";
-    }
-
-    function buildEngineSchema(payload, result, existingCreatedAt = null) {
-      const marketYield = num(payload.marketYield);
-      const fairYield = num(result.fair_yield);
-      const edge = fmt(marketYield - fairYield);
-      const basketVol = num(result.basket_vol);
-      const marketContext = getMarketContext(basketVol);
-
-      return {
-        schema_version: "m8_quote_v3",
-
-        inquiry: {
-          inquiry_no: payload.inquiryNo,
-          inquiry_date: payload.inquiryDate
-        },
-
-        counterparty: {
-          issuer_local: payload.issuer || "",
-          upstream_bank_code: payload.upstreamBank || "",
-          upstream_bank_name: getUpstreamBankLabel(payload.upstreamBank),
-          rm: payload.rm || ""
-        },
-
-        quote: {
-          case_name: payload.caseName || "",
-          symbols: payload.symbols || [],
-          basket_key: normalizeBasket(payload.symbols || []),
-          KI: payload.KI,
-          strike: payload.Strike,
-          tenor: payload.T,
-          type: payload.type,
-          market_yield: payload.marketYield,
-          note: payload.note || ""
-        },
-
-        engine: {
-          fair_yield: fairYield,
-          basket_vol: basketVol,
-          vol_adj: num(result.vol_adj),
-          rate_pressure_adj: num(result.rate_pressure_adj),
-          rate_pressure_score_basket: num(result.rate_pressure_score_basket),
-          rate_pressure_source: result.rate_pressure_source || "",
-          rate_pressure_stocks: result.rate_pressure_stocks || [],
-          pricing_delta: num(result.pricing_delta),
-          pricing_view: result.pricing_view || "",
-          edge: edge,
-
-          base: num(result.base),
-          BW: num(result.BW),
-          basket_premium: num(result.basket_premium),
-          tail_adj: num(result.tail_adj),
-          ki_adj: num(result.ki_adj),
-          tenor_adj: num(result.tenor_adj),
-          strike_adj: num(result.strike_adj),
-          type_adj: num(result.type_adj),
-          structure_total: num(result.structure_total),
-          pre_rate: num(result.pre_rate),
-          high_rate_brake: num(result.high_rate_brake),
-
-          scores: result.scores || [],
-          weaknesses: result.weaknesses || [],
-          short_swings: result.short_swings || [],
-          short_swing_days: result.short_swing_days || [],
-          stock_sources: result.stock_sources || []
-        },
-
-        m2_callback: {
-          ready: true,
-          basket_key: normalizeBasket(payload.symbols || []),
-          basket_vol: basketVol,
-          vol_adj: num(result.vol_adj),
-          fair_yield_ref: fairYield,
-          pricing_delta: num(result.pricing_delta),
-          pricing_view: result.pricing_view || "",
-          market_context: marketContext,
-          action_priority: getActionPriority(edge, basketVol),
-          watch_reason:
-            basketVol > 6 ? "BasketVol 偏高" :
-            edge < -1 ? "市場條件轉差" :
-            "一般觀察",
-          need_active_attention: edge < -1 || basketVol > 6,
-          suggested_action: getSuggestedAction(edge, result.pricing_view, basketVol)
-        },
-
-        raw_engine_result: result,
-
-        created_at: existingCreatedAt || new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      };
-    }
-
-    function parseBatchText(text, inquiryDate) {
-      const lines = String(text || "")
-        .split("\n")
-        .map(x => x.trim())
-        .filter(Boolean);
-
-      const output = [];
-
-      for (const line of lines) {
-        const parts = line.split(",").map(x => x.trim());
-
-        if (parts.length >= 10) {
-          const issuer = parts[0] || "";
-          const upstreamBank = parts[1] || "";
-          const rm = parts[2] || "";
-          const caseName = parts[3] || "Case";
-          const symbolText = parts[4] || "";
-          const KI = Number(parts[5]);
-          const Strike = Number(parts[6]);
-          const T = Number(parts[7]);
-          const type = parts[8] || "EKI";
-          const marketYield = Number(parts[9]);
-          const note = parts[10] || "";
-
-          const symbols = symbolText.split("|").map(x => x.trim().toUpperCase()).filter(Boolean);
-
-          output.push({
-            inquiryDate,
-            inquiryNo: generateInquiryNo(inquiryDate),
-            issuer,
-            upstreamBank,
-            rm,
-            caseName,
-            symbols,
-            KI,
-            Strike,
-            T,
-            type,
-            marketYield,
-            note
-          });
-          continue;
-        }
-
-        if (parts.length >= 7) {
-          const caseName = parts[0] || "Case";
-          const symbolText = parts[1] || "";
-          const KI = Number(parts[2]);
-          const Strike = Number(parts[3]);
-          const T = Number(parts[4]);
-          const type = parts[5] || "EKI";
-          const marketYield = Number(parts[6]);
-
-          const symbols = symbolText.split("|").map(x => x.trim().toUpperCase()).filter(Boolean);
-
-          output.push({
-            inquiryDate,
-            inquiryNo: generateInquiryNo(inquiryDate),
-            issuer: "",
-            upstreamBank: "",
-            rm: "",
-            caseName,
-            symbols,
-            KI,
-            Strike,
-            T,
-            type,
-            marketYield,
-            note: ""
-          });
-        }
-      }
-
-      return output;
-    }
-
-    function renderBlueprint() {
-      const bp = getM8Blueprint() || {};
-      const container = $("blueprintContent");
-      if (!container) return;
-
-      const summary = Array.isArray(bp.summary) ? bp.summary : [];
-      const formulas = bp.formulas || {};
-      const parameters = bp.parameters || {};
-      const typeMap = parameters.type_map || {};
-      const tenor = parameters.tenor || {};
-
-      container.innerHTML = `
-        <div class="bp-block">
-          <h3>${bp.version || "M8 Blueprint"}</h3>
-          <ul>
-            ${summary.map(x => `<li>${x}</li>`).join("")}
-          </ul>
-        </div>
-
-        <div class="bp-block">
-          <h3>完整公式</h3>
-          <table class="bp-table">
-            <tbody>
-              ${Object.entries(formulas).map(([k, v]) => `
-                <tr>
-                  <th>${k}</th>
-                  <td>${v}</td>
-                </tr>
-              `).join("")}
-            </tbody>
-          </table>
-        </div>
-
-        <div class="bp-block">
-          <h3>參數設定</h3>
-          <table class="bp-table">
-            <tbody>
-              <tr><th>Base</th><td>${parameters.base ?? "-"}</td></tr>
-              <tr><th>Type</th><td>EKI=${typeMap.EKI ?? "-"}, DACN=${typeMap.DACN ?? "-"}, AKI=${typeMap.AKI ?? "-"}</td></tr>
-              <tr><th>Tenor</th><td>${tenor.short || "-"} / ${tenor.mid || "-"} / ${tenor.long || "-"} / max=${tenor.max ?? "-"}</td></tr>
-              <tr><th>Vol Note</th><td>${parameters.vol_note || "-"}</td></tr>
-            </tbody>
-          </table>
-        </div>
-      `;
-    }
-
-    function setupBlueprintToggle() {
-      const btn = $("toggleBlueprintBtn");
-      const panel = $("blueprintPanel");
-      if (!btn || !panel) return;
-
-      btn.addEventListener("click", () => {
-        const isOpen = panel.style.display !== "none";
-        panel.style.display = isOpen ? "none" : "block";
-        btn.textContent = isOpen ? "一鍵展開" : "一鍵收合";
-      });
-    }
-
-    function buildShortSwingFormula(days) {
-      const d = Array.isArray(days) ? days : [];
-      const d0 = fmt(d[0]);
-      const d1 = fmt(d[1]);
-      const d2 = fmt(d[2]);
-      const d3 = fmt(d[3]);
-      const d4 = fmt(d[4]);
-      const d5 = fmt(d[5]);
-
-      return `0.35×${d0} + 0.25×${d1} + 0.15×${d2} + 0.10×${d3} + 0.08×${d4} + 0.07×${d5}`;
-    }
-
-    function buildVolAdjExplain(v) {
-      const basketVol = num(v);
-
-      if (basketVol <= 2.0) {
-        return {
-          bucket: "v ≤ 2",
-          formula: "-0.1 + 0.35×v",
-          substitution: `-0.1 + 0.35×${fmt(basketVol)}`
-        };
-      }
-      if (basketVol <= 4.0) {
-        const d = basketVol - 2.0;
-        return {
-          bucket: "2 < v ≤ 4",
-          formula: "0.6 + 0.7×(v-2) + 0.3×(v-2)^2",
-          substitution: `0.6 + 0.7×${fmt(d)} + 0.3×${fmt(d)}^2`
-        };
-      }
-      if (basketVol <= 6.0) {
-        const d = basketVol - 4.0;
-        return {
-          bucket: "4 < v ≤ 6",
-          formula: "3.2 + 0.85×(v-4) + 0.3×(v-4)^2",
-          substitution: `3.2 + 0.85×${fmt(d)} + 0.3×${fmt(d)}^2`
-        };
-      }
-
-      const d = basketVol - 6.0;
-      return {
-        bucket: "v > 6",
-        formula: "6.4 + 0.45×(v-6) - 0.04×(v-6)^2",
-        substitution: `6.4 + 0.45×${fmt(d)} - 0.04×${fmt(d)}^2`
-      };
-    }
-
-    function renderResult(r, schema = null) {
-      $("pricingBadge").className = badgeClass(r.pricing_view || "尚未執行");
-      $("pricingBadge").textContent = r.pricing_view || "尚未執行";
-
-      const sortedSwings = (r.short_swings || [])
-        .map((v, idx) => ({ idx, v: num(v), symbol: r.symbols?.[idx] || "" }))
-        .sort((a, b) => b.v - a.v);
-
-      const rankMap = {};
-      const roleMap = {};
-
-      sortedSwings.forEach((x, i) => {
-        rankMap[x.idx] = i + 1;
-        if (i === 0) roleMap[x.idx] = "s1";
-        else if (i === 1) roleMap[x.idx] = "s2";
-        else roleMap[x.idx] = "avg only";
-      });
-
-      const s1 = sortedSwings[0]?.v || 0;
-      const s2 = sortedSwings[1]?.v || 0;
-      const avgSwing = sortedSwings.length
-        ? sortedSwings.reduce((sum, x) => sum + x.v, 0) / sortedSwings.length
-        : 0;
-
-      const volAdjExplain = buildVolAdjExplain(r.basket_vol);
-
-      const stockRows = (r.stock_sources || []).map((s, idx) => `
-        <tr>
-          <td>${idx + 1}</td>
-          <td>${s.symbol || ""}</td>
-          <td>${s.source || ""}</td>
-          <td>${fmt(s.m7_v2_score)}</td>
-          <td>${fmt(s.rate_pressure_score)}</td>
-          <td>${fmt(s.rate_pressure_score_0_100)}</td>
-          <td>${fmt(s.iv_30d_atm_pct)}</td>
-          <td>${fmt(s.iv_score)}</td>
-          <td>${fmt(s.put_skew_30d_vol_points)}</td>
-          <td>${fmt(s.skew_score)}</td>
-          <td>${fmt(s.demand_score)}</td>
-          <td>${s.rate_driver_label || ""}</td>
-          <td>${s.data_warning || ""}</td>
-          <td>${s.sector || ""}</td>
-          <td>${s.subsector || ""}</td>
-          <td>${s.risk || ""}</td>
-          <td>${fmt(r.scores?.[idx])}</td>
-          <td>${fmt(r.weaknesses?.[idx])}</td>
-          <td>${fmt(r.short_swings?.[idx])}</td>
-        </tr>
-      `).join("");
-
-      const swingRows = (r.short_swing_days || []).map((days, idx) => {
-        const ds = Array.isArray(days) ? days : [];
-        return `
-          <tr>
-            <td>${r.symbols?.[idx] || ""}</td>
-            <td>${fmt(ds[0])}</td>
-            <td>${fmt(ds[1])}</td>
-            <td>${fmt(ds[2])}</td>
-            <td>${fmt(ds[3])}</td>
-            <td>${fmt(ds[4])}</td>
-            <td>${fmt(ds[5])}</td>
-            <td>${fmt(r.short_swings?.[idx])}</td>
-            <td>${rankMap[idx] || ""}</td>
-            <td>${roleMap[idx] || ""}</td>
-          </tr>
-        `;
-      }).join("");
-
-      const shortSwingExplainRows = (r.short_swing_days || []).map((days, idx) => `
-        <tr>
-          <td>${r.symbols?.[idx] || ""}</td>
-          <td class="mono">${buildShortSwingFormula(days)}</td>
-          <td>${fmt(r.short_swings?.[idx])}</td>
-        </tr>
-      `).join("");
-
-      const counterpartyHtml = schema ? `
-        <div class="section-title">Counterparty / Schema</div>
-        <table>
-          <tbody>
-            <tr><th>承做機構</th><td>${schema.counterparty?.issuer_local || "-"}</td></tr>
-            <tr><th>上手銀行</th><td>${schema.counterparty?.upstream_bank_name || "-"}</td></tr>
-            <tr><th>RM</th><td>${schema.counterparty?.rm || "-"}</td></tr>
-            <tr><th>Basket Key</th><td>${schema.quote?.basket_key || "-"}</td></tr>
-            <tr><th>M2 市場環境</th><td>${schema.m2_callback?.market_context || "-"}</td></tr>
-            <tr><th>M2 處理優先級</th><td>${schema.m2_callback?.action_priority || "-"}</td></tr>
-            <tr><th>M2 建議</th><td>${schema.m2_callback?.suggested_action || "-"}</td></tr>
-          </tbody>
-        </table>
-      ` : "";
-
-      $("resultArea").innerHTML = `
-        <div class="summary-grid">
-          <div class="summary-box"><div class="k">Market Yield</div><div class="v">${fmt(r.market_yield)}%</div></div>
-          <div class="summary-box">
-            <div class="k">Fair Yield</div>
-            <div class="v">${fmt(r.fair_yield)}%</div>
-            <div class="small-note">${r.yield_capped ? "已封頂 10%" : ""}</div>
-          </div>
-          <div class="summary-box"><div class="k">Pricing Delta</div><div class="v">${fmt(r.pricing_delta)}%</div></div>
-          <div class="summary-box"><div class="k">BasketVol / VolAdj</div><div class="v">${fmt(r.basket_vol)} / ${fmt(r.vol_adj)}%</div></div>
-          <div class="summary-box"><div class="k">RatePressureAdj</div><div class="v">${fmt(r.rate_pressure_adj)}%</div><div class="small-note">RP ${fmt(r.rate_pressure_score_basket)}</div></div>
-        </div>
-
-        <div class="section-title">案例摘要</div>
-        <table>
-          <tbody>
-            <tr><th>Case Name</th><td>${r.case_name || "-"}</td></tr>
-            <tr><th>Symbols</th><td>${(r.symbols || []).join(", ")}</td></tr>
-            <tr><th>KI / Strike / Tenor / Type</th><td>${fmt(r.KI)} / ${fmt(r.strike)} / ${fmt(r.tenor)} / ${r.type}</td></tr>
-            <tr><th>Note</th><td>${r.note || "-"}</td></tr>
-          </tbody>
-        </table>
-
-        ${counterpartyHtml}
-
-        <div class="section-title">Basket / Structure / Vol / Brake</div>
-        <table>
-          <thead>
-            <tr>
-              <th>Base</th>
-              <th>BW</th>
-              <th>BasketPremium</th>
-              <th>TailAdj</th>
-              <th>KIAdj</th>
-              <th>TenorAdj</th>
-              <th>StrikeAdj</th>
-              <th>TypeAdj</th>
-              <th>StructureTotal</th>
-              <th>BasketVol</th>
-              <th>VolAdj</th>
-              <th>RatePressureAdj</th>
-              <th>PreRate</th>
-              <th>HighRateBrake</th>
-              <th>FairYield</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>${fmt(r.base)}</td>
-              <td>${fmt(r.BW)}</td>
-              <td>${fmt(r.basket_premium)}</td>
-              <td>${fmt(r.tail_adj)}</td>
-              <td>${fmt(r.ki_adj)}</td>
-              <td>${fmt(r.tenor_adj)}</td>
-              <td>${fmt(r.strike_adj)}</td>
-              <td>${fmt(r.type_adj)}</td>
-              <td>${fmt(r.structure_total)}</td>
-              <td>${fmt(r.basket_vol)}</td>
-              <td>${fmt(r.vol_adj)}</td>
-              <td>${fmt(r.rate_pressure_adj)}</td>
-              <td>${fmt(r.pre_rate)}</td>
-              <td>${fmt(r.high_rate_brake)}</td>
-              <td>${fmt(r.fair_yield)}</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <div class="section-title">股票明細</div>
-        <table>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Symbol</th>
-              <th>Source</th>
-              <th>M7_v2</th>
-              <th>RP Score</th>
-              <th>RP(100)</th>
-              <th>IV%</th>
-              <th>IV Score</th>
-              <th>Skew</th>
-              <th>Skew Score</th>
-              <th>Demand</th>
-              <th>Driver</th>
-              <th>Warning</th>
-              <th>Sector</th>
-              <th>Subsector</th>
-              <th>Risk</th>
-              <th>Today Score</th>
-              <th>Weakness</th>
-              <th>ShortSwing</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${stockRows || `<tr><td colspan="18">無資料</td></tr>`}
-          </tbody>
-        </table>
-
-        <div class="section-title">6日振幅輸入</div>
-        <table>
-          <thead>
-            <tr>
-              <th>Symbol</th>
-              <th>d0</th>
-              <th>d1</th>
-              <th>d2</th>
-              <th>d3</th>
-              <th>d4</th>
-              <th>d5</th>
-              <th>ShortSwing</th>
-              <th>Vol Rank</th>
-              <th>Basket Role</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${swingRows || `<tr><td colspan="10">無資料</td></tr>`}
-          </tbody>
-        </table>
-
-        <div class="section-title">綜合說明</div>
-        <div class="explain-box">
-          <div class="row">
-            <div class="label">ShortSwing 公式</div>
-            <div class="mono">ShortSwing = 0.35×d0 + 0.25×d1 + 0.15×d2 + 0.10×d3 + 0.08×d4 + 0.07×d5</div>
-            <div class="mono">Yield Cap = ${r.yield_capped ? "已套用 10%" : "未觸發"}</div>
-          </div>
-
-          <div class="row">
-            <div class="label">各股 ShortSwing 計算過程</div>
-            <table>
-              <thead>
-                <tr>
-                  <th>Symbol</th>
-                  <th>計算式</th>
-                  <th>結果</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${shortSwingExplainRows || `<tr><td colspan="3">無資料</td></tr>`}
-              </tbody>
-            </table>
-          </div>
-
-          <div class="row">
-            <div class="label">BasketVol 計算過程</div>
-            <div class="mono">排序後 ShortSwing：${sortedSwings.map(x => `${x.symbol}:${fmt(x.v)}`).join(" , ") || "-"}</div>
-            <div class="mono">s1 = ${fmt(s1)}, s2 = ${fmt(s2)}, avg = ${fmt(avgSwing)}</div>
-            <div class="mono">BasketVol = 0.5×${fmt(s1)} + 0.3×${fmt(s2)} + 0.2×${fmt(avgSwing)} = ${fmt(r.basket_vol)}</div>
-          </div>
-
-          <div class="row">
-            <div class="label">VolAdj 計算過程</div>
-            <div class="mono">BasketVol = ${fmt(r.basket_vol)}，落在區間：${volAdjExplain.bucket}</div>
-            <div class="mono">公式：${volAdjExplain.formula}</div>
-            <div class="mono">代入：${volAdjExplain.substitution}</div>
-            <div class="mono">VolAdj = ${fmt(r.vol_adj)}</div>
-          </div>
-
-          <div class="row">
-            <div class="label">Rate Pressure 計算結果</div>
-            <div class="mono">Source = ${r.rate_pressure_source || "missing"}</div>
-            <div class="mono">Basket RP = ${fmt(r.rate_pressure_score_basket)}，RatePressureAdj = ${fmt(r.rate_pressure_adj)}</div>
-            <div class="mono">股票明細：${Array.isArray(r.rate_pressure_stocks) ? r.rate_pressure_stocks.map(x => `${x.symbol} RP=${fmt(x.rate_pressure_score)} | IV=${fmt(x.iv_30d_atm_pct)} | Skew=${fmt(x.put_skew_30d_vol_points)} | Demand=${fmt(x.demand_score)} | Driver=${x.rate_driver_label || "-"} | Formula=${x.rate_pressure_formula_text || "-"}`).join("\n") : "-"}</div>
-          </div>
-        </div>
-      `;
-    }
-
-    function renderProxyResult(result) {
-      const box = $("proxyResult");
-      if (!box) return;
-
-      if (!result || !Array.isArray(result.proxies) || !result.proxies.length) {
-        box.innerHTML = "沒有可顯示的 proxy 結果";
-        return;
-      }
-
-      box.innerHTML = `
-        <div style="padding:12px;">
-          <div style="font-weight:800; margin-bottom:8px;">
-            Anchor：${result.anchor_symbol} ${result.anchor_name} ｜ today_score ${fmt(result.anchor_today_score)}
-          </div>
-          <div class="small-note" style="margin-bottom:10px;">
-            Normalization Base Yield：${fmt(result.base_yield_for_normalization)}
-          </div>
-
-          <table>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Target</th>
-                <th>Today Score</th>
-                <th>Pair Fair Yield</th>
-                <th>BasketVol</th>
-                <th>VolAdj</th>
-                <th>Proxy</th>
-                <th>Normalized</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${result.proxies.map((x, idx) => `
-                <tr>
-                  <td>${idx + 1}</td>
-                  <td>${x.target_symbol}</td>
-                  <td>${fmt(x.target_today_score)}</td>
-                  <td>${fmt(x.pair_fair_yield)}</td>
-                  <td>${fmt(x.pair_basket_vol)}</td>
-                  <td>${fmt(x.pair_vol_adj)}</td>
-                  <td>${fmt(x.proxy_value)}</td>
-                  <td>${fmt(x.normalized_proxy)}</td>
-                </tr>
-              `).join("")}
-            </tbody>
-          </table>
-        </div>
-      `;
-    }
-
-    function renderHistory() {
-      const store = getInquiryStore()
-        .slice()
-        .sort((a, b) => String(b.inquiry?.inquiry_no || "").localeCompare(String(a.inquiry?.inquiry_no || "")));
-
-      const box = $("historyList");
-
-      if (!store.length) {
-        box.innerHTML = "尚無資料";
-        return;
-      }
-
-      box.innerHTML = `
-        <table>
-          <thead>
-            <tr>
-              <th>詢價單號</th>
-              <th>日期</th>
-              <th>承做</th>
-              <th>上手</th>
-              <th>RM</th>
-              <th>Case</th>
-              <th>Symbols</th>
-              <th>Market</th>
-              <th>Fair</th>
-              <th>Edge</th>
-              <th>操作</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${store.map((r, idx) => `
-              <tr>
-                <td>${r.inquiry?.inquiry_no || ""}</td>
-                <td>${r.inquiry?.inquiry_date || ""}</td>
-                <td>${r.counterparty?.issuer_local || "-"}</td>
-                <td>${r.counterparty?.upstream_bank_code || "-"}</td>
-                <td>${r.counterparty?.rm || "-"}</td>
-                <td>${r.quote?.case_name || ""}</td>
-                <td>${(r.quote?.symbols || []).join("|")}</td>
-                <td>${r.quote?.market_yield != null ? fmt(r.quote.market_yield) : "-"}</td>
-                <td>${r.engine?.fair_yield != null ? fmt(r.engine.fair_yield) : "-"}</td>
-                <td>${r.engine?.edge != null ? fmt(r.engine.edge) : "-"}</td>
-                <td>
-                  <div style="display:flex; gap:6px; flex-wrap:wrap;">
-                    <button class="btn-secondary" data-load-index="${idx}">載入</button>
-                    <button class="btn-success" data-edit-index="${idx}">編輯</button>
-                    <button class="btn-danger" data-delete-index="${idx}">刪除</button>
-                  </div>
-                </td>
-              </tr>
-            `).join("")}
-          </tbody>
-        </table>
-      `;
-
-      box.querySelectorAll("[data-load-index]").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          const idx = Number(btn.getAttribute("data-load-index"));
-          loadHistoryBySortedIndex(idx);
-        });
-      });
-
-      box.querySelectorAll("[data-edit-index]").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          const idx = Number(btn.getAttribute("data-edit-index"));
-          editHistoryBySortedIndex(idx);
-        });
-      });
-
-      box.querySelectorAll("[data-delete-index]").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          const idx = Number(btn.getAttribute("data-delete-index"));
-          deleteHistoryBySortedIndex(idx);
-        });
-      });
-    }
-
-    function renderBasketCompare(symbols = null) {
-      const store = getInquiryStore();
-      const box = $("basketCompare");
-
-      if (!store.length) {
-        box.innerHTML = "尚無資料";
-        return;
-      }
-
-      let basketKey = null;
-
-      if (symbols && symbols.length) {
-        basketKey = normalizeBasket(symbols);
-      } else {
-        const currentSymbols = parseSymbols($("symbols").value);
-        if (currentSymbols.length) basketKey = normalizeBasket(currentSymbols);
-      }
-
-      if (!basketKey) {
-        box.innerHTML = "尚無資料";
-        return;
-      }
-
-      const rows = store
-        .filter(x => x.quote?.basket_key === basketKey)
-        .sort((a, b) => String(a.inquiry?.inquiry_date || "").localeCompare(String(b.inquiry?.inquiry_date || "")));
-
-      if (!rows.length) {
-        box.innerHTML = "尚無資料";
-        return;
-      }
-
-      box.innerHTML = `
-        <table>
-          <thead>
-            <tr>
-              <th>日期</th>
-              <th>單號</th>
-              <th>承做</th>
-              <th>上手</th>
-              <th>Market</th>
-              <th>Fair</th>
-              <th>Edge</th>
-              <th>BasketVol</th>
-              <th>VolAdj</th>
-              <th>M2建議</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${rows.map(r => `
-              <tr>
-                <td>${r.inquiry?.inquiry_date || ""}</td>
-                <td>${r.inquiry?.inquiry_no || ""}</td>
-                <td>${r.counterparty?.issuer_local || "-"}</td>
-                <td>${r.counterparty?.upstream_bank_code || "-"}</td>
-                <td>${r.quote?.market_yield != null ? fmt(r.quote.market_yield) : "-"}</td>
-                <td>${r.engine?.fair_yield != null ? fmt(r.engine.fair_yield) : "-"}</td>
-                <td>${r.engine?.edge != null ? fmt(r.engine.edge) : "-"}</td>
-                <td>${r.engine?.basket_vol != null ? fmt(r.engine.basket_vol) : "-"}</td>
-                <td>${r.engine?.vol_adj != null ? fmt(r.engine.vol_adj) : "-"}</td>
-                <td>${r.m2_callback?.suggested_action || "-"}</td>
-              </tr>
-            `).join("")}
-          </tbody>
-        </table>
-      `;
-    }
-
-    function loadRecordIntoForm(schema, editing = false) {
-      if (!schema) return;
-
-      $("inquiryDate").value = schema.inquiry?.inquiry_date || todayStr();
-      $("issuer").value = schema.counterparty?.issuer_local || "";
-      $("upstreamBank").value = schema.counterparty?.upstream_bank_code || "";
-      $("rm").value = schema.counterparty?.rm || "";
-      $("caseName").value = schema.quote?.case_name || "Case 1";
-      $("symbols").value = (schema.quote?.symbols || []).join(",");
-      $("ki").value = schema.quote?.KI ?? 0;
-      $("strike").value = schema.quote?.strike ?? 0;
-      $("tenor").value = schema.quote?.tenor ?? 0;
-      $("type").value = schema.quote?.type || "EKI";
-      $("marketYield").value = schema.quote?.market_yield ?? 0;
-      $("note").value = schema.quote?.note || "";
-
-      $("inputMode").value = "single";
-      setupInputMode();
-
-      if (editing) {
-        currentEditingInquiryNo = schema.inquiry?.inquiry_no || null;
-        $("inquiryNo").value = schema.inquiry?.inquiry_no || "";
-      } else {
-        currentEditingInquiryNo = null;
-        refreshInquiryNo();
-      }
-
-      renderBasketCompare(schema.quote?.symbols || []);
-
-      if (schema.raw_engine_result) {
-        renderResult(schema.raw_engine_result, schema);
-      }
-    }
-
-    function loadHistoryBySortedIndex(sortedIndex) {
-      const sorted = getInquiryStore()
-        .slice()
-        .sort((a, b) => String(b.inquiry?.inquiry_no || "").localeCompare(String(a.inquiry?.inquiry_no || "")));
-      const schema = sorted[sortedIndex];
-      if (!schema) return;
-
-      loadRecordIntoForm(schema, false);
-    }
-
-    function editHistoryBySortedIndex(sortedIndex) {
-      const sorted = getInquiryStore()
-        .slice()
-        .sort((a, b) => String(b.inquiry?.inquiry_no || "").localeCompare(String(a.inquiry?.inquiry_no || "")));
-      const schema = sorted[sortedIndex];
-      if (!schema) return;
-
-      loadRecordIntoForm(schema, true);
-      alert(`已載入編輯模式：${schema.inquiry?.inquiry_no || ""}`);
-    }
-
-    function deleteHistoryBySortedIndex(sortedIndex) {
-      const sorted = getInquiryStore()
-        .slice()
-        .sort((a, b) => String(b.inquiry?.inquiry_no || "").localeCompare(String(a.inquiry?.inquiry_no || "")));
-      const target = sorted[sortedIndex];
-      if (!target) return;
-
-      const ok = confirm(`確定刪除 ${target.inquiry?.inquiry_no || ""} 嗎？`);
-      if (!ok) return;
-
-      const store = getInquiryStore().filter(x => x.inquiry?.inquiry_no !== target.inquiry?.inquiry_no);
-      saveInquiryStore(store);
-
-      if (currentEditingInquiryNo === target.inquiry?.inquiry_no) {
-        currentEditingInquiryNo = null;
-        refreshInquiryNo();
-      }
-
-      renderHistory();
-      renderBasketCompare(parseSymbols($("symbols").value));
-    }
-
-    function downloadFile(filename, content, mimeType = "text/plain;charset=utf-8") {
-      const blob = new Blob([content], { type: mimeType });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-    }
-
-    function csvEscape(value) {
-      const s = String(value ?? "");
-      if (s.includes('"') || s.includes(",") || s.includes("\n")) {
-        return `"${s.replace(/"/g, '""')}"`;
-      }
-      return s;
-    }
-
-    function exportHistoryJson() {
-      const store = getInquiryStore();
-      if (!store.length) {
-        alert("目前沒有可匯出的歷史資料");
-        return;
-      }
-      downloadFile(
-        `fcn_quote_history_${todayStr().replaceAll("-", "")}.json`,
-        JSON.stringify(store, null, 2),
-        "application/json;charset=utf-8"
-      );
-    }
-
-    function exportHistoryCsv() {
-      const store = getInquiryStore();
-      if (!store.length) {
-        alert("目前沒有可匯出的歷史資料");
-        return;
-      }
-
-      const rows = [[
-        "schema_version",
-        "inquiry_date",
-        "inquiry_no",
-        "issuer_local",
-        "upstream_bank_code",
-        "upstream_bank_name",
-        "rm",
-        "case_name",
-        "symbols",
-        "basket_key",
-        "KI",
-        "strike",
-        "tenor",
-        "type",
-        "market_yield",
-        "note",
-        "fair_yield",
-        "basket_vol",
-        "vol_adj",
-        "rate_pressure_adj",
-        "rate_pressure_score_basket",
-        "pricing_view",
-        "pricing_delta",
-        "edge",
-        "m2_market_context",
-        "m2_action_priority",
-        "m2_need_active_attention",
-        "m2_suggested_action",
-        "created_at",
-        "updated_at"
-      ].join(",")];
-
-      store.forEach(r => {
-        rows.push([
-          csvEscape(r.schema_version),
-          csvEscape(r.inquiry?.inquiry_date),
-          csvEscape(r.inquiry?.inquiry_no),
-          csvEscape(r.counterparty?.issuer_local),
-          csvEscape(r.counterparty?.upstream_bank_code),
-          csvEscape(r.counterparty?.upstream_bank_name),
-          csvEscape(r.counterparty?.rm),
-          csvEscape(r.quote?.case_name),
-          csvEscape((r.quote?.symbols || []).join("|")),
-          csvEscape(r.quote?.basket_key),
-          csvEscape(r.quote?.KI),
-          csvEscape(r.quote?.strike),
-          csvEscape(r.quote?.tenor),
-          csvEscape(r.quote?.type),
-          csvEscape(r.quote?.market_yield),
-          csvEscape(r.quote?.note),
-          csvEscape(r.engine?.fair_yield ?? ""),
-          csvEscape(r.engine?.basket_vol ?? ""),
-          csvEscape(r.engine?.vol_adj ?? ""),
-          csvEscape(r.engine?.rate_pressure_adj ?? ""),
-          csvEscape(r.engine?.rate_pressure_score_basket ?? ""),
-          csvEscape(r.engine?.pricing_view ?? ""),
-          csvEscape(r.engine?.pricing_delta ?? ""),
-          csvEscape(r.engine?.edge ?? ""),
-          csvEscape(r.m2_callback?.market_context ?? ""),
-          csvEscape(r.m2_callback?.action_priority ?? ""),
-          csvEscape(r.m2_callback?.need_active_attention ?? ""),
-          csvEscape(r.m2_callback?.suggested_action ?? ""),
-          csvEscape(r.created_at ?? ""),
-          csvEscape(r.updated_at ?? "")
-        ].join(","));
-      });
-
-      downloadFile(
-        `fcn_quote_history_${todayStr().replaceAll("-", "")}.csv`,
-        rows.join("\n"),
-        "text/csv;charset=utf-8"
-      );
-    }
-
-    function clearAllHistory() {
-      const store = getInquiryStore();
-      if (!store.length) {
-        alert("目前沒有資料可清空");
-        return;
-      }
-
-      const ok = confirm("確定要清空全部歷史詢價單嗎？此動作無法復原。");
-      if (!ok) return;
-
-      localStorage.removeItem(STORAGE_KEY);
-      Object.keys(localStorage).forEach(key => {
-        if (key.startsWith("fcn_inquiry_seq_")) {
-          localStorage.removeItem(key);
-        }
-      });
-
-      currentEditingInquiryNo = null;
-      refreshInquiryNo();
-      renderHistory();
-      renderBasketCompare();
-      loadRuntimeDashboard();
-      loadAllStocksPool();
-      clearResult();
-    }
-
-    function collectSinglePayload() {
-      const inquiryDate = $("inquiryDate").value || todayStr();
-
-      return {
-        inquiryDate,
-        inquiryNo: currentEditingInquiryNo || generateInquiryNo(inquiryDate),
-        issuer: $("issuer").value || "",
-        upstreamBank: $("upstreamBank").value || "",
-        rm: $("rm").value.trim() || "",
-        caseName: $("caseName").value.trim() || "Case 1",
-        symbols: parseSymbols($("symbols").value),
-        KI: num($("ki").value),
-        Strike: num($("strike").value),
-        T: num($("tenor").value),
-        type: $("type").value,
-        marketYield: num($("marketYield").value),
-        note: $("note").value.trim() || ""
-      };
-    }
-
-    async function saveSchemaRecord(schema) {
-      const store = getInquiryStore();
-      const inquiryNo = schema.inquiry?.inquiry_no;
-      const existingIndex = store.findIndex(x => x.inquiry?.inquiry_no === inquiryNo);
-
-      if (existingIndex >= 0) {
-        schema.created_at = store[existingIndex].created_at || schema.created_at;
-        store[existingIndex] = schema;
-      } else {
-        store.push(schema);
-      }
-
-      saveInquiryStore(store);
-      currentEditingInquiryNo = null;
-      refreshInquiryNo();
-      renderHistory();
-      renderBasketCompare(schema.quote?.symbols || []);
-    }
-
-    async function runCase() {
-      try {
-        const payload = collectSinglePayload();
-
-        const engineInput = {
-          caseName: payload.caseName,
-          symbols: payload.symbols,
-          KI: payload.KI,
-          Strike: payload.Strike,
-          T: payload.T,
-          type: payload.type,
-          marketYield: payload.marketYield,
-          note: payload.note
-        };
-
-        const result = await runM8Case(engineInput);
-
-        if (!result.market_yield && result.market_yield !== 0) {
-          result.market_yield = payload.marketYield;
-        }
-        if (!result.case_name) {
-          result.case_name = payload.caseName;
-        }
-        if (!result.note) {
-          result.note = payload.note;
-        }
-
-        const store = getInquiryStore();
-        const old = store.find(x => x.inquiry?.inquiry_no === payload.inquiryNo);
-        const schema = buildEngineSchema(payload, result, old?.created_at || null);
-
-        renderResult(result, schema);
-        await saveSchemaRecord(schema);
-
-      } catch (err) {
-        $("pricingBadge").className = "pill bad";
-        $("pricingBadge").textContent = "執行失敗";
-        $("resultArea").innerHTML = `<div class="empty" style="color:#b42318;">${err.message || err}</div>`;
-      }
-    }
-
-    async function runAnchorProxy() {
-      try {
-        const symbols = parseSymbols($("proxySymbols").value);
-        const KI = num($("proxyKi").value);
-        const Strike = num($("proxyStrike").value);
-        const T = num($("proxyTenor").value);
-        const type = $("proxyType").value;
-
-        const result = await runM8AnchorProxy({
-          symbols,
-          KI,
-          Strike,
-          T,
-          type
-        });
-
-        renderProxyResult(result);
-      } catch (err) {
-        const box = $("proxyResult");
-        if (box) {
-          box.innerHTML = `<div style="color:#b42318;padding:12px;">${err.message || err}</div>`;
-        }
-      }
-    }
-
-    async function importBatchInquiry() {
-      const inquiryDate = $("inquiryDate").value || todayStr();
-      const rows = parseBatchText($("batchInput").value, inquiryDate);
-
-      if (!rows.length) {
-        alert("沒有可匯入的資料");
-        return;
-      }
-
-      const store = getInquiryStore();
-      let successCount = 0;
-      let lastSchema = null;
-
-      for (const row of rows) {
-        try {
-          const engineInput = {
-            caseName: row.caseName,
-            symbols: row.symbols,
-            KI: row.KI,
-            Strike: row.Strike,
-            T: row.T,
-            type: row.type,
-            marketYield: row.marketYield,
-            note: row.note
-          };
-
-          const result = await runM8Case(engineInput);
-
-          if (!result.market_yield && result.market_yield !== 0) {
-            result.market_yield = row.marketYield;
           }
-          if (!result.case_name) {
-            result.case_name = row.caseName;
-          }
-          if (!result.note) {
-            result.note = row.note;
-          }
-
-          const payload = {
-            inquiryDate: row.inquiryDate,
-            inquiryNo: row.inquiryNo,
-            issuer: row.issuer,
-            upstreamBank: row.upstreamBank,
-            rm: row.rm,
-            caseName: row.caseName,
-            symbols: row.symbols,
-            KI: row.KI,
-            Strike: row.Strike,
-            T: row.T,
-            type: row.type,
-            marketYield: row.marketYield,
-            note: row.note
-          };
-
-          const schema = buildEngineSchema(payload, result, null);
-          store.push(schema);
-          lastSchema = schema;
-          successCount += 1;
-        } catch (err) {
-          console.error("batch run failed:", row, err);
-        }
-      }
-
-      saveInquiryStore(store);
-      renderHistory();
-
-      if (lastSchema?.raw_engine_result) {
-        renderResult(lastSchema.raw_engine_result, lastSchema);
-        renderBasketCompare(lastSchema.quote?.symbols || []);
-      }
-
-      refreshInquiryNo();
-      alert(`已匯入並完成 M8 計算：${successCount} 筆`);
-    }
-
-    function setupInputMode() {
-      const mode = $("inputMode").value;
-      $("singleInputPanel").style.display = mode === "single" ? "block" : "none";
-      $("batchInputPanel").style.display = mode === "batch" ? "block" : "none";
-    }
-
-    function loadDemo() {
-      $("issuer").value = "富邦";
-      $("upstreamBank").value = "NATIXIS";
-      $("rm").value = "王小姐";
-      $("caseName").value = "Case Demo";
-      $("symbols").value = "ARM,GOOG,INTC,TSM";
-      $("ki").value = 60;
-      $("strike").value = 70;
-      $("tenor").value = 6;
-      $("type").value = "EKI";
-      $("marketYield").value = 23.35;
-      $("note").value = "示範案例";
-      $("inputMode").value = "single";
-      currentEditingInquiryNo = null;
-      setupInputMode();
-      refreshInquiryNo();
-      renderBasketCompare(parseSymbols($("symbols").value));
-    }
-
-    
-    async function loadRuntimeDashboard() {
-      try {
-        const res = await fetch("./data/options/option_runtime.json");
-        const json = await res.json();
-
-        const rows = Object.values(json.data || {}).filter(x => x && x.status === "ok");
-
-        const avg = (arr) => arr.length ? arr.reduce((a,b)=>a+b,0)/arr.length : 0;
-
-        const avgRP = avg(rows.map(x => Number(x.rate_pressure_score || 0)));
-        const avgIV = avg(rows.map(x => Number(x.iv_30d_atm_pct || 0)));
-
-        $("rtSymbolCount").textContent = rows.length;
-        $("rtAvgRP").textContent = fmt(avgRP);
-        $("rtAvgIV").textContent = fmt(avgIV);
-
-        $("rtHighRP").textContent =
-          rows.filter(x => Number(x.rate_pressure_score || 0) >= 5).length;
-
-        $("rtHighSkew").textContent =
-          rows.filter(x => Number(x.put_skew_30d_vol_points || 0) >= 5).length;
-
-        function renderTable() {
-          const symbolFilter = ($("runtimeFilterSymbol").value || "").toUpperCase();
-          const driverFilter = $("runtimeFilterDriver").value || "";
-          const sortMode = $("runtimeSort").value || "rp_desc";
-
-          let data = rows.filter(x => {
-            const symOk = !symbolFilter || String(x.symbol || "").includes(symbolFilter);
-            const drvOk = !driverFilter || x.rate_driver_label === driverFilter;
-            return symOk && drvOk;
-          });
-
-          if (sortMode === "rp_desc") {
-            data.sort((a,b)=>(b.rate_pressure_score||0)-(a.rate_pressure_score||0));
-          } else if (sortMode === "iv_desc") {
-            data.sort((a,b)=>(b.iv_30d_atm_pct||0)-(a.iv_30d_atm_pct||0));
-          } else if (sortMode === "skew_desc") {
-            data.sort((a,b)=>(b.put_skew_30d_vol_points||0)-(a.put_skew_30d_vol_points||0));
-          }
-
-          $("runtimeDashboardTable").innerHTML = `
-            <table>
-              <thead>
-                <tr>
-                  <th>Symbol</th>
-                  <th>IV%</th>
-                  <th>IV Score</th>
-                  <th>Skew</th>
-                  <th>Skew Score</th>
-                  <th>Demand</th>
-                  <th>RP</th>
-                  <th>Driver</th>
-                  <th>Warning</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${data.map(x => `
-                  <tr>
-                    <td>${x.symbol || ""}</td>
-                    <td>${fmt(x.iv_30d_atm_pct)}</td>
-                    <td>${fmt(x.iv_score)}</td>
-                    <td>${fmt(x.put_skew_30d_vol_points)}</td>
-                    <td>${fmt(x.skew_score)}</td>
-                    <td>${fmt(x.demand_score)}</td>
-                    <td>${fmt(x.rate_pressure_score)}</td>
-                    <td>${x.rate_driver_label || ""}</td>
-                    <td>${x.data_warning || ""}</td>
-                  </tr>
-                `).join("")}
-              </tbody>
-            </table>
-          `;
-        }
-
-        renderTable();
-
-        ["runtimeFilterSymbol","runtimeFilterDriver","runtimeSort"].forEach(id => {
-          $(id).addEventListener("input", renderTable);
-          $(id).addEventListener("change", renderTable);
-        });
-
-      } catch (err) {
-        console.error("runtime dashboard failed", err);
+        },
+        "warning": "pilot proxy: not real 25-delta; use production options API for Greeks"
       }
     }
-
-
-
-    async function loadAllStocksPool() {
-      try {
-        const res = await fetch("./data/options/option_runtime.json");
-        const json = await res.json();
-        const rows = Object.values(json.data || {}).filter(x => x && x.status === "ok");
-        const avg = (arr) => arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0;
-
-        function updateSummary(data) {
-          $("allPoolSymbolCount").textContent = data.length;
-          $("allPoolAvgIVScore").textContent = fmt(avg(data.map(x => Number(x.iv_score || 0))));
-          $("allPoolAvgSkewScore").textContent = fmt(avg(data.map(x => Number(x.skew_score || 0))));
-          $("allPoolAvgDemand").textContent = fmt(avg(data.map(x => Number(x.demand_score || 0))));
-          $("allPoolAvgRP").textContent = fmt(avg(data.map(x => Number(x.rate_pressure_score || 0))));
-        }
-
-        function renderTable() {
-          const symbolFilter = ($("allPoolFilterSymbol").value || "").trim().toUpperCase();
-          const driverFilter = $("allPoolFilterDriver").value || "";
-          const sortMode = $("allPoolSort").value || "rp_desc";
-          const minIVScore = Number($("allPoolMinIVScore").value || 0);
-          const minRP = Number($("allPoolMinRP").value || 0);
-          const warningFilter = $("allPoolWarningFilter").value || "";
-
-          let data = rows.filter(x => {
-            const symbol = String(x.symbol || "").toUpperCase();
-            const warning = String(x.data_warning || "");
-            const passSymbol = !symbolFilter || symbol.includes(symbolFilter);
-            const passDriver = !driverFilter || x.rate_driver_label === driverFilter;
-            const passIV = Number(x.iv_score || 0) >= minIVScore;
-            const passRP = Number(x.rate_pressure_score || 0) >= minRP;
-            const passWarning =
-              !warningFilter ||
-              (warningFilter === "with_warning" && warning) ||
-              (warningFilter === "no_warning" && !warning);
-            return passSymbol && passDriver && passIV && passRP && passWarning;
-          });
-
-          if (sortMode === "rp_desc") data.sort((a, b) => Number(b.rate_pressure_score || 0) - Number(a.rate_pressure_score || 0));
-          else if (sortMode === "ivscore_desc") data.sort((a, b) => Number(b.iv_score || 0) - Number(a.iv_score || 0));
-          else if (sortMode === "iv_desc") data.sort((a, b) => Number(b.iv_30d_atm_pct || 0) - Number(a.iv_30d_atm_pct || 0));
-          else if (sortMode === "skewscore_desc") data.sort((a, b) => Number(b.skew_score || 0) - Number(a.skew_score || 0));
-          else if (sortMode === "demand_desc") data.sort((a, b) => Number(b.demand_score || 0) - Number(a.demand_score || 0));
-          else if (sortMode === "symbol_asc") data.sort((a, b) => String(a.symbol || "").localeCompare(String(b.symbol || "")));
-
-          updateSummary(data);
-
-          $("allStocksPoolTable").innerHTML = `
-            <table>
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Symbol</th>
-                  <th>Spot</th>
-                  <th>IV%</th>
-                  <th>IV Score</th>
-                  <th>Skew</th>
-                  <th>Skew Score</th>
-                  <th>Demand</th>
-                  <th>Event</th>
-                  <th>RP</th>
-                  <th>Driver</th>
-                  <th>IV Source</th>
-                  <th>Warning</th>
-                  <th>Expiry</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${data.map((x, idx) => `
-                  <tr>
-                    <td>${idx + 1}</td>
-                    <td>${x.symbol || ""}</td>
-                    <td>${fmt(x.spot)}</td>
-                    <td>${fmt(x.iv_30d_atm_pct)}</td>
-                    <td>${fmt(x.iv_score)}</td>
-                    <td>${fmt(x.put_skew_30d_vol_points)}</td>
-                    <td>${fmt(x.skew_score)}</td>
-                    <td>${fmt(x.demand_score)}</td>
-                    <td>${fmt(x.event_score)}</td>
-                    <td>${fmt(x.rate_pressure_score)}</td>
-                    <td>${x.rate_driver_label || ""}</td>
-                    <td>${x.iv_source || ""}</td>
-                    <td>${x.data_warning || ""}</td>
-                    <td>${x.expiry_used || ""}</td>
-                  </tr>
-                `).join("")}
-              </tbody>
-            </table>
-          `;
-        }
-
-        renderTable();
-
-        ["allPoolFilterSymbol", "allPoolFilterDriver", "allPoolSort", "allPoolMinIVScore", "allPoolMinRP", "allPoolWarningFilter"].forEach(id => {
-          const el = $(id);
-          if (el) {
-            el.addEventListener("input", renderTable);
-            el.addEventListener("change", renderTable);
-          }
-        });
-      } catch (err) {
-        console.error("all stocks pool failed", err);
-        const box = $("allStocksPoolTable");
-        if (box) box.innerHTML = `<div style="color:#b42318;">載入失敗：${err.message || err}</div>`;
-      }
-    }
-
-
-    function clearResult() {
-      currentEditingInquiryNo = null;
-      refreshInquiryNo();
-
-      $("pricingBadge").className = "pill info";
-      $("pricingBadge").textContent = "尚未執行";
-      $("resultArea").innerHTML = `<div class="empty">請先輸入案例後，按「執行 M8 並留存」</div>`;
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-      console.log("m8_batch html loaded");
-
-      $("inquiryDate").value = todayStr();
-      refreshInquiryNo();
-
-      renderBlueprint();
-      setupBlueprintToggle();
-      renderHistory();
-      renderBasketCompare();
-      setupInputMode();
-
-      $("inquiryDate").addEventListener("change", () => {
-        if (!currentEditingInquiryNo) refreshInquiryNo();
-      });
-
-      $("inputMode").addEventListener("change", setupInputMode);
-
-      $("runBtn").addEventListener("click", runCase);
-      $("demoBtn").addEventListener("click", loadDemo);
-      $("clearBtn").addEventListener("click", clearResult);
-      $("importBatchBtn").addEventListener("click", importBatchInquiry);
-      $("runProxyBtn").addEventListener("click", runAnchorProxy);
-
-      $("exportJsonBtn").addEventListener("click", exportHistoryJson);
-      $("exportCsvBtn").addEventListener("click", exportHistoryCsv);
-      $("clearHistoryBtn").addEventListener("click", clearAllHistory);
-
-      ["symbols", "ki", "strike", "tenor", "type", "marketYield"].forEach(id => {
-        const el = $(id);
-        if (el) {
-          el.addEventListener("change", () => {
-            renderBasketCompare(parseSymbols($("symbols").value));
-          });
-        }
-      });
-    });
-  </script>
-</body>
-</html>
+  }
+}
