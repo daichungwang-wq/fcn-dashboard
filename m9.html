@@ -540,6 +540,7 @@
                   <th>首次入帳</th>
                   <th>到期日</th>
                   <th>本月</th>
+                  <th>本月入帳日</th>
                   <th>次月</th>
                   <th>次次月</th>
                   <th>狀態</th>
@@ -547,7 +548,7 @@
                 </tr>
               </thead>
               <tbody id="fcnTableBody">
-                <tr><td colspan="12">載入中...</td></tr>
+                <tr><td colspan="13">載入中...</td></tr>
               </tbody>
             </table>
           </div>
@@ -1090,7 +1091,7 @@
       const usd = Number(document.getElementById("usdRate")?.value || 33);
       if(!window.M9_FCN){
         document.getElementById("fcnSummaryBox").innerHTML = "FCN engine 尚未載入";
-        document.getElementById("fcnTableBody").innerHTML = `<tr><td colspan="12">FCN engine 尚未載入</td></tr>`;
+        document.getElementById("fcnTableBody").innerHTML = `<tr><td colspan="13">FCN engine 尚未載入</td></tr>`;
         document.getElementById("fcnCashflowChart").innerHTML = `<div class="muted">FCN engine 尚未載入</div>`;
         m9FcnMonthlyIncome = 0;
         return;
@@ -1131,7 +1132,7 @@
         <div style="line-height:1.9;">
           <div><b>FCN 檔數：</b> ${s.count || 0}</div>
           <div><b>收入併入：</b> 本月 FCN 利息已併入「每月收入 / 每月淨現金流」</div>
-          <div><b>首次入帳邏輯：</b> record date + 49 天（估算 entry + 首次配息 + 入帳 + buffer）</div>
+          <div><b>首次入帳邏輯：</b> record/create date + 49 天；提前出場/到期最後結算 = out/maturity date +12 天</div>
           <div><b>本月：</b> ${formatNum2(s.total?.thisMonth || 0)}</div>
           <div><b>次月：</b> ${formatNum2(s.total?.nextMonth || 0)}</div>
           <div><b>次次月：</b> ${formatNum2(s.total?.thirdMonth || 0)}</div>
@@ -1147,7 +1148,7 @@
 
       tbody.innerHTML = "";
       if(!rows.length){
-        tbody.innerHTML = `<tr><td colspan="12">目前無 active FCN</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="13">目前無 active FCN</td></tr>`;
         return;
       }
 
@@ -1163,6 +1164,7 @@
           <td>${r.firstCouponDepositDate || "—"}</td>
           <td>${r.maturityDate || "—"}</td>
           <td>${formatNum2(r.thisMonth)}</td>
+          <td>${r.thisMonthDepositDates || "—"}</td>
           <td>${formatNum2(r.nextMonth)}</td>
           <td>${formatNum2(r.thirdMonth)}</td>
           <td>${r.statusText || "持有中"}</td>
