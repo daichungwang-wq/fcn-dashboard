@@ -214,10 +214,12 @@ export async function runMMFilterFull(input = {}) {
   const summary = buildSummary({ stocks, pools, category_map, baskets, allocation, market_match });
 
   return {
-    version: "mm_filter_v3_5_m7_autoload_fix_ui_aliases",
+    version: "mm_filter_v3_6_pools_non_enum_fix",
     generated_at: new Date().toISOString(),
     summary,
     pools,
+    pool_stats: pools._stats || buildPoolStats(pools),
+    pool_conditions: pools._conditions || {},
     category_map,
     baskets,
     allocation,
@@ -231,6 +233,8 @@ export async function runMMFilterFull(input = {}) {
     debug_json: {
       stocks,
       pools,
+      pool_stats: pools._stats || buildPoolStats(pools),
+      pool_conditions: pools._conditions || {},
       category_map,
       baskets,
       allocation,
@@ -1139,13 +1143,26 @@ function classifyPools(stocks, options = {}) {
   }
 
   Object.keys(pools).forEach(k => pools[k].sort(sortByM6Market));
-  pools._stats = buildPoolStats(pools);
-  pools._conditions = {
-    highlight: `M7 score >= ${m7HighlightCut} OR C1 tier=add; amount can be 0 but remains visible.`,
-    watch: `M7 score >= ${m7PassCut} but < ${m7HighlightCut}, OR C1 tier=standard/watch.`,
-    simulation: "Not hard reject, but not selected by M7 today; basket experiment material.",
-    reject: `Hard reject only: allow_fcn=false / explicit reject / M7 < ${m7PassCut} / M2 >= ${Math.round(m2RejectCut * 100)}%. Amount=0 is NOT reject.`
-  };
+
+  // v3.6 IMPORTANT:
+  // mm/test.html iterates Object.entries(pools) and expects every value to be an array.
+  // Do NOT attach enumerable metadata like pools._stats or pools._conditions,
+  // otherwise test.html will call rows.forEach on an object and crash.
+  Object.defineProperty(pools, "_stats", {
+    value: buildPoolStats(pools),
+    enumerable: false,
+    configurable: true
+  });
+  Object.defineProperty(pools, "_conditions", {
+    value: {
+      highlight: `M7 score >= ${m7HighlightCut} OR C1 tier=add; amount can be 0 but remains visible.`,
+      watch: `M7 score >= ${m7PassCut} but < ${m7HighlightCut}, OR C1 tier=standard/watch.`,
+      simulation: "Not hard reject, but not selected by M7 today; basket experiment material.",
+      reject: `Hard reject only: allow_fcn=false / explicit reject / M7 < ${m7PassCut} / M2 >= ${Math.round(m2RejectCut * 100)}%. Amount=0 is NOT reject.`
+    },
+    enumerable: false,
+    configurable: true
+  });
   return pools;
 }
 
@@ -1847,5 +1864,6 @@ function volBandRank(band) {
 function money(v) {
   return `USD ${Math.round(num(v)).toLocaleString()}`;
 }
+
 
 
