@@ -582,6 +582,152 @@ function pricingView(diff) {
   return "明顯偏貴";
 }
 
+
+// ------------------------------------------
+// Option Runtime Dashboard / 全市場總表
+// ------------------------------------------
+function optionRuntimeRows(optionRuntimeJson) {
+  const data = optionRuntimeJson?.data || optionRuntimeJson || {};
+  if (Array.isArray(data)) return data;
+
+  if (data && typeof data === "object") {
+    return Object.entries(data).map(([symbol, row]) => ({
+      symbol,
+      ...(row || {})
+    }));
+  }
+
+  return [];
+}
+
+function normalizeOptionRow(row) {
+  const rp = toNum(row?.rate_pressure_score, 0);
+  const ivPct = toNum(row?.iv_30d_atm_pct, 0);
+  const skewVol = toNum(row?.put_skew_30d_vol_points, 0);
+  const demand = toNum(row?.demand_score, 0);
+  const ivScore = toNum(row?.iv_score, 0);
+  const skewScore = toNum(row?.skew_score, 0);
+
+  return {
+    symbol: safeUpper(row?.symbol),
+    status: row?.status || "",
+    spot: round2(row?.spot),
+    spot_raw: round2(row?.spot_raw),
+    spot_scale_adjustment: row?.spot_scale_adjustment || "none",
+    expiry_used: row?.expiry_used || "",
+    iv_30d_atm_pct: round2(ivPct),
+    iv_score: round2(ivScore),
+    skew_score: round2(skewScore),
+    put_skew_30d_vol_points: round2(skewVol),
+    demand_score: round2(demand),
+    put_call_volume_ratio: round2(row?.put_call_volume_ratio),
+    put_call_oi_ratio: round2(row?.put_call_oi_ratio),
+    rate_pressure_score: round2(rp),
+    rate_pressure_score_0_100: round2(rp * 10),
+    rate_driver_label: row?.rate_driver_label || "",
+    iv_source: row?.iv_source || "",
+    data_warning: row?.data_warning || "",
+    data_source: row?.data_source || "",
+    source_quality: row?.source_quality || "",
+    updated_at: row?.updated_at || "",
+    rp_formula_text:
+      `0.45*IV(${round2(ivScore)}) + 0.30*Skew(${round2(skewScore)}) + 0.20*Demand(${round2(demand)}) = ${round2(rp)}`
+  };
+}
+
+function calcOptionRuntimeSummary(rows) {
+  const okRows = rows.filter(r => r.status === "ok");
+  const rpVals = okRows.map(r => r.rate_pressure_score).filter(Number.isFinite);
+  const ivVals = okRows.map(r => r.iv_30d_atm_pct).filter(Number.isFinite);
+  const skewVals = okRows.map(r => r.skew_score).filter(Number.isFinite);
+  const demandVals = okRows.map(r => r.demand_score).filter(Number.isFinite);
+
+  const highRP = okRows.filter(r => r.rate_pressure_score >= 3).length;
+  const highIV = okRows.filter(r => r.iv_score >= 3).length;
+  const highSkew = okRows.filter(r => r.skew_score >= 3).length;
+  const highDemand = okRows.filter(r => r.demand_score >= 5).length;
+  const warnings = okRows.filter(r => r.data_warning).length;
+
+  return {
+    total: rows.length,
+    ok_count: okRows.length,
+    error_count: rows.filter(r => r.status && r.status !== "ok").length,
+    warning_count: warnings,
+    avg_rate_pressure_score: round2(avg(rpVals)),
+    max_rate_pressure_score: round2(Math.max(0, ...rpVals)),
+    avg_iv_pct: round2(avg(ivVals)),
+    avg_skew_score: round2(avg(skewVals)),
+    avg_demand_score: round2(avg(demandVals)),
+    high_rp_count: highRP,
+    high_iv_count: highIV,
+    high_skew_count: highSkew,
+    high_demand_count: highDemand
+  };
+}
+
+/**
+ * 給 m8_batch.html 的 Option Runtime 總表使用。
+ *
+ * options:
+ *   sortBy: "rate_pressure_score" | "iv_30d_atm_pct" | "skew_score" | "demand_score"
+ *   direction: "desc" | "asc"
+ *   driver: optional filter, e.g. "IV_DRIVEN", "SKEW_DRIVEN", "DEMAND_DRIVEN", "LOW_PRESSURE"
+ *   warning: optional filter, "all" | "warning" | "clean"
+ *   query: optional symbol search
+ */
+export async function loadM8OptionRuntimeDashboard(options = {}) {
+  const optionRuntime = await loadOptionRuntime();
+  const rawRows = optionRuntimeRows(optionRuntime);
+  let rows = rawRows.map(normalizeOptionRow);
+
+  const query = safeUpper(options.query || "");
+  const driver = String(options.driver || "all");
+  const warning = String(options.warning || "all");
+  const sortBy = options.sortBy || "rate_pressure_score";
+  const direction = options.direction === "asc" ? "asc" : "desc";
+
+  if (query) {
+    rows = rows.filter(r => r.symbol.includes(query));
+  }
+
+  if (driver !== "all") {
+    rows = rows.filter(r => r.rate_driver_label === driver);
+  }
+
+  if (warning === "warning") {
+    rows = rows.filter(r => !!r.data_warning);
+  } else if (warning === "clean") {
+    rows = rows.filter(r => !r.data_warning);
+  }
+
+  rows.sort((a, b) => {
+    const av = toNum(a[sortBy], 0);
+    const bv = toNum(b[sortBy], 0);
+    return direction === "asc" ? av - bv : bv - av;
+  });
+
+  const allRows = rawRows.map(normalizeOptionRow);
+
+  return {
+    meta: optionRuntime.meta || {},
+    summary: calcOptionRuntimeSummary(allRows),
+    filters: {
+      drivers: [...new Set(allRows.map(r => r.rate_driver_label).filter(Boolean))].sort(),
+      warnings: [...new Set(allRows.map(r => r.data_warning).filter(Boolean))].sort(),
+      sort_options: [
+        "rate_pressure_score",
+        "iv_30d_atm_pct",
+        "iv_score",
+        "skew_score",
+        "demand_score",
+        "put_call_volume_ratio"
+      ]
+    },
+    rows
+  };
+}
+
+
 // ------------------------------------------
 // Blueprint
 // ------------------------------------------
@@ -606,7 +752,7 @@ export function getM8Blueprint() {
       "Tenor：1–3慢、3–10加速、10–12放緩（max=2）",
       "BasketVol = 0.5×s1 + 0.3×s2 + 0.2×avgSwing",
       "VolAdj 採平滑函數",
-      "RatePressureAdj 改用 market curve v3；修正 0~10 / 0~100 尺度錯誤；HighRateBrake 保留用來抑制極端高利率失真",
+      "RatePressureAdj 改用 market curve v3；全程使用 0~10 尺度，UI 另提供 0~100 顯示；HighRateBrake 保留用來抑制極端高利率失真",
       "Anchor-based Yield Proxy：以當次輸入最高 M7_v2 品質股票當 anchor"
     ],
     formulas: {
@@ -731,9 +877,16 @@ export async function runM8Case({
       quality_score: round2(getTodayScore(s)),
       today_score: round2(getTodayScore(s)),
       rate_pressure_score: round2(calcStockRatePressureScore(s) !== null ? calcStockRatePressureScore(s) : 0),
+      rate_pressure_score_0_100: round2((calcStockRatePressureScore(s) !== null ? calcStockRatePressureScore(s) : 0) * 10),
       iv_30d_atm_pct: round2(getOptionField(s, "iv_30d_atm_pct", 0)),
+      iv_score: round2(getOptionField(s, "iv_score", 0)),
+      skew_score: round2(getOptionField(s, "skew_score", 0)),
       put_skew_30d_vol_points: round2(getOptionField(s, "put_skew_30d_vol_points", 0)),
-      demand_score: round2(getOptionField(s, "demand_score", 0))
+      demand_score: round2(getOptionField(s, "demand_score", 0)),
+      rate_driver_label: getOptionField(s, "rate_driver_label", ""),
+      iv_source: getOptionField(s, "iv_source", ""),
+      data_warning: getOptionField(s, "data_warning", ""),
+      option_status: getOptionField(s, "status", "")
     })),
 
     scores: scores.map(round2),
@@ -755,8 +908,12 @@ export async function runM8Case({
     rate_pressure_source: ratePressure.rate_pressure_source,
     rate_pressure_stocks: ratePressure.rate_pressure_stocks.map(x => ({
       ...x,
-      rate_pressure_score: round2(x.rate_pressure_score / 10),
-      rate_pressure_score_0_100: round2(x.rate_pressure_score)
+      // rate_pressure_score is 0~10 scale from option_runtime.py.
+      // Do NOT divide by 10 here.
+      rate_pressure_score: round2(x.rate_pressure_score),
+      rate_pressure_score_0_100: round2(x.rate_pressure_score * 10),
+      rate_pressure_formula_text:
+        `0.45*IV(${round2(toNum(x.iv_score, 0))}) + 0.30*Skew(${round2(toNum(x.skew_score, 0))}) + 0.20*Demand(${round2(toNum(x.demand_score, 0))})`
     })),
 
     market_yield: round2(marketYield),
