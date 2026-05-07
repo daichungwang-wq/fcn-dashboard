@@ -13,7 +13,7 @@
 }
 *{box-sizing:border-box} body{margin:0;font-family:Arial,"Noto Sans TC",sans-serif;background:var(--bg);color:var(--text)}
 .app{max-width:1480px;margin:0 auto;padding:24px}.hero{background:linear-gradient(135deg,#10233f,#1d4ed8);border-radius:24px;padding:24px 28px;margin-bottom:20px;box-shadow:0 18px 48px rgba(0,0,0,.35)}
-.hero h1{margin:0 0 8px;font-size:34px}.hero p{margin:0;color:#dbeafe;font-weight:700}.section{background:var(--panel);border:1px solid var(--line);border-radius:18px;margin:18px 0;overflow:hidden}.section summary{cursor:pointer;padding:16px 20px;font-size:20px;font-weight:900;border-bottom:1px solid var(--line)}.section-body{padding:18px}.grid{display:grid;gap:14px}.kpi-grid{grid-template-columns:repeat(7,minmax(120px,1fr))}.pool-grid{grid-template-columns:repeat(4,1fr)}.cat-grid{grid-template-columns:repeat(5,1fr)}.sim-grid{grid-template-columns:1.1fr 1.4fr}.sim-card-grid{grid-template-columns:repeat(3,1fr)}.market-grid{grid-template-columns:repeat(2,1fr)}.card{background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:14px}.card h3{margin:0 0 10px}.kpi-title{font-size:12px;color:var(--muted);font-weight:800}.kpi-value{font-size:24px;font-weight:900;margin-top:6px}.small{font-size:12px;color:var(--muted);line-height:1.55}.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:999px;font-size:12px;font-weight:900;border:1px solid var(--line)}.badge.low,.badge.good,.badge.pass{background:rgba(52,211,153,.12);color:var(--green)}.badge.mid,.badge.warn,.badge.weak{background:rgba(251,191,36,.12);color:var(--yellow)}.badge.high{background:rgba(251,146,60,.12);color:var(--orange)}.badge.extreme,.badge.bad,.badge.fail{background:rgba(248,113,113,.12);color:var(--red)}.badge.info{background:rgba(77,163,255,.12);color:var(--blue)}.badge.purple{background:rgba(167,139,250,.12);color:var(--purple)}
+.hero h1{margin:0 0 8px;font-size:34px}.hero p{margin:0;color:#dbeafe;font-weight:700}.section{background:var(--panel);border:1px solid var(--line);border-radius:18px;margin:18px 0;overflow:hidden}.section summary{cursor:pointer;padding:16px 20px;font-size:20px;font-weight:900;border-bottom:1px solid var(--line)}.section-body{padding:18px}.grid{display:grid;gap:14px}.kpi-grid{grid-template-columns:repeat(8,minmax(120px,1fr))}.pool-grid{grid-template-columns:repeat(4,1fr)}.cat-grid{grid-template-columns:repeat(5,1fr)}.sim-grid{grid-template-columns:1.1fr 1.4fr}.sim-card-grid{grid-template-columns:repeat(3,1fr)}.market-grid{grid-template-columns:repeat(2,1fr)}.card{background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:14px}.card h3{margin:0 0 10px}.kpi-title{font-size:12px;color:var(--muted);font-weight:800}.kpi-value{font-size:24px;font-weight:900;margin-top:6px}.small{font-size:12px;color:var(--muted);line-height:1.55}.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:999px;font-size:12px;font-weight:900;border:1px solid var(--line)}.badge.low,.badge.good,.badge.pass{background:rgba(52,211,153,.12);color:var(--green)}.badge.mid,.badge.warn,.badge.weak{background:rgba(251,191,36,.12);color:var(--yellow)}.badge.high{background:rgba(251,146,60,.12);color:var(--orange)}.badge.extreme,.badge.bad,.badge.fail{background:rgba(248,113,113,.12);color:var(--red)}.badge.info{background:rgba(77,163,255,.12);color:var(--blue)}.badge.purple{background:rgba(167,139,250,.12);color:var(--purple)}
 .stock-line{padding:8px 0;border-bottom:1px dashed var(--line);font-size:13px}.stock-line:last-child{border-bottom:0}.stock-main{display:flex;justify-content:space-between;gap:8px;font-weight:900}.stock-sub{color:var(--muted);font-size:12px;margin-top:4px}.table-wrap{overflow:auto;max-height:560px;border:1px solid var(--line);border-radius:14px}table{width:100%;border-collapse:collapse;background:var(--panel2)}th,td{border-bottom:1px solid var(--line);padding:8px;font-size:12px;text-align:left;white-space:nowrap}th{position:sticky;top:0;background:#111827;z-index:1}.controls{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px}.controls select,.controls input{background:#111827;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:9px 10px}.note{background:#111827;border:1px dashed var(--line);border-radius:14px;padding:12px;color:var(--muted)}.error{background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.5);color:#fecaca;border-radius:14px;padding:12px;margin:12px 0}pre{background:#090b10;border:1px solid var(--line);border-radius:14px;padding:12px;overflow:auto;max-height:520px}.result-pass{border-color:rgba(52,211,153,.7)}.result-fail{border-color:rgba(248,113,113,.7)}.result-warn{border-color:rgba(251,191,36,.7)}
 .segment-grid{display:grid;grid-template-columns:repeat(6,minmax(180px,1fr));gap:12px}
 .segment-card{background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:12px;min-height:210px}
@@ -32,6 +32,18 @@
 .label-rational-risk{border-color:rgba(251,146,60,.75)}
 .label-aggressive{border-color:rgba(167,139,250,.75)}
 .label-reject{border-color:rgba(248,113,113,.75)}
+
+.optimizer-grid{grid-template-columns:1fr 1fr}
+.optimizer-run-grid{grid-template-columns:repeat(3,1fr)}
+.optimizer-target-grid{grid-template-columns:repeat(4,1fr)}
+.optimizer-card{background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:14px}
+.optimizer-card h3{margin:0 0 10px}
+.optimizer-rank{font-size:12px;color:var(--muted);font-weight:900;margin-bottom:6px}
+.optimizer-symbols{font-size:15px;font-weight:900;margin:8px 0;color:var(--text)}
+.optimizer-note{font-size:12px;color:var(--muted);line-height:1.55;margin-top:8px;border-top:1px dashed var(--line);padding-top:8px}
+@media(max-width:1100px){.optimizer-grid,.optimizer-run-grid,.optimizer-target-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:760px){.optimizer-grid,.optimizer-run-grid,.optimizer-target-grid{grid-template-columns:1fr}}
+
 @media(max-width:1280px){.segment-grid{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:760px){.segment-grid{grid-template-columns:1fr}}
 
@@ -86,6 +98,18 @@
     </div>
   </details>
 
+
+  <details class="section" open>
+    <summary>2B. Smart Basket Optimizer v3 / 目標導向智慧組單</summary>
+    <div class="section-body">
+      <div id="optimizer-summary" class="grid optimizer-grid"></div>
+      <h3 style="margin-top:18px">Target Pool Best Picks / 各池最佳解</h3>
+      <div id="optimizer-targets" class="grid optimizer-target-grid"></div>
+      <h3 style="margin-top:18px">Optimizer Top Runs / v3 排名前段</h3>
+      <div id="optimizer-runs" class="grid optimizer-run-grid"></div>
+    </div>
+  </details>
+
   <details class="section" open>
     <summary>3. M7 / C1 Stock Pool Review</summary>
     <div class="section-body"><div class="grid pool-grid">
@@ -127,7 +151,7 @@
 
 <script src="./js/mm/modules/mm_fcn_risk_taxonomy_engine_vfinal.js?v=20260507_risk_v1"></script>
 <script src="./js/mm/modules/mm_fcn_simulating_allocating_engine_v2.js?v=20260507_2"></script>
-<script src="../js/mm/modules/mm_fcn_smart_basket_optimizer_v3.js"></script>  
+<script src="./js/mm/modules/mm_fcn_smart_basket_optimizer_v3.js?v=20260507_v3"></script>
 <script type="module">
 import { runMMFilterFull } from "./js/mm/modules/mm_filter.js";
 import { runM8Case } from "./js/core/m8_batch_engine.js";
@@ -178,7 +202,13 @@ async function main(){
       marketHistory
     });
 
-    const result = { filterResult, smartResult, v2Result };
+    const v3Result = await runV3Optimizer({
+      filterResult,
+      marketHistory,
+      currentPool
+    });
+
+    const result = { filterResult, smartResult, v2Result, v3Result };
     window.__MM_SMART_SIM_RESULT__ = result;
     renderAll(result);
   }catch(err){
@@ -384,6 +414,36 @@ function buildM6Map(m6){ const map = new Map(); const rows = Array.isArray(m6?.d
 function inferAddableAmount({symbol, category, exposureRatio, m7Score}){ const caps={core:50000,growth:30000,defensive:30000,defense:30000,income:20000,incoming:20000,speculative:3000}; const exception=new Set(["NVDA","TSM","SMH","GOOG"]); const base=exception.has(symbol)?70000:(caps[category]||10000); const util=Number(exposureRatio||0); if(util>=1) return 0; if(util>=.9) return Math.min(10000,base); if(m7Score>=8) return Math.min(50000,base); if(m7Score>=6) return Math.min(20000,base); return Math.min(10000,base); }
 function mockStocks(){return [{symbol:"NVDA",name:"NVIDIA",category:"core",m7_score:9,ret_1d:1,ret_2d:2,ret_1w:5,ret_2w:3,m2_util:.7,amt_signal:.8,max_addable_amt:50000,allow_fcn:true},{symbol:"TSM",name:"TSMC",category:"core",m7_score:8.2,ret_1d:1,ret_2d:1,ret_1w:4,ret_2w:2,m2_util:.6,amt_signal:.7,max_addable_amt:20000,allow_fcn:true},{symbol:"GOOG",name:"Alphabet",category:"core",m7_score:7.8,ret_1d:.5,ret_2d:1,ret_1w:3,ret_2w:2,m2_util:.4,amt_signal:.7,max_addable_amt:10000,allow_fcn:true},{symbol:"AVGO",name:"Broadcom",category:"core",m7_score:8.1,ret_1d:2,ret_2d:3,ret_1w:7,ret_2w:4,m2_util:.3,amt_signal:.7,max_addable_amt:30000,allow_fcn:true},{symbol:"MU",name:"Micron",category:"growth",m7_score:5.8,ret_1d:3,ret_2d:5,ret_1w:9,ret_2w:7,m2_util:.3,amt_signal:.9,max_addable_amt:30000,allow_fcn:true},{symbol:"LQD",name:"LQD",category:"income",m7_score:7.2,ret_1d:.1,ret_2d:.2,ret_1w:.5,ret_2w:.7,m2_util:.1,amt_signal:.5,max_addable_amt:20000,allow_fcn:true},{symbol:"SMH",name:"SMH",category:"defensive",m7_score:8,ret_1d:1,ret_2d:1,ret_1w:3,ret_2w:2,m2_util:.2,amt_signal:.7,max_addable_amt:30000,allow_fcn:true},{symbol:"QQQ",name:"QQQ",category:"defensive",m7_score:7.5,ret_1d:.8,ret_2d:1,ret_1w:2,ret_2w:2,m2_util:.2,amt_signal:.6,max_addable_amt:20000,allow_fcn:true}];}
 
+
+async function runV3Optimizer({filterResult, marketHistory, currentPool}){
+  if(!window.MMFCNSmartBasketOptimizerV3 || typeof window.MMFCNSmartBasketOptimizerV3.optimize !== "function"){
+    return {
+      error: true,
+      message: "MMFCNSmartBasketOptimizerV3 not loaded. 請確認 js/mm/modules/mm_fcn_smart_basket_optimizer_v3.js 已上傳且路徑正確。",
+      runs: [],
+      by_target: {},
+      summary: { total_runs: 0, best_overall: null, target_status: {} }
+    };
+  }
+
+  return await window.MMFCNSmartBasketOptimizerV3.optimize({
+    filterResult,
+    marketHistory,
+    currentPool,
+    targets: ["conservative", "rational", "aggressive", "speculative"],
+    m8Runner: async ({caseName, symbols, KI, Strike, T, type, marketYield}) => {
+      return await runM8Case({caseName, symbols, KI, Strike, T, type, marketYield});
+    },
+    options: {
+      max_candidate_baskets: 8,
+      max_combinations_per_size: 24,
+      highlight_top_n: 8,
+      watch_top_n: 8,
+      simulation_top_n: 8,
+      reject_top_n: 5
+    }
+  });
+}
 
 async function runV2Classification({filterResult, smartResult, marketHistory}){
   const marketRecords = await buildMarketClassificationRecords({marketHistory, filterResult});
@@ -604,14 +664,86 @@ async function runM8FairForClassification(caseName, symbols, structure){
   }
 }
 
-function renderAll({filterResult, smartResult, v2Result}){ renderSummary(filterResult.summary, smartResult); renderSmart(smartResult); renderV2(v2Result); renderPools(filterResult.pools); renderCategories(filterResult.summary.category, filterResult.category_map); setupTable(filterResult); document.getElementById("debug").textContent = JSON.stringify({filterResult, smartResult, v2Result}, null, 2); }
-function renderSummary(s, smart){ const cards = [["Input Stocks",s.total_stocks],["Highlight",s.pools.highlight],["Watch",s.pools.watch],["Simulation",s.pools.simulation],["Smart Runs",smart.runs.length],["Best Yield",fmt(smart.summary.best_fair_yield)+"%"],["Suggest",money(smart.summary.suggested_today_amount_usd)]]; document.getElementById("summary").innerHTML = cards.map(([t,v])=>`<div class="card"><div class="kpi-title">${t}</div><div class="kpi-value">${v}</div></div>`).join(""); }
+function renderAll({filterResult, smartResult, v2Result, v3Result}){ renderSummary(filterResult.summary, smartResult, v3Result); renderSmart(smartResult); renderV2(v2Result); renderOptimizer(v3Result); renderPools(filterResult.pools); renderCategories(filterResult.summary.category, filterResult.category_map); setupTable(filterResult); document.getElementById("debug").textContent = JSON.stringify({filterResult, smartResult, v2Result, v3Result}, null, 2); }
+function renderSummary(s, smart, v3){ const cards = [["Input Stocks",s.total_stocks],["Highlight",s.pools.highlight],["Watch",s.pools.watch],["Simulation",s.pools.simulation],["Smart Runs",smart.runs.length],["V3 Runs",v3?.summary?.total_runs ?? 0],["Best Yield",fmt(smart.summary.best_fair_yield)+"%"],["Suggest",money(smart.summary.suggested_today_amount_usd)]]; document.getElementById("summary").innerHTML = cards.map(([t,v])=>`<div class="card"><div class="kpi-title">${t}</div><div class="kpi-value">${v}</div></div>`).join(""); }
 function renderSmart(smart){
   const best = smart.best;
   document.getElementById("smart-summary").innerHTML = `<div class="card ${best?.evaluation?.result==='PASS'?'result-pass':'result-warn'}"><h3>Best Decision</h3><div class="kpi-value">${best?.template_label || "--"}</div><p>${smart.summary.recommended_action}</p><div>Suggested Today：<b>${money(smart.summary.suggested_today_amount_usd)}</b></div><div>Best Fair Yield：<b>${fmt(smart.summary.best_fair_yield)}%</b></div></div><div class="card"><h3>Market Status</h3><div>Market Style：<span class="badge info">${smart.market_intelligence.market_style}</span></div><div>AI Appetite：${smart.market_intelligence.ai_appetite}</div><div>Avg Market Coupon：${fmt(smart.market_intelligence.avg_market_coupon)}%</div><div>Best Yield Area：${smart.market_intelligence.best_yield_area}</div><div class="small">${(smart.market_intelligence.observations||[]).slice(0,5).map(x=>`• ${x}`).join("<br>")}</div></div>`;
   document.getElementById("smart-runs").innerHTML = smart.runs.map(renderRunCard).join("");
   const topSymbols = Object.entries(smart.market_intelligence.symbol_stats || {}).sort((a,b)=>b[1].count-a[1].count).slice(0,10);
   document.getElementById("market-intel").innerHTML = `<div class="card"><h3>Market Top Symbols</h3>${topSymbols.map(([s,v])=>`<div class="stock-line"><div class="stock-main"><span>${s}</span><span>${v.count}x</span></div><div class="stock-sub">avg coupon ${fmt(v.avg_coupon)}%</div></div>`).join("") || "<div class='small'>No history</div>"}</div><div class="card"><h3>Basket Type Frequency</h3>${Object.entries(smart.market_intelligence.basket_stats||{}).map(([k,v])=>`<div class="stock-line"><div class="stock-main"><span>${k}</span><span>${v}</span></div></div>`).join("") || "<div class='small'>No history</div>"}</div>`;
+}
+
+
+function renderOptimizer(v3){
+  const summaryEl = document.getElementById("optimizer-summary");
+  const targetsEl = document.getElementById("optimizer-targets");
+  const runsEl = document.getElementById("optimizer-runs");
+  if(!summaryEl || !targetsEl || !runsEl) return;
+
+  if(!v3 || v3.error){
+    summaryEl.innerHTML = `<div class="error"><b>Optimizer v3 載入失敗：</b>${escapeHtml(v3?.message || "No v3 result")}</div>`;
+    targetsEl.innerHTML = "";
+    runsEl.innerHTML = "";
+    return;
+  }
+
+  const best = v3.summary?.best_overall;
+  summaryEl.innerHTML = `<div class="optimizer-card ${best ? 'result-pass' : 'result-warn'}">
+    <h3>Optimizer Best Overall</h3>
+    <div class="kpi-value">${best?.target_label || "--"}</div>
+    <div class="optimizer-symbols">${(best?.symbols || []).join(" / ") || "-"}</div>
+    <div>Fair Yield：<b>${pct(best?.fair_yield)}</b></div>
+    <div>Structure：${renderStructureText(best?.structure)}</div>
+    <div>Risk：${best?.risk?.structure_risk_zh || best?.risk?.structure_risk || "-"}｜${best?.risk?.time_label || "-"}</div>
+    <div class="optimizer-note">${best?.note || "v3 會找同池內最低風險達標解，而不是只找最高 coupon。"}</div>
+  </div>
+  <div class="optimizer-card">
+    <h3>Optimizer Summary</h3>
+    <div>Total Runs：<b>${v3.summary?.total_runs || 0}</b></div>
+    <div>Mode：Target-driven / Risk-minimized</div>
+    <div class="small">保守池 10~15%、合理池 15~18.99%、積極池 19%+、投機池只允許 Low / Medium-Low 且短天期。</div>
+  </div>`;
+
+  const status = v3.summary?.target_status || {};
+  targetsEl.innerHTML = Object.entries(status).map(([key, row])=>{
+    const bq = row.best_qualified;
+    const hy = row.high_yield_candidate;
+    return `<div class="optimizer-card">
+      <h3>${row.label || key}</h3>
+      <div class="small">Best Qualified</div>
+      <div class="optimizer-symbols">${(bq?.symbols || []).join(" / ") || "-"}</div>
+      <div>Fair：<b>${pct(bq?.fair_yield)}</b></div>
+      <div>Risk：${bq?.structure_risk || "-"}｜${bq?.time_label || "-"}</div>
+      <hr style="border-color:var(--line)">
+      <div class="small">High Yield Candidate</div>
+      <div class="optimizer-symbols">${(hy?.symbols || []).join(" / ") || "-"}</div>
+      <div>Fair：<b>${pct(hy?.fair_yield)}</b></div>
+      <div>Risk：${hy?.structure_risk || "-"}｜${hy?.time_label || "-"}</div>
+    </div>`;
+  }).join("");
+
+  runsEl.innerHTML = (v3.runs || []).slice(0, 9).map((r, idx)=>renderOptimizerRunCard(r, idx)).join("") || `<div class="note">目前沒有 v3 optimizer runs。</div>`;
+}
+
+function renderOptimizerRunCard(r, idx){
+  const cls = r.evaluation?.decision === "BEST_QUALIFIED" ? "result-pass" : r.evaluation?.decision === "HIGH_YIELD_CANDIDATE" ? "result-warn" : r.evaluation?.decision === "INVALID" ? "result-fail" : "";
+  return `<div class="optimizer-card ${cls}">
+    <div class="optimizer-rank">#${idx+1}｜${r.evaluation?.decision || "REVIEW"}｜Score ${fmt(r.evaluation?.score)}</div>
+    <h3>${r.target_label || r.target_key}</h3>
+    <div class="optimizer-symbols">${(r.symbols || []).join(" / ")}</div>
+    <div>Fair Yield：<b>${pct(r.fair_yield)}</b>｜Market ${pct(r.market_coupon)}</div>
+    <div>Delta：${pct(r.evaluation?.delta_pct)}</div>
+    <div>Structure：${renderStructureText(r.structure)}</div>
+    <div>Pool：${r.risk?.basket_pool || "-"}｜Risk ${r.risk?.structure_risk_zh || r.risk?.structure_risk || "-"}｜${r.risk?.time_label || "-"}</div>
+    <div>Validity：<b>${r.risk?.validity || "-"}</b>｜Overlap ${(r.portfolio_overlap || []).join("/") || "-"}</div>
+    <div class="optimizer-note">${r.evaluation?.note || ""}</div>
+  </div>`;
+}
+
+function renderStructureText(st){
+  if(!st) return "-";
+  return `${st.type || "AKI"}｜KI ${fmt(st.KI)}%｜Strike ${fmt(st.Strike)}%｜${fmt(st.T)}M`;
 }
 
 function renderV2(v2){
