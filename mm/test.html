@@ -98,7 +98,7 @@
 
   <details class="section">
     <summary>4. Legacy Basket / Allocation / Market Match（已停用）</summary>
-    <div class="section-body"><div class="note">本頁已改用 MM FCN Simulating & Allocating Engine v2。mm_filter 的 legacy basket、allocation、market match 已由 options 停用，避免和智慧組單結果重複或衝突。</div></div>
+    <div class="section-body"><div class="note">本頁已改用 MM FCN Simulating & Allocating Engine v1。mm_filter 的 legacy basket、allocation、market match 已由 options 停用，避免和智慧組單結果重複或衝突。</div></div>
   </details>
 
   <details class="section">
@@ -125,7 +125,7 @@
   </details>
 </div>
 
-<script src="./js/mm/modules/mm_fcn_simulating_allocating_engine_v2_1.js"></script>
+<script src="./js/mm/modules/mm_fcn_simulating_allocating_engine_v2.js"></script>
 <script type="module">
 import { runMMFilterFull } from "./js/mm/modules/mm_filter.js";
 import { runM8Case } from "./js/core/m8_batch_engine.js";
@@ -384,93 +384,11 @@ function mockStocks(){return [{symbol:"NVDA",name:"NVIDIA",category:"core",m7_sc
 
 
 async function runV2Classification({filterResult, smartResult, marketHistory}){
-  if(!window.MMFCNEngineV2){
-    throw new Error("MMFCNEngineV2 not loaded. 請確認 js/mm/modules/mm_fcn_simulating_allocating_engine_v2_1.js 已上傳且路徑正確。");
-  }
-
-  const marketRawRecords = await buildMarketClassificationRecords({marketHistory, filterResult});
-  const marketResult = window.MMFCNEngineV2.processMarketRecords(marketRawRecords, { filterResult });
-  const simulationResult = window.MMFCNEngineV2.processSimulationRuns(smartResult?.runs || [], { filterResult });
-
-  const marketRecords = marketResult.records || [];
-  const simulationRecords = simulationResult.records || [];
+  const marketRecords = await buildMarketClassificationRecords({marketHistory, filterResult});
+  const simulationRecords = buildSimulationClassificationRecords({smartResult});
   const allRecords = [...marketRecords, ...simulationRecords];
-  const allStats = window.MMFCNEngineV2.buildSegmentStats(allRecords);
-  const appleToApple = buildAppleToAppleRows(marketRecords);
-
-  return {
-    marketRawRecords,
-    marketRecords,
-    simulationRecords,
-    allRecords,
-    records: allRecords,
-    market_stats: marketResult.stats || {},
-    simulation_stats: simulationResult.stats || {},
-    stats: marketResult.stats || {},
-    all_stats: allStats,
-    apple_to_apple: appleToApple
-  };
-}
-
-function buildAppleToAppleRows(records = []){
-  const groups = new Map();
-  records.forEach(r=>{
-    const key = [r.final_label, r.basket_style, r.structure_adj, tenorBucket(r.tenor), r.barrier_type || r.type || "AKI"].join("|");
-    if(!groups.has(key)) groups.set(key, []);
-    groups.get(key).push(r);
-  });
-  return [...groups.entries()].map(([key, rows])=>{
-    const [final_label, basket_style, structure_adj, tenor_bucket, barrier_type] = key.split("|");
-    const market = rows.map(r=>Number(r.market_coupon)).filter(Number.isFinite);
-    const fair = rows.map(r=>Number(r.fair_yield)).filter(Number.isFinite);
-    const delta = rows.map(r=>Number(r.delta_pct)).filter(Number.isFinite);
-    const deltaMean = avgNum(delta);
-    return {
-      final_label,
-      basket_style,
-      structure_adj,
-      tenor_bucket,
-      barrier_type,
-      count: rows.length,
-      market_mean: avgNum(market),
-      fair_mean: avgNum(fair),
-      delta_mean: deltaMean,
-      delta_cv: cvNum(delta),
-      regime: classifyDeltaRegime(deltaMean)
-    };
-  }).sort((a,b)=>b.count-a.count || String(a.final_label).localeCompare(String(b.final_label), "zh-Hant"));
-}
-
-function tenorBucket(t){
-  const x = Number(t);
-  if(!Number.isFinite(x)) return "unknown";
-  if(x <= 6) return "3~6M";
-  if(x <= 9) return "6~9M";
-  if(x <= 12) return "9~12M";
-  return "12M+";
-}
-
-function avgNum(arr){
-  const a = (arr || []).map(Number).filter(Number.isFinite);
-  return a.length ? a.reduce((s,x)=>s+x,0)/a.length : null;
-}
-
-function cvNum(arr){
-  const a = (arr || []).map(Number).filter(Number.isFinite);
-  const m = avgNum(a);
-  if(!a.length || !m) return null;
-  const variance = a.reduce((s,x)=>s+Math.pow(x-m,2),0)/a.length;
-  return Math.sqrt(variance)/Math.abs(m);
-}
-
-function classifyDeltaRegime(delta){
-  const d = Number(delta);
-  if(!Number.isFinite(d)) return "unknown";
-  if(d > 15) return "crazy_risk_on";
-  if(d > 5) return "risk_on";
-  if(d >= -5) return "fair";
-  if(d >= -15) return "tight";
-  return "very_tight";
+  const result = await window.MMFCNSimAllocEngine.process(allRecords);
+  return { marketRecords, simulationRecords, allRecords, ...output };
 }
 
 async function buildMarketClassificationRecords({marketHistory, filterResult}){
@@ -599,7 +517,7 @@ function renderV2(v2){
 
 function renderFinalLabelCards(stats){
   const labels = window.MMFCNEngineV2.FINAL_LABELS || Object.keys(stats);
-  const defs = window.MMFCNEngineV2.FINAL_LABEL_DEFINITIONS || window.MMFCNEngineV2.LABEL_DEFINITIONS || {};
+  const defs = window.MMFCNEngineV2.LABEL_DEFINITIONS || {};
   document.getElementById("final-label-cards").innerHTML = labels.map(label=>{
     const s = stats[label] || {};
     const cls = label === "保守單" ? "label-conservative"
@@ -609,28 +527,28 @@ function renderFinalLabelCards(stats){
       : label === "積極單" ? "label-aggressive" : "label-reject";
     const definition = s.definition || defs[label] || "";
     const bestRateRow = label === "保守單"
-      ? `<div class="seg-row"><span>Best Market Rate</span><b>${pct(firstDefined(s.best_market_rate, s.market_best))}</b></div>`
+      ? `<div class="seg-row"><span>Best Market Rate</span><b>${pct(s.market_best)}</b></div>`
       : "";
     return `<div class="segment-card ${cls}">
       <h4>${label}</h4>
       <div class="seg-def">${definition}</div>
       <div class="seg-main">${s.count || 0}</div>
-      <div class="seg-row"><span>Top</span><b>${formatTopSymbols(s.top_symbols)}</b></div>
+      <div class="seg-row"><span>Top</span><b>${(s.top_symbols||[]).join(" / ") || "-"}</b></div>
       ${bestRateRow}
-      <div class="seg-row"><span>Market Rate Mean</span><b>${pct(firstDefined(s.market_rate_mean, s.market_mean))}</b></div>
-      <div class="seg-row"><span>Market Rate CV</span><b>${fmtNullable(firstDefined(s.market_rate_cv, s.coupon_cv))}</b></div>
-      <div class="seg-row"><span>Fair Rate Mean</span><b>${pct(firstDefined(s.fair_rate_mean, s.fair_mean))}</b></div>
-      <div class="seg-row"><span>Delta vs Fair</span><b>${pct(firstDefined(s.delta_mean_pct, s.delta_mean))}</b></div>
+      <div class="seg-row"><span>Market Rate Mean</span><b>${pct(s.market_mean)}</b></div>
+      <div class="seg-row"><span>Market Rate CV</span><b>${fmtNullable(s.coupon_cv)}</b></div>
+      <div class="seg-row"><span>Fair Rate Mean</span><b>${pct(s.fair_mean)}</b></div>
+      <div class="seg-row"><span>Delta vs Fair</span><b>${pct(s.delta_mean)}</b></div>
       <details class="seg-details">
         <summary>一鍵展開：Strike / KI / Period mean & CV</summary>
         <div class="seg-mini-table">
           <div class="seg-mini-head"><span>Item</span><span>Mean</span><span>CV</span></div>
           <div class="seg-mini-row"><span>Strike</span><span>${fmtNullable(s.strike_mean)}</span><span>${fmtNullable(s.strike_cv)}</span></div>
           <div class="seg-mini-row"><span>KI</span><span>${fmtNullable(s.ki_mean)}</span><span>${fmtNullable(s.ki_cv)}</span></div>
-          <div class="seg-mini-row"><span>Period</span><span>${fmtNullable(firstDefined(s.period_mean, s.tenor_mean))}M</span><span>${fmtNullable(firstDefined(s.period_cv, s.tenor_cv))}</span></div>
-          <div class="seg-mini-row"><span>Market Rate</span><span>${pct(firstDefined(s.market_rate_mean, s.market_mean))}</span><span>${fmtNullable(firstDefined(s.market_rate_cv, s.coupon_cv))}</span></div>
-          <div class="seg-mini-row"><span>Fair Rate</span><span>${pct(firstDefined(s.fair_rate_mean, s.fair_mean))}</span><span>${fmtNullable(s.fair_rate_cv)}</span></div>
-          <div class="seg-mini-row"><span>Delta</span><span>${pct(firstDefined(s.delta_mean_pct, s.delta_mean))}</span><span>${fmtNullable(s.delta_cv_pct)}</span></div>
+          <div class="seg-mini-row"><span>Period</span><span>${fmtNullable(s.tenor_mean)}M</span><span>${fmtNullable(s.tenor_cv)}</span></div>
+          <div class="seg-mini-row"><span>Market Rate</span><span>${pct(s.market_mean)}</span><span>${fmtNullable(s.coupon_cv)}</span></div>
+          <div class="seg-mini-row"><span>Fair Rate</span><span>${pct(s.fair_mean)}</span><span>-</span></div>
+          <div class="seg-mini-row"><span>Delta</span><span>${pct(s.delta_mean)}</span><span>-</span></div>
         </div>
       </details>
     </div>`;
@@ -642,7 +560,7 @@ function renderClassificationTable(id, rows){
     <th>Source</th><th>ID</th><th>Symbols</th><th>H/W/S</th><th>Basket Style</th><th>Worst-of</th><th>Adj</th><th>Final Label</th><th>Market</th><th>Fair(M8)</th><th>Delta</th><th>Definition</th>
   </tr>${(rows||[]).map(r=>`<tr>
     <td>${r.source_type}</td><td>${r.id}</td><td>${(r.symbols||[]).join("/")}</td><td>${r.highlight_count}/${r.watch_count}/${r.simulation_count}</td>
-    <td>${r.basket_style}</td><td>${r.worst_of || r.worst_of_quality}</td><td>${r.structure_adj}</td><td><b>${r.final_label}</b></td>
+    <td>${r.basket_style}</td><td>${r.worst_of_quality}</td><td>${r.structure_adj}</td><td><b>${r.final_label}</b></td>
     <td>${pct(r.market_coupon)}</td><td>${pct(r.fair_yield)}</td><td>${pct(r.delta_pct)}</td><td>${r.definition || ""}</td>
   </tr>`).join("")}`;
 }
@@ -662,17 +580,6 @@ function renderPool(id, list){ const el=document.getElementById(id); if(!list.le
 function stockLine(s){ return `<div class="stock-line"><div class="stock-main"><span>${s.symbol}</span><span>${money(s.max_addable_amt)}</span></div><div class="stock-sub">M7 Score ${fmt(s.m7_score)} ｜ M6 ${fmt(s.m6_market_attractive_score)} ｜ vol ${fmt(s.vol_score)} <span class="badge ${s.vol_band}">${s.vol_band}</span> ｜ M2 ${fmt((s.m2_util||0)*100)}%</div></div>`; }
 function renderCategories(catSummary, catMap){ document.getElementById("category").innerHTML=Object.keys(catMap).map(cat=>{const summary=catSummary[cat]||{};const rows=(catMap[cat]||[]).slice(0,5);return `<div class="card"><h3>${cat.toUpperCase()} (${summary.count||0})</h3><div class="small">M6 mean ${fmt(summary.mean_m6_market)} ｜ std ${fmt(summary.std_m6_market)} ｜ CV ${fmt(summary.cv_m6_market)}</div><div class="small">avg vol ${fmt(summary.avg_vol)} ｜ cap ${money(summary.total_max_addable||0)}</div><hr style="border-color:var(--line)">${rows.length?rows.map(stockLine).join(""):`<div class="small">無</div>`}</div>`;}).join(""); }
 function setupTable(res){ const allRows=[]; Object.entries(res.pools).forEach(([pool,rows])=>rows.forEach(r=>allRows.push({...r,pool}))); const render=()=>{const q=document.getElementById("search").value.trim().toUpperCase(),p=document.getElementById("filterPool").value,v=document.getElementById("filterVol").value,c=document.getElementById("filterCat").value; const rows=allRows.filter(r=>(!q||r.symbol.includes(q))&&(!p||r.pool===p)&&(!v||r.vol_band===v)&&(!c||r.category===c)); document.getElementById("stockTable").innerHTML=`<tr><th>Pool</th><th>Symbol</th><th>Category</th><th>M7 Score</th><th>M6</th><th>Vol</th><th>Band</th><th>M2</th><th>Stock Amt</th><th>Reason</th></tr>${rows.map(r=>`<tr><td>${r.pool}</td><td><b>${r.symbol}</b></td><td>${r.category}</td><td>${fmt(r.m7_score)}</td><td>${fmt(r.m6_market_attractive_score)}</td><td>${fmt(r.vol_score)}</td><td><span class="badge ${r.vol_band}">${r.vol_band}</span></td><td>${fmt((r.m2_util||0)*100)}%</td><td>${money(r.max_addable_amt)}</td><td>${[...(r.why_yes||[]),...(r.why_not||[]),...(r.reject_reasons||[])].join(" / ")}</td></tr>`).join("")}`;}; ["search","filterPool","filterVol","filterCat"].forEach(id=>document.getElementById(id).addEventListener("input",render)); render(); }
-function firstDefined(...values){
-  for(const v of values){
-    if(v !== undefined && v !== null && !(typeof v === "number" && Number.isNaN(v))) return v;
-  }
-  return null;
-}
-function formatTopSymbols(top){
-  const arr = Array.isArray(top) ? top : [];
-  if(!arr.length) return "-";
-  return arr.map(x => typeof x === "string" ? x : x.symbol).filter(Boolean).join(" / ") || "-";
-}
 function money(v){ const x=Number(v); if(!Number.isFinite(x)) return "-"; return "USD "+Math.round(x).toLocaleString(); }
 function fmt(v){ const x=Number(v); return Number.isFinite(x)?x.toFixed(2):"-"; }
 function fmtNullable(v){ const x=Number(v); return Number.isFinite(x)?x.toFixed(2):"-"; }
