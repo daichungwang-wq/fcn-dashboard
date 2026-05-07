@@ -98,7 +98,7 @@
 
   <details class="section">
     <summary>4. Legacy Basket / Allocation / Market Match（已停用）</summary>
-    <div class="section-body"><div class="note">本頁已改用 MM FCN Simulating & Allocating Engine v1。mm_filter 的 legacy basket、allocation、market match 已由 options 停用，避免和智慧組單結果重複或衝突。</div></div>
+    <div class="section-body"><div class="note">本頁已改用 MM FCN Simulating & Allocating Engine v2。mm_filter 的 legacy basket、allocation、market match 已由 options 停用，避免和智慧組單結果重複或衝突。</div></div>
   </details>
 
   <details class="section">
@@ -125,7 +125,7 @@
   </details>
 </div>
 
-<script src="./js/mm/modules/mm_fcn_simulating_allocating_engine_v2.js"></script>
+<script src="./js/mm/modules/mm_fcn_simulating_allocating_engine_v2.js?v=20260507_2"></script>
 <script type="module">
 import { runMMFilterFull } from "./js/mm/modules/mm_filter.js";
 import { runM8Case } from "./js/core/m8_batch_engine.js";
@@ -387,12 +387,82 @@ async function runV2Classification({filterResult, smartResult, marketHistory}){
   const marketRecords = await buildMarketClassificationRecords({marketHistory, filterResult});
   const simulationRecords = buildSimulationClassificationRecords({smartResult});
   const allRecords = [...marketRecords, ...simulationRecords];
- const v2Result = window.MMFCNEngineV2.processMarketRecords(
-  marketRecords,
-  {
-    filterResult
+
+  if(!window.MMFCNEngineV2 || typeof window.MMFCNEngineV2.processMarketRecords !== "function"){
+    throw new Error("MMFCNEngineV2 not loaded or processMarketRecords missing. 請確認 js/mm/modules/mm_fcn_simulating_allocating_engine_v2.js 已上傳且路徑正確。");
   }
-);
+
+  const processed = window.MMFCNEngineV2.processMarketRecords(allRecords, {
+    filterResult,
+    render_options: { showDetailsDefault: false }
+  });
+
+  return {
+    ...processed,
+    marketRecords,
+    simulationRecords,
+    allRecords,
+    apple_to_apple: buildAppleToAppleRows(processed.records || [])
+  };
+}
+
+function buildAppleToAppleRows(records){
+  const groups = {};
+  (records || []).forEach(r=>{
+    const key = [
+      r.final_label || "未分類",
+      r.basket_style || "unknown",
+      r.structure_adj || "unknown",
+      tenorBucket(r.tenor),
+      r.barrier_type || r.type || "AKI"
+    ].join("__");
+    if(!groups[key]) groups[key] = [];
+    groups[key].push(r);
+  });
+  return Object.values(groups).map(rows=>{
+    const first = rows[0] || {};
+    const marketArr = rows.map(r=>Number(r.market_coupon)).filter(Number.isFinite);
+    const fairArr = rows.map(r=>Number(r.fair_yield)).filter(Number.isFinite);
+    const deltaArr = rows.map(r=>Number(r.delta_pct)).filter(Number.isFinite);
+    const marketMean = avgLocal(marketArr);
+    const fairMean = avgLocal(fairArr);
+    const deltaMean = avgLocal(deltaArr);
+    return {
+      final_label: first.final_label || "未分類",
+      basket_style: first.basket_style || "unknown",
+      structure_adj: first.structure_adj || "unknown",
+      tenor_bucket: tenorBucket(first.tenor),
+      barrier_type: first.barrier_type || first.type || "AKI",
+      count: rows.length,
+      market_mean: marketMean,
+      fair_mean: fairMean,
+      delta_mean: deltaMean,
+      delta_cv: cvLocal(deltaArr),
+      regime: classifyRegimeLocal(deltaMean)
+    };
+  }).sort((a,b)=>String(a.final_label).localeCompare(String(b.final_label), "zh-Hant") || b.count-a.count);
+}
+
+function tenorBucket(t){
+  const x = Number(t);
+  if(!Number.isFinite(x)) return "unknown";
+  if(x <= 6) return "<=6M";
+  if(x <= 9) return "6~9M";
+  if(x <= 12) return "9~12M";
+  return ">12M";
+}
+function avgLocal(arr){ return arr.length ? arr.reduce((a,b)=>a+b,0)/arr.length : null; }
+function stdLocal(arr){ const m=avgLocal(arr); if(arr.length<=1 || m===null) return 0; return Math.sqrt(arr.reduce((s,x)=>s+Math.pow(x-m,2),0)/arr.length); }
+function cvLocal(arr){ const m=avgLocal(arr); if(!m) return null; return stdLocal(arr)/Math.abs(m); }
+function classifyRegimeLocal(delta){
+  const d=Number(delta);
+  if(!Number.isFinite(d)) return "unknown";
+  if(d>15) return "crazy_risk_on";
+  if(d>5) return "risk_on";
+  if(d>=-5) return "fair";
+  if(d>=-15) return "tight";
+  return "very_tight";
+}
 
 async function buildMarketClassificationRecords({marketHistory, filterResult}){
   const records = marketHistory?.records || [];
@@ -519,8 +589,8 @@ function renderV2(v2){
 }
 
 function renderFinalLabelCards(stats){
-  const labels = window.MMFCNEngineV2.FINAL_LABELS || Object.keys(stats);
-  const defs = window.MMFCNEngineV2.LABEL_DEFINITIONS || {};
+  const labels = window.MMFCNEngineV2?.FINAL_LABELS || Object.keys(stats || {});
+  const defs = window.MMFCNEngineV2?.FINAL_LABEL_DEFINITIONS || window.MMFCNEngineV2?.LABEL_DEFINITIONS || {};
   document.getElementById("final-label-cards").innerHTML = labels.map(label=>{
     const s = stats[label] || {};
     const cls = label === "保守單" ? "label-conservative"
@@ -529,33 +599,53 @@ function renderFinalLabelCards(stats){
       : label === "高風險合理單" ? "label-rational-risk"
       : label === "積極單" ? "label-aggressive" : "label-reject";
     const definition = s.definition || defs[label] || "";
+    const topSymbols = (s.top_symbols || []).map(x => typeof x === "string" ? x : x.symbol).filter(Boolean);
+    const marketMean = firstNum([s.market_mean, s.market_rate_mean]);
+    const marketCv = firstNum([s.coupon_cv, s.market_rate_cv]);
+    const fairMean = firstNum([s.fair_mean, s.fair_rate_mean]);
+    const deltaMean = firstNum([s.delta_mean, s.delta_mean_pct]);
+    const strikeMean = firstNum([s.strike_mean]);
+    const strikeCv = firstNum([s.strike_cv]);
+    const kiMean = firstNum([s.ki_mean]);
+    const kiCv = firstNum([s.ki_cv]);
+    const periodMean = firstNum([s.tenor_mean, s.period_mean]);
+    const periodCv = firstNum([s.tenor_cv, s.period_cv]);
+    const bestMarket = firstNum([s.market_best, s.best_market_rate]);
     const bestRateRow = label === "保守單"
-      ? `<div class="seg-row"><span>Best Market Rate</span><b>${pct(s.market_best)}</b></div>`
+      ? `<div class="seg-row"><span>Best Market Rate</span><b>${pct(bestMarket)}</b></div>`
       : "";
     return `<div class="segment-card ${cls}">
       <h4>${label}</h4>
       <div class="seg-def">${definition}</div>
       <div class="seg-main">${s.count || 0}</div>
-      <div class="seg-row"><span>Top</span><b>${(s.top_symbols||[]).join(" / ") || "-"}</b></div>
+      <div class="seg-row"><span>Top</span><b>${topSymbols.join(" / ") || "-"}</b></div>
       ${bestRateRow}
-      <div class="seg-row"><span>Market Rate Mean</span><b>${pct(s.market_mean)}</b></div>
-      <div class="seg-row"><span>Market Rate CV</span><b>${fmtNullable(s.coupon_cv)}</b></div>
-      <div class="seg-row"><span>Fair Rate Mean</span><b>${pct(s.fair_mean)}</b></div>
-      <div class="seg-row"><span>Delta vs Fair</span><b>${pct(s.delta_mean)}</b></div>
+      <div class="seg-row"><span>Market Rate Mean</span><b>${pct(marketMean)}</b></div>
+      <div class="seg-row"><span>Market Rate CV</span><b>${fmtNullable(marketCv)}</b></div>
+      <div class="seg-row"><span>Fair Rate Mean</span><b>${pct(fairMean)}</b></div>
+      <div class="seg-row"><span>Delta vs Fair</span><b>${pct(deltaMean)}</b></div>
       <details class="seg-details">
         <summary>一鍵展開：Strike / KI / Period mean & CV</summary>
         <div class="seg-mini-table">
           <div class="seg-mini-head"><span>Item</span><span>Mean</span><span>CV</span></div>
-          <div class="seg-mini-row"><span>Strike</span><span>${fmtNullable(s.strike_mean)}</span><span>${fmtNullable(s.strike_cv)}</span></div>
-          <div class="seg-mini-row"><span>KI</span><span>${fmtNullable(s.ki_mean)}</span><span>${fmtNullable(s.ki_cv)}</span></div>
-          <div class="seg-mini-row"><span>Period</span><span>${fmtNullable(s.tenor_mean)}M</span><span>${fmtNullable(s.tenor_cv)}</span></div>
-          <div class="seg-mini-row"><span>Market Rate</span><span>${pct(s.market_mean)}</span><span>${fmtNullable(s.coupon_cv)}</span></div>
-          <div class="seg-mini-row"><span>Fair Rate</span><span>${pct(s.fair_mean)}</span><span>-</span></div>
-          <div class="seg-mini-row"><span>Delta</span><span>${pct(s.delta_mean)}</span><span>-</span></div>
+          <div class="seg-mini-row"><span>Strike</span><span>${fmtNullable(strikeMean)}</span><span>${fmtNullable(strikeCv)}</span></div>
+          <div class="seg-mini-row"><span>KI</span><span>${fmtNullable(kiMean)}</span><span>${fmtNullable(kiCv)}</span></div>
+          <div class="seg-mini-row"><span>Period</span><span>${fmtNullable(periodMean)}M</span><span>${fmtNullable(periodCv)}</span></div>
+          <div class="seg-mini-row"><span>Market Rate</span><span>${pct(marketMean)}</span><span>${fmtNullable(marketCv)}</span></div>
+          <div class="seg-mini-row"><span>Fair Rate</span><span>${pct(fairMean)}</span><span>-</span></div>
+          <div class="seg-mini-row"><span>Delta</span><span>${pct(deltaMean)}</span><span>-</span></div>
         </div>
       </details>
     </div>`;
   }).join("");
+}
+
+function firstNum(values){
+  for(const v of values || []){
+    const x = Number(v);
+    if(Number.isFinite(x)) return x;
+  }
+  return null;
 }
 
 function renderClassificationTable(id, rows){
@@ -563,7 +653,7 @@ function renderClassificationTable(id, rows){
     <th>Source</th><th>ID</th><th>Symbols</th><th>H/W/S</th><th>Basket Style</th><th>Worst-of</th><th>Adj</th><th>Final Label</th><th>Market</th><th>Fair(M8)</th><th>Delta</th><th>Definition</th>
   </tr>${(rows||[]).map(r=>`<tr>
     <td>${r.source_type}</td><td>${r.id}</td><td>${(r.symbols||[]).join("/")}</td><td>${r.highlight_count}/${r.watch_count}/${r.simulation_count}</td>
-    <td>${r.basket_style}</td><td>${r.worst_of_quality}</td><td>${r.structure_adj}</td><td><b>${r.final_label}</b></td>
+    <td>${r.basket_style}</td><td>${r.worst_of_quality || r.worst_of || "-"}</td><td>${r.structure_adj}</td><td><b>${r.final_label}</b></td>
     <td>${pct(r.market_coupon)}</td><td>${pct(r.fair_yield)}</td><td>${pct(r.delta_pct)}</td><td>${r.definition || ""}</td>
   </tr>`).join("")}`;
 }
@@ -592,5 +682,3 @@ main();
 </script>
 </body>
 </html>
-
-
