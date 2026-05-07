@@ -1,5 +1,5 @@
 // ==========================================
-// MM FILTER ENGINE v3.7 FULL MODULE (M7 gate + C1 Decision Output + M6 Market Attractive ordering)
+// MM FILTER ENGINE v3.9 FULL MODULE (M7 gate + C1 Decision Output + M6 Market Attractive ordering)
 // Path: js/mm/modules/mm_filter.js
 // Purpose: M7 allow FCN -> C1-L1 Decision Output status/amount/strategy -> Category -> M6 Market Attractive ordering -> Basket / Allocation / M8 / Market Match
 // Notes:
@@ -233,7 +233,7 @@ export async function runMMFilterFull(input = {}) {
   const summary = buildSummary({ stocks, pools, category_map, baskets, allocation, market_match });
 
   return {
-    version: "mm_filter_v3_8_legacy_disabled_for_smart_sim",
+    version: "mm_filter_v3_9_m7_5_5_pool_amount_independent",
     generated_at: new Date().toISOString(),
     summary,
     pools,
@@ -1099,7 +1099,7 @@ function classifyPools(stocks, options = {}) {
   const m2RejectCut = num(options.reject_m2_cut, 0.95);
   const amtSignalCut = num(options.highlight_amt_signal_cut, 0.6);
   const m7PassCut = num(options.m7_pass_cut, 6.0);
-  const m7SimulationCut = num(options.m7_simulation_cut, 5.0);
+  const m7SimulationCut = num(options.m7_simulation_cut, 5.5);
   const m7HighlightCut = num(options.m7_highlight_cut, 8.0);
 
   for (const s of stocks) {
@@ -1155,7 +1155,7 @@ function classifyPools(stocks, options = {}) {
     }
 
     // Simulation: ONLY for FCN simulation operation.
-    // Rule: M7 > 5, sorted by M6 market attractive score.
+    // Rule: M7 > 5.5, sorted by M6 market attractive score.
     // This keeps HYBRID and aggressive basket experiments supplied with borderline-but-usable names.
     if (m7Score > m7SimulationCut) {
       pools.simulation.push({
@@ -1164,7 +1164,7 @@ function classifyPools(stocks, options = {}) {
         reject_reasons: [],
         amount_status: amountNote,
         why_not: watchReasons,
-        pool_condition: `Simulation only: FCN simulation operation base pool; M7 score > ${m7SimulationCut}; M6 market attractive sorts order.`,
+        pool_condition: `Simulation only: FCN simulation operation base pool; M7 score > ${m7SimulationCut}; M6 market attractive sorts order. Amount=0 is display-only, not admission control.`,
         c1_decision_source_used: c1Tier !== "unknown"
       });
       continue;
@@ -1186,7 +1186,7 @@ function classifyPools(stocks, options = {}) {
     value: {
       highlight: `M7 score >= ${m7HighlightCut} OR C1 tier=add; amount can be 0 but remains visible.`,
       watch: `M7 score >= ${m7PassCut} but < ${m7HighlightCut}, OR C1 tier=standard/watch.`,
-      simulation: `M7 score > ${m7SimulationCut}; ONLY for FCN simulation operation; sorted by M6 market attractive score.`,
+      simulation: `M7 score > ${m7SimulationCut}; ONLY for FCN simulation operation; sorted by M6 market attractive score. Amount=0 is NOT an admission filter.`,
       reject: `Hard reject only: allow_fcn=false / explicit reject / M7 <= ${m7SimulationCut} / M2 >= ${Math.round(m2RejectCut * 100)}% / extreme vol with high M2. Amount=0 is NOT reject.`
     },
     enumerable: false,
@@ -1200,8 +1200,8 @@ function getRejectReasons(s, { m2RejectCut, m7SimulationCut = 5 }) {
   if (!s.allow_fcn) reasons.push("allow_fcn=false");
   if (s.reject_reason) reasons.push(String(s.reject_reason));
 
-  // v3.7: Simulation pool is M7 > 5.
-  // Therefore M7 <= 5 is the hard reject threshold; 5 < M7 < 6 can enter simulation for FCN tests.
+  // v3.9: Simulation pool is M7 > 5.5.
+  // Therefore M7 <= 5.5 is the hard reject threshold; 5.5 < M7 < 6 can enter simulation for FCN tests.
   if (num(s.m7_score) <= m7SimulationCut) reasons.push(`m7_score<=${m7SimulationCut}`);
 
   if (s.m2_util >= m2RejectCut) reasons.push(`m2_util>=${Math.round(m2RejectCut * 100)}%`);
@@ -1378,8 +1378,8 @@ function buildHybridSimulationGroups(pools = {}, options = {}) {
     const id = i === 0 ? "HYBRID" : `HYBRID_${i + 1}`;
     const stocks = uniqueBySymbol([
       ...pools.highlight.slice(highlightStart, highlightStart + 2),
-      ...pools.simulation.filter(x => x.max_addable_amt > 0).slice(simulationStart, simulationStart + 3),
-      ...pools.watch.filter(x => x.max_addable_amt > 0).slice(watchStart, watchStart + 2)
+      ...pools.simulation.slice(simulationStart, simulationStart + 3),
+      ...pools.watch.slice(watchStart, watchStart + 2)
     ]).slice(0, 5);
 
     groups.push({ id, stocks });
@@ -1420,7 +1420,6 @@ function buildAggressiveMixFromPools(pools = {}) {
 
   const eligible = base.filter(s =>
     s.allow_fcn &&
-    s.max_addable_amt > 0 &&
     s.vol_band !== "extreme"
   );
 
