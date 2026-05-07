@@ -15,6 +15,26 @@
 .app{max-width:1480px;margin:0 auto;padding:24px}.hero{background:linear-gradient(135deg,#10233f,#1d4ed8);border-radius:24px;padding:24px 28px;margin-bottom:20px;box-shadow:0 18px 48px rgba(0,0,0,.35)}
 .hero h1{margin:0 0 8px;font-size:34px}.hero p{margin:0;color:#dbeafe;font-weight:700}.section{background:var(--panel);border:1px solid var(--line);border-radius:18px;margin:18px 0;overflow:hidden}.section summary{cursor:pointer;padding:16px 20px;font-size:20px;font-weight:900;border-bottom:1px solid var(--line)}.section-body{padding:18px}.grid{display:grid;gap:14px}.kpi-grid{grid-template-columns:repeat(7,minmax(120px,1fr))}.pool-grid{grid-template-columns:repeat(4,1fr)}.cat-grid{grid-template-columns:repeat(5,1fr)}.sim-grid{grid-template-columns:1.1fr 1.4fr}.sim-card-grid{grid-template-columns:repeat(3,1fr)}.market-grid{grid-template-columns:repeat(2,1fr)}.card{background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:14px}.card h3{margin:0 0 10px}.kpi-title{font-size:12px;color:var(--muted);font-weight:800}.kpi-value{font-size:24px;font-weight:900;margin-top:6px}.small{font-size:12px;color:var(--muted);line-height:1.55}.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:999px;font-size:12px;font-weight:900;border:1px solid var(--line)}.badge.low,.badge.good,.badge.pass{background:rgba(52,211,153,.12);color:var(--green)}.badge.mid,.badge.warn,.badge.weak{background:rgba(251,191,36,.12);color:var(--yellow)}.badge.high{background:rgba(251,146,60,.12);color:var(--orange)}.badge.extreme,.badge.bad,.badge.fail{background:rgba(248,113,113,.12);color:var(--red)}.badge.info{background:rgba(77,163,255,.12);color:var(--blue)}.badge.purple{background:rgba(167,139,250,.12);color:var(--purple)}
 .stock-line{padding:8px 0;border-bottom:1px dashed var(--line);font-size:13px}.stock-line:last-child{border-bottom:0}.stock-main{display:flex;justify-content:space-between;gap:8px;font-weight:900}.stock-sub{color:var(--muted);font-size:12px;margin-top:4px}.table-wrap{overflow:auto;max-height:560px;border:1px solid var(--line);border-radius:14px}table{width:100%;border-collapse:collapse;background:var(--panel2)}th,td{border-bottom:1px solid var(--line);padding:8px;font-size:12px;text-align:left;white-space:nowrap}th{position:sticky;top:0;background:#111827;z-index:1}.controls{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px}.controls select,.controls input{background:#111827;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:9px 10px}.note{background:#111827;border:1px dashed var(--line);border-radius:14px;padding:12px;color:var(--muted)}.error{background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.5);color:#fecaca;border-radius:14px;padding:12px;margin:12px 0}pre{background:#090b10;border:1px solid var(--line);border-radius:14px;padding:12px;overflow:auto;max-height:520px}.result-pass{border-color:rgba(52,211,153,.7)}.result-fail{border-color:rgba(248,113,113,.7)}.result-warn{border-color:rgba(251,191,36,.7)}
+.segment-grid{display:grid;grid-template-columns:repeat(6,minmax(180px,1fr));gap:12px}
+.segment-card{background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:12px;min-height:210px}
+.segment-card h4{margin:0 0 8px;font-size:16px}
+.segment-card .seg-main{font-size:22px;font-weight:900;margin:4px 0 8px}
+.seg-def{font-size:11px;line-height:1.45;color:var(--muted);background:rgba(255,255,255,.035);border:1px dashed rgba(255,255,255,.08);border-radius:10px;padding:7px;margin:6px 0 8px}
+.seg-row{display:flex;justify-content:space-between;gap:8px;font-size:12px;border-bottom:1px dashed rgba(255,255,255,.08);padding:4px 0;color:var(--muted)}
+.seg-row b{color:var(--text)}
+.seg-mini-table{margin-top:8px;border-top:1px solid var(--line);padding-top:6px}
+.seg-details{margin-top:8px}.seg-details summary{font-size:11px;font-weight:900;color:var(--muted);cursor:pointer;padding:6px 0;border:0}.seg-details[open] summary{color:var(--text)}
+.seg-mini-head,.seg-mini-row{display:grid;grid-template-columns:1fr .8fr .8fr;gap:6px;font-size:11px;padding:2px 0;color:var(--muted)}
+.seg-mini-head{font-weight:900;color:var(--text)}
+.label-conservative{border-color:rgba(52,211,153,.65)}
+.label-conservative-risk{border-color:rgba(251,191,36,.75)}
+.label-rational{border-color:rgba(77,163,255,.65)}
+.label-rational-risk{border-color:rgba(251,146,60,.75)}
+.label-aggressive{border-color:rgba(167,139,250,.75)}
+.label-reject{border-color:rgba(248,113,113,.75)}
+@media(max-width:1280px){.segment-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:760px){.segment-grid{grid-template-columns:1fr}}
+
 @media(max-width:1100px){.kpi-grid,.pool-grid,.cat-grid,.sim-grid,.sim-card-grid,.market-grid{grid-template-columns:1fr 1fr}}@media(max-width:760px){.kpi-grid,.pool-grid,.cat-grid,.sim-grid,.sim-card-grid,.market-grid{grid-template-columns:1fr}}
 </style>
 </head>
@@ -32,13 +52,37 @@
   </details>
 
   <details class="section" open>
-    <summary>2. MM FCN Simulating & Allocating Engine v1</summary>
+    <summary>2. MM FCN Simulating & Allocating Engine v2</summary>
     <div class="section-body">
       <div id="smart-summary" class="grid sim-grid"></div>
       <h3 style="margin-top:18px">Smart Basket Runs</h3>
       <div id="smart-runs" class="grid sim-card-grid"></div>
       <h3 style="margin-top:18px">Market Intelligence</h3>
       <div id="market-intel" class="grid market-grid"></div>
+
+      <h3 style="margin-top:18px">Final Label Segment Cards / 6分類統計</h3>
+      <div id="final-label-cards" class="segment-grid"></div>
+
+      <details class="section" style="margin-top:18px">
+        <summary>Market FCN Classification Detail / 市場外單分類明細（default hidden）</summary>
+        <div class="section-body">
+          <div class="table-wrap"><table id="market-classification-table"></table></div>
+        </div>
+      </details>
+
+      <details class="section" style="margin-top:18px">
+        <summary>Simulation Classification Result / 模擬分類結果（default hidden）</summary>
+        <div class="section-body">
+          <div class="table-wrap"><table id="simulation-classification-table"></table></div>
+        </div>
+      </details>
+
+      <details class="section" style="margin-top:18px">
+        <summary>Apple-to-Apple Market vs Fair(M8) Compare / 同層比對（default hidden）</summary>
+        <div class="section-body">
+          <div class="table-wrap"><table id="apple-to-apple-table"></table></div>
+        </div>
+      </details>
     </div>
   </details>
 
@@ -81,6 +125,7 @@
   </details>
 </div>
 
+<script src="./js/mm/modules/mm_fcn_simulating_allocating_engine_v2.js"></script>
 <script type="module">
 import { runMMFilterFull } from "./js/mm/modules/mm_filter.js";
 import { runM8Case } from "./js/core/m8_batch_engine.js";
@@ -125,7 +170,13 @@ async function main(){
       currentPool
     });
 
-    const result = { filterResult, smartResult };
+    const v2Result = await runV2Classification({
+      filterResult,
+      smartResult,
+      marketHistory
+    });
+
+    const result = { filterResult, smartResult, v2Result };
     window.__MM_SMART_SIM_RESULT__ = result;
     renderAll(result);
   }catch(err){
@@ -331,7 +382,122 @@ function buildM6Map(m6){ const map = new Map(); const rows = Array.isArray(m6?.d
 function inferAddableAmount({symbol, category, exposureRatio, m7Score}){ const caps={core:50000,growth:30000,defensive:30000,defense:30000,income:20000,incoming:20000,speculative:3000}; const exception=new Set(["NVDA","TSM","SMH","GOOG"]); const base=exception.has(symbol)?70000:(caps[category]||10000); const util=Number(exposureRatio||0); if(util>=1) return 0; if(util>=.9) return Math.min(10000,base); if(m7Score>=8) return Math.min(50000,base); if(m7Score>=6) return Math.min(20000,base); return Math.min(10000,base); }
 function mockStocks(){return [{symbol:"NVDA",name:"NVIDIA",category:"core",m7_score:9,ret_1d:1,ret_2d:2,ret_1w:5,ret_2w:3,m2_util:.7,amt_signal:.8,max_addable_amt:50000,allow_fcn:true},{symbol:"TSM",name:"TSMC",category:"core",m7_score:8.2,ret_1d:1,ret_2d:1,ret_1w:4,ret_2w:2,m2_util:.6,amt_signal:.7,max_addable_amt:20000,allow_fcn:true},{symbol:"GOOG",name:"Alphabet",category:"core",m7_score:7.8,ret_1d:.5,ret_2d:1,ret_1w:3,ret_2w:2,m2_util:.4,amt_signal:.7,max_addable_amt:10000,allow_fcn:true},{symbol:"AVGO",name:"Broadcom",category:"core",m7_score:8.1,ret_1d:2,ret_2d:3,ret_1w:7,ret_2w:4,m2_util:.3,amt_signal:.7,max_addable_amt:30000,allow_fcn:true},{symbol:"MU",name:"Micron",category:"growth",m7_score:5.8,ret_1d:3,ret_2d:5,ret_1w:9,ret_2w:7,m2_util:.3,amt_signal:.9,max_addable_amt:30000,allow_fcn:true},{symbol:"LQD",name:"LQD",category:"income",m7_score:7.2,ret_1d:.1,ret_2d:.2,ret_1w:.5,ret_2w:.7,m2_util:.1,amt_signal:.5,max_addable_amt:20000,allow_fcn:true},{symbol:"SMH",name:"SMH",category:"defensive",m7_score:8,ret_1d:1,ret_2d:1,ret_1w:3,ret_2w:2,m2_util:.2,amt_signal:.7,max_addable_amt:30000,allow_fcn:true},{symbol:"QQQ",name:"QQQ",category:"defensive",m7_score:7.5,ret_1d:.8,ret_2d:1,ret_1w:2,ret_2w:2,m2_util:.2,amt_signal:.6,max_addable_amt:20000,allow_fcn:true}];}
 
-function renderAll({filterResult, smartResult}){ renderSummary(filterResult.summary, smartResult); renderSmart(smartResult); renderPools(filterResult.pools); renderCategories(filterResult.summary.category, filterResult.category_map); setupTable(filterResult); document.getElementById("debug").textContent = JSON.stringify({filterResult, smartResult}, null, 2); }
+
+async function runV2Classification({filterResult, smartResult, marketHistory}){
+  const marketRecords = await buildMarketClassificationRecords({marketHistory, filterResult});
+  const simulationRecords = buildSimulationClassificationRecords({smartResult});
+  const allRecords = [...marketRecords, ...simulationRecords];
+  const output = window.MMFCNEngineV2.process(allRecords);
+  return { marketRecords, simulationRecords, allRecords, ...output };
+}
+
+async function buildMarketClassificationRecords({marketHistory, filterResult}){
+  const records = marketHistory?.records || [];
+  const out = [];
+  for(const [idx, r] of records.entries()){
+    const symbols = (r.symbols || []).map(x=>String(x).toUpperCase()).filter(Boolean);
+    const counts = getPoolCountsForSymbols(symbols, filterResult.pools);
+    const structure = {
+      KI: Number(r.ki_pct ?? r.KI ?? 55),
+      Strike: Number(r.strike_pct ?? r.Strike ?? 70),
+      T: Number(r.tenor_month ?? r.T ?? 6),
+      type: normalizeBarrierType(r.barrier_type)
+    };
+    const fair = await runM8FairForClassification(`MKT_CLASS_${idx+1}`, symbols, structure);
+    out.push({
+      id: r.record_id || `MKT_${idx+1}`,
+      source_type: "market",
+      symbols,
+      highlight_count: counts.highlight,
+      watch_count: counts.watch,
+      simulation_count: counts.simulation,
+      reject_count: counts.reject,
+      market_coupon: Number(r.coupon_pct || 0),
+      fair_yield: Number(fair?.fair_yield),
+      strike: structure.Strike,
+      ki: Number(r.ki_pct ?? structure.KI),
+      tenor: structure.T,
+      barrier_type: structure.type,
+      bank: r.bank || "--",
+      raw_market_style: r.market_style,
+      comment: r.market_comment || ""
+    });
+  }
+  return out;
+}
+
+function buildSimulationClassificationRecords({smartResult}){
+  return (smartResult?.runs || []).map((r, idx)=>{
+    const counts = getCountsFromBasket(r.basket || []);
+    return {
+      id: r.run_id || `SIM_${idx+1}`,
+      source_type: "simulation",
+      symbols: r.symbols || [],
+      highlight_count: counts.highlight,
+      watch_count: counts.watch,
+      simulation_count: counts.simulation,
+      reject_count: 0,
+      market_coupon: Number(r.evaluation?.market_coupon || 0),
+      fair_yield: Number(r.evaluation?.fair_yield || r.m8?.fair_yield || 0),
+      strike: Number(r.structure?.Strike ?? r.structure?.strike ?? 0),
+      ki: Number(r.structure?.KI ?? r.structure?.ki ?? 0),
+      tenor: Number(r.structure?.T ?? r.structure?.tenor_month ?? 0),
+      barrier_type: normalizeBarrierType(r.structure?.type),
+      template_label: r.template_label,
+      simulation_result: r.evaluation?.result,
+      portfolio_fit: r.portfolio_fit?.fit
+    };
+  });
+}
+
+function getPoolCountsForSymbols(symbols, pools){
+  const lookup = {};
+  Object.entries(pools || {}).forEach(([pool, rows])=>{
+    if(!Array.isArray(rows)) return;
+    rows.forEach(r=>{ lookup[String(r.symbol||"").toUpperCase()] = pool; });
+  });
+  const counts = {highlight:0, watch:0, simulation:0, reject:0, unknown:0};
+  symbols.forEach(s=>{
+    const pool = lookup[s] || "unknown";
+    counts[pool] = (counts[pool] || 0) + 1;
+  });
+  return counts;
+}
+
+function getCountsFromBasket(basket){
+  const counts = {highlight:0, watch:0, simulation:0};
+  (basket || []).forEach(x=>{
+    const p = String(x.pool_type || "highlight").toLowerCase();
+    if(counts[p] === undefined) counts[p] = 0;
+    counts[p] += 1;
+  });
+  return counts;
+}
+
+function normalizeBarrierType(type){
+  const t = String(type || "AKI").toUpperCase();
+  if(["AKI","EKI","DACN"].includes(t)) return t;
+  return "AKI";
+}
+
+async function runM8FairForClassification(caseName, symbols, structure){
+  if(!symbols || symbols.length < 2) return {fair_yield:null, error:true};
+  try{
+    return await runM8Case({
+      caseName,
+      symbols,
+      KI: structure.KI,
+      Strike: structure.Strike,
+      T: structure.T,
+      type: structure.type,
+      marketYield: 0
+    });
+  }catch(e){
+    return {fair_yield:null, error:true, message:e.message || String(e)};
+  }
+}
+
+function renderAll({filterResult, smartResult, v2Result}){ renderSummary(filterResult.summary, smartResult); renderSmart(smartResult); renderV2(v2Result); renderPools(filterResult.pools); renderCategories(filterResult.summary.category, filterResult.category_map); setupTable(filterResult); document.getElementById("debug").textContent = JSON.stringify({filterResult, smartResult, v2Result}, null, 2); }
 function renderSummary(s, smart){ const cards = [["Input Stocks",s.total_stocks],["Highlight",s.pools.highlight],["Watch",s.pools.watch],["Simulation",s.pools.simulation],["Smart Runs",smart.runs.length],["Best Yield",fmt(smart.summary.best_fair_yield)+"%"],["Suggest",money(smart.summary.suggested_today_amount_usd)]]; document.getElementById("summary").innerHTML = cards.map(([t,v])=>`<div class="card"><div class="kpi-title">${t}</div><div class="kpi-value">${v}</div></div>`).join(""); }
 function renderSmart(smart){
   const best = smart.best;
@@ -340,6 +506,74 @@ function renderSmart(smart){
   const topSymbols = Object.entries(smart.market_intelligence.symbol_stats || {}).sort((a,b)=>b[1].count-a[1].count).slice(0,10);
   document.getElementById("market-intel").innerHTML = `<div class="card"><h3>Market Top Symbols</h3>${topSymbols.map(([s,v])=>`<div class="stock-line"><div class="stock-main"><span>${s}</span><span>${v.count}x</span></div><div class="stock-sub">avg coupon ${fmt(v.avg_coupon)}%</div></div>`).join("") || "<div class='small'>No history</div>"}</div><div class="card"><h3>Basket Type Frequency</h3>${Object.entries(smart.market_intelligence.basket_stats||{}).map(([k,v])=>`<div class="stock-line"><div class="stock-main"><span>${k}</span><span>${v}</span></div></div>`).join("") || "<div class='small'>No history</div>"}</div>`;
 }
+
+function renderV2(v2){
+  if(!v2 || !window.MMFCNEngineV2){ return; }
+  renderFinalLabelCards(v2.stats || {});
+  renderClassificationTable("market-classification-table", v2.records.filter(r=>r.source_type === "market"));
+  renderClassificationTable("simulation-classification-table", v2.records.filter(r=>r.source_type === "simulation"));
+  renderAppleToAppleTable(v2.apple_to_apple || []);
+}
+
+function renderFinalLabelCards(stats){
+  const labels = window.MMFCNEngineV2.FINAL_LABELS || Object.keys(stats);
+  const defs = window.MMFCNEngineV2.LABEL_DEFINITIONS || {};
+  document.getElementById("final-label-cards").innerHTML = labels.map(label=>{
+    const s = stats[label] || {};
+    const cls = label === "保守單" ? "label-conservative"
+      : label === "高風險保守單" ? "label-conservative-risk"
+      : label === "合理單" ? "label-rational"
+      : label === "高風險合理單" ? "label-rational-risk"
+      : label === "積極單" ? "label-aggressive" : "label-reject";
+    const definition = s.definition || defs[label] || "";
+    const bestRateRow = label === "保守單"
+      ? `<div class="seg-row"><span>Best Market Rate</span><b>${pct(s.market_best)}</b></div>`
+      : "";
+    return `<div class="segment-card ${cls}">
+      <h4>${label}</h4>
+      <div class="seg-def">${definition}</div>
+      <div class="seg-main">${s.count || 0}</div>
+      <div class="seg-row"><span>Top</span><b>${(s.top_symbols||[]).join(" / ") || "-"}</b></div>
+      ${bestRateRow}
+      <div class="seg-row"><span>Market Rate Mean</span><b>${pct(s.market_mean)}</b></div>
+      <div class="seg-row"><span>Market Rate CV</span><b>${fmtNullable(s.coupon_cv)}</b></div>
+      <div class="seg-row"><span>Fair Rate Mean</span><b>${pct(s.fair_mean)}</b></div>
+      <div class="seg-row"><span>Delta vs Fair</span><b>${pct(s.delta_mean)}</b></div>
+      <details class="seg-details">
+        <summary>一鍵展開：Strike / KI / Period mean & CV</summary>
+        <div class="seg-mini-table">
+          <div class="seg-mini-head"><span>Item</span><span>Mean</span><span>CV</span></div>
+          <div class="seg-mini-row"><span>Strike</span><span>${fmtNullable(s.strike_mean)}</span><span>${fmtNullable(s.strike_cv)}</span></div>
+          <div class="seg-mini-row"><span>KI</span><span>${fmtNullable(s.ki_mean)}</span><span>${fmtNullable(s.ki_cv)}</span></div>
+          <div class="seg-mini-row"><span>Period</span><span>${fmtNullable(s.tenor_mean)}M</span><span>${fmtNullable(s.tenor_cv)}</span></div>
+          <div class="seg-mini-row"><span>Market Rate</span><span>${pct(s.market_mean)}</span><span>${fmtNullable(s.coupon_cv)}</span></div>
+          <div class="seg-mini-row"><span>Fair Rate</span><span>${pct(s.fair_mean)}</span><span>-</span></div>
+          <div class="seg-mini-row"><span>Delta</span><span>${pct(s.delta_mean)}</span><span>-</span></div>
+        </div>
+      </details>
+    </div>`;
+  }).join("");
+}
+
+function renderClassificationTable(id, rows){
+  document.getElementById(id).innerHTML = `<tr>
+    <th>Source</th><th>ID</th><th>Symbols</th><th>H/W/S</th><th>Basket Style</th><th>Worst-of</th><th>Adj</th><th>Final Label</th><th>Market</th><th>Fair(M8)</th><th>Delta</th><th>Definition</th>
+  </tr>${(rows||[]).map(r=>`<tr>
+    <td>${r.source_type}</td><td>${r.id}</td><td>${(r.symbols||[]).join("/")}</td><td>${r.highlight_count}/${r.watch_count}/${r.simulation_count}</td>
+    <td>${r.basket_style}</td><td>${r.worst_of_quality}</td><td>${r.structure_adj}</td><td><b>${r.final_label}</b></td>
+    <td>${pct(r.market_coupon)}</td><td>${pct(r.fair_yield)}</td><td>${pct(r.delta_pct)}</td><td>${r.definition || ""}</td>
+  </tr>`).join("")}`;
+}
+
+function renderAppleToAppleTable(rows){
+  document.getElementById("apple-to-apple-table").innerHTML = `<tr>
+    <th>Final Label</th><th>Basket</th><th>Adj</th><th>Tenor</th><th>Type</th><th>Count</th><th>Market</th><th>Fair(M8)</th><th>Delta</th><th>Delta CV</th><th>Regime</th>
+  </tr>${(rows||[]).map(r=>`<tr>
+    <td><b>${r.final_label}</b></td><td>${r.basket_style}</td><td>${r.structure_adj}</td><td>${r.tenor_bucket}</td><td>${r.barrier_type}</td><td>${r.count}</td>
+    <td>${pct(r.market_mean)}</td><td>${pct(r.fair_mean)}</td><td>${pct(r.delta_mean)}</td><td>${fmtNullable(r.delta_cv)}</td><td>${r.regime}</td>
+  </tr>`).join("")}`;
+}
+
 function renderRunCard(r){ const cls = r.evaluation.result === "PASS" ? "result-pass" : r.evaluation.result === "FAIL_MARKET_TIGHT" ? "result-warn" : "result-fail"; return `<div class="card ${cls}"><h3>${r.template_label}</h3><div><span class="badge ${r.evaluation.result==='PASS'?'pass':'warn'}">${r.evaluation.result}</span> <span class="badge purple">${r.basket_style}</span></div><p class="small">${r.symbols.join(" / ")}</p><div>Structure：${r.structure.type}｜KI ${r.structure.KI}%｜Strike ${r.structure.Strike}%｜${r.structure.T}M</div><div>Fair Yield：<b>${fmt(r.evaluation.fair_yield)}%</b></div><div>Market Coupon：${fmt(r.evaluation.market_coupon)}% ｜ Ratio ${fmt(r.evaluation.market_tightness_ratio)}</div><div>Overlap：${fmt(r.evaluation.overlap_score*100)}% ｜ ${r.evaluation.overlap_symbols.join("/") || "-"}</div><div>Portfolio：${r.portfolio_fit.fit} ${r.portfolio_fit.overlap.length ? "｜"+r.portfolio_fit.overlap.join("/") : ""}</div><hr style="border-color:var(--line)"><div class="small">${r.decision}</div></div>`; }
 function renderPools(pools){ renderPool("pool-highlight", pools.highlight); renderPool("pool-watch", pools.watch); renderPool("pool-simulation", pools.simulation); renderPool("pool-reject", pools.reject); }
 function renderPool(id, list){ const el=document.getElementById(id); if(!list.length){el.innerHTML=`<div class="small">目前無資料</div>`;return;} el.innerHTML=list.slice(0,8).map(stockLine).join(""); }
@@ -348,6 +582,8 @@ function renderCategories(catSummary, catMap){ document.getElementById("category
 function setupTable(res){ const allRows=[]; Object.entries(res.pools).forEach(([pool,rows])=>rows.forEach(r=>allRows.push({...r,pool}))); const render=()=>{const q=document.getElementById("search").value.trim().toUpperCase(),p=document.getElementById("filterPool").value,v=document.getElementById("filterVol").value,c=document.getElementById("filterCat").value; const rows=allRows.filter(r=>(!q||r.symbol.includes(q))&&(!p||r.pool===p)&&(!v||r.vol_band===v)&&(!c||r.category===c)); document.getElementById("stockTable").innerHTML=`<tr><th>Pool</th><th>Symbol</th><th>Category</th><th>M7 Score</th><th>M6</th><th>Vol</th><th>Band</th><th>M2</th><th>Stock Amt</th><th>Reason</th></tr>${rows.map(r=>`<tr><td>${r.pool}</td><td><b>${r.symbol}</b></td><td>${r.category}</td><td>${fmt(r.m7_score)}</td><td>${fmt(r.m6_market_attractive_score)}</td><td>${fmt(r.vol_score)}</td><td><span class="badge ${r.vol_band}">${r.vol_band}</span></td><td>${fmt((r.m2_util||0)*100)}%</td><td>${money(r.max_addable_amt)}</td><td>${[...(r.why_yes||[]),...(r.why_not||[]),...(r.reject_reasons||[])].join(" / ")}</td></tr>`).join("")}`;}; ["search","filterPool","filterVol","filterCat"].forEach(id=>document.getElementById(id).addEventListener("input",render)); render(); }
 function money(v){ const x=Number(v); if(!Number.isFinite(x)) return "-"; return "USD "+Math.round(x).toLocaleString(); }
 function fmt(v){ const x=Number(v); return Number.isFinite(x)?x.toFixed(2):"-"; }
+function fmtNullable(v){ const x=Number(v); return Number.isFinite(x)?x.toFixed(2):"-"; }
+function pct(v){ const x=Number(v); return Number.isFinite(x)?x.toFixed(1)+"%":"-"; }
 function escapeHtml(s){ return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m])); }
 main();
 </script>
