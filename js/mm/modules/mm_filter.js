@@ -1,5 +1,5 @@
 // ==========================================
-// MM FILTER ENGINE v3.3 FULL MODULE (M7 gate + C1 Decision Output + M6 Market Attractive ordering)
+// MM FILTER ENGINE v3.7 FULL MODULE (M7 gate + C1 Decision Output + M6 Market Attractive ordering)
 // Path: js/mm/modules/mm_filter.js
 // Purpose: M7 allow FCN -> C1-L1 Decision Output status/amount/strategy -> Category -> M6 Market Attractive ordering -> Basket / Allocation / M8 / Market Match
 // Notes:
@@ -214,7 +214,7 @@ export async function runMMFilterFull(input = {}) {
   const summary = buildSummary({ stocks, pools, category_map, baskets, allocation, market_match });
 
   return {
-    version: "mm_filter_v3_6_pools_non_enum_fix",
+    version: "mm_filter_v3_7_simulation_hybrid_aggressive_fix",
     generated_at: new Date().toISOString(),
     summary,
     pools,
@@ -634,6 +634,10 @@ export function normalizeStocks(rows) {
         // UI compatibility: existing mm/test.html cards may render row.score.
         // score is M7 score, not Priority.
         score: round2(m7Score),
+        display_score: round2(m7Score),
+        score_label: "M7 Score",
+        stock_pool_review_score: round2(m7Score),
+        stock_pool_review_score_label: "M7 Score",
         m7_selected: round2(m7Score) >= num(row.m7_fcn_min_score || row.m7_min_score, 6),
         m7_pass: round2(m7Score) >= num(row.m7_fcn_min_score || row.m7_min_score, 6),
         m7_selection_reason: round2(m7Score) >= 8 ? "m7_high_score" : (round2(m7Score) >= 6 ? "m7_pass" : "m7_below_threshold"),
@@ -1076,22 +1080,23 @@ function classifyPools(stocks, options = {}) {
   const m2RejectCut = num(options.reject_m2_cut, 0.95);
   const amtSignalCut = num(options.highlight_amt_signal_cut, 0.6);
   const m7PassCut = num(options.m7_pass_cut, 6.0);
+  const m7SimulationCut = num(options.m7_simulation_cut, 5.0);
   const m7HighlightCut = num(options.m7_highlight_cut, 8.0);
 
   for (const s of stocks) {
-    const rejectReasons = getRejectReasons(s, { m2RejectCut, m7PassCut });
+    const rejectReasons = getRejectReasons(s, { m2RejectCut, m7SimulationCut });
 
-    // v3.4 pool meaning:
-    // M7 / C1 Stock Pool Review is NOT an amount gate.
-    // It shows which stocks M7 selected today and how much C1 says can be done.
-    // Therefore amount_unavailable is a C1 amount status, not a Reject reason.
+    // v3.7 pool meaning:
+    // - Reject is hard reject only: allow_fcn=false / explicit reject / M7<=5 / M2 hard limit / extreme vol with high M2.
+    // - Simulation is no longer a garbage bucket. It is ONLY the FCN simulation operation base pool.
+    // - Amount=0 is still display-only and must not hard reject a stock.
     if (rejectReasons.length) {
       pools.reject.push({
         ...s,
         pool: "reject",
         reject_reasons: rejectReasons,
         reject_level: "hard_reject",
-        pool_condition: "Hard reject: allow_fcn=false, explicit reject, M7 below threshold, or M2 over hard limit. Amount=0 alone is not reject."
+        pool_condition: `Hard reject: allow_fcn=false, explicit reject, M7 <= ${m7SimulationCut}, M2 hard limit, or extreme vol with high M2. Amount=0 alone is not reject.`
       });
       continue;
     }
@@ -1130,16 +1135,21 @@ function classifyPools(stocks, options = {}) {
       continue;
     }
 
-    // Simulation: data is usable for basket testing but not selected by M7 today.
-    pools.simulation.push({
-      ...s,
-      pool: "simulation",
-      reject_reasons: [],
-      amount_status: amountNote,
-      why_not: watchReasons,
-      pool_condition: "Simulation: not hard reject, but not selected by M7 today; keep for basket experiments.",
-      c1_decision_source_used: c1Tier !== "unknown"
-    });
+    // Simulation: ONLY for FCN simulation operation.
+    // Rule: M7 > 5, sorted by M6 market attractive score.
+    // This keeps HYBRID and aggressive basket experiments supplied with borderline-but-usable names.
+    if (m7Score > m7SimulationCut) {
+      pools.simulation.push({
+        ...s,
+        pool: "simulation",
+        reject_reasons: [],
+        amount_status: amountNote,
+        why_not: watchReasons,
+        pool_condition: `Simulation only: FCN simulation operation base pool; M7 score > ${m7SimulationCut}; M6 market attractive sorts order.`,
+        c1_decision_source_used: c1Tier !== "unknown"
+      });
+      continue;
+    }
   }
 
   Object.keys(pools).forEach(k => pools[k].sort(sortByM6Market));
@@ -1157,8 +1167,8 @@ function classifyPools(stocks, options = {}) {
     value: {
       highlight: `M7 score >= ${m7HighlightCut} OR C1 tier=add; amount can be 0 but remains visible.`,
       watch: `M7 score >= ${m7PassCut} but < ${m7HighlightCut}, OR C1 tier=standard/watch.`,
-      simulation: "Not hard reject, but not selected by M7 today; basket experiment material.",
-      reject: `Hard reject only: allow_fcn=false / explicit reject / M7 < ${m7PassCut} / M2 >= ${Math.round(m2RejectCut * 100)}%. Amount=0 is NOT reject.`
+      simulation: `M7 score > ${m7SimulationCut}; ONLY for FCN simulation operation; sorted by M6 market attractive score.`,
+      reject: `Hard reject only: allow_fcn=false / explicit reject / M7 <= ${m7SimulationCut} / M2 >= ${Math.round(m2RejectCut * 100)}% / extreme vol with high M2. Amount=0 is NOT reject.`
     },
     enumerable: false,
     configurable: true
@@ -1166,14 +1176,18 @@ function classifyPools(stocks, options = {}) {
   return pools;
 }
 
-function getRejectReasons(s, { m2RejectCut, m7PassCut = 6 }) {
+function getRejectReasons(s, { m2RejectCut, m7SimulationCut = 5 }) {
   const reasons = [];
   if (!s.allow_fcn) reasons.push("allow_fcn=false");
   if (s.reject_reason) reasons.push(String(s.reject_reason));
-  if (num(s.m7_score) < m7PassCut) reasons.push(`m7_score<${m7PassCut}`);
+
+  // v3.7: Simulation pool is M7 > 5.
+  // Therefore M7 <= 5 is the hard reject threshold; 5 < M7 < 6 can enter simulation for FCN tests.
+  if (num(s.m7_score) <= m7SimulationCut) reasons.push(`m7_score<=${m7SimulationCut}`);
+
   if (s.m2_util >= m2RejectCut) reasons.push(`m2_util>=${Math.round(m2RejectCut * 100)}%`);
   if (s.vol_band === "extreme" && s.m2_util >= 0.8) reasons.push("extreme_vol_with_high_m2");
-  // v3.4: max_addable_amt <= 0 is NOT reject here.
+  // max_addable_amt <= 0 is NOT reject here.
   // It is an amount status displayed in the pool, so high-M7 names with no room remain visible.
   return reasons;
 }
@@ -1292,20 +1306,19 @@ async function buildAllBaskets({ pools, category_map, stocks, options }) {
     }));
   }
 
-  // 3. Hybrid
-  const hybrid = uniqueBySymbol([
-    ...pools.highlight.slice(0, 2),
-    ...pools.simulation.filter(x => x.max_addable_amt > 0).slice(0, 3),
-    ...pools.watch.filter(x => x.max_addable_amt > 0).slice(0, 2)
-  ]).slice(0, 5);
-
-  if (hybrid.length >= 3) {
-    baskets.push(await buildBasket({
-      id: "HYBRID",
-      style: "rational",
-      stocks: hybrid,
-      structure: options.hybrid_structure || { KI: 55, Strike: 65, T: 6, type: "AKI", marketYield: 0 }
-    }));
+  // 3. Hybrid simulation groups
+  // HYBRID keeps the original good logic: highlight + simulation + watch.
+  // v3.7 adds multiple slices so sandbox can compare more than one mixed basket.
+  const hybridGroups = buildHybridSimulationGroups(pools, options);
+  for (const group of hybridGroups) {
+    if (group.stocks.length >= 3) {
+      baskets.push(await buildBasket({
+        id: group.id,
+        style: "rational",
+        stocks: group.stocks,
+        structure: options.hybrid_structure || { KI: 55, Strike: 65, T: 6, type: "AKI", marketYield: 0 }
+      }));
+    }
   }
 
   // 4. Conservative Special: NVDA/TSM + low vol large caps/ETF
@@ -1319,8 +1332,9 @@ async function buildAllBaskets({ pools, category_map, stocks, options }) {
     }));
   }
 
-  // 5. Aggressive: high + mid + low vol mix
-  const aggressive = buildAggressiveMix(stocks);
+  // 5. Aggressive: high + mid + low vol mix, simulation pool first.
+  // v3.7: AGGRESSIVE_MIX joins FCN simulation workflow and prioritizes simulation pool names.
+  const aggressive = buildAggressiveMixFromPools(pools);
   if (aggressive.length >= 3) {
     baskets.push(await buildBasket({
       id: "AGGRESSIVE_MIX",
@@ -1331,6 +1345,28 @@ async function buildAllBaskets({ pools, category_map, stocks, options }) {
   }
 
   return baskets;
+}
+
+function buildHybridSimulationGroups(pools = {}, options = {}) {
+  const groupCount = Math.max(1, Math.floor(num(options.hybrid_group_count, 3)));
+  const groups = [];
+
+  for (let i = 0; i < groupCount; i += 1) {
+    const highlightStart = i;
+    const simulationStart = i * 3;
+    const watchStart = i;
+
+    const id = i === 0 ? "HYBRID" : `HYBRID_${i + 1}`;
+    const stocks = uniqueBySymbol([
+      ...pools.highlight.slice(highlightStart, highlightStart + 2),
+      ...pools.simulation.filter(x => x.max_addable_amt > 0).slice(simulationStart, simulationStart + 3),
+      ...pools.watch.filter(x => x.max_addable_amt > 0).slice(watchStart, watchStart + 2)
+    ]).slice(0, 5);
+
+    groups.push({ id, stocks });
+  }
+
+  return groups;
 }
 
 function buildConservativeSpecial(stocks) {
@@ -1356,8 +1392,18 @@ function buildConservativeSpecial(stocks) {
   return uniqueBySymbol([required[0], ...companions]);
 }
 
-function buildAggressiveMix(stocks) {
-  const eligible = stocks.filter(s => s.allow_fcn && s.max_addable_amt > 0 && s.vol_band !== "extreme");
+function buildAggressiveMixFromPools(pools = {}) {
+  const base = uniqueBySymbol([
+    ...(pools.simulation || []),
+    ...(pools.watch || []),
+    ...(pools.highlight || [])
+  ]);
+
+  const eligible = base.filter(s =>
+    s.allow_fcn &&
+    s.max_addable_amt > 0 &&
+    s.vol_band !== "extreme"
+  );
 
   const high = eligible.filter(s => s.vol_band === "high").sort(sortByM6Market).slice(0, 2);
   const mid = eligible.filter(s => s.vol_band === "mid").sort(sortByM6Market).slice(0, 2);
@@ -1864,6 +1910,5 @@ function volBandRank(band) {
 function money(v) {
   return `USD ${Math.round(num(v)).toLocaleString()}`;
 }
-
 
 
