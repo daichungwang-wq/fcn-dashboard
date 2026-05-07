@@ -3,191 +3,63 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<!-- IMPORTANT:
-     This base makes M8 engine fetch("data/m7/...") resolve from repo root,
-     not from /mm/. It also means JS imports below should use ./js/... -->
 <base href="../">
-<title>MM Sandbox Test</title>
+<title>MM Sandbox Test｜Smart FCN Simulation</title>
 <style>
 :root{
-  --bg:#0f1115;
-  --panel:#181c24;
-  --panel2:#202634;
-  --line:#30384a;
-  --text:#f4f7fb;
-  --muted:#aab5c8;
-  --blue:#4da3ff;
-  --green:#34d399;
-  --yellow:#fbbf24;
-  --orange:#fb923c;
-  --red:#f87171;
+  --bg:#0f1115;--panel:#181c24;--panel2:#202634;--panel3:#111827;
+  --line:#30384a;--text:#f4f7fb;--muted:#aab5c8;--blue:#4da3ff;
+  --green:#34d399;--yellow:#fbbf24;--orange:#fb923c;--red:#f87171;--purple:#a78bfa;
 }
-*{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:Arial,"Noto Sans TC",sans-serif;
-  background:var(--bg);
-  color:var(--text);
-}
-.app{max-width:1440px;margin:0 auto;padding:24px}
-.hero{
-  background:linear-gradient(135deg,#10233f,#1d4ed8);
-  border-radius:24px;
-  padding:24px 28px;
-  margin-bottom:20px;
-  box-shadow:0 18px 48px rgba(0,0,0,.35);
-}
-.hero h1{margin:0 0 8px;font-size:34px}
-.hero p{margin:0;color:#dbeafe;font-weight:700}
-.section{
-  background:var(--panel);
-  border:1px solid var(--line);
-  border-radius:18px;
-  margin:18px 0;
-  overflow:hidden;
-}
-.section summary{
-  cursor:pointer;
-  padding:16px 20px;
-  font-size:20px;
-  font-weight:900;
-  border-bottom:1px solid var(--line);
-}
-.section-body{padding:18px}
-.grid{display:grid;gap:14px}
-.kpi-grid{grid-template-columns:repeat(7,minmax(120px,1fr))}
-.pool-grid{grid-template-columns:repeat(4,1fr)}
-.cat-grid{grid-template-columns:repeat(5,1fr)}
-.basket-grid{grid-template-columns:repeat(3,1fr)}
-.market-grid{grid-template-columns:repeat(2,1fr)}
-.card{
-  background:var(--panel2);
-  border:1px solid var(--line);
-  border-radius:16px;
-  padding:14px;
-}
-.card h3{margin:0 0 10px}
-.kpi-title{font-size:12px;color:var(--muted);font-weight:800}
-.kpi-value{font-size:24px;font-weight:900;margin-top:6px}
-.small{font-size:12px;color:var(--muted)}
-.badge{
-  display:inline-flex;
-  align-items:center;
-  gap:4px;
-  padding:3px 8px;
-  border-radius:999px;
-  font-size:12px;
-  font-weight:900;
-  border:1px solid var(--line);
-}
-.badge.low{background:rgba(52,211,153,.12);color:var(--green)}
-.badge.mid{background:rgba(251,191,36,.12);color:var(--yellow)}
-.badge.high{background:rgba(251,146,60,.12);color:var(--orange)}
-.badge.extreme{background:rgba(248,113,113,.12);color:var(--red)}
-.badge.good{background:rgba(52,211,153,.12);color:var(--green)}
-.badge.warn{background:rgba(251,191,36,.12);color:var(--yellow)}
-.badge.bad{background:rgba(248,113,113,.12);color:var(--red)}
-.stock-line{
-  padding:8px 0;
-  border-bottom:1px dashed var(--line);
-  font-size:13px;
-}
-.stock-line:last-child{border-bottom:0}
-.stock-main{display:flex;justify-content:space-between;gap:8px;font-weight:900}
-.stock-sub{color:var(--muted);font-size:12px;margin-top:4px}
-.table-wrap{overflow:auto;max-height:560px;border:1px solid var(--line);border-radius:14px}
-table{width:100%;border-collapse:collapse;background:var(--panel2)}
-th,td{border-bottom:1px solid var(--line);padding:8px;font-size:12px;text-align:left;white-space:nowrap}
-th{position:sticky;top:0;background:#111827;z-index:1}
-.controls{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px}
-.controls select,.controls input{
-  background:#111827;
-  color:var(--text);
-  border:1px solid var(--line);
-  border-radius:10px;
-  padding:9px 10px;
-}
-.note{
-  background:#111827;
-  border:1px dashed var(--line);
-  border-radius:14px;
-  padding:12px;
-  color:var(--muted);
-}
-.error{
-  background:rgba(248,113,113,.12);
-  border:1px solid rgba(248,113,113,.5);
-  color:#fecaca;
-  border-radius:14px;
-  padding:12px;
-  margin:12px 0;
-}
-pre{
-  background:#090b10;
-  border:1px solid var(--line);
-  border-radius:14px;
-  padding:12px;
-  overflow:auto;
-  max-height:520px;
-}
-@media(max-width:1100px){
-  .kpi-grid,.pool-grid,.cat-grid,.basket-grid,.market-grid{grid-template-columns:1fr 1fr}
-}
-@media(max-width:760px){
-  .kpi-grid,.pool-grid,.cat-grid,.basket-grid,.market-grid{grid-template-columns:1fr}
-}
+*{box-sizing:border-box} body{margin:0;font-family:Arial,"Noto Sans TC",sans-serif;background:var(--bg);color:var(--text)}
+.app{max-width:1480px;margin:0 auto;padding:24px}.hero{background:linear-gradient(135deg,#10233f,#1d4ed8);border-radius:24px;padding:24px 28px;margin-bottom:20px;box-shadow:0 18px 48px rgba(0,0,0,.35)}
+.hero h1{margin:0 0 8px;font-size:34px}.hero p{margin:0;color:#dbeafe;font-weight:700}.section{background:var(--panel);border:1px solid var(--line);border-radius:18px;margin:18px 0;overflow:hidden}.section summary{cursor:pointer;padding:16px 20px;font-size:20px;font-weight:900;border-bottom:1px solid var(--line)}.section-body{padding:18px}.grid{display:grid;gap:14px}.kpi-grid{grid-template-columns:repeat(7,minmax(120px,1fr))}.pool-grid{grid-template-columns:repeat(4,1fr)}.cat-grid{grid-template-columns:repeat(5,1fr)}.sim-grid{grid-template-columns:1.1fr 1.4fr}.sim-card-grid{grid-template-columns:repeat(3,1fr)}.market-grid{grid-template-columns:repeat(2,1fr)}.card{background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:14px}.card h3{margin:0 0 10px}.kpi-title{font-size:12px;color:var(--muted);font-weight:800}.kpi-value{font-size:24px;font-weight:900;margin-top:6px}.small{font-size:12px;color:var(--muted);line-height:1.55}.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:999px;font-size:12px;font-weight:900;border:1px solid var(--line)}.badge.low,.badge.good,.badge.pass{background:rgba(52,211,153,.12);color:var(--green)}.badge.mid,.badge.warn,.badge.weak{background:rgba(251,191,36,.12);color:var(--yellow)}.badge.high{background:rgba(251,146,60,.12);color:var(--orange)}.badge.extreme,.badge.bad,.badge.fail{background:rgba(248,113,113,.12);color:var(--red)}.badge.info{background:rgba(77,163,255,.12);color:var(--blue)}.badge.purple{background:rgba(167,139,250,.12);color:var(--purple)}
+.stock-line{padding:8px 0;border-bottom:1px dashed var(--line);font-size:13px}.stock-line:last-child{border-bottom:0}.stock-main{display:flex;justify-content:space-between;gap:8px;font-weight:900}.stock-sub{color:var(--muted);font-size:12px;margin-top:4px}.table-wrap{overflow:auto;max-height:560px;border:1px solid var(--line);border-radius:14px}table{width:100%;border-collapse:collapse;background:var(--panel2)}th,td{border-bottom:1px solid var(--line);padding:8px;font-size:12px;text-align:left;white-space:nowrap}th{position:sticky;top:0;background:#111827;z-index:1}.controls{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px}.controls select,.controls input{background:#111827;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:9px 10px}.note{background:#111827;border:1px dashed var(--line);border-radius:14px;padding:12px;color:var(--muted)}.error{background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.5);color:#fecaca;border-radius:14px;padding:12px;margin:12px 0}pre{background:#090b10;border:1px solid var(--line);border-radius:14px;padding:12px;overflow:auto;max-height:520px}.result-pass{border-color:rgba(52,211,153,.7)}.result-fail{border-color:rgba(248,113,113,.7)}.result-warn{border-color:rgba(251,191,36,.7)}
+@media(max-width:1100px){.kpi-grid,.pool-grid,.cat-grid,.sim-grid,.sim-card-grid,.market-grid{grid-template-columns:1fr 1fr}}@media(max-width:760px){.kpi-grid,.pool-grid,.cat-grid,.sim-grid,.sim-card-grid,.market-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <div class="app">
   <div class="hero">
-    <h1>MM Sandbox Test</h1>
-    <p>C1 Output → Filter → Basket → M8 → Allocation → Market Order Match</p>
+    <h1>MM Sandbox Test｜Smart FCN Simulation</h1>
+    <p>M7/C1 Pool → Market Intelligence → Smart Basket → M8 Fair Yield → Portfolio Fit → Suggested Allocation</p>
   </div>
-
   <div id="error"></div>
 
   <details class="section" open>
     <summary>1. Overall Review / 全流程總覽</summary>
+    <div class="section-body"><div id="summary" class="grid kpi-grid"></div></div>
+  </details>
+
+  <details class="section" open>
+    <summary>2. MM FCN Simulating & Allocating Engine v1</summary>
     <div class="section-body">
-      <div id="summary" class="grid kpi-grid"></div>
+      <div id="smart-summary" class="grid sim-grid"></div>
+      <h3 style="margin-top:18px">Smart Basket Runs</h3>
+      <div id="smart-runs" class="grid sim-card-grid"></div>
+      <h3 style="margin-top:18px">Market Intelligence</h3>
+      <div id="market-intel" class="grid market-grid"></div>
     </div>
   </details>
 
   <details class="section" open>
-    <summary>2. M7 / C1 Stock Pool Review</summary>
-    <div class="section-body">
-      <div class="grid pool-grid">
-        <div class="card"><h3>🔥 Today Highlight</h3><div id="pool-highlight"></div></div>
-        <div class="card"><h3>👀 Watch</h3><div id="pool-watch"></div></div>
-        <div class="card"><h3>🧪 Simulation</h3><div id="pool-simulation"></div></div>
-        <div class="card"><h3>❌ Reject</h3><div id="pool-reject"></div></div>
-      </div>
-    </div>
+    <summary>3. M7 / C1 Stock Pool Review</summary>
+    <div class="section-body"><div class="grid pool-grid">
+      <div class="card"><h3>🔥 Today Highlight</h3><div id="pool-highlight"></div></div>
+      <div class="card"><h3>👀 Watch</h3><div id="pool-watch"></div></div>
+      <div class="card"><h3>🧪 Simulation</h3><div id="pool-simulation"></div></div>
+      <div class="card"><h3>❌ Reject</h3><div id="pool-reject"></div></div>
+    </div></div>
   </details>
 
-  <details class="section" open>
-    <summary>3. 五大類排序 / Category Distribution</summary>
-    <div class="section-body">
-      <div id="category" class="grid cat-grid"></div>
-    </div>
+  <details class="section">
+    <summary>4. Legacy Basket / Allocation / Market Match（已停用）</summary>
+    <div class="section-body"><div class="note">本頁已改用 MM FCN Simulating & Allocating Engine v1。mm_filter 的 legacy basket、allocation、market match 已由 options 停用，避免和智慧組單結果重複或衝突。</div></div>
   </details>
 
-  <details class="section" open>
-    <summary>4. Basket Candidate + M8 + Allocation v0</summary>
-    <div class="section-body">
-      <h3>Basket Candidates</h3>
-      <div id="basket" class="grid basket-grid"></div>
-      <h3 style="margin-top:18px">Allocation v0</h3>
-      <div id="allocation"></div>
-    </div>
-  </details>
-
-  <details class="section" open>
-    <summary>5. Market FCN Order Match</summary>
-    <div class="section-body">
-      <div id="market" class="grid market-grid"></div>
-    </div>
+  <details class="section">
+    <summary>5. 五大類排序 / Category Distribution</summary>
+    <div class="section-body"><div id="category" class="grid cat-grid"></div></div>
   </details>
 
   <details class="section" open>
@@ -195,472 +67,290 @@ pre{
     <div class="section-body">
       <div class="controls">
         <input id="search" placeholder="Search symbol..." />
-        <select id="filterPool">
-          <option value="">All pools</option>
-          <option value="highlight">Highlight</option>
-          <option value="watch">Watch</option>
-          <option value="simulation">Simulation</option>
-          <option value="reject">Reject</option>
-        </select>
-        <select id="filterVol">
-          <option value="">All vol</option>
-          <option value="low">Low</option>
-          <option value="mid">Mid</option>
-          <option value="high">High</option>
-          <option value="extreme">Extreme</option>
-        </select>
-        <select id="filterCat">
-          <option value="">All category</option>
-          <option value="core">Core</option>
-          <option value="growth">Growth</option>
-          <option value="income">Income</option>
-          <option value="defensive">Defensive</option>
-          <option value="speculative">Speculative</option>
-        </select>
+        <select id="filterPool"><option value="">All pools</option><option value="highlight">Highlight</option><option value="watch">Watch</option><option value="simulation">Simulation</option><option value="reject">Reject</option></select>
+        <select id="filterVol"><option value="">All vol</option><option value="low">Low</option><option value="mid">Mid</option><option value="high">High</option><option value="extreme">Extreme</option></select>
+        <select id="filterCat"><option value="">All category</option><option value="core">Core</option><option value="growth">Growth</option><option value="income">Income</option><option value="defensive">Defensive</option><option value="speculative">Speculative</option></select>
       </div>
-      <div class="table-wrap">
-        <table id="stockTable"></table>
-      </div>
+      <div class="table-wrap"><table id="stockTable"></table></div>
     </div>
   </details>
 
   <details class="section">
     <summary>7. Debug JSON</summary>
-    <div class="section-body">
-      <pre id="debug"></pre>
-    </div>
+    <div class="section-body"><pre id="debug"></pre></div>
   </details>
 </div>
 
 <script type="module">
 import { runMMFilterFull } from "./js/mm/modules/mm_filter.js";
+import { runM8Case } from "./js/core/m8_batch_engine.js";
 
-const MARKET_ORDERS = [
-  {
-    order_id: "BANK_A_SAMPLE",
-    bank: "Bank-A",
-    symbols: ["NVDA","TSM","GOOG"],
-    KI: 65,
-    strike: 65,
-    tenor: 9,
-    type: "AKI",
-    market_yield: 16.5,
-    notional: 20000
-  },
-  {
-    order_id: "BANK_B_SAMPLE",
-    bank: "Bank-B",
-    symbols: ["MU","PLTR","TSM","SMH"],
-    KI: 50,
-    strike: 65,
-    tenor: 7,
-    type: "EKI",
-    market_yield: 22,
-    notional: 20000
-  }
-];
+const DEFAULT_STOCK_ROLES = {
+  NVDA:["growth_core"], TSM:["anchor"], AVGO:["growth_core"], MSFT:["anchor"], GOOG:["anchor"], AMZN:["growth_core"], AAPL:["anchor"],
+  SMH:["sector_etf"], QQQ:["sector_etf"], SOXX:["sector_etf"], LQD:["defensive_buffer"], AMD:["high_vol_booster","growth_core"], MU:["high_vol_booster"], TSLA:["high_vol_booster"], NFLX:["growth_core"], AMAT:["anchor"]
+};
+
+const DEFAULT_TEMPLATES = {
+  conservative_plus:{label:"Conservative+",basket_style:"conservative",target_coupon:12,roles:{anchor:2,sector_etf:1,defensive_buffer:1},allowed_pools:{highlight:true,watch:1,simulation:0},structure_profiles:[{name:"high_strike_aki",Strike:70,KI:70,T:12,type:"AKI"},{name:"medium_ki_eki",Strike:70,KI:55,T:9,type:"EKI"}]},
+  rational_core:{label:"Rational Core",basket_style:"rational",target_coupon:16,roles:{anchor:1,growth_core:2,sector_etf:1},allowed_pools:{highlight:true,watch:2,simulation:1},structure_profiles:[{name:"balanced_eki",Strike:70,KI:60,T:7,type:"EKI"}]},
+  aggressive_mix:{label:"Aggressive Mix",basket_style:"aggressive",target_coupon:20,roles:{growth_core:2,high_vol_booster:1,sector_etf:1},allowed_pools:{highlight:true,watch:99,simulation:2},structure_profiles:[{name:"high_coupon_eki",Strike:65,KI:55,T:6,type:"EKI"}]}
+};
 
 async function main(){
   try{
-    const stocks = await loadC1LikeStocks();
+    const [stocks, marketHistory, stockRoles, templates, currentPool] = await Promise.all([
+      loadC1LikeStocks(),
+      loadMarketHistory(),
+      loadStockRoles(),
+      loadTemplates(),
+      loadCurrentPoolSymbols()
+    ]);
 
-    const result = await runMMFilterFull({
+    const filterResult = await runMMFilterFull({
       stocks,
-      market_orders: MARKET_ORDERS,
+      market_orders: [],
       options: {
+        disable_legacy_baskets: true,
+        disable_legacy_allocation: true,
+        disable_legacy_market_match: true,
         total_today_capacity: undefined
       }
     });
 
-    window.__MM_FILTER_RESULT__ = result;
+    const smartResult = await runSmartSimulation({
+      filterResult,
+      marketHistory,
+      stockRoles,
+      templates,
+      currentPool
+    });
+
+    const result = { filterResult, smartResult };
+    window.__MM_SMART_SIM_RESULT__ = result;
     renderAll(result);
   }catch(err){
     console.error(err);
-    document.getElementById("error").innerHTML =
-      `<div class="error"><b>載入失敗：</b>${escapeHtml(err.message || String(err))}</div>`;
+    document.getElementById("error").innerHTML = `<div class="error"><b>載入失敗：</b>${escapeHtml(err.message || String(err))}</div>`;
   }
+}
+
+async function loadMarketHistory(){
+  return await tryLoadJson("./data/mm/market_fcn_history.json") || await tryLoadJson("./market_fcn_history.json") || {records:[],market_summary:{market_style:"missing",market_observation:["market_fcn_history.json not found"]}};
+}
+async function loadStockRoles(){ return await tryLoadJson("./data/mm/m7_stock_roles.json") || DEFAULT_STOCK_ROLES; }
+async function loadTemplates(){ return await tryLoadJson("./data/mm/m7_basket_templates.json") || DEFAULT_TEMPLATES; }
+async function loadCurrentPoolSymbols(){
+  const fcn = await tryLoadJson("./data/fcn_pool.json");
+  const rows = Array.isArray(fcn) ? fcn : Array.isArray(fcn?.data) ? fcn.data : Array.isArray(fcn?.records) ? fcn.records : [];
+  const symbols = new Set();
+  rows.forEach(r => (r.symbols || r.basket || r.underlyings || []).forEach(x => symbols.add(String(x).toUpperCase())));
+  return [...symbols];
+}
+
+function analyzeMarketHistory(history){
+  const records = history?.records || [];
+  const symbolStats = {}, basketStats = {}, styleStats = {};
+  let totalCoupon = 0;
+  records.forEach(record=>{
+    const c = Number(record.coupon_pct || 0); totalCoupon += c;
+    basketStats[record.basket_type] = (basketStats[record.basket_type] || 0) + 1;
+    styleStats[record.market_style] = (styleStats[record.market_style] || 0) + 1;
+    (record.symbols || []).forEach(symbol=>{
+      symbol = String(symbol).toUpperCase();
+      if(!symbolStats[symbol]) symbolStats[symbol] = {count:0,total_coupon:0,avg_coupon:0};
+      symbolStats[symbol].count += 1; symbolStats[symbol].total_coupon += c;
+    });
+  });
+  Object.keys(symbolStats).forEach(s=> symbolStats[s].avg_coupon = symbolStats[s].total_coupon / symbolStats[s].count);
+  return {
+    market_style: history?.market_summary?.market_style || "neutral",
+    ai_appetite: history?.market_summary?.ai_appetite || "neutral",
+    best_yield_area: history?.market_summary?.best_yield_area || "--",
+    avg_market_coupon: records.length ? totalCoupon / records.length : 0,
+    symbol_stats: symbolStats,
+    basket_stats: basketStats,
+    style_stats: styleStats,
+    observations: history?.market_summary?.market_observation || []
+  };
+}
+function calculateOverlap(basketSymbols, marketIntel){
+  const topSymbols = Object.entries(marketIntel.symbol_stats || {}).sort((a,b)=>b[1].count-a[1].count).slice(0,10).map(x=>x[0]);
+  const overlap = basketSymbols.filter(s=>topSymbols.includes(s));
+  return {overlap_symbols:overlap, overlap_score:basketSymbols.length ? overlap.length / basketSymbols.length : 0, top_symbols:topSymbols};
+}
+function calculateMarketTightness(marketCoupon, m8FairYield){
+  if(!m8FairYield || m8FairYield <= 0) return {ratio:1,status:"neutral"};
+  const ratio = marketCoupon / m8FairYield;
+  let status = "fair";
+  if(ratio >= 1.05) status = "attractive"; else if(ratio >= .95) status = "fair"; else if(ratio >= .85) status = "slightly_tight"; else if(ratio >= .75) status = "tight"; else status = "very_tight";
+  return {ratio,status};
+}
+function benchmarkMarketCouponForBasket(symbols, marketHistory, fallback){
+  const records = marketHistory?.records || [];
+  const scored = records.map(r=>{
+    const rs = (r.symbols || []).map(x=>String(x).toUpperCase());
+    const overlap = symbols.filter(s=>rs.includes(s)).length;
+    return {record:r, overlap, ratio: symbols.length ? overlap / symbols.length : 0};
+  }).filter(x=>x.overlap>0).sort((a,b)=>b.ratio-a.ratio || b.overlap-a.overlap);
+  const top = scored.slice(0,5);
+  const avg = top.length ? top.reduce((sum,x)=>sum+Number(x.record.coupon_pct||0),0)/top.length : fallback;
+  return {coupon:avg, comparable_records:top.map(x=>({record_id:x.record.record_id, symbols:x.record.symbols, coupon_pct:x.record.coupon_pct, overlap:x.overlap, market_style:x.record.market_style}))};
+}
+
+function buildBasket({template, stockRoles, pools, marketIntel}){
+  const basket = [], used = new Set();
+  const allowed = {watch:Number(template.allowed_pools?.watch || 0), simulation:Number(template.allowed_pools?.simulation || 0)};
+  const orderedPools = [
+    ...(pools.highlight||[]).map(x=>({...x,pool_type:"highlight"})),
+    ...(pools.watch||[]).map(x=>({...x,pool_type:"watch"})),
+    ...(pools.simulation||[]).map(x=>({...x,pool_type:"simulation"}))
+  ];
+  for(const [role, qty] of Object.entries(template.roles || {})){
+    const candidates = orderedPools.filter(stock=>{
+      const roles = stockRoles[stock.symbol] || [];
+      if(!roles.includes(role) || used.has(stock.symbol)) return false;
+      if(stock.pool_type === "watch" && allowed.watch <= 0) return false;
+      if(stock.pool_type === "simulation" && allowed.simulation <= 0) return false;
+      return true;
+    }).sort((a,b)=> contributionScore(b, marketIntel) - contributionScore(a, marketIntel));
+    candidates.slice(0, qty).forEach(stock=>{
+      basket.push({symbol:stock.symbol, role, pool_type:stock.pool_type, m7_score:stock.m7_score, vol_score:stock.vol_score, m6_market_attractive_score:stock.m6_market_attractive_score});
+      used.add(stock.symbol);
+      if(stock.pool_type === "watch") allowed.watch -= 1;
+      if(stock.pool_type === "simulation") allowed.simulation -= 1;
+    });
+  }
+  return basket;
+}
+function contributionScore(stock, marketIntel){
+  const stat = marketIntel.symbol_stats?.[stock.symbol];
+  const marketPopularity = stat ? Math.min(10, stat.count * 2) : 0;
+  return Number(stock.vol_score||0)*0.35 + Number(stock.m7_score||0)*0.35 + Number(stock.m6_market_attractive_score||0)*0.15 + marketPopularity*0.15;
+}
+async function runM8ForBasket(runId, basket, profile){
+  const symbols = basket.map(x=>x.symbol);
+  if(symbols.length < 2) return {fair_yield:null, error:true, message:"basket symbols < 2"};
+  try{
+    return await runM8Case({caseName:runId, symbols, KI:profile.KI, Strike:profile.Strike, T:profile.T, type:profile.type, marketYield:0});
+  }catch(e){
+    return {fair_yield:null, error:true, message:e.message || String(e)};
+  }
+}
+function evaluateCouponTarget(fairYield, style){
+  if(!Number.isFinite(Number(fairYield))) return false;
+  if(style === "conservative") return fairYield >= 10 && fairYield < 15;
+  if(style === "rational") return fairYield >= 15 && fairYield < 19;
+  if(style === "aggressive") return fairYield >= 19;
+  return false;
+}
+function classifyResult(pass, tightness){
+  if(pass) return "PASS";
+  if(["tight","very_tight"].includes(tightness)) return "FAIL_MARKET_TIGHT";
+  return "FAIL_BASKET_QUALITY";
+}
+function evaluatePortfolioFit(currentPool, basket){
+  const symbols = basket.map(x=>x.symbol);
+  const overlap = symbols.filter(s=>currentPool.includes(s));
+  const fit = overlap.length >= 3 ? "concentration_warning" : overlap.length >= 1 ? "watch" : "good";
+  return {overlap, overlap_count:overlap.length, fit};
+}
+function suggestedAmountFromResult(result, template){
+  if(result.evaluation.result !== "PASS") return 0;
+  if(result.portfolio_fit.fit === "concentration_warning") return 10000;
+  if(template.basket_style === "conservative") return 30000;
+  if(template.basket_style === "rational") return 20000;
+  return 10000;
+}
+async function runSmartSimulation({filterResult, marketHistory, stockRoles, templates, currentPool}){
+  const marketIntel = analyzeMarketHistory(marketHistory);
+  const runs = [];
+  for(const [templateId, template] of Object.entries(templates)){
+    for(const profile of template.structure_profiles || []){
+      const basket = buildBasket({template, stockRoles, pools:filterResult.pools, marketIntel});
+      const runId = `${templateId}_${profile.name}`;
+      const m8 = await runM8ForBasket(runId, basket, profile);
+      const symbols = basket.map(x=>x.symbol);
+      const marketBenchmark = benchmarkMarketCouponForBasket(symbols, marketHistory, marketIntel.avg_market_coupon);
+      const tightness = calculateMarketTightness(marketBenchmark.coupon, Number(m8?.fair_yield));
+      const overlap = calculateOverlap(symbols, marketIntel);
+      const pass = evaluateCouponTarget(Number(m8?.fair_yield), template.basket_style);
+      const evaluation = {result:classifyResult(pass, tightness.status), pass, fair_yield:Number(m8?.fair_yield), market_coupon:marketBenchmark.coupon, market_tightness:tightness.status, market_tightness_ratio:tightness.ratio, overlap_score:overlap.overlap_score, overlap_symbols:overlap.overlap_symbols};
+      const portfolio_fit = evaluatePortfolioFit(currentPool, basket);
+      const result = {run_id:runId, template_id:templateId, template_label:template.label, basket_style:template.basket_style, target_coupon:template.target_coupon, structure:profile, symbols, basket, m8, evaluation, portfolio_fit, market_benchmark:marketBenchmark};
+      result.suggested_amount_usd = suggestedAmountFromResult(result, template);
+      result.decision = buildSmartDecision(result);
+      runs.push(result);
+    }
+  }
+  const ranked = [...runs].sort((a,b)=> smartRank(b)-smartRank(a));
+  const best = ranked[0] || null;
+  return {generated_at:new Date().toISOString(), base_currency:"USD", market_intelligence:marketIntel, runs:ranked, best, summary:{best_template:best?.template_label || "--", best_fair_yield:best?.evaluation?.fair_yield || null, suggested_today_amount_usd:best?.suggested_amount_usd || 0, recommended_action:best?.decision || "No simulation result"}};
+}
+function smartRank(r){
+  let score = 0;
+  if(r.evaluation.result === "PASS") score += 100;
+  if(r.evaluation.result === "FAIL_MARKET_TIGHT") score += 20;
+  score += Number(r.evaluation.overlap_score || 0) * 20;
+  if(r.portfolio_fit.fit === "good") score += 20; else if(r.portfolio_fit.fit === "watch") score += 5; else score -= 20;
+  score += Math.min(25, Number(r.evaluation.fair_yield || 0));
+  return score;
+}
+function buildSmartDecision(r){
+  if(r.evaluation.result === "PASS" && r.portfolio_fit.fit === "good") return `達標且 portfolio fit 良好，建議可進一步評估下單，建議金額 ${money(r.suggested_amount_usd)}。`;
+  if(r.evaluation.result === "PASS" && r.portfolio_fit.fit !== "good") return `Basket 達標，但現有 FCN Pool 有重疊：${r.portfolio_fit.overlap.join("/") || "-"}，建議小部位或換標的。`;
+  if(r.evaluation.result === "FAIL_MARKET_TIGHT") return "市場利率偏緊，建議降低 coupon target、改保守版本，或調整 KI/Strike 後再測。";
+  return "Basket 未達標，建議改 template 或進入 controlled expansion。";
 }
 
 async function loadC1LikeStocks(){
-  // Priority 1: future real C1 output
   const c1 = await tryLoadJson("./data/mm/c1_output.json");
-  if(Array.isArray(c1)) return c1;
-  if(Array.isArray(c1?.data)) return c1.data;
-  if(Array.isArray(c1?.stocks)) return c1.stocks;
-
-  // Priority 2: adapt M7 today + optional M6 forecast
+  if(Array.isArray(c1)) return c1; if(Array.isArray(c1?.data)) return c1.data; if(Array.isArray(c1?.stocks)) return c1.stocks;
   const today = await tryLoadJson("./data/m7/m7_new_stock_today.json");
   const pool = await tryLoadJson("./data/m7/m7_new_stock_pool.json");
   const m6 = await tryLoadJson("./data/m6/price_forecast_debug.json");
-
-  if(today){
-    const rows = adaptM7TodayToC1(today, pool, m6);
-    if(rows.length) return rows;
-  }
-
-  // Priority 3: mock fallback, so page never blank
+  if(today){ const rows = adaptM7TodayToC1(today, pool, m6); if(rows.length) return rows; }
   return mockStocks();
 }
-
-async function tryLoadJson(path){
-  try{
-    const res = await fetch(path + "?v=" + Date.now());
-    if(!res.ok) return null;
-    return await res.json();
-  }catch(e){
-    return null;
-  }
-}
-
+async function tryLoadJson(path){ try{ const res = await fetch(path + "?v=" + Date.now()); if(!res.ok) return null; return await res.json(); }catch(e){ return null; } }
 function adaptM7TodayToC1(today, pool, m6){
-  const m7Rows = [
-    ...(today?.today_highlight_pool || []),
-    ...(today?.simulation_pool || []),
-    ...(today?.watch_pool || []),
-    ...(today?.reject_pool || []),
-    ...(today?.aggressive_recommend || []),
-    ...(today?.watch_list || []),
-    ...(today?.all || [])
-  ];
-
-  const poolMap = buildPoolMap(pool);
-  const m6Map = buildM6Map(m6);
-  const seen = new Set();
-
-  return m7Rows.map((row, idx)=>{
-    const symbol = String(row.symbol || row["股號"] || "").toUpperCase();
-    if(!symbol || seen.has(symbol)) return null;
-    seen.add(symbol);
-
-    const meta = poolMap.get(symbol) || {};
-    const f6 = m6Map.get(symbol) || {};
-
-    const todayScore = Number(row.today_score ?? row.total ?? row["today_score"] ?? 0);
+  const m7Rows = [...(today?.today_highlight_pool||[]),...(today?.simulation_pool||[]),...(today?.watch_pool||[]),...(today?.reject_pool||[]),...(today?.aggressive_recommend||[]),...(today?.watch_list||[]),...(today?.all||[])];
+  const poolMap = buildPoolMap(pool), m6Map = buildM6Map(m6), seen = new Set();
+  return m7Rows.map(row=>{
+    const symbol = String(row.symbol || row["股號"] || "").toUpperCase(); if(!symbol || seen.has(symbol)) return null; seen.add(symbol);
+    const meta = poolMap.get(symbol) || {}, f6 = m6Map.get(symbol) || {};
+    const m7Score = Number(row.m7_score ?? row.m7_v2_score ?? row.today_score ?? row.total ?? row["today_score"] ?? 0);
     const category = String(meta.category || row.category || "unknown").toLowerCase();
-
-    const ret1d = Number(
-      f6?.timing_structure?.raw_returns?.ret_1d_pct ??
-      row.ret_1d ??
-      row.ret_1d_pct ??
-      0
-    );
-    const ret1w = Number(
-      f6?.timing_structure?.raw_returns?.ret_1w_pct ??
-      row.ret_1w ??
-      row.ret_1w_pct ??
-      0
-    );
-    const ret2d = Number(row.ret_2d ?? 0);
-    const ret2w = Number(row.ret_2w ?? 0);
-    const maSlope = Number(
-      row.ma_slope ??
-      row.ma_slope_pct ??
-      row.trend_ma_annualized_pct ??
-      ((f6?.flat?.timing_slope || 0) * 100)
-    );
-
-    const exposureRatio = Number(
-      row?.["持倉曝險"]?.["投入資金比"] ??
-      row.exposureRatio ??
-      row.m2_util ??
-      0
-    );
-
-    const maxAddable = inferAddableAmount({ symbol, category, exposureRatio, todayScore });
+    const exposureRatio = Number(row?.["持倉曝險"]?.["投入資金比"] ?? row.exposureRatio ?? row.m2_util ?? 0);
+    const maxAddable = inferAddableAmount({symbol, category, exposureRatio, m7Score});
     const isRejected = !!row.reject_type || meta.allow_fcn === false || meta["是否納入新股票池"] === false;
-
-    return {
-      symbol,
-      name: row.name || row["股名"] || meta.name || meta["名稱"] || symbol,
-      category,
-      priority_score: todayScore,
-      m7_score: todayScore,
-      m1_score: meta.m1_score ?? null,
-      valuation_score: row.valuation_score,
-      trend_score: row.trend_score,
-      structure_score: row.structure_score,
-
-      ret_1d: ret1d,
-      ret_2d: ret2d,
-      ret_1w: ret1w,
-      ret_2w: ret2w,
-      ma_slope: maSlope,
-
-      m2_util: exposureRatio,
-      m2_exposure_amt: Number(row?.["持倉曝險"]?.["投入金額"] ?? 0),
-      m2_fcn_count: Number(row?.["持倉曝險"]?.["FCN數量"] ?? 0),
-
-      m6_timing: String(f6?.decision_mode || row.m6_timing || "").toLowerCase(),
-      amt_signal: todayScore >= 80 ? 0.8 : todayScore >= 70 ? 0.6 : 0.3,
-      single_suggest_amt: maxAddable > 0 ? 20000 : 0,
-      max_addable_amt: maxAddable,
-      allow_fcn: !isRejected,
-      reject_reason: isRejected ? (row.reject_type || "attribute_reject") : null,
-      why_yes: row.why_yes || [],
-      why_not: row.why_no || []
-    };
+    return {symbol,name:row.name||row["股名"]||meta.name||meta["名稱"]||symbol,category,priority_score:m7Score,m7_score:m7Score,m1_score:meta.m1_score??null,valuation_score:row.valuation_score,trend_score:row.trend_score,structure_score:row.structure_score,ret_1d:Number(f6?.timing_structure?.raw_returns?.ret_1d_pct ?? row.ret_1d ?? row.ret_1d_pct ?? 0),ret_2d:Number(row.ret_2d ?? 0),ret_1w:Number(f6?.timing_structure?.raw_returns?.ret_1w_pct ?? row.ret_1w ?? row.ret_1w_pct ?? 0),ret_2w:Number(f6?.timing_structure?.raw_returns?.ret_2w_pct ?? row.ret_2w ?? 0),m2_util:exposureRatio,m2_exposure_amt:Number(row?.["持倉曝險"]?.["投入金額"] ?? 0),m2_fcn_count:Number(row?.["持倉曝險"]?.["FCN數量"] ?? 0),m6_timing:String(f6?.decision_mode || row.m6_timing || "").toLowerCase(),amt_signal:m7Score>=8?0.8:m7Score>=6?0.6:0.3,single_suggest_amt:maxAddable>0?20000:0,max_addable_amt:maxAddable,allow_fcn:!isRejected,reject_reason:isRejected?(row.reject_type||"attribute_reject"):null,why_yes:row.why_yes||[],why_not:row.why_no||[]};
   }).filter(Boolean);
 }
+function buildPoolMap(pool){ const map = new Map(); if(pool?.data && typeof pool.data === "object") Object.values(pool.data).forEach(r=>{const s=String(r.symbol||r["股號"]||"").toUpperCase(); if(s) map.set(s,r);}); else if(Array.isArray(pool)) pool.forEach(r=>{const s=String(r.symbol||r["股號"]||"").toUpperCase(); if(s) map.set(s,r);}); return map; }
+function buildM6Map(m6){ const map = new Map(); const rows = Array.isArray(m6?.data)?m6.data:Array.isArray(m6)?m6:[]; rows.forEach(r=>{const s=String(r.symbol||"").toUpperCase(); if(s) map.set(s,r);}); return map; }
+function inferAddableAmount({symbol, category, exposureRatio, m7Score}){ const caps={core:50000,growth:30000,defensive:30000,defense:30000,income:20000,incoming:20000,speculative:3000}; const exception=new Set(["NVDA","TSM","SMH","GOOG"]); const base=exception.has(symbol)?70000:(caps[category]||10000); const util=Number(exposureRatio||0); if(util>=1) return 0; if(util>=.9) return Math.min(10000,base); if(m7Score>=8) return Math.min(50000,base); if(m7Score>=6) return Math.min(20000,base); return Math.min(10000,base); }
+function mockStocks(){return [{symbol:"NVDA",name:"NVIDIA",category:"core",m7_score:9,ret_1d:1,ret_2d:2,ret_1w:5,ret_2w:3,m2_util:.7,amt_signal:.8,max_addable_amt:50000,allow_fcn:true},{symbol:"TSM",name:"TSMC",category:"core",m7_score:8.2,ret_1d:1,ret_2d:1,ret_1w:4,ret_2w:2,m2_util:.6,amt_signal:.7,max_addable_amt:20000,allow_fcn:true},{symbol:"GOOG",name:"Alphabet",category:"core",m7_score:7.8,ret_1d:.5,ret_2d:1,ret_1w:3,ret_2w:2,m2_util:.4,amt_signal:.7,max_addable_amt:10000,allow_fcn:true},{symbol:"AVGO",name:"Broadcom",category:"core",m7_score:8.1,ret_1d:2,ret_2d:3,ret_1w:7,ret_2w:4,m2_util:.3,amt_signal:.7,max_addable_amt:30000,allow_fcn:true},{symbol:"MU",name:"Micron",category:"growth",m7_score:5.8,ret_1d:3,ret_2d:5,ret_1w:9,ret_2w:7,m2_util:.3,amt_signal:.9,max_addable_amt:30000,allow_fcn:true},{symbol:"LQD",name:"LQD",category:"income",m7_score:7.2,ret_1d:.1,ret_2d:.2,ret_1w:.5,ret_2w:.7,m2_util:.1,amt_signal:.5,max_addable_amt:20000,allow_fcn:true},{symbol:"SMH",name:"SMH",category:"defensive",m7_score:8,ret_1d:1,ret_2d:1,ret_1w:3,ret_2w:2,m2_util:.2,amt_signal:.7,max_addable_amt:30000,allow_fcn:true},{symbol:"QQQ",name:"QQQ",category:"defensive",m7_score:7.5,ret_1d:.8,ret_2d:1,ret_1w:2,ret_2w:2,m2_util:.2,amt_signal:.6,max_addable_amt:20000,allow_fcn:true}];}
 
-function buildPoolMap(pool){
-  const map = new Map();
-  if(pool?.data && typeof pool.data === "object"){
-    Object.values(pool.data).forEach(row=>{
-      const sym = String(row.symbol || row["股號"] || "").toUpperCase();
-      if(sym) map.set(sym,row);
-    });
-  }else if(Array.isArray(pool)){
-    pool.forEach(row=>{
-      const sym = String(row.symbol || row["股號"] || "").toUpperCase();
-      if(sym) map.set(sym,row);
-    });
-  }
-  return map;
+function renderAll({filterResult, smartResult}){ renderSummary(filterResult.summary, smartResult); renderSmart(smartResult); renderPools(filterResult.pools); renderCategories(filterResult.summary.category, filterResult.category_map); setupTable(filterResult); document.getElementById("debug").textContent = JSON.stringify({filterResult, smartResult}, null, 2); }
+function renderSummary(s, smart){ const cards = [["Input Stocks",s.total_stocks],["Highlight",s.pools.highlight],["Watch",s.pools.watch],["Simulation",s.pools.simulation],["Smart Runs",smart.runs.length],["Best Yield",fmt(smart.summary.best_fair_yield)+"%"],["Suggest",money(smart.summary.suggested_today_amount_usd)]]; document.getElementById("summary").innerHTML = cards.map(([t,v])=>`<div class="card"><div class="kpi-title">${t}</div><div class="kpi-value">${v}</div></div>`).join(""); }
+function renderSmart(smart){
+  const best = smart.best;
+  document.getElementById("smart-summary").innerHTML = `<div class="card ${best?.evaluation?.result==='PASS'?'result-pass':'result-warn'}"><h3>Best Decision</h3><div class="kpi-value">${best?.template_label || "--"}</div><p>${smart.summary.recommended_action}</p><div>Suggested Today：<b>${money(smart.summary.suggested_today_amount_usd)}</b></div><div>Best Fair Yield：<b>${fmt(smart.summary.best_fair_yield)}%</b></div></div><div class="card"><h3>Market Status</h3><div>Market Style：<span class="badge info">${smart.market_intelligence.market_style}</span></div><div>AI Appetite：${smart.market_intelligence.ai_appetite}</div><div>Avg Market Coupon：${fmt(smart.market_intelligence.avg_market_coupon)}%</div><div>Best Yield Area：${smart.market_intelligence.best_yield_area}</div><div class="small">${(smart.market_intelligence.observations||[]).slice(0,5).map(x=>`• ${x}`).join("<br>")}</div></div>`;
+  document.getElementById("smart-runs").innerHTML = smart.runs.map(renderRunCard).join("");
+  const topSymbols = Object.entries(smart.market_intelligence.symbol_stats || {}).sort((a,b)=>b[1].count-a[1].count).slice(0,10);
+  document.getElementById("market-intel").innerHTML = `<div class="card"><h3>Market Top Symbols</h3>${topSymbols.map(([s,v])=>`<div class="stock-line"><div class="stock-main"><span>${s}</span><span>${v.count}x</span></div><div class="stock-sub">avg coupon ${fmt(v.avg_coupon)}%</div></div>`).join("") || "<div class='small'>No history</div>"}</div><div class="card"><h3>Basket Type Frequency</h3>${Object.entries(smart.market_intelligence.basket_stats||{}).map(([k,v])=>`<div class="stock-line"><div class="stock-main"><span>${k}</span><span>${v}</span></div></div>`).join("") || "<div class='small'>No history</div>"}</div>`;
 }
-
-function buildM6Map(m6){
-  const map = new Map();
-  const rows = Array.isArray(m6?.data) ? m6.data : Array.isArray(m6) ? m6 : [];
-  rows.forEach(row=>{
-    const sym = String(row.symbol || "").toUpperCase();
-    if(sym) map.set(sym,row);
-  });
-  return map;
-}
-
-function inferAddableAmount({ symbol, category, exposureRatio, todayScore }){
-  const caps = {
-    core: 50000,
-    growth: 30000,
-    defensive: 30000,
-    defense: 30000,
-    income: 20000,
-    incoming: 20000,
-    speculative: 3000
-  };
-  const exception = new Set(["NVDA","TSM","SMH","GOOG"]);
-  const base = exception.has(symbol) ? 70000 : (caps[category] || 10000);
-  const util = Number(exposureRatio || 0);
-  if(util >= 1) return 0;
-  if(util >= 0.9) return Math.min(10000, base);
-  if(todayScore >= 80) return Math.min(50000, base);
-  if(todayScore >= 70) return Math.min(20000, base);
-  return Math.min(10000, base);
-}
-
-function mockStocks(){
-  return [
-    {symbol:"NVDA",name:"NVIDIA",category:"core",priority_score:90,ret_1d:1,ret_2d:2,ret_1w:5,ret_2w:3,ma_slope:6,m2_util:0.7,m6_timing:"sideways",amt_signal:0.8,max_addable_amt:50000,allow_fcn:true},
-    {symbol:"TSM",name:"TSMC",category:"core",priority_score:82,ret_1d:1,ret_2d:1,ret_1w:4,ret_2w:2,ma_slope:4,m2_util:0.6,m6_timing:"sideways",amt_signal:0.7,max_addable_amt:20000,allow_fcn:true},
-    {symbol:"GOOG",name:"Alphabet",category:"core",priority_score:78,ret_1d:.5,ret_2d:1,ret_1w:3,ret_2w:2,ma_slope:3,m2_util:0.4,m6_timing:"sideways",amt_signal:0.7,max_addable_amt:10000,allow_fcn:true},
-    {symbol:"MU",name:"Micron",category:"growth",priority_score:84,ret_1d:3,ret_2d:5,ret_1w:9,ret_2w:7,ma_slope:8,m2_util:0.3,m6_timing:"sideways",amt_signal:.9,max_addable_amt:30000,allow_fcn:true},
-    {symbol:"PLTR",name:"Palantir",category:"growth",priority_score:80,ret_1d:4,ret_2d:5,ret_1w:10,ret_2w:6,ma_slope:9,m2_util:0.5,m6_timing:"sideways",amt_signal:.8,max_addable_amt:20000,allow_fcn:true},
-    {symbol:"LQD",name:"LQD",category:"income",priority_score:72,ret_1d:.1,ret_2d:.2,ret_1w:.5,ret_2w:.7,ma_slope:.2,m2_util:0.1,m6_timing:"sideways",amt_signal:.5,max_addable_amt:20000,allow_fcn:true}
-  ];
-}
-
-function renderAll(res){
-  renderSummary(res.summary);
-  renderPools(res.pools);
-  renderCategories(res.summary.category, res.category_map);
-  renderBaskets(res.baskets);
-  renderAllocation(res.allocation);
-  renderMarket(res.market_match);
-  setupTable(res);
-  document.getElementById("debug").textContent = JSON.stringify(res, null, 2);
-}
-
-function renderSummary(s){
-  const cards = [
-    ["Input Stocks", s.total_stocks],
-    ["Highlight", s.pools.highlight],
-    ["Simulation", s.pools.simulation],
-    ["Reject", s.pools.reject],
-    ["Basket Gen", s.baskets.generated],
-    ["Allocated", money(s.allocation.allocated)],
-    ["Market Follow", s.market_order_match.follow]
-  ];
-  document.getElementById("summary").innerHTML = cards.map(([t,v])=>`
-    <div class="card">
-      <div class="kpi-title">${t}</div>
-      <div class="kpi-value">${v}</div>
-    </div>
-  `).join("");
-}
-
-function renderPools(pools){
-  renderPool("pool-highlight", pools.highlight);
-  renderPool("pool-watch", pools.watch);
-  renderPool("pool-simulation", pools.simulation.slice(0,8));
-  renderPool("pool-reject", pools.reject);
-}
-
-function renderPool(id, list){
-  const el = document.getElementById(id);
-  if(!list.length){
-    el.innerHTML = `<div class="small">目前無資料</div>`;
-    return;
-  }
-  el.innerHTML = list.slice(0,8).map(stockLine).join("");
-}
-
-function stockLine(s){
-  return `
-    <div class="stock-line">
-      <div class="stock-main">
-        <span>${s.symbol}</span>
-        <span>${money(s.max_addable_amt)}</span>
-      </div>
-      <div class="stock-sub">
-        score ${fmt(s.priority_score)} ｜ vol ${fmt(s.vol_score)}
-        <span class="badge ${s.vol_band}">${s.vol_band}</span>
-        ｜ M2 ${fmt((s.m2_util||0)*100)}%
-      </div>
-    </div>
-  `;
-}
-
-function renderCategories(catSummary, catMap){
-  document.getElementById("category").innerHTML = Object.keys(catMap).map(cat=>{
-    const summary = catSummary[cat] || {};
-    const rows = (catMap[cat] || []).slice(0,5);
-    return `
-      <div class="card">
-        <h3>${cat.toUpperCase()} (${summary.count || 0})</h3>
-        <div class="small">mean ${fmt(summary.mean_priority)} ｜ std ${fmt(summary.std_priority)} ｜ CV ${fmt(summary.cv_priority)}</div>
-        <div class="small">avg vol ${fmt(summary.avg_vol)} ｜ cap ${money(summary.total_max_addable || 0)}</div>
-        <hr style="border-color:var(--line)">
-        ${rows.length ? rows.map(stockLine).join("") : `<div class="small">無</div>`}
-      </div>
-    `;
-  }).join("");
-}
-
-function renderBaskets(baskets){
-  document.getElementById("basket").innerHTML = baskets.map(b=>`
-    <div class="card">
-      <h3>${b.id}</h3>
-      <div><span class="badge good">${b.style_label}</span></div>
-      <p class="small">${b.symbols.join(" / ")}</p>
-      <div>Basket Cap：<b>${money(b.basket_cap)}</b></div>
-      <div>Avg Score：${fmt(b.avg_score)} ｜ Avg Vol：${fmt(b.avg_vol)}</div>
-      <div>KI ${b.structure.KI}% ｜ Strike ${b.structure.Strike}% ｜ ${b.structure.T}M ｜ ${b.structure.type}</div>
-      <hr style="border-color:var(--line)">
-      <div>Fair Yield：<b>${fmt(b.m8?.fair_yield)}%</b></div>
-      <div>BasketVol：${fmt(b.m8?.basket_vol)} ｜ VolAdj：${fmt(b.m8?.vol_adj)}</div>
-      <div>Pricing：${pricingBadge(b.m8?.pricing_view || b.pricing_view)}</div>
-      <div class="small">Rule：${b.rule_check?.pass ? "PASS" : "CHECK"} ${b.rule_check?.reasons?.join(", ") || ""}</div>
-    </div>
-  `).join("") || `<div class="note">目前沒有產出 basket。</div>`;
-}
-
-function renderAllocation(allocation){
-  const rows = allocation.rows || [];
-  document.getElementById("allocation").innerHTML = `
-    <div class="card">
-      <div>Today Capacity：<b>${money(allocation.total_capacity)}</b></div>
-      <div>Allocated：<b>${money(allocation.allocated)}</b></div>
-      <div>Remaining：<b>${money(allocation.remaining)}</b></div>
-    </div>
-    <div class="table-wrap" style="margin-top:12px">
-      <table>
-        <tr><th>Rank</th><th>Basket</th><th>Cap</th><th>Suggested</th><th>Final</th><th>Remaining</th><th>Reason</th></tr>
-        ${rows.map(r=>`
-          <tr>
-            <td>${r.rank}</td><td>${r.basket_id}</td><td>${money(r.basket_cap)}</td>
-            <td>${money(r.suggested_amt)}</td><td>${money(r.final_alloc_amt)}</td>
-            <td>${money(r.remaining_after)}</td><td>${r.reason}</td>
-          </tr>
-        `).join("")}
-      </table>
-    </div>
-  `;
-}
-
-function renderMarket(list){
-  document.getElementById("market").innerHTML = list.map(o=>`
-    <div class="card">
-      <h3>${o.order.bank}｜${o.order.order_id}</h3>
-      <div class="small">${o.order.symbols.join(" / ")}</div>
-      <div>Match：<b>${fmt(o.match_pct)}%</b></div>
-      <div>Matched：${o.matched.join(", ") || "-"}</div>
-      <div>Rejected：${o.rejected.map(r=>`${r.symbol}(${r.reason})`).join(", ") || "-"}</div>
-      <hr style="border-color:var(--line)">
-      <div>Fair：${fmt(o.fair_yield)}% ｜ Market：${fmt(o.market_yield)}%</div>
-      <div>Delta：${fmt(o.pricing_delta)}% ｜ ${pricingBadge(o.pricing_view)}</div>
-      <div>Action：<b>${o.action}</b></div>
-      <div>Suggested：<b>${money(o.suggested_amt)}</b></div>
-      <div class="small">Outliers：${o.outliers.map(x=>`${x.symbol}:${x.type}`).join(", ") || "-"}</div>
-    </div>
-  `).join("") || `<div class="note">尚未輸入 market orders。</div>`;
-}
-
-function setupTable(res){
-  const allRows = [];
-  Object.entries(res.pools).forEach(([pool, rows])=>{
-    rows.forEach(r=>allRows.push({...r, pool}));
-  });
-
-  const render = ()=>{
-    const q = document.getElementById("search").value.trim().toUpperCase();
-    const p = document.getElementById("filterPool").value;
-    const v = document.getElementById("filterVol").value;
-    const c = document.getElementById("filterCat").value;
-
-    const rows = allRows.filter(r=>
-      (!q || r.symbol.includes(q)) &&
-      (!p || r.pool === p) &&
-      (!v || r.vol_band === v) &&
-      (!c || r.category === c)
-    );
-
-    document.getElementById("stockTable").innerHTML = `
-      <tr>
-        <th>Pool</th><th>Symbol</th><th>Category</th><th>Priority</th><th>M7</th>
-        <th>Vol</th><th>Band</th><th>M2</th><th>M6</th><th>Stock Amt</th><th>Reason</th>
-      </tr>
-      ${rows.map(r=>`
-        <tr>
-          <td>${r.pool}</td><td><b>${r.symbol}</b></td><td>${r.category}</td>
-          <td>${fmt(r.priority_score)}</td><td>${fmt(r.m7_score)}</td>
-          <td>${fmt(r.vol_score)}</td><td><span class="badge ${r.vol_band}">${r.vol_band}</span></td>
-          <td>${fmt((r.m2_util||0)*100)}%</td><td>${r.m6_timing || "-"}</td>
-          <td>${money(r.max_addable_amt)}</td>
-          <td>${[...(r.why_yes||[]),...(r.why_not||[]),...(r.reject_reasons||[])].join(" / ")}</td>
-        </tr>
-      `).join("")}
-    `;
-  };
-
-  ["search","filterPool","filterVol","filterCat"].forEach(id=>{
-    document.getElementById(id).addEventListener("input", render);
-  });
-  render();
-}
-
-function pricingBadge(v){
-  const s = String(v || "unknown");
-  const cls = ["cheap","slightly_cheap","便宜","略便宜"].includes(s) ? "good"
-    : ["rich","very_rich","偏貴","明顯偏貴"].includes(s) ? "bad" : "warn";
-  return `<span class="badge ${cls}">${s}</span>`;
-}
-
-function money(v){
-  const x = Number(v);
-  if(!Number.isFinite(x)) return "-";
-  return "USD " + Math.round(x).toLocaleString();
-}
-
-function fmt(v){
-  const x = Number(v);
-  return Number.isFinite(x) ? x.toFixed(2) : "-";
-}
-
-function escapeHtml(s){
-  return String(s).replace(/[&<>"']/g, m=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[m]));
-}
-
+function renderRunCard(r){ const cls = r.evaluation.result === "PASS" ? "result-pass" : r.evaluation.result === "FAIL_MARKET_TIGHT" ? "result-warn" : "result-fail"; return `<div class="card ${cls}"><h3>${r.template_label}</h3><div><span class="badge ${r.evaluation.result==='PASS'?'pass':'warn'}">${r.evaluation.result}</span> <span class="badge purple">${r.basket_style}</span></div><p class="small">${r.symbols.join(" / ")}</p><div>Structure：${r.structure.type}｜KI ${r.structure.KI}%｜Strike ${r.structure.Strike}%｜${r.structure.T}M</div><div>Fair Yield：<b>${fmt(r.evaluation.fair_yield)}%</b></div><div>Market Coupon：${fmt(r.evaluation.market_coupon)}% ｜ Ratio ${fmt(r.evaluation.market_tightness_ratio)}</div><div>Overlap：${fmt(r.evaluation.overlap_score*100)}% ｜ ${r.evaluation.overlap_symbols.join("/") || "-"}</div><div>Portfolio：${r.portfolio_fit.fit} ${r.portfolio_fit.overlap.length ? "｜"+r.portfolio_fit.overlap.join("/") : ""}</div><hr style="border-color:var(--line)"><div class="small">${r.decision}</div></div>`; }
+function renderPools(pools){ renderPool("pool-highlight", pools.highlight); renderPool("pool-watch", pools.watch); renderPool("pool-simulation", pools.simulation); renderPool("pool-reject", pools.reject); }
+function renderPool(id, list){ const el=document.getElementById(id); if(!list.length){el.innerHTML=`<div class="small">目前無資料</div>`;return;} el.innerHTML=list.slice(0,8).map(stockLine).join(""); }
+function stockLine(s){ return `<div class="stock-line"><div class="stock-main"><span>${s.symbol}</span><span>${money(s.max_addable_amt)}</span></div><div class="stock-sub">M7 Score ${fmt(s.m7_score)} ｜ M6 ${fmt(s.m6_market_attractive_score)} ｜ vol ${fmt(s.vol_score)} <span class="badge ${s.vol_band}">${s.vol_band}</span> ｜ M2 ${fmt((s.m2_util||0)*100)}%</div></div>`; }
+function renderCategories(catSummary, catMap){ document.getElementById("category").innerHTML=Object.keys(catMap).map(cat=>{const summary=catSummary[cat]||{};const rows=(catMap[cat]||[]).slice(0,5);return `<div class="card"><h3>${cat.toUpperCase()} (${summary.count||0})</h3><div class="small">M6 mean ${fmt(summary.mean_m6_market)} ｜ std ${fmt(summary.std_m6_market)} ｜ CV ${fmt(summary.cv_m6_market)}</div><div class="small">avg vol ${fmt(summary.avg_vol)} ｜ cap ${money(summary.total_max_addable||0)}</div><hr style="border-color:var(--line)">${rows.length?rows.map(stockLine).join(""):`<div class="small">無</div>`}</div>`;}).join(""); }
+function setupTable(res){ const allRows=[]; Object.entries(res.pools).forEach(([pool,rows])=>rows.forEach(r=>allRows.push({...r,pool}))); const render=()=>{const q=document.getElementById("search").value.trim().toUpperCase(),p=document.getElementById("filterPool").value,v=document.getElementById("filterVol").value,c=document.getElementById("filterCat").value; const rows=allRows.filter(r=>(!q||r.symbol.includes(q))&&(!p||r.pool===p)&&(!v||r.vol_band===v)&&(!c||r.category===c)); document.getElementById("stockTable").innerHTML=`<tr><th>Pool</th><th>Symbol</th><th>Category</th><th>M7 Score</th><th>M6</th><th>Vol</th><th>Band</th><th>M2</th><th>Stock Amt</th><th>Reason</th></tr>${rows.map(r=>`<tr><td>${r.pool}</td><td><b>${r.symbol}</b></td><td>${r.category}</td><td>${fmt(r.m7_score)}</td><td>${fmt(r.m6_market_attractive_score)}</td><td>${fmt(r.vol_score)}</td><td><span class="badge ${r.vol_band}">${r.vol_band}</span></td><td>${fmt((r.m2_util||0)*100)}%</td><td>${money(r.max_addable_amt)}</td><td>${[...(r.why_yes||[]),...(r.why_not||[]),...(r.reject_reasons||[])].join(" / ")}</td></tr>`).join("")}`;}; ["search","filterPool","filterVol","filterCat"].forEach(id=>document.getElementById(id).addEventListener("input",render)); render(); }
+function money(v){ const x=Number(v); if(!Number.isFinite(x)) return "-"; return "USD "+Math.round(x).toLocaleString(); }
+function fmt(v){ const x=Number(v); return Number.isFinite(x)?x.toFixed(2):"-"; }
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m])); }
 main();
 </script>
 </body>
 </html>
+
