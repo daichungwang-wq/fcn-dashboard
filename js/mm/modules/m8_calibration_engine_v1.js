@@ -118,7 +118,9 @@ function normalizeFcnRecord(row, sourceName, idx) {
 }
 
 function normalizeMarketHistoryRows(json) {
-  const rows = arr(json?.records);
+  const rows = Array.isArray(json)
+    ? json
+    : arr(json?.records);
 
   return rows.map((row, idx) => ({
     source_name: "market_history",
