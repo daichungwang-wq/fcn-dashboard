@@ -1,297 +1,256 @@
-# js/mm/modules/m8_regression_engine_v1.js
+// ============================================================================
+// M8 Regression Engine v1
+// Path: js/mm/modules/m8_regression_engine_v1.js
+// Purpose:
+// 1. Build market-implied template / risk / tenor / structure curves
+// 2. Produce New Fair Rate per FCN
+// 3. Compare Market Coupon vs Old Fair vs New Fair
+// ============================================================================
 
-```javascript
 (function (global) {
-  'use strict';
+  "use strict";
+
+  const VERSION = "m8_regression_engine_v1_20260508";
 
   function toNum(v, d = 0) {
     const n = Number(v);
     return Number.isFinite(n) ? n : d;
   }
 
-  function avg(arr) {
-    if (!Array.isArray(arr) || !arr.length) return 0;
-    return arr.reduce((a, b) => a + toNum(b), 0) / arr.length;
+  function round2(v) {
+    const n = Number(v);
+    return Number.isFinite(n) ? Math.round(n * 100) / 100 : null;
   }
 
-  function median(arr) {
-    if (!Array.isArray(arr) || !arr.length) return 0;
-
-    const s = [...arr]
-      .map(v => toNum(v))
-      .sort((a, b) => a - b);
-
-    const mid = Math.floor(s.length / 2);
-
-    return s.length % 2
-      ? s[mid]
-      : (s[mid - 1] + s[mid]) / 2;
+  function arr(v) {
+    return Array.isArray(v) ? v : [];
   }
 
-  function bucketAvg(rows, field) {
-    return avg(rows.map(r => toNum(r[field])));
+  function avg(values) {
+    const xs = arr(values).map(Number).filter(Number.isFinite);
+    if (!xs.length) return null;
+    return xs.reduce((a, b) => a + b, 0) / xs.length;
+  }
+
+  function median(values) {
+    const xs = arr(values).map(Number).filter(Number.isFinite).sort((a, b) => a - b);
+    if (!xs.length) return null;
+    const mid = Math.floor(xs.length / 2);
+    return xs.length % 2 ? xs[mid] : (xs[mid - 1] + xs[mid]) / 2;
+  }
+
+  function pickNum(...values) {
+    for (const v of values) {
+      const n = Number(v);
+      if (Number.isFinite(n)) return n;
+    }
+    return null;
+  }
+
+  function safeKey(v, fallback = "UNKNOWN") {
+    const s = String(v || "").trim();
+    return s || fallback;
+  }
+
+  function getMarketCoupon(row) {
+    return pickNum(row.market_coupon, row.market_rate, row.coupon_pct);
+  }
+
+  function getOldFairRate(row) {
+    return pickNum(
+      row.fair_rate,
+      row.fair_yield,
+      row.my_preference_rate,
+      row.m8_features && row.m8_features.fair_yield
+    );
+  }
+
+  function getPreRate(row) {
+    return pickNum(row.pre_rate, row.my_pre_rate, row.m8_features && row.m8_features.pre_rate);
+  }
+
+  function getMarketImpliedBrake(row) {
+    const direct = pickNum(row.market_implied_brake, row.implied_market_brake);
+    if (direct !== null) return direct;
+
+    const pre = getPreRate(row);
+    const coupon = getMarketCoupon(row);
+    if (pre !== null && coupon !== null) return pre - coupon;
+
+    return null;
+  }
+
+  function groupBy(rows, keyFn) {
+    const map = new Map();
+    arr(rows).forEach(row => {
+      const k = safeKey(keyFn(row));
+      if (!map.has(k)) map.set(k, []);
+      map.get(k).push(row);
+    });
+    return map;
+  }
+
+  function summarizeGroup(key, rows, keyName) {
+    const coupons = rows.map(getMarketCoupon).filter(Number.isFinite);
+    const oldFairs = rows.map(getOldFairRate).filter(Number.isFinite);
+    const preRates = rows.map(getPreRate).filter(Number.isFinite);
+    const brakes = rows.map(getMarketImpliedBrake).filter(Number.isFinite);
+
+    return {
+      [keyName]: key,
+      count: rows.length,
+      avg_coupon: round2(avg(coupons)),
+      median_coupon: round2(median(coupons)),
+      avg_old_fair_rate: round2(avg(oldFairs)),
+      avg_pre_rate: round2(avg(preRates)),
+      avg_market_implied_brake: round2(avg(brakes)),
+      median_market_implied_brake: round2(median(brakes))
+    };
   }
 
   function buildTemplateSummary(rows) {
-    const map = {};
-
-    rows.forEach(r => {
-      const k = r.basket_template || 'UNKNOWN';
-
-      if (!map[k]) {
-        map[k] = {
-          template: k,
-          count: 0,
-          coupons: [],
-          brakes: [],
-          fairs: [],
-          newFairs: []
+    const groups = groupBy(rows, r => r.basket_template || r.basket_template_label);
+    return Array.from(groups.entries())
+      .map(([k, rs]) => {
+        const base = summarizeGroup(k, rs, "template");
+        const labels = rs.map(r => r.basket_template_label).filter(Boolean);
+        const names = rs.map(r => r.basket_template_name).filter(Boolean);
+        return {
+          ...base,
+          template_label: labels[0] || k,
+          template_name: names[0] || ""
         };
-      }
-
-      map[k].count += 1;
-      map[k].coupons.push(toNum(r.market_coupon));
-      map[k].brakes.push(toNum(r.market_implied_brake));
-      map[k].fairs.push(toNum(r.fair_rate));
-    });
-
-    return Object.values(map)
-      .map(v => ({
-        template: v.template,
-        count: v.count,
-        avg_coupon: avg(v.coupons),
-        median_coupon: median(v.coupons),
-        avg_brake: avg(v.brakes),
-        avg_fair_rate: avg(v.fairs)
-      }))
+      })
       .sort((a, b) => b.count - a.count);
   }
 
   function buildRiskSurface(rows) {
-    const map = {};
-
-    rows.forEach(r => {
-      const k = r.risk_template || 'UNKNOWN';
-
-      if (!map[k]) {
-        map[k] = {
-          risk_template: k,
-          count: 0,
-          coupons: [],
-          brakes: []
-        };
-      }
-
-      map[k].count += 1;
-      map[k].coupons.push(toNum(r.market_coupon));
-      map[k].brakes.push(toNum(r.market_implied_brake));
-    });
-
-    return Object.values(map)
-      .map(v => ({
-        risk_template: v.risk_template,
-        count: v.count,
-        avg_coupon: avg(v.coupons),
-        avg_brake: avg(v.brakes)
-      }))
-      .sort((a, b) => b.avg_coupon - a.avg_coupon);
+    const groups = groupBy(rows, r => r.risk_template);
+    return Array.from(groups.entries())
+      .map(([k, rs]) => summarizeGroup(k, rs, "risk_template"))
+      .sort((a, b) => (b.avg_coupon || 0) - (a.avg_coupon || 0));
   }
 
   function buildTenorCurve(rows) {
-    const map = {};
-
-    rows.forEach(r => {
-      const k = r.tenor_template || 'UNKNOWN';
-
-      if (!map[k]) {
-        map[k] = {
-          tenor_template: k,
-          count: 0,
-          coupons: [],
-          brakes: []
-        };
-      }
-
-      map[k].count += 1;
-      map[k].coupons.push(toNum(r.market_coupon));
-      map[k].brakes.push(toNum(r.market_implied_brake));
-    });
-
-    return Object.values(map)
-      .map(v => ({
-        tenor_template: v.tenor_template,
-        count: v.count,
-        avg_coupon: avg(v.coupons),
-        avg_brake: avg(v.brakes)
-      }))
-      .sort((a, b) => b.avg_coupon - a.avg_coupon);
+    const groups = groupBy(rows, r => r.tenor_template || r.tenor_bucket);
+    return Array.from(groups.entries())
+      .map(([k, rs]) => summarizeGroup(k, rs, "tenor_template"))
+      .sort((a, b) => (b.avg_coupon || 0) - (a.avg_coupon || 0));
   }
 
   function buildStructureCurve(rows) {
-    const map = {};
+    const groups = groupBy(rows, r => r.structure_template || r.type);
+    return Array.from(groups.entries())
+      .map(([k, rs]) => summarizeGroup(k, rs, "structure_template"))
+      .sort((a, b) => (b.avg_coupon || 0) - (a.avg_coupon || 0));
+  }
 
-    rows.forEach(r => {
-      const k = r.structure_template || 'UNKNOWN';
-
-      if (!map[k]) {
-        map[k] = {
-          structure_template: k,
-          count: 0,
-          coupons: [],
-          brakes: []
-        };
-      }
-
-      map[k].count += 1;
-      map[k].coupons.push(toNum(r.market_coupon));
-      map[k].brakes.push(toNum(r.market_implied_brake));
-    });
-
-    return Object.values(map)
-      .map(v => ({
-        structure_template: v.structure_template,
-        count: v.count,
-        avg_coupon: avg(v.coupons),
-        avg_brake: avg(v.brakes)
-      }))
-      .sort((a, b) => b.avg_coupon - a.avg_coupon);
+  function buildDNAStats(rows) {
+    const groups = groupBy(rows, r => r.core_dna_2 || r.core_dna_3 || r.basket_symbols_key);
+    return Array.from(groups.entries())
+      .map(([k, rs]) => summarizeGroup(k, rs, "dna"))
+      .sort((a, b) => b.count - a.count);
   }
 
   function buildM7Overlay(rows) {
     const buckets = {
-      high_8: [],
-      strong_7_8: [],
-      medium_6_7: [],
-      weak_lt6: []
+      high_8_plus: [],
+      strong_7_to_8: [],
+      medium_6_to_7: [],
+      weak_under_6: [],
+      no_m7_score: []
     };
 
-    rows.forEach(r => {
-      const s = toNum(r.avg_m7_score);
-
-      if (s >= 8) {
-        buckets.high_8.push(r);
-      } else if (s >= 7) {
-        buckets.strong_7_8.push(r);
-      } else if (s >= 6) {
-        buckets.medium_6_7.push(r);
+    arr(rows).forEach(r => {
+      const raw = pickNum(r.avg_m7_score, r.m7_score, r.score_avg);
+      if (raw === null) {
+        buckets.no_m7_score.push(r);
+      } else if (raw >= 8) {
+        buckets.high_8_plus.push(r);
+      } else if (raw >= 7) {
+        buckets.strong_7_to_8.push(r);
+      } else if (raw >= 6) {
+        buckets.medium_6_to_7.push(r);
       } else {
-        buckets.weak_lt6.push(r);
+        buckets.weak_under_6.push(r);
       }
     });
 
-    return Object.entries(buckets).map(([k, rows]) => ({
-      bucket: k,
-      count: rows.length,
-      avg_coupon: bucketAvg(rows, 'market_coupon'),
-      avg_brake: bucketAvg(rows, 'market_implied_brake')
-    }));
+    return Object.entries(buckets).map(([bucket, rs]) => summarizeGroup(bucket, rs, "m7_bucket"));
   }
 
-  function buildDNAStats(rows) {
-    const map = {};
-
-    rows.forEach(r => {
-      const k = r.core_dna_2 || 'UNKNOWN';
-
-      if (!map[k]) {
-        map[k] = {
-          dna: k,
-          count: 0,
-          coupons: []
-        };
-      }
-
-      map[k].count += 1;
-      map[k].coupons.push(toNum(r.market_coupon));
-    });
-
-    return Object.values(map)
-      .map(v => ({
-        dna: v.dna,
-        count: v.count,
-        avg_coupon: avg(v.coupons)
-      }))
-      .sort((a, b) => b.count - a.count);
+  function globalMeanCoupon(rows) {
+    return avg(arr(rows).map(getMarketCoupon).filter(Number.isFinite)) || 18;
   }
 
-  function calcTemplateBaseRate(row, templateSummary) {
-    const hit = templateSummary.find(
-      t => t.template === row.basket_template
-    );
-
-    return hit
-      ? toNum(hit.avg_coupon)
-      : toNum(row.fair_rate);
+  function findCurveValue(curve, keyName, key, valueField, fallback) {
+    const hit = arr(curve).find(x => x[keyName] === key);
+    const v = hit ? pickNum(hit[valueField]) : null;
+    return v === null ? fallback : v;
   }
 
-  function calcRiskAdjustment(row, riskSurface) {
-    const hit = riskSurface.find(
-      r => r.risk_template === row.risk_template
-    );
-
-    if (!hit) return 0;
-
-    return (toNum(hit.avg_coupon) - 18) * 0.35;
+  function calcTemplateBaseRate(row, templateSummary, fallbackRate) {
+    const key = safeKey(row.basket_template || row.basket_template_label);
+    return findCurveValue(templateSummary, "template", key, "avg_coupon", fallbackRate);
   }
 
-  function calcTenorAdjustment(row, tenorCurve) {
-    const hit = tenorCurve.find(
-      r => r.tenor_template === row.tenor_template
-    );
-
-    if (!hit) return 0;
-
-    return (toNum(hit.avg_brake) - 2) * 0.45;
+  function calcRiskAdjustment(row, riskSurface, globalCoupon) {
+    const key = safeKey(row.risk_template);
+    const v = findCurveValue(riskSurface, "risk_template", key, "avg_coupon", globalCoupon);
+    return (v - globalCoupon) * 0.35;
   }
 
-  function calcStructureAdjustment(row, structureCurve) {
-    const hit = structureCurve.find(
-      r => r.structure_template === row.structure_template
-    );
+  function calcTenorAdjustment(row, tenorCurve, globalBrake) {
+    const key = safeKey(row.tenor_template || row.tenor_bucket);
+    const v = findCurveValue(tenorCurve, "tenor_template", key, "avg_market_implied_brake", globalBrake);
+    return (v - globalBrake) * 0.45;
+  }
 
-    if (!hit) return 0;
-
-    return (toNum(hit.avg_coupon) - 18) * 0.12;
+  function calcStructureAdjustment(row, structureCurve, globalCoupon) {
+    const key = safeKey(row.structure_template || row.type);
+    const v = findCurveValue(structureCurve, "structure_template", key, "avg_coupon", globalCoupon);
+    return (v - globalCoupon) * 0.12;
   }
 
   function calcM7OverlayAdjustment(row) {
-    const m7 = toNum(row.avg_m7_score, 7);
+    const m7 = pickNum(row.avg_m7_score, row.m7_score, row.score_avg);
+    if (m7 === null) return 0;
 
     if (m7 >= 8.5) return -1.4;
-    if (m7 >= 8) return -1.0;
+    if (m7 >= 8.0) return -1.0;
     if (m7 >= 7.5) return -0.6;
-    if (m7 >= 7) return -0.2;
+    if (m7 >= 7.0) return -0.2;
     if (m7 >= 6.5) return 0.5;
-    if (m7 >= 6) return 1.2;
-
+    if (m7 >= 6.0) return 1.2;
     return 2.5;
   }
 
-  function calcNewFairRate(
-    row,
-    templateSummary,
-    riskSurface,
-    tenorCurve,
-    structureCurve
-  ) {
+  function calcNewFairRate(row, curves, globals) {
+    const coupon = getMarketCoupon(row);
+    const oldFair = getOldFairRate(row);
+
     const templateBase = calcTemplateBaseRate(
       row,
-      templateSummary
+      curves.templateSummary,
+      globals.globalCoupon
     );
 
     const riskAdj = calcRiskAdjustment(
       row,
-      riskSurface
+      curves.riskSurface,
+      globals.globalCoupon
     );
 
     const tenorAdj = calcTenorAdjustment(
       row,
-      tenorCurve
+      curves.tenorCurve,
+      globals.globalBrake
     );
 
     const structureAdj = calcStructureAdjustment(
       row,
-      structureCurve
+      curves.structureCurve,
+      globals.globalCoupon
     );
 
     const m7Adj = calcM7OverlayAdjustment(row);
@@ -304,50 +263,66 @@
       m7Adj;
 
     return {
-      template_base_rate: templateBase,
-      risk_adjustment: riskAdj,
-      tenor_adjustment: tenorAdj,
-      structure_adjustment: structureAdj,
-      m7_overlay_adjustment: m7Adj,
-      new_fair_rate: newFairRate,
-      pricing_gap_vs_old:
-        toNum(row.market_coupon) -
-        toNum(row.fair_rate),
-      pricing_gap_vs_new:
-        toNum(row.market_coupon) -
-        newFairRate
+      template_base_rate: round2(templateBase),
+      risk_adjustment: round2(riskAdj),
+      tenor_adjustment: round2(tenorAdj),
+      structure_adjustment: round2(structureAdj),
+      m7_overlay_adjustment: round2(m7Adj),
+      new_fair_rate: round2(newFairRate),
+      pricing_gap_vs_old: coupon !== null && oldFair !== null ? round2(coupon - oldFair) : null,
+      pricing_gap_vs_new: coupon !== null ? round2(coupon - newFairRate) : null,
+      fair_rate_delta_old_to_new: oldFair !== null ? round2(newFairRate - oldFair) : null
     };
   }
 
   function runM8Regression(rows) {
-    const templateSummary = buildTemplateSummary(rows);
+    const validRows = arr(rows).filter(r => getMarketCoupon(r) !== null);
 
-    const riskSurface = buildRiskSurface(rows);
+    const templateSummary = buildTemplateSummary(validRows);
+    const riskSurface = buildRiskSurface(validRows);
+    const tenorCurve = buildTenorCurve(validRows);
+    const structureCurve = buildStructureCurve(validRows);
+    const m7Overlay = buildM7Overlay(validRows);
+    const dnaStats = buildDNAStats(validRows);
 
-    const tenorCurve = buildTenorCurve(rows);
+    const globalCoupon = globalMeanCoupon(validRows);
+    const globalBrake = avg(validRows.map(getMarketImpliedBrake).filter(Number.isFinite)) || 0;
 
-    const structureCurve = buildStructureCurve(rows);
+    const curves = {
+      templateSummary,
+      riskSurface,
+      tenorCurve,
+      structureCurve
+    };
 
-    const m7Overlay = buildM7Overlay(rows);
+    const globals = {
+      globalCoupon,
+      globalBrake
+    };
 
-    const dnaStats = buildDNAStats(rows);
-
-    const calibratedRows = rows.map(r => {
-      const regression = calcNewFairRate(
-        r,
-        templateSummary,
-        riskSurface,
-        tenorCurve,
-        structureCurve
-      );
-
+    const calibratedRows = validRows.map(r => {
+      const regression = calcNewFairRate(r, curves, globals);
       return {
         ...r,
         ...regression
       };
     });
 
+    const relationshipSummary = {
+      avg_market_coupon: round2(avg(calibratedRows.map(getMarketCoupon))),
+      avg_old_fair_rate: round2(avg(calibratedRows.map(getOldFairRate))),
+      avg_new_fair_rate: round2(avg(calibratedRows.map(r => r.new_fair_rate))),
+      avg_gap_vs_old: round2(avg(calibratedRows.map(r => r.pricing_gap_vs_old))),
+      avg_gap_vs_new: round2(avg(calibratedRows.map(r => r.pricing_gap_vs_new))),
+      avg_old_to_new_delta: round2(avg(calibratedRows.map(r => r.fair_rate_delta_old_to_new)))
+    };
+
     return {
+      version: VERSION,
+      generated_at: new Date().toISOString(),
+      rows_used: calibratedRows.length,
+      globals,
+      relationship_summary: relationshipSummary,
       template_summary: templateSummary,
       risk_surface: riskSurface,
       tenor_curve: tenorCurve,
@@ -359,6 +334,7 @@
   }
 
   global.M8RegressionEngineV1 = {
+    VERSION,
     runM8Regression,
     buildTemplateSummary,
     buildRiskSurface,
@@ -370,59 +346,4 @@
   };
 
 })(window);
-```
 
----
-
-# mm/m8_regression_dashboard_v1.html
-
-新增 section：
-
-1. Template Regression Summary
-2. Risk Surface
-3. Tenor Curve
-4. Structure Curve
-5. M7 Overlay Curve
-6. DNA Leaderboard
-7. FCN Coupon vs Fair Rate vs New Fair Rate
-
----
-
-# dashboard integration
-
-```javascript
-const regression =
-  M8RegressionEngineV1.runM8Regression(rows);
-
-window.m8Regression = regression;
-```
-
----
-
-# row rendering
-
-新增欄位：
-
-| 欄位            |
-| ------------- |
-| New Fair Rate |
-| Gap vs Old    |
-| Gap vs New    |
-| Template Base |
-| Risk Adj      |
-| Tenor Adj     |
-| Structure Adj |
-| M7 Overlay    |
-
----
-
-# 新核心公式
-
-```text
-new_fair_rate =
-market_template_base_rate
-+ risk_adjustment
-+ tenor_adjustment
-+ structure_adjustment
-+ m7_overlay_adjustment
-```
