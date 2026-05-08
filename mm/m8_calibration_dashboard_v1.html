@@ -104,11 +104,60 @@
     <div class="section-body"><div class="table-wrap"><table id="regTable"></table></div></div>
   </details>
 
+
+  <details class="section" open>
+    <summary>8. Regression Calibration / New Fair Rate 分析</summary>
+    <div class="section-body">
+      <div id="regRelationshipSummary" class="grid kpi-grid"></div>
+      <div class="note small">
+        New Fair Rate = Template Base + Risk Adj + Tenor Adj + Structure Adj + M7 Overlay。<br/>
+        這一區用來比較：Market Coupon vs Old Fair Rate vs New Fair Rate。
+      </div>
+    </div>
+  </details>
+
+  <details class="section" open>
+    <summary>9. Template Regression Summary / 模板基準利率</summary>
+    <div class="section-body">
+      <div class="table-wrap"><table id="regTemplateTable"></table></div>
+    </div>
+  </details>
+
+  <details class="section" open>
+    <summary>10. Risk Surface / Strike + KI 風險曲面</summary>
+    <div class="section-body">
+      <div class="table-wrap"><table id="riskSurfaceTable"></table></div>
+    </div>
+  </details>
+
+  <details class="section" open>
+    <summary>11. Tenor Curve / 時間曲線</summary>
+    <div class="section-body">
+      <div class="table-wrap"><table id="tenorCurveTable"></table></div>
+    </div>
+  </details>
+
+  <details class="section" open>
+    <summary>12. Structure Curve / EKI-AKI 結構曲線</summary>
+    <div class="section-body">
+      <div class="table-wrap"><table id="structureCurveTable"></table></div>
+    </div>
+  </details>
+
+  <details class="section" open>
+    <summary>13. DNA Leaderboard / Core DNA 排行</summary>
+    <div class="section-body">
+      <div class="table-wrap"><table id="dnaTable"></table></div>
+    </div>
+  </details>
+
   <details class="section">
-    <summary>8. Debug JSON</summary>
+    <summary>14. Debug JSON</summary>
     <div class="section-body"><pre id="debug"></pre></div>
   </details>
 </div>
+
+<script src="./js/mm/modules/m8_regression_engine_v1.js"></script>
 
 <script type="module">
 import {
@@ -121,7 +170,7 @@ const CURRENT_POOL_PATH = "./data/fcn_pool.json";
 const OLD_POOL_PATH = "./data/fcn_pool_old.json";
 const MARKET_HISTORY_PATH = "./data/mm/market_fcn_history.json";
 
-let DATASET=null, REG_ROWS=[];
+let DATASET=null, REG_ROWS=[], REGRESSION=null;
 
 document.getElementById("runBtn").addEventListener("click", run);
 document.getElementById("downloadBtn").addEventListener("click",()=>{
@@ -151,8 +200,16 @@ async function run(){
     DATASET = enrichDualTrackDataset(DATASET);
     REG_ROWS=buildCalibrationRegressionRows(DATASET);
 
+    if (!window.M8RegressionEngineV1 || !window.M8RegressionEngineV1.runM8Regression) {
+      throw new Error("m8_regression_engine_v1.js not loaded. Please confirm path: js/mm/modules/m8_regression_engine_v1.js");
+    }
+
+    REGRESSION = window.M8RegressionEngineV1.runM8Regression(REG_ROWS);
+    REG_ROWS = REGRESSION.calibrated_rows || REG_ROWS;
+
     window.__M8_CALIBRATION_DATASET__=DATASET;
     window.__M8_CALIBRATION_REG_ROWS__=REG_ROWS;
+    window.__M8_REGRESSION__=REGRESSION;
 
     renderAll();
     btn.disabled=false;btn.textContent="Run Calibration";
@@ -237,7 +294,8 @@ function renderAll(){
   renderDiagnostics();
   renderRows();
   renderRegRows();
-  document.getElementById("debug").textContent=JSON.stringify(DATASET,null,2);
+  renderRegressionDashboard();
+  document.getElementById("debug").textContent=JSON.stringify({calibration: DATASET, regression: REGRESSION},null,2);
 }
 
 function renderSourceSummary(){
@@ -366,9 +424,10 @@ function renderRegRows(){
   const rows=REG_ROWS.slice(0,300);
   document.getElementById("regTable").innerHTML=
 `<tr>
-<th>FCN</th><th>Source</th><th>Template</th><th>Basket</th><th>Core2</th><th>Core3</th><th>Risk</th><th>TenorTpl</th><th>Structure</th><th>Market Coupon</th><th>My Preference</th><th>Market Normal</th>
-<th>Gap vs My</th><th>Gap vs Market</th><th>My - Market</th>
-<th>PreRate</th><th>BrakeGap</th><th>BasketPremium</th><th>Tail</th><th>KI</th><th>Tenor</th><th>Strike</th><th>Type</th><th>Vol</th><th>RP</th><th>Brake</th>
+<th>FCN</th><th>Source</th><th>Template</th><th>Basket</th><th>Core2</th><th>Core3</th><th>Risk</th><th>TenorTpl</th><th>Structure</th>
+<th>Market Coupon</th><th>Old Fair</th><th>New Fair</th><th>Gap vs Old</th><th>Gap vs New</th>
+<th>Template Base</th><th>Risk Adj</th><th>Tenor Adj</th><th>Structure Adj</th><th>M7 Overlay</th>
+<th>Market Normal</th><th>PreRate</th><th>BrakeGap</th><th>BasketPremium</th><th>Tail</th><th>KI</th><th>Tenor</th><th>Strike</th><th>Type</th><th>Vol</th><th>RP</th><th>Brake</th>
 </tr>${rows.map(r=>`<tr>
 <td><b>${escapeHtml(r.fcn_id)}</b></td>
 <td>${escapeHtml(r.source_type||"-")}</td>
@@ -380,11 +439,16 @@ function renderRegRows(){
 <td>${escapeHtml(r.tenor_template||"-")}</td>
 <td>${escapeHtml(r.structure_template||"-")}</td>
 <td>${pct(r.market_coupon ?? r.market_rate)}</td>
-<td>${pct(r.my_preference_rate ?? r.fair_yield)}</td>
+<td>${pct(r.fair_yield ?? r.my_preference_rate)}</td>
+<td>${pct(r.new_fair_rate)}</td>
+<td>${pct(r.pricing_gap_vs_old ?? r.pricing_gap)}</td>
+<td>${pct(r.pricing_gap_vs_new)}</td>
+<td>${pct(r.template_base_rate)}</td>
+<td>${pct(r.risk_adjustment)}</td>
+<td>${pct(r.tenor_adjustment)}</td>
+<td>${pct(r.structure_adjustment)}</td>
+<td>${pct(r.m7_overlay_adjustment)}</td>
 <td>${pct(r.market_normal_rate)}</td>
-<td>${pct(r.gap_vs_my ?? r.pricing_gap)}</td>
-<td>${pct(r.gap_vs_market)}</td>
-<td>${pct(r.preference_vs_market_gap)}</td>
 <td>${pct(r.pre_rate)}</td>
 <td>${pct(r.brake_gap)}</td>
 <td>${fmt(r.basket_premium)}</td>
@@ -397,6 +461,88 @@ function renderRegRows(){
 <td>${fmt(r.rate_pressure_adj)}</td>
 <td>${fmt(r.high_rate_brake)}</td>
 </tr>`).join("")}`;
+}
+
+function renderRegressionDashboard(){
+  if(!REGRESSION){
+    ["regRelationshipSummary","regTemplateTable","riskSurfaceTable","tenorCurveTable","structureCurveTable","dnaTable"].forEach(id=>{
+      const el=document.getElementById(id);
+      if(el) el.innerHTML="";
+    });
+    return;
+  }
+
+  renderRegressionRelationship();
+  renderRegressionTable("regTemplateTable", REGRESSION.template_summary, [
+    ["Template","template_label"],
+    ["Count","count"],
+    ["Avg Coupon","avg_coupon","pct"],
+    ["Median Coupon","median_coupon","pct"],
+    ["Avg Old Fair","avg_old_fair_rate","pct"],
+    ["Avg PreRate","avg_pre_rate","pct"],
+    ["Avg Implied Brake","avg_market_implied_brake","pct"]
+  ]);
+
+  renderRegressionTable("riskSurfaceTable", REGRESSION.risk_surface, [
+    ["Risk Template","risk_template"],
+    ["Count","count"],
+    ["Avg Coupon","avg_coupon","pct"],
+    ["Median Coupon","median_coupon","pct"],
+    ["Avg Old Fair","avg_old_fair_rate","pct"],
+    ["Avg Implied Brake","avg_market_implied_brake","pct"]
+  ]);
+
+  renderRegressionTable("tenorCurveTable", REGRESSION.tenor_curve, [
+    ["Tenor Template","tenor_template"],
+    ["Count","count"],
+    ["Avg Coupon","avg_coupon","pct"],
+    ["Median Coupon","median_coupon","pct"],
+    ["Avg Old Fair","avg_old_fair_rate","pct"],
+    ["Avg Implied Brake","avg_market_implied_brake","pct"]
+  ]);
+
+  renderRegressionTable("structureCurveTable", REGRESSION.structure_curve, [
+    ["Structure","structure_template"],
+    ["Count","count"],
+    ["Avg Coupon","avg_coupon","pct"],
+    ["Median Coupon","median_coupon","pct"],
+    ["Avg Old Fair","avg_old_fair_rate","pct"],
+    ["Avg Implied Brake","avg_market_implied_brake","pct"]
+  ]);
+
+  renderRegressionTable("dnaTable", REGRESSION.dna_stats.slice(0,80), [
+    ["Core DNA","dna"],
+    ["Count","count"],
+    ["Avg Coupon","avg_coupon","pct"],
+    ["Median Coupon","median_coupon","pct"],
+    ["Avg Old Fair","avg_old_fair_rate","pct"],
+    ["Avg Implied Brake","avg_market_implied_brake","pct"]
+  ]);
+}
+
+function renderRegressionRelationship(){
+  const s=REGRESSION.relationship_summary||{};
+  const cards=[
+    ["Avg Market Coupon",pct(s.avg_market_coupon)],
+    ["Avg Old Fair",pct(s.avg_old_fair_rate)],
+    ["Avg New Fair",pct(s.avg_new_fair_rate)],
+    ["Avg Gap vs Old",pct(s.avg_gap_vs_old)],
+    ["Avg Gap vs New",pct(s.avg_gap_vs_new)],
+    ["Old → New Delta",pct(s.avg_old_to_new_delta)]
+  ];
+  document.getElementById("regRelationshipSummary").innerHTML=cards.map(([t,v])=>`<div class="card"><div class="kpi-title">${t}</div><div class="kpi-value">${v??"-"}</div></div>`).join("");
+}
+
+function renderRegressionTable(id, rows, cols){
+  const el=document.getElementById(id);
+  if(!el)return;
+  const head=`<tr>${cols.map(c=>`<th>${escapeHtml(c[0])}</th>`).join("")}</tr>`;
+  const body=(rows||[]).map(r=>`<tr>${cols.map(c=>{
+    const v=r[c[1]];
+    const out=c[2]==="pct"?pct(v):escapeHtml(v??"-");
+    return `<td>${out}</td>`;
+  }).join("")}</tr>`).join("");
+  el.innerHTML=head+body;
 }
 
 function labelGap(v){
