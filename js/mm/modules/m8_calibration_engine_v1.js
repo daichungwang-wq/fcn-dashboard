@@ -499,6 +499,19 @@ export async function buildM8CalibrationDataset(options = {}) {
   for (const record of source.rows.slice(0, maxRows)) {
     const caseName = ("CAL_" + record.source_name + "_" + record.fcn_id).replace(/\s+/g, "_");
 
+    // Template / risk / tenor classification must be available in both
+    // success and error rows. Keep these outside try/catch scope.
+    const templateInfo = classifyBasketTemplate(record.symbols);
+    const riskInfo = classifyRiskTemplate(record.strike, record.ki);
+    const tenorInfo = classifyTenorTemplate(record.tenor);
+    const structureTemplate = classifyStructureTemplate(record.type, record.eki);
+    const marketBlockKey = [
+      templateInfo.basket_template,
+      riskInfo.risk_template,
+      tenorInfo.tenor_template,
+      structureTemplate
+    ].join("|");
+
     try {
       const m8 = await runM8Case({
         caseName,
@@ -511,16 +524,6 @@ export async function buildM8CalibrationDataset(options = {}) {
       });
 
       const features = extractM8Features(m8);
-      const templateInfo = classifyBasketTemplate(record.symbols);
-      const riskInfo = classifyRiskTemplate(record.strike, record.ki);
-      const tenorInfo = classifyTenorTemplate(record.tenor);
-      const structureTemplate = classifyStructureTemplate(record.type, record.eki);
-      const marketBlockKey = [
-        templateInfo.basket_template,
-        riskInfo.risk_template,
-        tenorInfo.tenor_template,
-        structureTemplate
-      ].join("|");
 
       const marketCoupon = round2(record.market_rate);
       const preRate = features.pre_rate;
