@@ -911,20 +911,54 @@
       const trigger = overlayEngine.evaluateOverlayTrigger(historyForOverlay);
       const cleanGlobalFair = pickNum(row.clean_global_fair, row.new_fair_rate);
       const oldFair = getOldFairRate(row);
-      const beta = pickNum(trigger.overlay_beta, 1);
+      // ------------------------------------------------------------------
+      // v3 Fast Market Convergence Engine
+      // β is NOT smoothing.
+      // β is market emotion convergence speed.
+      // Final Fair always converges toward Market Coupon.
+      // ------------------------------------------------------------------
 
-      // v3 anchor rule:
-      // Final Fair is no longer New Fair × β.
-      // It is an M8 feedback adjustment anchored on Old Fair:
-      // Final Fair = Old Fair + β × (Clean Global/New Fair - Old Fair).
-      // This lets the correction feed back to the original M8 fair rate instead
-      // of adjusting the new surface against itself.
-      let finalFairRate = null;
-      if (cleanGlobalFair !== null && oldFair !== null) {
-        finalFairRate = oldFair + beta * (cleanGlobalFair - oldFair);
-      } else if (cleanGlobalFair !== null) {
-        finalFairRate = cleanGlobalFair * beta;
+      const marketGap =
+        coupon !== null && cleanGlobalFair !== null
+          ? coupon - cleanGlobalFair
+          : null;
+
+      const gapPct =
+        marketGap !== null && cleanGlobalFair
+          ? Math.abs(marketGap / cleanGlobalFair) * 100
+          : 0;
+
+      let convergenceStrength = 0;
+
+      // --------------------------------------------------
+      // FCN Market Regime Convergence
+      // Goal:
+      // Fast catch-up, not slow smoothing.
+      // --------------------------------------------------
+
+      if (gapPct > 20) {
+        convergenceStrength = 0.99;
+      } else if (gapPct > 10) {
+        convergenceStrength = 0.95;
+      } else if (gapPct > 2) {
+        convergenceStrength = 0.85;
+      } else {
+        convergenceStrength = 0.60;
       }
+
+      let finalFairRate = cleanGlobalFair;
+
+      if (
+        marketGap !== null &&
+        Number.isFinite(marketGap)
+      ) {
+        finalFairRate =
+          cleanGlobalFair +
+          marketGap * convergenceStrength;
+      }
+
+      // β display purpose only
+      const beta = round2(convergenceStrength);
 
       const gapBefore = coupon !== null && cleanGlobalFair !== null ? coupon - cleanGlobalFair : null;
       const gapAfter = coupon !== null && finalFairRate !== null ? coupon - finalFairRate : null;
@@ -948,7 +982,10 @@
         residual_std: trigger.residual_std,
         residual_avg_gap_pct: trigger.avg_gap_pct,
         final_fair_rate: round2(finalFairRate),
-        final_fair_method: oldFair !== null ? "Old Fair + β × (New Fair-AVG - Old Fair)" : "New Fair-AVG × β fallback",
+        final_fair_method: "Market Convergence: New Fair + (Market - New Fair) × convergenceStrength",
+        market_gap: round2(marketGap),
+        gap_pct: round2(gapPct),
+        convergence_strength: round2(convergenceStrength),
         old_fair_anchor_rate: oldFair !== null ? round2(oldFair) : null,
         global_regression_rate: cleanGlobalFair !== null ? round2(cleanGlobalFair) : null,
         pricing_gap_vs_final: gapAfter !== null ? round2(gapAfter) : null,
@@ -1185,6 +1222,7 @@
   };
 
 })(window);
+
 
 
 
