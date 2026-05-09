@@ -766,12 +766,16 @@
   function predictNewFairRate(row, surface) {
     const resolved = resolveSurfaceFallback(row, surface);
     const oldFair = getOldFairRate(row);
-    const selected = pickNum(resolved.median_coupon, resolved.weighted_avg_coupon, oldFair);
-    const calculationMethod = resolved && resolved.median_coupon !== null
-      ? "New Fair = selected surface median_market_coupon"
-      : "New Fair = old fair fallback because no eligible clean surface";
+
+    // v3 rule: New Fair is based on AVG, not median.
+    // Prefer the plain surface average so the dashboard labels can correctly say
+    // New Fair-AVG / Final Fair-AVG. Weighted average remains visible in trace.
+    const selected = pickNum(resolved.avg_coupon, resolved.weighted_avg_coupon, resolved.median_coupon, oldFair);
+    const calculationMethod = resolved && resolved.avg_coupon !== null
+      ? "New Fair-AVG = selected surface avg_market_coupon"
+      : "New Fair-AVG = old fair fallback because no eligible clean surface";
     return {
-      template_base_rate: resolved && resolved.median_coupon !== null ? round2(resolved.median_coupon) : null,
+      template_base_rate: resolved && resolved.avg_coupon !== null ? round2(resolved.avg_coupon) : null,
       risk_adjustment: 0,
       tenor_adjustment: 0,
       structure_adjustment: 0,
@@ -906,8 +910,22 @@
       }));
       const trigger = overlayEngine.evaluateOverlayTrigger(historyForOverlay);
       const cleanGlobalFair = pickNum(row.clean_global_fair, row.new_fair_rate);
+      const oldFair = getOldFairRate(row);
       const beta = pickNum(trigger.overlay_beta, 1);
-      const finalFairRate = cleanGlobalFair !== null ? cleanGlobalFair * beta : null;
+
+      // v3 anchor rule:
+      // Final Fair is no longer New Fair × β.
+      // It is an M8 feedback adjustment anchored on Old Fair:
+      // Final Fair = Old Fair + β × (Clean Global/New Fair - Old Fair).
+      // This lets the correction feed back to the original M8 fair rate instead
+      // of adjusting the new surface against itself.
+      let finalFairRate = null;
+      if (cleanGlobalFair !== null && oldFair !== null) {
+        finalFairRate = oldFair + beta * (cleanGlobalFair - oldFair);
+      } else if (cleanGlobalFair !== null) {
+        finalFairRate = cleanGlobalFair * beta;
+      }
+
       const gapBefore = coupon !== null && cleanGlobalFair !== null ? coupon - cleanGlobalFair : null;
       const gapAfter = coupon !== null && finalFairRate !== null ? coupon - finalFairRate : null;
       const improvement = gapBefore !== null && Math.abs(gapBefore) > 0.01 && gapAfter !== null
@@ -930,6 +948,9 @@
         residual_std: trigger.residual_std,
         residual_avg_gap_pct: trigger.avg_gap_pct,
         final_fair_rate: round2(finalFairRate),
+        final_fair_method: oldFair !== null ? "Old Fair + β × (New Fair-AVG - Old Fair)" : "New Fair-AVG × β fallback",
+        old_fair_anchor_rate: oldFair !== null ? round2(oldFair) : null,
+        global_regression_rate: cleanGlobalFair !== null ? round2(cleanGlobalFair) : null,
         pricing_gap_vs_final: gapAfter !== null ? round2(gapAfter) : null,
         pricing_gap_vs_final_pct: coupon !== null && finalFairRate ? round2(calcPricingGapPct(coupon, finalFairRate)) : null,
         gap_before: gapBefore !== null ? round2(gapBefore) : null,
@@ -955,6 +976,8 @@
         const avgOldFair = avg(rs.map(getOldFairRate).filter(Number.isFinite));
         const avgNewFair = avg(rs.map(r => r.clean_global_fair).filter(Number.isFinite));
         const avgFinalFair = avg(rs.map(r => r.final_fair_rate).filter(Number.isFinite));
+        const gapOld = avgMarket !== null && avgOldFair !== null ? avgMarket - avgOldFair : null;
+        const gapOldPct = avgOldFair ? (gapOld / avgOldFair) * 100 : null;
         const gapBefore = avgMarket !== null && avgNewFair !== null ? avgMarket - avgNewFair : null;
         const gapAfter = avgMarket !== null && avgFinalFair !== null ? avgMarket - avgFinalFair : null;
         const gapBeforePct = avgNewFair ? (gapBefore / avgNewFair) * 100 : null;
@@ -972,6 +995,8 @@
           overlay_state: (rs[0] && rs[0].overlay_state) || "NONE",
           avg_market_coupon: round2(avgMarket),
           avg_old_fair_rate: round2(avgOldFair),
+          avg_gap_old: round2(gapOld),
+          avg_gap_old_pct: round2(gapOldPct),
           avg_new_fair_rate: round2(avgNewFair),
           avg_beta: round2(avg(rs.map(r => r.overlay_beta))),
           avg_confidence: round2(avg(rs.map(r => r.overlay_confidence))),
@@ -1160,6 +1185,8 @@
   };
 
 })(window);
+
+
 
 
 
