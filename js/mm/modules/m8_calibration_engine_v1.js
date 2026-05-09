@@ -782,3 +782,4 @@ export function downloadCalibrationJson(dataset, filename = "m8_calibration_data
 
 export const __M8_TEMPLATE_CLASSIFIER_V2__ = { classifyBasketTemplate, classifyRiskTemplate, classifyTenorTemplate, classifyStructureTemplate };
 
+
