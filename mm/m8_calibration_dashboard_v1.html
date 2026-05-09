@@ -180,10 +180,10 @@
   </details>
 
   <details class="section" open>
-    <summary>17. Residual Overlay Analysis / 殘差疊加分析</summary>
+    <summary>17. Template Overlay Effectiveness / 模板 β 調整有效性分析</summary>
     <div class="section-body">
       <div class="note small">
-        這一區用來檢查 market coupon 與 clean global fair 的 residual 是否足以啟動 overlay β。Overlay 不回寫 Global Surface，只輸出 Final Fair Rate。
+        這張表只回答一件事：β 修正後 Final Fair 是否更接近 Market Coupon。用 Before / After Gap 與 Improvement % 證明修正是否有效。
       </div>
       <div class="table-wrap" style="margin-top:12px"><table id="overlayTable"></table></div>
     </div>
@@ -682,6 +682,7 @@ function renderRegressionTable(id, rows, cols){
 
 function renderOverlayDashboard(){
   const summary = REGRESSION?.overlay_summary || [];
+  const templateEffectiveness = REGRESSION?.template_overlay_effectiveness || [];
   const rows = REGRESSION?.calibrated_rows || REG_ROWS || [];
 
   const activeRows = rows.filter(r => ["ACTIVE","LEARNING"].includes(r.overlay_state));
@@ -703,21 +704,25 @@ function renderOverlayDashboard(){
     monitor.innerHTML = monitorCards.map(([t,v])=>`<div class="card"><div class="kpi-title">${escapeHtml(t)}</div><div class="kpi-value">${v??"-"}</div></div>`).join("");
   }
 
-  renderRegressionTable("overlayTable", summary.slice(0,120), [
+  // 17. Residual Overlay Analysis / 殘差疊加分析
+  // 這張表的目的：用數據證明 β 修正後 Final Fair 是否更接近 Market Coupon。
+  renderRegressionTable("overlayTable", templateEffectiveness.slice(0,120), [
     ["Template","template"],
-    ["Core DNA","core_dna"],
-    ["Risk","risk_zone_9"],
-    ["Tenor","tenor_group_4"],
-    ["Count","count"],
-    ["State","overlay_state"],
+    ["FCN Count","fcn_count"],
+    ["Active Rows","active_rows"],
+    ["Overlay State","overlay_state"],
+    ["Avg Market Coupon","avg_market_coupon","pct"],
+    ["Avg Fair Rate","avg_fair_rate","pct"],
+    ["Avg New Fair Rate","avg_new_fair_rate","pct"],
     ["Avg β","avg_beta"],
-    ["Confidence","avg_confidence"],
-    ["Avg Residual %","avg_residual_gap_pct","pct"],
-    ["Residual Std","avg_residual_std"],
-    ["Final Fair","avg_final_fair_rate","pct"],
-    ["Gap vs Final","avg_gap_vs_final","pct"],
-    ["One-time","one_time_triggers"],
-    ["Active Rows","active_rows"]
+    ["Avg Final Fair Rate","avg_final_fair_rate","pct"],
+    ["Gap Before","gap_before","pct"],
+    ["Gap% Before","gap_before_pct","pct"],
+    ["Gap After","gap_after","pct"],
+    ["Gap% After","gap_after_pct","pct"],
+    ["Improvement %","improvement_pct","pct"],
+    ["Avg Confidence","avg_confidence"],
+    ["One-time Trigger Count","one_time_trigger_count"]
   ]);
 
   renderRegressionTable("lifecycleTable", summary.slice(0,120), [
@@ -729,8 +734,12 @@ function renderOverlayDashboard(){
     ["Count","count"],
     ["Avg β","avg_beta"],
     ["Confidence","avg_confidence"],
-    ["Residual %","avg_residual_gap_pct","pct"],
-    ["Gap vs Final","avg_gap_vs_final","pct"]
+    ["Market Coupon","avg_market_coupon","pct"],
+    ["New Fair","avg_new_fair_rate","pct"],
+    ["Final Fair","avg_final_fair_rate","pct"],
+    ["Gap Before %","avg_gap_before_pct","pct"],
+    ["Gap After %","avg_gap_after_pct","pct"],
+    ["Improvement %","improvement_pct","pct"]
   ]);
 }
 
@@ -783,95 +792,9 @@ function pct(v){
 function escapeHtml(s){
   return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
 }
-  <!-- ===================================================================== -->
-<!-- Summary Dashboard -->
-<!-- ===================================================================== -->
-
-<section class="m8-section">
-  <h2>0. Summary Dashboard / 今日總覽</h2>
-
-  <div id="summaryDashboard"></div>
-</section>
-
-<!-- ===================================================================== -->
-<!-- Trigger Mechanism Analysis -->
-<!-- ===================================================================== -->
-
-<section class="m8-section">
-  <h2>2. Trigger Mechanism Analysis / Trigger 機制分析</h2>
-
-  <table id="triggerAnalysisTable"></table>
-</section>
-
-<!-- ===================================================================== -->
-<!-- Overlay Effectiveness -->
-<!-- ===================================================================== -->
-
-<section class="m8-section">
-  <h2>
-    3. Template Overlay Effectiveness
-    / 模板 Overlay 有效性分析
-  </h2>
-
-  <table id="overlayEffectivenessTable"></table>
-</section>
-
-<!-- ===================================================================== -->
-<!-- Beta Tracking -->
-<!-- ===================================================================== -->
-
-<section class="m8-section">
-  <h2>
-    4. β Tracking Dashboard
-    / β 追蹤儀表板
-  </h2>
-
-  <table id="betaTrackingTable"></table>
-</section>
-
-<!-- ===================================================================== -->
-<!-- Mechanism Dashboard -->
-<!-- ===================================================================== -->
-
-<section class="m8-section">
-  <h2>
-    5. Mechanism Dashboard
-    / Trigger & Watch Dashboard
-  </h2>
-
-  <table id="mechanismDashboardTable"></table>
-</section>
-  <th>Market Coupon</th>
-<th>Fair Rate</th>
-<th>Final Fair Rate</th>
-
-<th>Gap Before</th>
-<th>Gap Before %</th>
-
-<th>Gap After</th>
-<th>Gap After %</th>
-
-<th>Improvement %</th>
-
-<th>Overlay State</th>
-<th>Overlay β</th>
-<th>Confidence</th>
-
-<th>Samples</th>
-<th>Persistence Days</th>
-<th>Residual Std</th>
-
-<th>M1 Score</th>
-<th>M7 Score</th>
-  const overlaySummary =
-window.M8RegressionEngineV1
-.buildOverlayEffectivenessSummary(rows);
-
-console.table(overlaySummary);
 </script>
 </body>
 </html>
-
 
 
 
