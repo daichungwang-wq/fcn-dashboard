@@ -10,7 +10,7 @@
 (function (global) {
   "use strict";
 
-  const VERSION = "m8_regression_engine_v1_20260508_risk9_tenor4";
+  const VERSION = "m8_regression_engine_v2_small_template_surface_20260509";
 
   function toNum(v, d = 0) {
     const n = Number(v);
@@ -506,6 +506,277 @@
 
 
   // --------------------------------------------------------------------------
+  // M8 v3 Small Template Clean Surface Layer
+  // New Fair = Small Template × Risk × Tenor clean surface.
+  // Large templates are kept for grouping and fallback only.
+  // --------------------------------------------------------------------------
+
+  function percentile(values, p) {
+    const xs = arr(values).map(Number).filter(Number.isFinite).sort((a, b) => a - b);
+    if (!xs.length) return null;
+    const idx = Math.min(xs.length - 1, Math.max(0, Math.floor((xs.length - 1) * p)));
+    return xs[idx];
+  }
+
+  function getTradeDate(row) {
+    return String(row.trade_date || row.date || row.created_time || row.entry_time || "").slice(0, 10);
+  }
+
+  function isStressRegime(row) {
+    const d = getTradeDate(row);
+    return d.startsWith("2025-04") || d.startsWith("2025-05");
+  }
+
+  function getSmallTemplateKey(row) {
+    return safeKey(row.core_dna_3 || row.core_dna_2 || row.basket_symbols_key || arr(row.symbols).join("+"));
+  }
+
+  function getLargeTemplateKey(row) {
+    return safeKey(row.basket_template_label || row.basket_template || "GLOBAL");
+  }
+
+  function classifyCleanRow(row, couponQ95) {
+    const coupon = getMarketCoupon(row);
+    const smallTemplate = getSmallTemplateKey(row);
+    const missingRequired = coupon === null || !smallTemplate || smallTemplate === "UNKNOWN";
+    const outlierFlag = coupon !== null && couponQ95 !== null && coupon > couponQ95;
+    const stressFlag = isStressRegime(row);
+    const oldPoolFlag = String(row.source_type || row.source_name || "").toLowerCase().includes("old");
+
+    let learningWeight = 1;
+    if (stressFlag) learningWeight = 0.2;
+    if (oldPoolFlag) learningWeight = Math.min(learningWeight, 0.25);
+
+    const cleanRow = !missingRequired && !outlierFlag;
+
+    return {
+      ...row,
+      small_template_key: smallTemplate,
+      large_template_key: getLargeTemplateKey(row),
+      clean_row: cleanRow,
+      outlier_flag: outlierFlag,
+      stress_flag: stressFlag,
+      old_pool_reference: oldPoolFlag,
+      missing_surface_fields: missingRequired,
+      learning_weight: round2(learningWeight)
+    };
+  }
+
+  function buildCleanDataset(rows) {
+    const validCoupons = arr(rows).map(getMarketCoupon).filter(Number.isFinite);
+    const couponQ95 = percentile(validCoupons, 0.95);
+    return arr(rows).map(row => classifyCleanRow(row, couponQ95));
+  }
+
+  function weightedAverage(items, valueFn, weightFn) {
+    let total = 0;
+    let weightSum = 0;
+    arr(items).forEach(item => {
+      const v = Number(valueFn(item));
+      const w = Math.max(0, Number(weightFn(item)) || 0);
+      if (Number.isFinite(v) && w > 0) {
+        total += v * w;
+        weightSum += w;
+      }
+    });
+    return weightSum > 0 ? total / weightSum : null;
+  }
+
+  function weightedMedian(items, valueFn, weightFn) {
+    const xs = arr(items)
+      .map(item => ({ value: Number(valueFn(item)), weight: Math.max(0, Number(weightFn(item)) || 0) }))
+      .filter(x => Number.isFinite(x.value) && x.weight > 0)
+      .sort((a, b) => a.value - b.value);
+    if (!xs.length) return null;
+    const totalWeight = xs.reduce((sum, x) => sum + x.weight, 0);
+    let cumulative = 0;
+    for (const x of xs) {
+      cumulative += x.weight;
+      if (cumulative >= totalWeight / 2) return x.value;
+    }
+    return xs[xs.length - 1].value;
+  }
+
+  function calcSurfaceConfidence(count, level) {
+    let base = 20;
+    if (count >= 10) base = 90;
+    else if (count >= 7) base = 75;
+    else if (count >= 5) base = 60;
+    else if (count >= 3) base = 40;
+
+    if (String(level).includes("Small Template × Risk × Tenor")) return base;
+    if (String(level).includes("Small Template × Risk")) return Math.max(0, base - 10);
+    if (String(level).includes("Small Template")) return Math.max(0, base - 20);
+    if (String(level).includes("Large Template")) return Math.max(0, base - 30);
+    return Math.max(0, base - 40);
+  }
+
+  function summarizeSurfaceBucket(key, rows, level) {
+    const coupons = arr(rows).map(getMarketCoupon).filter(Number.isFinite);
+    const med = weightedMedian(rows, getMarketCoupon, r => pickNum(r.learning_weight, 1));
+    const wavg = weightedAverage(rows, getMarketCoupon, r => pickNum(r.learning_weight, 1));
+    return {
+      surface_key: key,
+      fallback_level: level,
+      sample_count: rows.length,
+      median_coupon: round2(med),
+      weighted_avg_coupon: round2(wavg),
+      avg_coupon: round2(avg(coupons)),
+      std_coupon: round2(calcStd(coupons)),
+      confidence: calcSurfaceConfidence(rows.length, level),
+      source_mix: countByObject(rows, r => r.source_type || r.source_name || "unknown")
+    };
+  }
+
+  function countByObject(rows, fn) {
+    const out = {};
+    arr(rows).forEach(row => {
+      const k = safeKey(fn(row));
+      out[k] = (out[k] || 0) + 1;
+    });
+    return out;
+  }
+
+  function calcStd(values) {
+    const xs = arr(values).map(Number).filter(Number.isFinite);
+    if (xs.length <= 1) return 0;
+    const m = avg(xs);
+    return Math.sqrt(avg(xs.map(x => Math.pow(x - m, 2))));
+  }
+
+  function pushSurfaceBucket(map, key, row) {
+    if (!map.has(key)) map.set(key, []);
+    map.get(key).push(row);
+  }
+
+  function buildSmallTemplateSurface(classifiedRows) {
+    const surfaceMaps = {
+      small_risk_tenor: new Map(),
+      small_risk: new Map(),
+      small: new Map(),
+      large_risk_tenor: new Map(),
+      large: new Map(),
+      global: new Map()
+    };
+
+    arr(classifiedRows)
+      .filter(r => r.clean_row)
+      .forEach(row => {
+        const small = getSmallTemplateKey(row);
+        const large = getLargeTemplateKey(row);
+        const risk = safeKey(row.risk_zone_9 || row.risk_template, "R_UNKNOWN");
+        const tenor = safeKey(row.tenor_group_4 || row.tenor_template || row.tenor_bucket, "T_UNKNOWN");
+
+        pushSurfaceBucket(surfaceMaps.small_risk_tenor, [small, risk, tenor].join("|"), row);
+        pushSurfaceBucket(surfaceMaps.small_risk, [small, risk].join("|"), row);
+        pushSurfaceBucket(surfaceMaps.small, small, row);
+        pushSurfaceBucket(surfaceMaps.large_risk_tenor, [large, risk, tenor].join("|"), row);
+        pushSurfaceBucket(surfaceMaps.large, large, row);
+        pushSurfaceBucket(surfaceMaps.global, "GLOBAL", row);
+      });
+
+    function materialize(map, level) {
+      const out = new Map();
+      Array.from(map.entries()).forEach(([key, rows]) => {
+        out.set(key, summarizeSurfaceBucket(key, rows, level));
+      });
+      return out;
+    }
+
+    return {
+      small_risk_tenor: materialize(surfaceMaps.small_risk_tenor, "Small Template × Risk × Tenor"),
+      small_risk: materialize(surfaceMaps.small_risk, "Small Template × Risk"),
+      small: materialize(surfaceMaps.small, "Small Template"),
+      large_risk_tenor: materialize(surfaceMaps.large_risk_tenor, "Large Template × Risk × Tenor"),
+      large: materialize(surfaceMaps.large, "Large Template"),
+      global: materialize(surfaceMaps.global, "Global")
+    };
+  }
+
+  function surfaceLookupKeys(row) {
+    const small = getSmallTemplateKey(row);
+    const large = getLargeTemplateKey(row);
+    const risk = safeKey(row.risk_zone_9 || row.risk_template, "R_UNKNOWN");
+    const tenor = safeKey(row.tenor_group_4 || row.tenor_template || row.tenor_bucket, "T_UNKNOWN");
+    return [
+      { mapName: "small_risk_tenor", key: [small, risk, tenor].join("|"), level: "Small Template × Risk × Tenor" },
+      { mapName: "small_risk", key: [small, risk].join("|"), level: "Small Template × Risk" },
+      { mapName: "small", key: small, level: "Small Template" },
+      { mapName: "large_risk_tenor", key: [large, risk, tenor].join("|"), level: "Large Template × Risk × Tenor" },
+      { mapName: "large", key: large, level: "Large Template" },
+      { mapName: "global", key: "GLOBAL", level: "Global" }
+    ];
+  }
+
+  function resolveSurfaceFallback(row, surface) {
+    const minCounts = {
+      "Small Template × Risk × Tenor": 3,
+      "Small Template × Risk": 3,
+      "Small Template": 3,
+      "Large Template × Risk × Tenor": 5,
+      "Large Template": 5,
+      "Global": 1
+    };
+
+    for (const candidate of surfaceLookupKeys(row)) {
+      const bucket = surface[candidate.mapName] && surface[candidate.mapName].get(candidate.key);
+      if (bucket && bucket.sample_count >= (minCounts[candidate.level] || 1)) {
+        return { ...bucket, matched_key: candidate.key, fallback_level: candidate.level };
+      }
+    }
+
+    return null;
+  }
+
+  function predictNewFairRate(row, surface) {
+    const resolved = resolveSurfaceFallback(row, surface);
+    const oldFair = getOldFairRate(row);
+    const selected = resolved ? pickNum(resolved.median_coupon, resolved.weighted_avg_coupon, oldFair) : oldFair;
+    return {
+      template_base_rate: resolved ? round2(resolved.median_coupon) : null,
+      risk_adjustment: 0,
+      tenor_adjustment: 0,
+      structure_adjustment: 0,
+      m7_overlay_adjustment: 0,
+      new_fair_rate: round2(selected),
+      clean_global_fair: round2(selected),
+      surface_key: resolved ? resolved.surface_key : null,
+      surface_matched_key: resolved ? resolved.matched_key : null,
+      fallback_level: resolved ? resolved.fallback_level : "Old Fair Fallback",
+      lookup_count: resolved ? resolved.sample_count : 0,
+      surface_confidence: resolved ? resolved.confidence : 0,
+      surface_median_coupon: resolved ? resolved.median_coupon : null,
+      surface_weighted_avg_coupon: resolved ? resolved.weighted_avg_coupon : null,
+      surface_std_coupon: resolved ? resolved.std_coupon : null
+    };
+  }
+
+  function explainNewFairTrace(row) {
+    return {
+      small_template: row.small_template_key || getSmallTemplateKey(row),
+      large_template: row.large_template_key || getLargeTemplateKey(row),
+      risk_zone: row.risk_zone_9,
+      tenor_group: row.tenor_group_4,
+      surface_key: row.surface_key,
+      fallback_level: row.fallback_level,
+      lookup_count: row.lookup_count,
+      surface_confidence: row.surface_confidence,
+      surface_median_coupon: row.surface_median_coupon,
+      surface_weighted_avg_coupon: row.surface_weighted_avg_coupon,
+      old_fair_rate: getOldFairRate(row),
+      new_fair_rate: row.clean_global_fair || row.new_fair_rate,
+      overlay_beta: row.overlay_beta,
+      final_fair_rate: row.final_fair_rate,
+      gap_vs_old: row.pricing_gap_vs_old,
+      gap_before: row.pricing_gap_vs_new,
+      gap_after: row.pricing_gap_vs_final,
+      gap_after_pct: row.pricing_gap_vs_final_pct,
+      improvement_pct: row.improvement_pct
+    };
+  }
+
+
+  // --------------------------------------------------------------------------
   // M8 v3 Overlay Lifecycle Layer
   // This layer does not mutate the clean global surface. It adds adaptive beta
   // fields and final_fair_rate for analysis/reporting only.
@@ -538,7 +809,7 @@
   }
 
   function calcCleanGlobalFair(row) {
-    return pickNum(row.new_fair_rate) || 0;
+    return pickNum(row.clean_global_fair, row.new_fair_rate, getOldFairRate(row)) || 0;
   }
 
   function applyOverlayLifecycle(rows) {
@@ -581,12 +852,20 @@
       const coupon = getMarketCoupon(row);
       const key = buildOverlayHistoryKey(row);
       const history = historyMap.get(key) || [];
-      const trigger = overlayEngine.evaluateOverlayTrigger(history);
+      const historyForOverlay = history.map(h => ({
+        ...h,
+        pricing_gap_vs_old_pct: h.pricing_gap_vs_clean_pct
+      }));
+      const trigger = overlayEngine.evaluateOverlayTrigger(historyForOverlay);
       const cleanGlobalFair = pickNum(row.clean_global_fair, row.new_fair_rate);
       const beta = pickNum(trigger.overlay_beta, 1);
       const finalFairRate = cleanGlobalFair !== null ? cleanGlobalFair * beta : null;
-
-      return {
+      const gapBefore = coupon !== null && cleanGlobalFair !== null ? coupon - cleanGlobalFair : null;
+      const gapAfter = coupon !== null && finalFairRate !== null ? coupon - finalFairRate : null;
+      const improvement = gapBefore !== null && Math.abs(gapBefore) > 0.01 && gapAfter !== null
+        ? (1 - (Math.abs(gapAfter) / Math.abs(gapBefore))) * 100
+        : null;
+      const outputRow = {
         ...row,
         overlay_key: key,
         overlay_state: trigger.overlay_state,
@@ -603,10 +882,19 @@
         residual_std: trigger.residual_std,
         residual_avg_gap_pct: trigger.avg_gap_pct,
         final_fair_rate: round2(finalFairRate),
-        pricing_gap_vs_final: coupon !== null && finalFairRate !== null ? round2(coupon - finalFairRate) : null,
+        pricing_gap_vs_final: gapAfter !== null ? round2(gapAfter) : null,
         pricing_gap_vs_final_pct: coupon !== null && finalFairRate ? round2(calcPricingGapPct(coupon, finalFairRate)) : null,
+        gap_before: gapBefore !== null ? round2(gapBefore) : null,
+        gap_before_pct: coupon !== null && cleanGlobalFair ? round2(calcPricingGapPct(coupon, cleanGlobalFair)) : null,
+        gap_after: gapAfter !== null ? round2(gapAfter) : null,
+        gap_after_pct: coupon !== null && finalFairRate ? round2(calcPricingGapPct(coupon, finalFairRate)) : null,
+        improvement_pct: round2(improvement),
         lifecycle_state: trigger.overlay_state,
         dormant_candidate: trigger.overlay_state === "DORMANT" || trigger.overlay_state === "DECAY"
+      };
+      return {
+        ...outputRow,
+        explain_trace: explainNewFairTrace(outputRow)
       };
     });
   }
@@ -708,34 +996,38 @@
       .filter(r => getMarketCoupon(r) !== null)
       .map(addCompressionFields);
 
-    const templateSummary = buildTemplateSummary(validRows);
-    const riskSurface = buildRiskSurface(validRows);
-    const rawRiskSurface = buildRawRiskSurface(validRows);
-    const tenorCurve = buildTenorCurve(validRows);
-    const structureCurve = buildStructureCurve(validRows);
-    const m7Overlay = buildM7Overlay(validRows);
-    const dnaStats = buildDNAStats(validRows);
+    const classifiedRows = buildCleanDataset(validRows);
+    const smallTemplateSurface = buildSmallTemplateSurface(classifiedRows);
 
-    const globalCoupon = globalMeanCoupon(validRows);
-    const globalBrake = avg(validRows.map(getMarketImpliedBrake).filter(Number.isFinite)) || 0;
+    // Legacy summaries remain for dashboard/database views. New Fair no longer uses
+    // the large-template average logic; it comes from smallTemplateSurface.
+    const templateSummary = buildTemplateSummary(classifiedRows);
+    const riskSurface = buildRiskSurface(classifiedRows);
+    const rawRiskSurface = buildRawRiskSurface(classifiedRows);
+    const tenorCurve = buildTenorCurve(classifiedRows);
+    const structureCurve = buildStructureCurve(classifiedRows);
+    const m7Overlay = buildM7Overlay(classifiedRows);
+    const dnaStats = buildDNAStats(classifiedRows);
 
-    const curves = {
-      templateSummary,
-      riskSurface,
-      tenorCurve,
-      structureCurve
-    };
+    const globalCoupon = globalMeanCoupon(classifiedRows);
+    const globalBrake = avg(classifiedRows.map(getMarketImpliedBrake).filter(Number.isFinite)) || 0;
 
     const globals = {
       globalCoupon,
       globalBrake
     };
 
-    const calibratedRowsBase = validRows.map(r => {
-      const regression = calcNewFairRate(r, curves, globals);
+    const calibratedRowsBase = classifiedRows.map(r => {
+      const fairResult = predictNewFairRate(r, smallTemplateSurface);
+      const coupon = getMarketCoupon(r);
+      const oldFair = getOldFairRate(r);
+      const newFair = pickNum(fairResult.new_fair_rate);
       return {
         ...r,
-        ...regression
+        ...fairResult,
+        pricing_gap_vs_old: coupon !== null && oldFair !== null ? round2(coupon - oldFair) : null,
+        pricing_gap_vs_new: coupon !== null && newFair !== null ? round2(coupon - newFair) : null,
+        fair_rate_delta_old_to_new: oldFair !== null && newFair !== null ? round2(newFair - oldFair) : null
       };
     });
 
@@ -764,6 +1056,8 @@
       version: VERSION,
       generated_at: new Date().toISOString(),
       rows_used: calibratedRows.length,
+      clean_rows_used: classifiedRows.filter(r => r.clean_row).length,
+      rows_removed_from_surface: classifiedRows.filter(r => !r.clean_row).length,
       globals,
       relationship_summary: relationshipSummary,
       template_summary: templateSummary,
@@ -776,10 +1070,19 @@
       template_risk_matrix: templateRiskMatrix,
       template_risk_tenor_matrix: templateRiskTenorMatrix,
       learning_recommendation: learningRecommendation,
+      small_template_surface: serializeSurface(smallTemplateSurface),
       overlay_summary: buildOverlaySummary(calibratedRows),
       template_overlay_effectiveness: buildTemplateOverlayEffectiveness(calibratedRows),
       calibrated_rows: calibratedRows
     };
+  }
+
+  function serializeSurface(surface) {
+    const out = {};
+    Object.keys(surface || {}).forEach(level => {
+      out[level] = Array.from(surface[level].values ? surface[level].values() : []);
+    });
+    return out;
   }
 
   global.M8RegressionEngineV1 = {
@@ -800,7 +1103,12 @@
     calcNewFairRate,
     applyOverlayLifecycle,
     buildOverlaySummary,
-    buildTemplateOverlayEffectiveness
+    buildTemplateOverlayEffectiveness,
+    buildCleanDataset,
+    buildSmallTemplateSurface,
+    predictNewFairRate,
+    resolveSurfaceFallback,
+    explainNewFairTrace
   };
 
 })(window);
