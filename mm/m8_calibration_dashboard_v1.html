@@ -783,6 +783,91 @@ function pct(v){
 function escapeHtml(s){
   return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
 }
+  <!-- ===================================================================== -->
+<!-- Summary Dashboard -->
+<!-- ===================================================================== -->
+
+<section class="m8-section">
+  <h2>0. Summary Dashboard / 今日總覽</h2>
+
+  <div id="summaryDashboard"></div>
+</section>
+
+<!-- ===================================================================== -->
+<!-- Trigger Mechanism Analysis -->
+<!-- ===================================================================== -->
+
+<section class="m8-section">
+  <h2>2. Trigger Mechanism Analysis / Trigger 機制分析</h2>
+
+  <table id="triggerAnalysisTable"></table>
+</section>
+
+<!-- ===================================================================== -->
+<!-- Overlay Effectiveness -->
+<!-- ===================================================================== -->
+
+<section class="m8-section">
+  <h2>
+    3. Template Overlay Effectiveness
+    / 模板 Overlay 有效性分析
+  </h2>
+
+  <table id="overlayEffectivenessTable"></table>
+</section>
+
+<!-- ===================================================================== -->
+<!-- Beta Tracking -->
+<!-- ===================================================================== -->
+
+<section class="m8-section">
+  <h2>
+    4. β Tracking Dashboard
+    / β 追蹤儀表板
+  </h2>
+
+  <table id="betaTrackingTable"></table>
+</section>
+
+<!-- ===================================================================== -->
+<!-- Mechanism Dashboard -->
+<!-- ===================================================================== -->
+
+<section class="m8-section">
+  <h2>
+    5. Mechanism Dashboard
+    / Trigger & Watch Dashboard
+  </h2>
+
+  <table id="mechanismDashboardTable"></table>
+</section>
+  <th>Market Coupon</th>
+<th>Fair Rate</th>
+<th>Final Fair Rate</th>
+
+<th>Gap Before</th>
+<th>Gap Before %</th>
+
+<th>Gap After</th>
+<th>Gap After %</th>
+
+<th>Improvement %</th>
+
+<th>Overlay State</th>
+<th>Overlay β</th>
+<th>Confidence</th>
+
+<th>Samples</th>
+<th>Persistence Days</th>
+<th>Residual Std</th>
+
+<th>M1 Score</th>
+<th>M7 Score</th>
+  const overlaySummary =
+window.M8RegressionEngineV1
+.buildOverlayEffectivenessSummary(rows);
+
+console.table(overlaySummary);
 </script>
 </body>
 </html>
