@@ -718,22 +718,60 @@
       "Global": 1
     };
 
+    const candidateTrace = surfaceLookupKeys(row).map(candidate => {
+      const bucket = surface[candidate.mapName] && surface[candidate.mapName].get(candidate.key);
+      const min_count = minCounts[candidate.level] || 1;
+      return {
+        level: candidate.level,
+        key: candidate.key,
+        min_count,
+        sample_count: bucket ? bucket.sample_count : 0,
+        eligible: !!(bucket && bucket.sample_count >= min_count),
+        median_coupon: bucket ? bucket.median_coupon : null,
+        weighted_avg_coupon: bucket ? bucket.weighted_avg_coupon : null,
+        avg_coupon: bucket ? bucket.avg_coupon : null,
+        std_coupon: bucket ? bucket.std_coupon : null,
+        confidence: bucket ? bucket.confidence : 0
+      };
+    });
+
     for (const candidate of surfaceLookupKeys(row)) {
       const bucket = surface[candidate.mapName] && surface[candidate.mapName].get(candidate.key);
       if (bucket && bucket.sample_count >= (minCounts[candidate.level] || 1)) {
-        return { ...bucket, matched_key: candidate.key, fallback_level: candidate.level };
+        return {
+          ...bucket,
+          matched_key: candidate.key,
+          fallback_level: candidate.level,
+          min_count_required: minCounts[candidate.level] || 1,
+          candidate_trace: candidateTrace
+        };
       }
     }
 
-    return null;
+    return {
+      fallback_level: "Old Fair Fallback",
+      matched_key: null,
+      surface_key: null,
+      sample_count: 0,
+      median_coupon: null,
+      weighted_avg_coupon: null,
+      avg_coupon: null,
+      std_coupon: null,
+      confidence: 0,
+      min_count_required: 0,
+      candidate_trace: candidateTrace
+    };
   }
 
   function predictNewFairRate(row, surface) {
     const resolved = resolveSurfaceFallback(row, surface);
     const oldFair = getOldFairRate(row);
-    const selected = resolved ? pickNum(resolved.median_coupon, resolved.weighted_avg_coupon, oldFair) : oldFair;
+    const selected = pickNum(resolved.median_coupon, resolved.weighted_avg_coupon, oldFair);
+    const calculationMethod = resolved && resolved.median_coupon !== null
+      ? "New Fair = selected surface median_market_coupon"
+      : "New Fair = old fair fallback because no eligible clean surface";
     return {
-      template_base_rate: resolved ? round2(resolved.median_coupon) : null,
+      template_base_rate: resolved && resolved.median_coupon !== null ? round2(resolved.median_coupon) : null,
       risk_adjustment: 0,
       tenor_adjustment: 0,
       structure_adjustment: 0,
@@ -744,10 +782,14 @@
       surface_matched_key: resolved ? resolved.matched_key : null,
       fallback_level: resolved ? resolved.fallback_level : "Old Fair Fallback",
       lookup_count: resolved ? resolved.sample_count : 0,
+      min_count_required: resolved ? resolved.min_count_required : 0,
       surface_confidence: resolved ? resolved.confidence : 0,
       surface_median_coupon: resolved ? resolved.median_coupon : null,
       surface_weighted_avg_coupon: resolved ? resolved.weighted_avg_coupon : null,
-      surface_std_coupon: resolved ? resolved.std_coupon : null
+      surface_avg_coupon: resolved ? resolved.avg_coupon : null,
+      surface_std_coupon: resolved ? resolved.std_coupon : null,
+      surface_candidate_trace: resolved ? resolved.candidate_trace : [],
+      surface_calculation_method: calculationMethod
     };
   }
 
@@ -758,11 +800,17 @@
       risk_zone: row.risk_zone_9,
       tenor_group: row.tenor_group_4,
       surface_key: row.surface_key,
+      surface_matched_key: row.surface_matched_key,
       fallback_level: row.fallback_level,
       lookup_count: row.lookup_count,
+      min_count_required: row.min_count_required,
       surface_confidence: row.surface_confidence,
       surface_median_coupon: row.surface_median_coupon,
       surface_weighted_avg_coupon: row.surface_weighted_avg_coupon,
+      surface_avg_coupon: row.surface_avg_coupon,
+      surface_std_coupon: row.surface_std_coupon,
+      surface_calculation_method: row.surface_calculation_method,
+      surface_candidate_trace: row.surface_candidate_trace || [],
       old_fair_rate: getOldFairRate(row),
       new_fair_rate: row.clean_global_fair || row.new_fair_rate,
       overlay_beta: row.overlay_beta,
