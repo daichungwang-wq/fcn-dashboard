@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
@@ -274,6 +273,96 @@
       line-height: 1.5;
     }
 
+
+    .decision-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .decision-box {
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 12px;
+      background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    }
+    .decision-box .k { font-size: 12px; color: #667085; margin-bottom: 6px; font-weight: 700; }
+    .decision-box .v { font-size: 22px; font-weight: 900; color: #111827; }
+    .decision-box .sub { margin-top: 4px; font-size: 12px; color: #667085; }
+    .decision-comment {
+      border-radius: 14px;
+      padding: 12px 14px;
+      border: 1px solid #d0d5dd;
+      background: #f9fafb;
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+    .template-line { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 16px; }
+    .mini-kpi { border: 1px solid #e5e7eb; border-radius: 12px; padding: 10px 12px; background: #fff; }
+    .mini-kpi .k { color: #667085; font-size: 12px; margin-bottom: 4px; font-weight: 700; }
+    .mini-kpi .v { color: #111827; font-weight: 800; font-size: 15px; word-break: break-word; }
+    .engine-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+    .engine-card { border: 1px solid #e5e7eb; border-radius: 16px; background: #fff; overflow: hidden; }
+    .engine-card-header {
+      padding: 14px 16px;
+      border-bottom: 1px solid #e5e7eb;
+      background: #f8fafc;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+    .engine-card-header h3 { margin: 0; font-size: 17px; }
+    .engine-card-body { padding: 14px 16px; }
+    .meter-wrap { margin: 12px 0; }
+    .meter-row { display: flex; align-items: center; gap: 10px; margin: 9px 0; }
+    .meter-label { width: 140px; font-size: 12px; color: #475467; font-weight: 700; }
+    .meter { flex: 1; height: 12px; background: #eef2f6; border-radius: 999px; overflow: hidden; }
+    .meter-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, #2f6fed, #12b76a); }
+    .meter-fill.warn { background: linear-gradient(90deg, #f79009, #fdb022); }
+    .meter-fill.bad { background: linear-gradient(90deg, #f04438, #f97066); }
+    .meter-value { width: 70px; text-align: right; font-size: 12px; font-weight: 800; color: #344054; }
+    .engine-comment {
+      background: #f9fafb;
+      border: 1px solid #eaecf0;
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 13px;
+      line-height: 1.6;
+      color: #344054;
+      margin-top: 10px;
+    }
+    details.collapsible-section {
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      background: #fff;
+      margin-top: 12px;
+      overflow: hidden;
+    }
+    details.collapsible-section summary {
+      cursor: pointer;
+      padding: 12px 14px;
+      font-weight: 800;
+      background: #f8fafc;
+      color: #1d2939;
+      list-style: none;
+    }
+    details.collapsible-section summary::-webkit-details-marker { display: none; }
+    details.collapsible-section summary::before { content: "▶"; margin-right: 8px; color: #667085; }
+    details.collapsible-section[open] summary::before { content: "▼"; }
+    .collapsible-body { padding: 14px; border-top: 1px solid #e5e7eb; }
+    .calibration-link {
+      display: inline-block;
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: #eef2ff;
+      color: #2447b2;
+      font-weight: 800;
+      text-decoration: none;
+      font-size: 12px;
+    }
+
     @media (max-width: 1180px) {
       .grid {
         grid-template-columns: 1fr;
@@ -284,7 +373,10 @@
       }
 
       .split-2,
-      .split-3 {
+      .split-3,
+      .decision-grid,
+      .template-line,
+      .engine-grid {
         grid-template-columns: 1fr;
       }
     }
@@ -527,11 +619,9 @@
     </div>
 
     <section class="card blueprint-card">
-      <div class="bp-header">
-        <h2 style="margin:0;">M8 Market Runtime Dashboard</h2>
-      </div>
-
-      <div style="margin-top:14px;">
+      <details class="collapsible-section">
+        <summary>M8 Market Runtime Dashboard（工程調校資料，預設收合）</summary>
+        <div class="collapsible-body">
         <div class="summary-grid">
           <div class="summary-box">
             <div class="k">Symbols</div>
@@ -591,18 +681,17 @@
             尚未載入
           </div>
         </div>
-      </div>
+        </div>
+      </details>
     </section>
 
 
 
     <section class="card blueprint-card">
-      <div class="bp-header">
-        <h2 style="margin:0;">M8 All Stocks Pool / Option Runtime 全市場池</h2>
-        <span class="muted">檢查 IV / Skew / Demand / RP 的 scale 與排序是否合理</span>
-      </div>
-
-      <div style="margin-top:14px;">
+      <details class="collapsible-section">
+        <summary>M8 All Stocks Pool / Option Runtime 全市場池（工程調校資料，預設收合）</summary>
+        <div class="collapsible-body">
+          <div class="muted" style="margin-bottom:12px;">檢查 IV / Skew / Demand / RP 的 scale 與排序是否合理</div>
         <div class="summary-grid">
           <div class="summary-box"><div class="k">Symbols</div><div class="v" id="allPoolSymbolCount">-</div></div>
           <div class="summary-box"><div class="k">Avg IVScore</div><div class="v" id="allPoolAvgIVScore">-</div></div>
@@ -669,23 +758,23 @@
         <div class="sticky-box" style="margin-top:12px; max-height:520px;">
           <div id="allStocksPoolTable" style="padding:12px;">尚未載入</div>
         </div>
-      </div>
+        </div>
+      </details>
     </section>
 
 
-    <section class="card blueprint-card">      <div class="bp-header">
-        <h2 style="margin:0;">M8 Blueprint（完整邏輯 / 公式 / 參數）</h2>
-        <button id="toggleBlueprintBtn" class="btn-secondary" type="button">一鍵展開</button>
-      </div>
-
-      <div id="blueprintPanel" style="display:none; margin-top:12px;">
-        <div id="blueprintContent"></div>
-      </div>
+    <section class="card blueprint-card">
+      <details class="collapsible-section">
+        <summary>M8 Blueprint（完整邏輯 / 公式 / 參數，預設收合）</summary>
+        <div class="collapsible-body">
+          <div id="blueprintContent"></div>
+        </div>
+      </details>
     </section>
   </div>
 
   <script type="module">
-    import { runM8Case, getM8Blueprint, runM8AnchorProxy } from "./js/core/m8_batch_engine.js?v=20260506_rpfix";
+    import { runM8Case, getM8Blueprint, runM8AnchorProxy } from "./js/core/m8_batch_engine.js?v=20260510_ui_vnext";
 
     const $ = (id) => document.getElementById(id);
     const STORAGE_KEY = "fcn_quote_history_v3";
@@ -693,7 +782,7 @@
 
     function badgeClass(view) {
       if (view === "便宜" || view === "略便宜") return "pill ok";
-      if (view === "合理") return "pill.warn";
+      if (view === "合理") return "pill warn";
       if (view === "尚未執行") return "pill info";
       return "pill bad";
     }
@@ -1012,15 +1101,7 @@
     }
 
     function setupBlueprintToggle() {
-      const btn = $("toggleBlueprintBtn");
-      const panel = $("blueprintPanel");
-      if (!btn || !panel) return;
-
-      btn.addEventListener("click", () => {
-        const isOpen = panel.style.display !== "none";
-        panel.style.display = isOpen ? "none" : "block";
-        btn.textContent = isOpen ? "一鍵展開" : "一鍵收合";
-      });
+      // Blueprint now uses native <details> collapsed UI.
     }
 
     function buildShortSwingFormula(days) {
@@ -1080,7 +1161,6 @@
 
       const rankMap = {};
       const roleMap = {};
-
       sortedSwings.forEach((x, i) => {
         rankMap[x.idx] = i + 1;
         if (i === 0) roleMap[x.idx] = "s1";
@@ -1095,6 +1175,62 @@
         : 0;
 
       const volAdjExplain = buildVolAdjExplain(r.basket_vol);
+      const marketYield = fmt(r.market_yield);
+      const m8Fair = fmt(r.fair_yield);
+      const pricingDelta = fmt(r.pricing_delta);
+
+      // Market Regression placeholder. Next phase will be filled by:
+      // data/mm/market_fcn_history.json + js/mm/modules/m8_regression_engine_v1.js
+      const marketRegression = r.market_regression || r.m8_market_regression || null;
+      const newFair = marketRegression?.new_fair_rate ?? null;
+      const finalFair = marketRegression?.final_fair_rate ?? null;
+      const beta = marketRegression?.overlay_beta ?? marketRegression?.convergence_strength ?? null;
+      const betaEffect = marketRegression?.improvement_pct ?? null;
+      const marketGap = marketRegression?.pricing_gap_vs_final_pct ?? marketRegression?.gap_after_pct ?? null;
+      const templateClass = marketRegression?.large_template || marketRegression?.template || "待接入";
+      const usedTemplate = marketRegression?.small_template || marketRegression?.surface_matched_key || "待接入";
+      const templateCount = marketRegression?.lookup_count ?? marketRegression?.sample_count ?? "-";
+      const confidence = marketRegression?.surface_confidence ?? marketRegression?.confidence ?? "-";
+
+      const marketDecision = (() => {
+        if (marketRegression && Number.isFinite(Number(marketGap))) {
+          const g = Number(marketGap);
+          if (Math.abs(g) <= 2) return "市場判定：接近 Final Market Fair，屬合理報價。";
+          if (g > 2) return "市場判定：報價高於 Final Market Fair，屬偏甜 / aggressive quote。";
+          return "市場判定：報價低於 Final Market Fair，屬偏保守 / 可議價。";
+        }
+        if (pricingDelta >= 1) return "偏好判定：Market 高於 M8 Fair，對你的偏好而言偏甜。";
+        if (pricingDelta <= -1) return "偏好判定：Market 低於 M8 Fair，對你的偏好而言偏貴。";
+        return "偏好判定：Market 接近 M8 Fair，屬合理區間。";
+      })();
+
+      const preferenceComment = (() => {
+        const parts = [];
+        if (pricingDelta < -1) parts.push(`Market ${marketYield}% 低於 M8 Fair ${m8Fair}%，此單在你的偏好模型下偏貴。`);
+        else if (pricingDelta > 1) parts.push(`Market ${marketYield}% 高於 M8 Fair ${m8Fair}%，此單在你的偏好模型下有利差。`);
+        else parts.push(`Market ${marketYield}% 與 M8 Fair ${m8Fair}% 接近，偏好模型判定為合理附近。`);
+
+        if (num(r.basket_vol) > 6) parts.push("BasketVol 偏高，需留意最弱標的與短線波動。");
+        else if (num(r.basket_vol) < 2) parts.push("BasketVol 偏低，票息上行空間有限。");
+        else parts.push("BasketVol 屬中性區間，主要看 KI / Strike 與 Rate Pressure。");
+
+        return parts.join(" ");
+      })();
+
+      const marketComment = marketRegression
+        ? `β 啟動原因：小模板近期 market coupon 與 New Fair 出現落差，β 依 gap 大小快速收斂到市場。New Fair ${fmt(newFair)}%，β ${fmt(beta)}，Final Fair ${fmt(finalFair)}%。`
+        : "Market Regression Engine 尚未接入；下一階段會讀取 data/mm/market_fcn_history.json，使用小模板 + β 產出 Final Market Fair。";
+
+      function meter(label, value, max, cls = "") {
+        const v = Math.max(0, Math.min(100, max ? (num(value) / max) * 100 : 0));
+        return `
+          <div class="meter-row">
+            <div class="meter-label">${label}</div>
+            <div class="meter"><div class="meter-fill ${cls}" style="width:${v}%;"></div></div>
+            <div class="meter-value">${fmt(value)}</div>
+          </div>
+        `;
+      }
 
       const stockRows = (r.stock_sources || []).map((s, idx) => `
         <tr>
@@ -1146,185 +1282,144 @@
         </tr>
       `).join("");
 
-      const counterpartyHtml = schema ? `
-        <div class="section-title">Counterparty / Schema</div>
-        <table>
-          <tbody>
-            <tr><th>承做機構</th><td>${schema.counterparty?.issuer_local || "-"}</td></tr>
-            <tr><th>上手銀行</th><td>${schema.counterparty?.upstream_bank_name || "-"}</td></tr>
-            <tr><th>RM</th><td>${schema.counterparty?.rm || "-"}</td></tr>
-            <tr><th>Basket Key</th><td>${schema.quote?.basket_key || "-"}</td></tr>
-            <tr><th>M2 市場環境</th><td>${schema.m2_callback?.market_context || "-"}</td></tr>
-            <tr><th>M2 處理優先級</th><td>${schema.m2_callback?.action_priority || "-"}</td></tr>
-            <tr><th>M2 建議</th><td>${schema.m2_callback?.suggested_action || "-"}</td></tr>
-          </tbody>
-        </table>
-      ` : "";
-
       $("resultArea").innerHTML = `
-        <div class="summary-grid">
-          <div class="summary-box"><div class="k">Market Yield</div><div class="v">${fmt(r.market_yield)}%</div></div>
-          <div class="summary-box">
-            <div class="k">Fair Yield</div>
-            <div class="v">${fmt(r.fair_yield)}%</div>
-            <div class="small-note">${r.yield_capped ? "已封頂 10%" : ""}</div>
+        <div class="decision-grid">
+          <div class="decision-box"><div class="k">Market</div><div class="v">${marketYield}%</div><div class="sub">銀行報價</div></div>
+          <div class="decision-box"><div class="k">M8 Fair</div><div class="v">${m8Fair}%</div><div class="sub">你的偏好</div></div>
+          <div class="decision-box"><div class="k">Final Fair</div><div class="v">${finalFair == null ? "-" : `${fmt(finalFair)}%`}</div><div class="sub">市場公平利率</div></div>
+          <div class="decision-box"><div class="k">Gap</div><div class="v">${marketGap == null ? `${pricingDelta}%` : `${fmt(marketGap)}%`}</div><div class="sub">${marketGap == null ? "vs M8 Fair" : "vs Final Fair"}</div></div>
+          <div class="decision-box"><div class="k">判定</div><div class="v" style="font-size:18px;">${r.pricing_view || "-"}</div><div class="sub">${marketRegression ? "雙引擎" : "偏好模型"}</div></div>
+          <div class="decision-box">
+            <div class="k">Calibration</div>
+            <div class="v" style="font-size:14px;"><a class="calibration-link" href="./mm/m8_calibration_dashboard_v1.html" target="_blank">Go to m8_calibration</a></div>
+            <div class="sub">模板校正</div>
           </div>
-          <div class="summary-box"><div class="k">Pricing Delta</div><div class="v">${fmt(r.pricing_delta)}%</div></div>
-          <div class="summary-box"><div class="k">BasketVol / VolAdj</div><div class="v">${fmt(r.basket_vol)} / ${fmt(r.vol_adj)}%</div></div>
-          <div class="summary-box"><div class="k">RatePressureAdj</div><div class="v">${fmt(r.rate_pressure_adj)}%</div><div class="small-note">RP ${fmt(r.rate_pressure_score_basket)}</div></div>
         </div>
 
-        <div class="section-title">案例摘要</div>
-        <table>
-          <tbody>
-            <tr><th>Case Name</th><td>${r.case_name || "-"}</td></tr>
-            <tr><th>Symbols</th><td>${(r.symbols || []).join(", ")}</td></tr>
-            <tr><th>KI / Strike / Tenor / Type</th><td>${fmt(r.KI)} / ${fmt(r.strike)} / ${fmt(r.tenor)} / ${r.type}</td></tr>
-            <tr><th>Note</th><td>${r.note || "-"}</td></tr>
-          </tbody>
-        </table>
+        <div class="decision-comment">${marketDecision}</div>
 
-        ${counterpartyHtml}
+        <div class="template-line">
+          <div class="mini-kpi"><div class="k">分類模板</div><div class="v">${templateClass}</div></div>
+          <div class="mini-kpi"><div class="k">使用模板</div><div class="v">${usedTemplate}</div></div>
+          <div class="mini-kpi"><div class="k">New Fair</div><div class="v">${newFair == null ? "-" : `${fmt(newFair)}%`}</div></div>
+          <div class="mini-kpi"><div class="k">β 值</div><div class="v">${beta == null ? "-" : fmt(beta)}</div></div>
+          <div class="mini-kpi"><div class="k">β 效果</div><div class="v">${betaEffect == null ? "-" : `${fmt(betaEffect)}%`}</div></div>
+        </div>
 
-        <div class="section-title">Basket / Structure / Vol / Brake</div>
-        <table>
-          <thead>
-            <tr>
-              <th>Base</th>
-              <th>BW</th>
-              <th>BasketPremium</th>
-              <th>TailAdj</th>
-              <th>KIAdj</th>
-              <th>TenorAdj</th>
-              <th>StrikeAdj</th>
-              <th>TypeAdj</th>
-              <th>StructureTotal</th>
-              <th>BasketVol</th>
-              <th>VolAdj</th>
-              <th>RatePressureAdj</th>
-              <th>PreRate</th>
-              <th>HighRateBrake</th>
-              <th>FairYield</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>${fmt(r.base)}</td>
-              <td>${fmt(r.BW)}</td>
-              <td>${fmt(r.basket_premium)}</td>
-              <td>${fmt(r.tail_adj)}</td>
-              <td>${fmt(r.ki_adj)}</td>
-              <td>${fmt(r.tenor_adj)}</td>
-              <td>${fmt(r.strike_adj)}</td>
-              <td>${fmt(r.type_adj)}</td>
-              <td>${fmt(r.structure_total)}</td>
-              <td>${fmt(r.basket_vol)}</td>
-              <td>${fmt(r.vol_adj)}</td>
-              <td>${fmt(r.rate_pressure_adj)}</td>
-              <td>${fmt(r.pre_rate)}</td>
-              <td>${fmt(r.high_rate_brake)}</td>
-              <td>${fmt(r.fair_yield)}</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <div class="section-title">股票明細</div>
-        <table>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Symbol</th>
-              <th>Source</th>
-              <th>M7_v2</th>
-              <th>RP Score</th>
-              <th>RP(100)</th>
-              <th>IV%</th>
-              <th>IV Score</th>
-              <th>Skew</th>
-              <th>Skew Score</th>
-              <th>Demand</th>
-              <th>Driver</th>
-              <th>Warning</th>
-              <th>Sector</th>
-              <th>Subsector</th>
-              <th>Risk</th>
-              <th>Today Score</th>
-              <th>Weakness</th>
-              <th>ShortSwing</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${stockRows || `<tr><td colspan="18">無資料</td></tr>`}
-          </tbody>
-        </table>
-
-        <div class="section-title">6日振幅輸入</div>
-        <table>
-          <thead>
-            <tr>
-              <th>Symbol</th>
-              <th>d0</th>
-              <th>d1</th>
-              <th>d2</th>
-              <th>d3</th>
-              <th>d4</th>
-              <th>d5</th>
-              <th>ShortSwing</th>
-              <th>Vol Rank</th>
-              <th>Basket Role</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${swingRows || `<tr><td colspan="10">無資料</td></tr>`}
-          </tbody>
-        </table>
-
-        <div class="section-title">綜合說明</div>
-        <div class="explain-box">
-          <div class="row">
-            <div class="label">ShortSwing 公式</div>
-            <div class="mono">ShortSwing = 0.35×d0 + 0.25×d1 + 0.15×d2 + 0.10×d3 + 0.08×d4 + 0.07×d5</div>
-            <div class="mono">Yield Cap = ${r.yield_capped ? "已套用 10%" : "未觸發"}</div>
+        <div class="engine-grid">
+          <div class="engine-card">
+            <div class="engine-card-header">
+              <h3>B1. M8 Preference Engine｜你的偏好</h3>
+              <span class="pill info">Preference</span>
+            </div>
+            <div class="engine-card-body">
+              <div class="meter-wrap">
+                ${meter("Base", r.base, 30)}
+                ${meter("Basket Premium", r.basket_premium, 10)}
+                ${meter("Structure Total", r.structure_total, 10)}
+                ${meter("BasketVol", r.basket_vol, 10, num(r.basket_vol) > 6 ? "bad" : "")}
+                ${meter("VolAdj", r.vol_adj, 10)}
+                ${meter("RatePressureAdj", r.rate_pressure_adj, 5, num(r.rate_pressure_adj) > 2 ? "warn" : "")}
+                ${meter("HighRateBrake", r.high_rate_brake, 12, num(r.high_rate_brake) > 6 ? "bad" : "")}
+              </div>
+              <div class="engine-comment">${preferenceComment}</div>
+            </div>
           </div>
 
-          <div class="row">
-            <div class="label">各股 ShortSwing 計算過程</div>
+          <div class="engine-card">
+            <div class="engine-card-header">
+              <h3>B2. Market Regression Engine｜市場公平利率</h3>
+              <span class="pill warn">β Market</span>
+            </div>
+            <div class="engine-card-body">
+              <div class="meter-wrap">
+                ${meter("New Fair", newFair ?? 0, 50)}
+                ${meter("Final Fair", finalFair ?? 0, 50)}
+                ${meter("β", beta ?? 0, 1)}
+                ${meter("Template Count", templateCount === "-" ? 0 : templateCount, 30)}
+                ${meter("Confidence", confidence === "-" ? 0 : confidence, 100)}
+              </div>
+              <div class="engine-comment">${marketComment}</div>
+            </div>
+          </div>
+        </div>
+
+        <details class="collapsible-section">
+          <summary>C. Explainability｜M8 Preference 細部公式與參數</summary>
+          <div class="collapsible-body">
             <table>
               <thead>
                 <tr>
-                  <th>Symbol</th>
-                  <th>計算式</th>
-                  <th>結果</th>
+                  <th>Base</th><th>BW</th><th>BasketPremium</th><th>TailAdj</th><th>KIAdj</th><th>TenorAdj</th><th>StrikeAdj</th><th>TypeAdj</th><th>StructureTotal</th><th>BasketVol</th><th>VolAdj</th><th>RatePressureAdj</th><th>PreRate</th><th>HighRateBrake</th><th>FairYield</th>
                 </tr>
               </thead>
               <tbody>
-                ${shortSwingExplainRows || `<tr><td colspan="3">無資料</td></tr>`}
+                <tr>
+                  <td>${fmt(r.base)}</td><td>${fmt(r.BW)}</td><td>${fmt(r.basket_premium)}</td><td>${fmt(r.tail_adj)}</td><td>${fmt(r.ki_adj)}</td><td>${fmt(r.tenor_adj)}</td><td>${fmt(r.strike_adj)}</td><td>${fmt(r.type_adj)}</td><td>${fmt(r.structure_total)}</td><td>${fmt(r.basket_vol)}</td><td>${fmt(r.vol_adj)}</td><td>${fmt(r.rate_pressure_adj)}</td><td>${fmt(r.pre_rate)}</td><td>${fmt(r.high_rate_brake)}</td><td>${fmt(r.fair_yield)}</td>
+                </tr>
               </tbody>
             </table>
           </div>
+        </details>
 
-          <div class="row">
-            <div class="label">BasketVol 計算過程</div>
-            <div class="mono">排序後 ShortSwing：${sortedSwings.map(x => `${x.symbol}:${fmt(x.v)}`).join(" , ") || "-"}</div>
-            <div class="mono">s1 = ${fmt(s1)}, s2 = ${fmt(s2)}, avg = ${fmt(avgSwing)}</div>
-            <div class="mono">BasketVol = 0.5×${fmt(s1)} + 0.3×${fmt(s2)} + 0.2×${fmt(avgSwing)} = ${fmt(r.basket_vol)}</div>
+        <details class="collapsible-section">
+          <summary>C. Explainability｜股票明細 / Rate Pressure 工程資料</summary>
+          <div class="collapsible-body">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th><th>Symbol</th><th>Source</th><th>M7_v2</th><th>RP Score</th><th>RP(100)</th><th>IV%</th><th>IV Score</th><th>Skew</th><th>Skew Score</th><th>Demand</th><th>Driver</th><th>Warning</th><th>Sector</th><th>Subsector</th><th>Risk</th><th>Today Score</th><th>Weakness</th><th>ShortSwing</th>
+                </tr>
+              </thead>
+              <tbody>${stockRows || `<tr><td colspan="19">無資料</td></tr>`}</tbody>
+            </table>
           </div>
+        </details>
 
-          <div class="row">
-            <div class="label">VolAdj 計算過程</div>
-            <div class="mono">BasketVol = ${fmt(r.basket_vol)}，落在區間：${volAdjExplain.bucket}</div>
-            <div class="mono">公式：${volAdjExplain.formula}</div>
-            <div class="mono">代入：${volAdjExplain.substitution}</div>
-            <div class="mono">VolAdj = ${fmt(r.vol_adj)}</div>
-          </div>
+        <details class="collapsible-section">
+          <summary>C. Explainability｜6日振幅 / ShortSwing / BasketVol / VolAdj</summary>
+          <div class="collapsible-body">
+            <div class="section-title">6日振幅輸入</div>
+            <table>
+              <thead>
+                <tr><th>Symbol</th><th>d0</th><th>d1</th><th>d2</th><th>d3</th><th>d4</th><th>d5</th><th>ShortSwing</th><th>Vol Rank</th><th>Basket Role</th></tr>
+              </thead>
+              <tbody>${swingRows || `<tr><td colspan="10">無資料</td></tr>`}</tbody>
+            </table>
 
-          <div class="row">
-            <div class="label">Rate Pressure 計算結果</div>
-            <div class="mono">Source = ${r.rate_pressure_source || "missing"}</div>
-            <div class="mono">Basket RP = ${fmt(r.rate_pressure_score_basket)}，RatePressureAdj = ${fmt(r.rate_pressure_adj)}</div>
-            <div class="mono">股票明細：${Array.isArray(r.rate_pressure_stocks) ? r.rate_pressure_stocks.map(x => `${x.symbol} RP=${fmt(x.rate_pressure_score)} | IV=${fmt(x.iv_30d_atm_pct)} | Skew=${fmt(x.put_skew_30d_vol_points)} | Demand=${fmt(x.demand_score)} | Driver=${x.rate_driver_label || "-"} | Formula=${x.rate_pressure_formula_text || "-"}`).join("\n") : "-"}</div>
+            <div class="explain-box">
+              <div class="row">
+                <div class="label">ShortSwing 公式</div>
+                <div class="mono">ShortSwing = 0.35×d0 + 0.25×d1 + 0.15×d2 + 0.10×d3 + 0.08×d4 + 0.07×d5</div>
+                <div class="mono">Yield Cap = ${r.yield_capped ? "已套用 10%" : "未觸發"}</div>
+              </div>
+              <div class="row">
+                <div class="label">各股 ShortSwing 計算過程</div>
+                <table><thead><tr><th>Symbol</th><th>計算式</th><th>結果</th></tr></thead><tbody>${shortSwingExplainRows || `<tr><td colspan="3">無資料</td></tr>`}</tbody></table>
+              </div>
+              <div class="row">
+                <div class="label">BasketVol 計算過程</div>
+                <div class="mono">排序後 ShortSwing：${sortedSwings.map(x => `${x.symbol}:${fmt(x.v)}`).join(" , ") || "-"}</div>
+                <div class="mono">s1 = ${fmt(s1)}, s2 = ${fmt(s2)}, avg = ${fmt(avgSwing)}</div>
+                <div class="mono">BasketVol = 0.5×${fmt(s1)} + 0.3×${fmt(s2)} + 0.2×${fmt(avgSwing)} = ${fmt(r.basket_vol)}</div>
+              </div>
+              <div class="row">
+                <div class="label">VolAdj 計算過程</div>
+                <div class="mono">BasketVol = ${fmt(r.basket_vol)}，落在區間：${volAdjExplain.bucket}</div>
+                <div class="mono">公式：${volAdjExplain.formula}</div>
+                <div class="mono">代入：${volAdjExplain.substitution}</div>
+                <div class="mono">VolAdj = ${fmt(r.vol_adj)}</div>
+              </div>
+              <div class="row">
+                <div class="label">Rate Pressure 計算結果</div>
+                <div class="mono">Source = ${r.rate_pressure_source || "missing"}</div>
+                <div class="mono">Basket RP = ${fmt(r.rate_pressure_score_basket)}，RatePressureAdj = ${fmt(r.rate_pressure_adj)}</div>
+                <div class="mono">股票明細：${Array.isArray(r.rate_pressure_stocks) ? r.rate_pressure_stocks.map(x => `${x.symbol} RP=${fmt(x.rate_pressure_score)} | IV=${fmt(x.iv_30d_atm_pct)} | Skew=${fmt(x.put_skew_30d_vol_points)} | Demand=${fmt(x.demand_score)} | Driver=${x.rate_driver_label || "-"} | Formula=${x.rate_pressure_formula_text || "-"}`).join("
+") : "-"}</div>
+              </div>
+            </div>
           </div>
-        </div>
+        </details>
       `;
     }
 
@@ -2153,7 +2248,7 @@
     }
 
     document.addEventListener("DOMContentLoaded", () => {
-      console.log("m8_batch html loaded - rpfix 20260506");
+      console.log("m8_batch html loaded - ui vnext 20260510");
 
       $("inquiryDate").value = todayStr();
       refreshInquiryNo();
@@ -2194,4 +2289,3 @@
   </script>
 </body>
 </html>
-```
