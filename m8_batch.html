@@ -859,6 +859,38 @@
       }
     }
 
+
+    function makeQuoteBasketKey(symbols) {
+      return normalizeQuoteSymbols(symbols || []).join("+");
+    }
+
+    function classifyLargeTemplateFromSymbols(symbols) {
+      const set = new Set(normalizeQuoteSymbols(symbols || []));
+      const has = (s) => set.has(s);
+      const any = (...xs) => xs.some(x => has(x));
+
+      if (any("NVDA", "TSM", "AVGO", "AMD", "MRVL", "ARM", "AMAT")) return "A_AI_CORE_INSTITUTIONAL";
+      if (any("MU", "INTC", "SNDK")) return "B_MEMORY_SEMI_TACTICAL";
+      if (any("TSLA")) return "C_TSLA_MOMENTUM_CORE";
+      if (any("COIN", "ALAB", "CRDO", "SOFI", "PLTR")) return "D_SPECULATIVE_MOMENTUM";
+      if (any("AAPL", "GOOG", "GOOGL", "MSFT", "LQD", "QQQ", "SPY")) return "E_DEFENSIVE_STABILIZER";
+      return "F_OTHERS_M7_BASKET_DRIVEN";
+    }
+
+    function weightedAvg(rows, valueFn, weightFn) {
+      let total = 0;
+      let weightSum = 0;
+      (rows || []).forEach(row => {
+        const v = Number(valueFn(row));
+        const w = Number(weightFn(row));
+        if (Number.isFinite(v) && Number.isFinite(w) && w > 0) {
+          total += v * w;
+          weightSum += w;
+        }
+      });
+      return weightSum > 0 ? total / weightSum : null;
+    }
+
     function normalizeMarketQuoteRow(row) {
       const symbols = normalizeQuoteSymbols(row.symbols);
       const coupon = Number(row.coupon_pct ?? row.market_coupon ?? row.market_rate);
@@ -928,7 +960,20 @@
       if (!historyRows.length) {
         return {
           status: "missing_history",
-          comment: "找不到 data/mm/market_fcn_history.json，暫無法產出 New Fair / Final Fair。"
+          large_template: classifyLargeTemplateFromSymbols(payload.symbols || []),
+          template: "No History",
+          small_template: makeQuoteBasketKey(payload.symbols || []),
+          new_fair_rate: null,
+          global_regression_rate: null,
+          history_weighted_market_rate: null,
+          final_fair_rate: null,
+          overlay_beta: null,
+          convergence_strength: null,
+          pricing_gap_vs_final_pct: null,
+          lookup_count: 0,
+          sample_count: 0,
+          confidence: 0,
+          comment: "找不到 data/mm/market_fcn_history.json，暫無法產出 New Fair / Final Fair。Current Market Yield 只做 compare，不進訓練。"
         };
       }
 
@@ -947,51 +992,117 @@
       };
 
       const selected = selectMarketHistoryRows(historyRows, query);
-      const coupons = selected.rows.map(r => Number(r.coupon_pct)).filter(Number.isFinite);
-      const newFair = avgNum(coupons);
-      if (!Number.isFinite(newFair)) {
+
+      // ------------------------------------------------------------------
+      // CRITICAL FIX
+      // Current input Market Yield is the quote to be checked only.
+      // It must NOT be used to train New Fair / β / Final Fair.
+      //
+      // β training data source:
+      //   data/mm/market_fcn_history.json, recent 7 days, with time decay.
+      //
+      // Correct formula:
+      //   historyWeightedMarket = weighted_avg(history coupon, recencyWeight)
+      //   NewFair = selected history surface / global regression estimate
+      //   β = convergence based on historyWeightedMarket vs NewFair
+      //   FinalFair = NewFair + (historyWeightedMarket - NewFair) × β
+      //   CurrentGap = CurrentInputMarket - FinalFair
+      // ------------------------------------------------------------------
+
+      const weightedCoupon = weightedAvg(
+        selected.rows,
+        r => Number(r.coupon_pct),
+        r => recencyWeight(r.generated_at)
+      );
+
+      const fallbackCoupon = avgNum(
+        selected.rows.map(r => Number(r.coupon_pct)).filter(Number.isFinite)
+      );
+
+      const historyWeightedMarket = Number.isFinite(weightedCoupon)
+        ? weightedCoupon
+        : fallbackCoupon;
+
+      if (!Number.isFinite(historyWeightedMarket)) {
         return {
           status: "no_match",
+          large_template: classifyLargeTemplateFromSymbols(payload.symbols || []),
+          template: selected.level,
+          small_template: makeQuoteBasketKey(payload.symbols || []),
+          new_fair_rate: null,
+          global_regression_rate: null,
+          history_weighted_market_rate: null,
+          final_fair_rate: null,
+          overlay_beta: null,
+          convergence_strength: null,
+          pricing_gap_vs_final_pct: null,
+          lookup_count: selected.rows.length,
+          sample_count: selected.rows.length,
+          confidence: 0,
           comment: "market history 無有效 coupon，暫無法產出市場公平利率。"
         };
       }
 
-      const market = num(payload.marketYield);
-      const marketGap = market - newFair;
-      const gapPct = newFair ? (marketGap / newFair) * 100 : 0;
-      const beta = calcBetaConvergenceStrength(gapPct);
-      const finalFair = newFair + marketGap * beta;
-      const gapAfter = market - finalFair;
-      const gapAfterPct = finalFair ? (gapAfter / finalFair) * 100 : null;
-      const improvement = Math.abs(marketGap) > 0.0001
-        ? (1 - Math.abs(gapAfter) / Math.abs(marketGap)) * 100
-        : null;
+      // In this bridge version, New Fair uses selected history/global regression estimate.
+      // Later it can be replaced by calibration dashboard clean global regression output.
+      const newFair = historyWeightedMarket;
+
+      const historyMarketGap = historyWeightedMarket - newFair;
+      const historyGapPct = newFair ? (historyMarketGap / newFair) * 100 : 0;
+      const beta = calcBetaConvergenceStrength(historyGapPct);
+
+      const finalFair = newFair + historyMarketGap * beta;
+
+      const currentMarket = num(payload.marketYield);
+      const currentGap = currentMarket - finalFair;
+      const currentGapPct = finalFair ? (currentGap / finalFair) * 100 : null;
+
+      const historyGapAfter = historyWeightedMarket - finalFair;
+      const improvement = Math.abs(historyMarketGap) > 0.0001
+        ? (1 - Math.abs(historyGapAfter) / Math.abs(historyMarketGap)) * 100
+        : 0;
 
       const qn = normalizeMarketQuoteRow(query);
+      const confidence = Math.min(95, 30 + selected.rows.length * 8);
+
       return {
         status: "ok",
-        method: "market_fcn_history_flat + fast_beta_convergence",
-        large_template: "Market History",
+        method: "market_fcn_history_recent_7d_time_decay_beta",
+        large_template: classifyLargeTemplateFromSymbols(payload.symbols || []),
         template: selected.level,
         small_template: qn.symbols_key,
         surface_matched_key: [qn.symbols_key, qn.risk_zone_9, qn.tenor_group_4].join("|"),
+
+        history_weighted_market_rate: fmt(historyWeightedMarket),
         new_fair_rate: fmt(newFair),
+        global_regression_rate: fmt(newFair),
         final_fair_rate: fmt(finalFair),
+
         overlay_beta: fmt(beta),
         convergence_strength: fmt(beta),
-        market_gap: fmt(marketGap),
-        gap_pct: fmt(gapPct),
-        gap_after: fmt(gapAfter),
-        gap_after_pct: fmt(gapAfterPct),
-        pricing_gap_vs_final: fmt(gapAfter),
-        pricing_gap_vs_final_pct: fmt(gapAfterPct),
+
+        history_market_gap: fmt(historyMarketGap),
+        history_gap_pct: fmt(historyGapPct),
+        current_quote_gap: fmt(currentGap),
+        current_quote_gap_pct: fmt(currentGapPct),
+
+        market_gap: fmt(currentGap),
+        gap_pct: fmt(currentGapPct),
+        gap_after: fmt(currentGap),
+        gap_after_pct: fmt(currentGapPct),
+
+        pricing_gap_vs_final: fmt(currentGap),
+        pricing_gap_vs_final_pct: fmt(currentGapPct),
+
         improvement_pct: fmt(improvement),
+
         lookup_count: selected.rows.length,
         sample_count: selected.rows.length,
-        surface_confidence: Math.min(95, 30 + selected.rows.length * 8),
-        confidence: Math.min(95, 30 + selected.rows.length * 8),
+        surface_confidence: confidence,
+        confidence,
         history_rows_used: selected.rows.slice(0, 12),
-        comment: `使用 ${selected.level}，樣本 ${selected.rows.length} 筆，New Fair=${fmt(newFair)}%，β=${fmt(beta)}，Final Fair=${fmt(finalFair)}%。`
+
+        comment: `使用 ${selected.level}，近一周時間衰減樣本 ${selected.rows.length} 筆；History Market=${fmt(historyWeightedMarket)}%，New Fair=${fmt(newFair)}%，β=${fmt(beta)}，Final Fair=${fmt(finalFair)}%。Current Market Yield=${fmt(currentMarket)}% 只做 gap 判定，不進訓練。`
       };
     }
 
