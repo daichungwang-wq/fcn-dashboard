@@ -1521,7 +1521,19 @@ function buildM8TemplateSurface() {
     });
   });
 
-  const surface = surfaceWindows["3m"];
+  // IMPORTANT:
+  // Do NOT use `const surface = surfaceWindows["3m"]` and then attach
+  // `surface.surface_windows = surfaceWindows`, because that makes:
+  // surface -> surface_windows -> 3m -> surface
+  // and JSON.stringify will fail with "Converting circular structure to JSON".
+  const surface = {
+    ...surfaceWindows["3m"],
+    templates: { ...(surfaceWindows["3m"].templates || {}) },
+    small_templates: { ...(surfaceWindows["3m"].small_templates || {}) },
+    theme_templates: { ...(surfaceWindows["3m"].theme_templates || {}) },
+    global_surface: { ...(surfaceWindows["3m"].global_surface || {}) }
+  };
+
   surface.market_window = "3m_export_pricing_surface";
   surface.reference_date = isoDateOnly(referenceDate);
   surface.export_policy = {
@@ -1531,7 +1543,14 @@ function buildM8TemplateSurface() {
     no_correction_rule: "If no same/template/theme data exists within 3 months, m8_batch should set beta=0 and Final Fair=New Fair.",
     formula: "Final Fair = New Fair + beta * (Surface Market Coupon - New Fair)"
   };
-  surface.surface_windows = surfaceWindows;
+
+  surface.surface_windows = {
+    "1w": surfaceWindows["1w"],
+    "1m": surfaceWindows["1m"],
+    "2m": surfaceWindows["2m"],
+    "3m": surfaceWindows["3m"]
+  };
+
   return surface;
 }
 
@@ -1593,4 +1612,5 @@ function escapeHtml(s){
 </script>
 </body>
 </html>
+
 
