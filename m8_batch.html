@@ -1149,7 +1149,8 @@
           weaknesses: result.weaknesses || [],
           short_swings: result.short_swings || [],
           short_swing_days: result.short_swing_days || [],
-          stock_sources: result.stock_sources || []
+          stock_sources: result.stock_sources || [],
+          market_regression: result.market_regression || null
         },
 
         m2_callback: {
@@ -1387,6 +1388,7 @@
       const beta = marketRegression?.overlay_beta ?? marketRegression?.convergence_strength ?? null;
       const betaEffect = marketRegression?.improvement_pct ?? null;
       const marketGap = marketRegression?.pricing_gap_vs_final_pct ?? marketRegression?.gap_after_pct ?? null;
+      const globalRegression = marketRegression?.global_regression_rate ?? marketRegression?.clean_global_fair ?? newFair;
       const templateClass = marketRegression?.large_template || marketRegression?.template || "待接入";
       const usedTemplate = marketRegression?.small_template || marketRegression?.surface_matched_key || "待接入";
       const templateCount = marketRegression?.lookup_count ?? marketRegression?.sample_count ?? "-";
@@ -1502,8 +1504,9 @@
           <div class="mini-kpi"><div class="k">分類模板</div><div class="v">${templateClass}</div></div>
           <div class="mini-kpi"><div class="k">使用模板</div><div class="v">${usedTemplate}</div></div>
           <div class="mini-kpi"><div class="k">New Fair</div><div class="v">${newFair == null ? "-" : `${fmt(newFair)}%`}</div></div>
-          <div class="mini-kpi"><div class="k">β 值</div><div class="v">${beta == null ? "-" : fmt(beta)}</div></div>
-          <div class="mini-kpi"><div class="k">β 效果</div><div class="v">${betaEffect == null ? "-" : `${fmt(betaEffect)}%`}</div></div>
+          <div class="mini-kpi"><div class="k">全域回歸推估利率</div><div class="v">${globalRegression == null ? "-" : `${fmt(globalRegression)}%`}</div></div>
+          <div class="mini-kpi"><div class="k">β 值 / β 效果</div><div class="v">${beta == null ? "-" : `${fmt(beta)} / ${betaEffect == null ? "-" : `${fmt(betaEffect)}%`}`}</div></div>
+          <div class="mini-kpi"><div class="k">樣本 / 信心</div><div class="v">${templateCount} / ${confidence}</div></div>
         </div>
 
         <div class="engine-grid">
@@ -2181,6 +2184,8 @@
             result.note = row.note;
           }
 
+          const historyRows = await loadMarketFcnHistoryRows();
+
           const payload = {
             inquiryDate: row.inquiryDate,
             inquiryNo: row.inquiryNo,
@@ -2198,6 +2203,8 @@
           };
 
           result.market_regression = await buildMarketRegressionForPayload(payload, result);
+
+          result.market_regression = estimateMarketFairFromHistory(payload, result, historyRows);
 
           const schema = buildEngineSchema(payload, result, null);
           store.push(schema);
