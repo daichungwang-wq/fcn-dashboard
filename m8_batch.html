@@ -892,65 +892,139 @@
       return null;
     }
 
-    function resolveSurfaceTemplate(symbols) {
-      if (!M8_TEMPLATE_SURFACE) return { level: "legacy_fallback", template: null };
+    function getNewFairFromResult(result) {
+      return round2(
+        result?.market_regression?.new_fair_rate ??
+        result?.m8_market_regression?.new_fair_rate ??
+        result?.fair_yield ??
+        result?.m8?.fair_yield ??
+        result?.M8?.fair_yield ??
+        result?.engine?.fair_yield ??
+        result?.pre_rate ??
+        result?.m8_features?.fair_yield
+      );
+    }
+
+    function resolveSurfaceTemplateInWindow(symbols, surfaceWindow, windowLabel) {
+      if (!surfaceWindow) return { level: `${windowLabel}_no_surface`, template: null };
       const key = normalizeSurfaceKey(symbols);
       const themeKey = detectThemeTemplate(symbols);
-      const small = M8_TEMPLATE_SURFACE.small_templates?.[key];
+      const small = surfaceWindow.small_templates?.[key];
 
-      // 1) Exact small template may win only when it is not a theme basket.
-      // For SMH/QQQ + TSM/NVDA/AVGO, theme surface must not be stolen by a random exact/partial overlap.
       if (!themeKey && small && small.eligible !== false) {
-        return { level: "exact_small_template", template: small };
+        return { level: `${windowLabel}_exact_small_template`, template: small, window: windowLabel };
       }
 
-      // 2) Theme template has priority for ETF semi core baskets.
-      const theme = resolveThemeTemplate(symbols);
-      if (theme) return theme;
+      const theme = themeKey ? surfaceWindow.theme_templates?.[themeKey] : null;
+      if (theme && theme.eligible !== false) {
+        return { level: `${windowLabel}_theme_template`, template: theme, window: windowLabel, requested_theme: themeKey };
+      }
 
-      // 3) Safety guard: if this is a theme basket but the exported surface has no theme_templates yet,
-      //    fall back to A_AI_CORE_INSTITUTIONAL, not TSLA/MEMORY partial matches.
-      if (themeKey) {
-        const parent = M8_TEMPLATE_SURFACE.templates?.A_AI_CORE_INSTITUTIONAL;
-        if (parent) {
-          return {
-            level: "theme_template_missing_use_parent",
-            template: parent,
-            requested_theme: themeKey
-          };
-        }
-        if (M8_TEMPLATE_SURFACE.global_surface) {
-          return {
-            level: "theme_template_missing_use_global",
-            template: M8_TEMPLATE_SURFACE.global_surface,
-            requested_theme: themeKey
-          };
+      // Within each window, partial match is allowed only with DNA guard and only for non-theme baskets.
+      // Do not fall back to parent/global template because 6大類平均太粗，會污染當下 pricing。
+      if (!themeKey) {
+        const partial = findBestSurfacePartial(symbols, surfaceWindow.small_templates);
+        if (partial) {
+          return { level: `${windowLabel}_partial_small_template`, template: partial.template, overlap: partial.overlap, window: windowLabel };
         }
       }
 
-      // 4) Partial small template is allowed only for non-theme baskets.
-      const partial = findBestSurfacePartial(symbols, M8_TEMPLATE_SURFACE.small_templates);
-      if (partial) return { level: "partial_small_template", template: partial.template, overlap: partial.overlap };
+      return { level: `${windowLabel}_no_same_template`, template: null, window: windowLabel, requested_theme: themeKey || null };
+    }
 
-      const parentKey = classifyLargeTemplateFromSymbols(symbols);
-      const parent = M8_TEMPLATE_SURFACE.templates?.[parentKey];
-      if (parent) return { level: "parent_template", template: parent };
+    function resolveSurfaceTemplate(symbols) {
+      if (!M8_TEMPLATE_SURFACE) return { level: "legacy_fallback", template: null };
 
-      if (M8_TEMPLATE_SURFACE.global_surface) return { level: "global_surface", template: M8_TEMPLATE_SURFACE.global_surface };
-      return { level: "global_surface", template: null };
+      const windows = M8_TEMPLATE_SURFACE.surface_windows || {
+        "3m": M8_TEMPLATE_SURFACE
+      };
+      const order = ["1w", "1m", "2m", "3m"];
+      const trace = [];
+
+      for (const w of order) {
+        const resolved = resolveSurfaceTemplateInWindow(symbols, windows[w], w);
+        trace.push({
+          window: w,
+          level: resolved.level,
+          key: resolved.template?.template_id || resolved.requested_theme || normalizeSurfaceKey(symbols),
+          count: resolved.template?.count || 0,
+          eligible: !!resolved.template
+        });
+        if (resolved.template) {
+          resolved.trace = trace;
+          return resolved;
+        }
+      }
+
+      return {
+        level: "no_recent_surface_beta_0",
+        template: null,
+        window: "none",
+        trace,
+        reason: "No exact/theme/DNA-safe partial surface within 3 months. Do not use parent/global fallback."
+      };
+    }
+
+    function buildNoCorrectionMarketRegression(payload, result, match) {
+      const newFair = getNewFairFromResult(result);
+      const currentMarket = num(payload.marketYield);
+      if (!Number.isFinite(Number(newFair))) return null;
+      const currentGap = currentMarket - Number(newFair);
+      const currentGapPct = Number(newFair) ? (currentGap / Number(newFair)) * 100 : null;
+      return {
+        status: "no_recent_surface_no_correction",
+        method: "m8_template_surface_1w_1m_2m_3m_no_correction",
+        large_template: classifyLargeTemplateFromSymbols(payload.symbols || []),
+        template: "no_recent_surface_beta_0",
+        small_template: normalizeSurfaceKey(payload.symbols || []),
+        surface_matched_key: "NO_RECENT_SURFACE_WITHIN_3M",
+        surface_template_id: null,
+        surface_level: "no_recent_surface_beta_0",
+        surface_window: "none",
+        request_basket_key: normalizeSurfaceKey(payload.symbols || []),
+        history_weighted_market_rate: null,
+        new_fair_rate: round2(newFair),
+        global_regression_rate: round2(newFair),
+        final_fair_rate: round2(newFair),
+        residual_premium: 0,
+        overlay_beta: 0,
+        convergence_strength: 0,
+        history_market_gap: 0,
+        history_gap_pct: 0,
+        gap_before: 0,
+        gap_before_pct: 0,
+        gap_after: round2(currentGap),
+        gap_after_pct: round2(currentGapPct),
+        current_quote_gap: round2(currentGap),
+        current_quote_gap_pct: round2(currentGapPct),
+        pricing_gap_vs_final: round2(currentGap),
+        pricing_gap_vs_final_pct: round2(currentGapPct),
+        market_gap: round2(currentGap),
+        gap_pct: round2(currentGapPct),
+        improvement_pct: 0,
+        lookup_count: 0,
+        sample_count: 0,
+        surface_confidence: "none",
+        confidence: 0,
+        surface_candidate_trace: match?.trace || [],
+        comment: `近 1W/1M/2M/3M 都找不到同模板或 DNA-safe 類似 surface；依規則不使用 6 大類或 global fallback，β=0，Final Fair=New Fair=${round2(newFair)}%。Current Market Yield=${round2(currentMarket)}% 只做 gap 判定。`
+      };
     }
 
     function buildMarketRegressionFromSurface(payload, result) {
       const match = resolveSurfaceTemplate(payload.symbols || []);
-      if (!match.template) return null;
+      if (!match.template) return buildNoCorrectionMarketRegression(payload, result, match);
 
       const t = match.template;
       const newFair = Number.isFinite(Number(t.avg_new_fair_rate)) ? Number(t.avg_new_fair_rate) : Number(t.avg_market_coupon);
-      const premium = Number(t.residual_premium || 0);
-      const finalFair = Number.isFinite(Number(t.avg_final_fair_rate))
-        ? Number(t.avg_final_fair_rate)
-        : newFair + premium;
       const historyMarket = Number(t.avg_market_coupon);
+      const beta = Number.isFinite(Number(t.avg_beta)) ? Number(t.avg_beta) : 1;
+
+      // M8 v3 market feedback formula:
+      // Final Fair = New Fair + β × (Surface Market Coupon - New Fair)
+      // Current Market Yield is only used for gap judgement and never trains the surface.
+      const finalFair = newFair + beta * (historyMarket - newFair);
+      const premium = historyMarket - newFair;
       const currentMarket = num(payload.marketYield);
       const currentGap = currentMarket - finalFair;
       const currentGapPct = finalFair ? (currentGap / finalFair) * 100 : null;
@@ -962,13 +1036,14 @@
 
       return {
         status: "ok",
-        method: "m8_template_surface_json",
+        method: "m8_template_surface_windowed_1w_1m_2m_3m",
         large_template: t.parent_template || classifyLargeTemplateFromSymbols(payload.symbols || []),
         template: match.level,
-        small_template: match.requested_theme || (match.level === "theme_template" ? t.template_id : normalizeSurfaceKey(payload.symbols || [])),
+        small_template: match.requested_theme || (match.level.includes("theme_template") ? t.template_id : normalizeSurfaceKey(payload.symbols || [])),
         surface_matched_key: t.template_id,
         surface_template_id: t.template_id,
         surface_level: match.level,
+        surface_window: match.window || "3m",
         theme_type: t.theme_type || null,
         request_basket_key: normalizeSurfaceKey(payload.symbols || []),
 
@@ -977,8 +1052,8 @@
         global_regression_rate: round2(newFair),
         final_fair_rate: round2(finalFair),
         residual_premium: round2(premium),
-        overlay_beta: Number.isFinite(Number(t.avg_beta)) ? round2(t.avg_beta) : 1,
-        convergence_strength: Number.isFinite(Number(t.avg_beta)) ? round2(t.avg_beta) : 1,
+        overlay_beta: round2(beta),
+        convergence_strength: round2(beta),
 
         history_market_gap: round2(historyMarket - newFair),
         history_gap_pct: newFair ? round2((historyMarket - newFair) / newFair * 100) : null,
@@ -999,8 +1074,11 @@
         surface_confidence: t.confidence || "low",
         confidence: t.avg_confidence ?? t.confidence ?? "low",
         surface_sample_ids: t.sample_ids || [],
+        surface_candidate_trace: match.trace || [],
+        latest_observation_date: t.latest_observation_date || null,
+        oldest_observation_date: t.oldest_observation_date || null,
 
-        comment: `${t.theme_type ? "使用 Theme Surface " + t.theme_type + "；" : ""}使用 data/mm/m8_template_surface.json：${match.level} → ${t.template_id}，樣本 ${t.count || 0} 筆；Surface Market=${round2(historyMarket)}%，New Fair=${round2(newFair)}%，Residual Premium=${round2(premium)}%，Final Fair=${round2(finalFair)}%。Current Market Yield=${round2(currentMarket)}% 只做 gap 判定，不進訓練。`
+        comment: `${t.theme_type ? "使用 Theme Surface " + t.theme_type + "；" : ""}使用 ${match.window || "3m"} 視窗：${match.level} → ${t.template_id}，樣本 ${t.count || 0} 筆；Surface Market=${round2(historyMarket)}%，New Fair=${round2(newFair)}%，β=${round2(beta)}，Final Fair = New Fair + β × (Market-NewFair) = ${round2(finalFair)}%。Current Market Yield=${round2(currentMarket)}% 只做 gap 判定，不進訓練。`
       };
     }
 
