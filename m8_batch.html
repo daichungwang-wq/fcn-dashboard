@@ -816,12 +816,57 @@
       return Number.isFinite(n) ? Math.round(n * 100) / 100 : null;
     }
 
+
+    const M8_TEMPLATE_DNA_RULES = {
+      C_TSLA_MOMENTUM_CORE: {
+        any_required: ["TSLA"]
+      },
+      D_SPECULATIVE_MOMENTUM: {
+        any_required: ["COIN", "CRDO", "ALAB", "SOFI", "COHR", "COHRN", "LITE", "CRDW", "PLTR"]
+      },
+      B_MEMORY_SEMI_TACTICAL: {
+        any_required: ["MU", "SNDK"]
+      },
+      E_DEFENSIVE_STABILIZER: {
+        any_required: ["LQD", "AAPL", "BAC", "C", "UNH", "REGN", "TGT"]
+      },
+      A_AI_CORE_INSTITUTIONAL: {
+        any_required: ["NVDA", "TSM", "AVGO", "SMH", "QQQ", "AMD", "MRVL", "ARM", "AMAT"]
+      }
+    };
+
+    function normalizeTemplateIdForDna(templateId) {
+      const s = String(templateId || "").toUpperCase();
+      if (s.includes("C_TSLA_MOMENTUM_CORE")) return "C_TSLA_MOMENTUM_CORE";
+      if (s.includes("D_SPECULATIVE_MOMENTUM")) return "D_SPECULATIVE_MOMENTUM";
+      if (s.includes("B_MEMORY_SEMI_TACTICAL")) return "B_MEMORY_SEMI_TACTICAL";
+      if (s.includes("E_DEFENSIVE_STABILIZER")) return "E_DEFENSIVE_STABILIZER";
+      if (s.includes("A_AI_CORE_INSTITUTIONAL")) return "A_AI_CORE_INSTITUTIONAL";
+      return s;
+    }
+
+    function passTemplateDna(symbols, templateId) {
+      const normalizedTemplateId = normalizeTemplateIdForDna(templateId);
+      const rule = M8_TEMPLATE_DNA_RULES[normalizedTemplateId];
+      if (!rule) return true;
+      const set = new Set(normalizeSurfaceSymbols(symbols));
+      const required = rule.any_required || [];
+      if (!required.length) return true;
+      return required.some(s => set.has(String(s).toUpperCase()));
+    }
+
+    function getSurfaceTemplateParentId(t) {
+      return t?.parent_template || t?.large_template || t?.basket_template_label || t?.template || "";
+    }
+
     function findBestSurfacePartial(symbols, smallTemplates) {
       const q = normalizeSurfaceSymbols(symbols);
       const qSet = new Set(q);
       let best = null;
       Object.values(smallTemplates || {}).forEach(t => {
         if (t.eligible === false) return;
+        const parentTemplateId = getSurfaceTemplateParentId(t);
+        if (!passTemplateDna(q, parentTemplateId)) return;
         const ts = normalizeSurfaceSymbols(t.match_symbols || t.template_id || "");
         const overlap = ts.filter(s => qSet.has(s)).length;
         if (overlap < Math.min(2, q.length)) return;
@@ -850,14 +895,40 @@
     function resolveSurfaceTemplate(symbols) {
       if (!M8_TEMPLATE_SURFACE) return { level: "legacy_fallback", template: null };
       const key = normalizeSurfaceKey(symbols);
+      const themeKey = detectThemeTemplate(symbols);
       const small = M8_TEMPLATE_SURFACE.small_templates?.[key];
-      if (small && small.eligible !== false) return { level: "exact_small_template", template: small };
 
+      // 1) Exact small template may win only when it is not a theme basket.
+      // For SMH/QQQ + TSM/NVDA/AVGO, theme surface must not be stolen by a random exact/partial overlap.
+      if (!themeKey && small && small.eligible !== false) {
+        return { level: "exact_small_template", template: small };
+      }
+
+      // 2) Theme template has priority for ETF semi core baskets.
       const theme = resolveThemeTemplate(symbols);
       if (theme) return theme;
 
-      // Partial small template is intentionally after theme template.
-      // For SMH/QQQ + TSM/NVDA/AVGO, theme surface should win over random overlap.
+      // 3) Safety guard: if this is a theme basket but the exported surface has no theme_templates yet,
+      //    fall back to A_AI_CORE_INSTITUTIONAL, not TSLA/MEMORY partial matches.
+      if (themeKey) {
+        const parent = M8_TEMPLATE_SURFACE.templates?.A_AI_CORE_INSTITUTIONAL;
+        if (parent) {
+          return {
+            level: "theme_template_missing_use_parent",
+            template: parent,
+            requested_theme: themeKey
+          };
+        }
+        if (M8_TEMPLATE_SURFACE.global_surface) {
+          return {
+            level: "theme_template_missing_use_global",
+            template: M8_TEMPLATE_SURFACE.global_surface,
+            requested_theme: themeKey
+          };
+        }
+      }
+
+      // 4) Partial small template is allowed only for non-theme baskets.
       const partial = findBestSurfacePartial(symbols, M8_TEMPLATE_SURFACE.small_templates);
       if (partial) return { level: "partial_small_template", template: partial.template, overlap: partial.overlap };
 
@@ -894,7 +965,7 @@
         method: "m8_template_surface_json",
         large_template: t.parent_template || classifyLargeTemplateFromSymbols(payload.symbols || []),
         template: match.level,
-        small_template: normalizeSurfaceKey(payload.symbols || []),
+        small_template: match.requested_theme || (match.level === "theme_template" ? t.template_id : normalizeSurfaceKey(payload.symbols || [])),
         surface_matched_key: t.template_id,
         surface_template_id: t.template_id,
         surface_level: match.level,
@@ -1043,11 +1114,12 @@
       const has = (s) => set.has(s);
       const any = (...xs) => xs.some(x => has(x));
 
-      if (any("NVDA", "TSM", "AVGO", "AMD", "MRVL", "ARM", "AMAT")) return "A_AI_CORE_INSTITUTIONAL";
-      if (any("MU", "INTC", "SNDK")) return "B_MEMORY_SEMI_TACTICAL";
+      // Template DNA priority: special-risk templates must not be swallowed by generic AI-core overlap.
+      if (any("COIN", "CRDO", "ALAB", "SOFI", "COHR", "COHRN", "LITE", "CRDW", "PLTR")) return "D_SPECULATIVE_MOMENTUM";
+      if (any("MU", "SNDK")) return "B_MEMORY_SEMI_TACTICAL";
       if (any("TSLA")) return "C_TSLA_MOMENTUM_CORE";
-      if (any("COIN", "ALAB", "CRDO", "SOFI", "PLTR")) return "D_SPECULATIVE_MOMENTUM";
-      if (any("AAPL", "GOOG", "GOOGL", "MSFT", "LQD", "QQQ", "SPY")) return "E_DEFENSIVE_STABILIZER";
+      if (any("LQD", "AAPL", "BAC", "C", "UNH", "REGN", "TGT")) return "E_DEFENSIVE_STABILIZER";
+      if (any("NVDA", "TSM", "AVGO", "SMH", "QQQ", "AMD", "MRVL", "ARM", "AMAT")) return "A_AI_CORE_INSTITUTIONAL";
       return "F_OTHERS_M7_BASKET_DRIVEN";
     }
 
