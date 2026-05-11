@@ -780,7 +780,136 @@
 
     const $ = (id) => document.getElementById(id);
     const STORAGE_KEY = "fcn_quote_history_v3";
+    const M8_TEMPLATE_SURFACE_PATH = "./data/mm/m8_template_surface.json?v=20260511_surface";
     let currentEditingInquiryNo = null;
+    let M8_TEMPLATE_SURFACE = null;
+
+    async function loadM8TemplateSurface() {
+      try {
+        const res = await fetch(M8_TEMPLATE_SURFACE_PATH, { cache: "no-store" });
+        if (!res.ok) throw new Error(`m8_template_surface.json ${res.status}`);
+        M8_TEMPLATE_SURFACE = await res.json();
+        console.log("[M8] template surface loaded", M8_TEMPLATE_SURFACE);
+        return M8_TEMPLATE_SURFACE;
+      } catch (err) {
+        console.warn("[M8] template surface load failed:", err);
+        M8_TEMPLATE_SURFACE = null;
+        return null;
+      }
+    }
+
+    function normalizeSurfaceSymbols(symbols) {
+      if (!symbols) return [];
+      if (typeof symbols === "string") symbols = symbols.split(/[,+|\s]+/);
+      return (Array.isArray(symbols) ? symbols : [])
+        .map(s => String(s || "").replace(/\s+(UW|UN|US|JP|HK)$/i, "").trim().toUpperCase())
+        .filter(Boolean)
+        .sort();
+    }
+
+    function normalizeSurfaceKey(symbols) {
+      return normalizeSurfaceSymbols(symbols).join("+");
+    }
+
+    function round2(v) {
+      const n = Number(v);
+      return Number.isFinite(n) ? Math.round(n * 100) / 100 : null;
+    }
+
+    function findBestSurfacePartial(symbols, smallTemplates) {
+      const q = normalizeSurfaceSymbols(symbols);
+      const qSet = new Set(q);
+      let best = null;
+      Object.values(smallTemplates || {}).forEach(t => {
+        if (t.eligible === false) return;
+        const ts = normalizeSurfaceSymbols(t.match_symbols || t.template_id || "");
+        const overlap = ts.filter(s => qSet.has(s)).length;
+        if (overlap < Math.min(2, q.length)) return;
+        const score = overlap * 100 + Number(t.count || 0);
+        if (!best || score > best.score) best = { score, template: t, overlap };
+      });
+      return best;
+    }
+
+    function resolveSurfaceTemplate(symbols) {
+      if (!M8_TEMPLATE_SURFACE) return { level: "legacy_fallback", template: null };
+      const key = normalizeSurfaceKey(symbols);
+      const small = M8_TEMPLATE_SURFACE.small_templates?.[key];
+      if (small && small.eligible !== false) return { level: "exact_small_template", template: small };
+
+      const partial = findBestSurfacePartial(symbols, M8_TEMPLATE_SURFACE.small_templates);
+      if (partial) return { level: "partial_small_template", template: partial.template, overlap: partial.overlap };
+
+      const parentKey = classifyLargeTemplateFromSymbols(symbols);
+      const parent = M8_TEMPLATE_SURFACE.templates?.[parentKey];
+      if (parent) return { level: "parent_template", template: parent };
+
+      if (M8_TEMPLATE_SURFACE.global_surface) return { level: "global_surface", template: M8_TEMPLATE_SURFACE.global_surface };
+      return { level: "global_surface", template: null };
+    }
+
+    function buildMarketRegressionFromSurface(payload, result) {
+      const match = resolveSurfaceTemplate(payload.symbols || []);
+      if (!match.template) return null;
+
+      const t = match.template;
+      const newFair = Number.isFinite(Number(t.avg_new_fair_rate)) ? Number(t.avg_new_fair_rate) : Number(t.avg_market_coupon);
+      const premium = Number(t.residual_premium || 0);
+      const finalFair = Number.isFinite(Number(t.avg_final_fair_rate))
+        ? Number(t.avg_final_fair_rate)
+        : newFair + premium;
+      const historyMarket = Number(t.avg_market_coupon);
+      const currentMarket = num(payload.marketYield);
+      const currentGap = currentMarket - finalFair;
+      const currentGapPct = finalFair ? (currentGap / finalFair) * 100 : null;
+      const historyGapBefore = historyMarket - newFair;
+      const historyGapAfter = historyMarket - finalFair;
+      const improvement = Math.abs(historyGapBefore) > 0.0001
+        ? (1 - Math.abs(historyGapAfter) / Math.abs(historyGapBefore)) * 100
+        : 0;
+
+      return {
+        status: "ok",
+        method: "m8_template_surface_json",
+        large_template: t.parent_template || classifyLargeTemplateFromSymbols(payload.symbols || []),
+        template: match.level,
+        small_template: normalizeSurfaceKey(payload.symbols || []),
+        surface_matched_key: t.template_id,
+        surface_template_id: t.template_id,
+        surface_level: match.level,
+
+        history_weighted_market_rate: round2(historyMarket),
+        new_fair_rate: round2(newFair),
+        global_regression_rate: round2(newFair),
+        final_fair_rate: round2(finalFair),
+        residual_premium: round2(premium),
+        overlay_beta: Number.isFinite(Number(t.avg_beta)) ? round2(t.avg_beta) : 1,
+        convergence_strength: Number.isFinite(Number(t.avg_beta)) ? round2(t.avg_beta) : 1,
+
+        history_market_gap: round2(historyMarket - newFair),
+        history_gap_pct: newFair ? round2((historyMarket - newFair) / newFair * 100) : null,
+        gap_before: round2(historyGapBefore),
+        gap_before_pct: newFair ? round2(historyGapBefore / newFair * 100) : null,
+        gap_after: round2(currentGap),
+        gap_after_pct: round2(currentGapPct),
+        current_quote_gap: round2(currentGap),
+        current_quote_gap_pct: round2(currentGapPct),
+        pricing_gap_vs_final: round2(currentGap),
+        pricing_gap_vs_final_pct: round2(currentGapPct),
+        market_gap: round2(currentGap),
+        gap_pct: round2(currentGapPct),
+        improvement_pct: round2(improvement),
+
+        lookup_count: t.count || 0,
+        sample_count: t.count || 0,
+        surface_confidence: t.confidence || "low",
+        confidence: t.avg_confidence ?? t.confidence ?? "low",
+        surface_sample_ids: t.sample_ids || [],
+
+        comment: `使用 data/mm/m8_template_surface.json：${match.level} → ${t.template_id}，樣本 ${t.count || 0} 筆；Surface Market=${round2(historyMarket)}%，New Fair=${round2(newFair)}%，Residual Premium=${round2(premium)}%，Final Fair=${round2(finalFair)}%。Current Market Yield=${round2(currentMarket)}% 只做 gap 判定，不進訓練。`
+      };
+    }
+
 
     function badgeClass(view) {
       if (view === "便宜" || view === "略便宜") return "pill ok";
@@ -978,12 +1107,17 @@
     }
 
     async function buildMarketRegressionForPayload(payload, result) {
+      if (!M8_TEMPLATE_SURFACE) await loadM8TemplateSurface();
+
+      const surfaceRegression = buildMarketRegressionFromSurface(payload, result);
+      if (surfaceRegression) return surfaceRegression;
+
       const historyRows = await loadMarketFcnHistory();
       if (!historyRows.length) {
         return {
-          status: "missing_history",
+          status: "missing_surface_and_history",
           large_template: classifyLargeTemplateFromSymbols(payload.symbols || []),
-          template: "No History",
+          template: "No Surface / No History",
           small_template: makeQuoteBasketKey(payload.symbols || []),
           new_fair_rate: null,
           global_regression_rate: null,
@@ -995,7 +1129,7 @@
           lookup_count: 0,
           sample_count: 0,
           confidence: 0,
-          comment: "找不到 data/mm/market_fcn_history.json，暫無法產出 New Fair / Final Fair。Current Market Yield 只做 compare，不進訓練。"
+          comment: "找不到 data/mm/m8_template_surface.json，也找不到 market_fcn_history.json，暫無法產出 New Fair / Final Fair。"
         };
       }
 
@@ -1014,36 +1148,9 @@
       };
 
       const selected = selectMarketHistoryRows(historyRows, query);
-
-      // ------------------------------------------------------------------
-      // CRITICAL FIX
-      // Current input Market Yield is the quote to be checked only.
-      // It must NOT be used to train New Fair / β / Final Fair.
-      //
-      // β training data source:
-      //   data/mm/market_fcn_history.json, recent 7 days, with time decay.
-      //
-      // Correct formula:
-      //   historyWeightedMarket = weighted_avg(history coupon, recencyWeight)
-      //   NewFair = selected history surface / global regression estimate
-      //   β = convergence based on historyWeightedMarket vs NewFair
-      //   FinalFair = NewFair + (historyWeightedMarket - NewFair) × β
-      //   CurrentGap = CurrentInputMarket - FinalFair
-      // ------------------------------------------------------------------
-
-      const weightedCoupon = weightedAvg(
-        selected.rows,
-        r => Number(r.coupon_pct),
-        r => recencyWeight(r.generated_at)
-      );
-
-      const fallbackCoupon = avgNum(
-        selected.rows.map(r => Number(r.coupon_pct)).filter(Number.isFinite)
-      );
-
-      const historyWeightedMarket = Number.isFinite(weightedCoupon)
-        ? weightedCoupon
-        : fallbackCoupon;
+      const weightedCoupon = weightedAvg(selected.rows, r => Number(r.coupon_pct), r => recencyWeight(r.generated_at));
+      const fallbackCoupon = avgNum(selected.rows.map(r => Number(r.coupon_pct)).filter(Number.isFinite));
+      const historyWeightedMarket = Number.isFinite(weightedCoupon) ? weightedCoupon : fallbackCoupon;
 
       if (!Number.isFinite(historyWeightedMarket)) {
         return {
@@ -1061,70 +1168,51 @@
           lookup_count: selected.rows.length,
           sample_count: selected.rows.length,
           confidence: 0,
-          comment: "market history 無有效 coupon，暫無法產出市場公平利率。"
+          comment: "surface 不可用，market history 也無有效 coupon，暫無法產出市場公平利率。"
         };
       }
 
-      // In this bridge version, New Fair uses selected history/global regression estimate.
-      // Later it can be replaced by calibration dashboard clean global regression output.
       const newFair = historyWeightedMarket;
-
       const historyMarketGap = historyWeightedMarket - newFair;
       const historyGapPct = newFair ? (historyMarketGap / newFair) * 100 : 0;
       const beta = calcBetaConvergenceStrength(historyGapPct);
-
       const finalFair = newFair + historyMarketGap * beta;
-
       const currentMarket = num(payload.marketYield);
       const currentGap = currentMarket - finalFair;
       const currentGapPct = finalFair ? (currentGap / finalFair) * 100 : null;
-
-      const historyGapAfter = historyWeightedMarket - finalFair;
-      const improvement = Math.abs(historyMarketGap) > 0.0001
-        ? (1 - Math.abs(historyGapAfter) / Math.abs(historyMarketGap)) * 100
-        : 0;
-
       const qn = normalizeMarketQuoteRow(query);
       const confidence = Math.min(95, 30 + selected.rows.length * 8);
 
       return {
         status: "ok",
-        method: "market_fcn_history_recent_7d_time_decay_beta",
+        method: "market_fcn_history_recent_7d_time_decay_beta_fallback",
         large_template: classifyLargeTemplateFromSymbols(payload.symbols || []),
         template: selected.level,
         small_template: qn.symbols_key,
         surface_matched_key: [qn.symbols_key, qn.risk_zone_9, qn.tenor_group_4].join("|"),
-
         history_weighted_market_rate: fmt(historyWeightedMarket),
         new_fair_rate: fmt(newFair),
         global_regression_rate: fmt(newFair),
         final_fair_rate: fmt(finalFair),
-
         overlay_beta: fmt(beta),
         convergence_strength: fmt(beta),
-
         history_market_gap: fmt(historyMarketGap),
         history_gap_pct: fmt(historyGapPct),
         current_quote_gap: fmt(currentGap),
         current_quote_gap_pct: fmt(currentGapPct),
-
         market_gap: fmt(currentGap),
         gap_pct: fmt(currentGapPct),
         gap_after: fmt(currentGap),
         gap_after_pct: fmt(currentGapPct),
-
         pricing_gap_vs_final: fmt(currentGap),
         pricing_gap_vs_final_pct: fmt(currentGapPct),
-
-        improvement_pct: fmt(improvement),
-
+        improvement_pct: 0,
         lookup_count: selected.rows.length,
         sample_count: selected.rows.length,
         surface_confidence: confidence,
         confidence,
         history_rows_used: selected.rows.slice(0, 12),
-
-        comment: `使用 ${selected.level}，近一周時間衰減樣本 ${selected.rows.length} 筆；History Market=${fmt(historyWeightedMarket)}%，New Fair=${fmt(newFair)}%，β=${fmt(beta)}，Final Fair=${fmt(finalFair)}%。Current Market Yield=${fmt(currentMarket)}% 只做 gap 判定，不進訓練。`
+        comment: `Surface 不可用，fallback 使用 ${selected.level}，近一周時間衰減樣本 ${selected.rows.length} 筆；History Market=${fmt(historyWeightedMarket)}%，Final Fair=${fmt(finalFair)}%。Current Market Yield=${fmt(currentMarket)}% 只做 gap 判定，不進訓練。`
       };
     }
 
@@ -2317,8 +2405,6 @@
             result.note = row.note;
           }
 
-          const historyRows = await loadMarketFcnHistoryRows();
-
           const payload = {
             inquiryDate: row.inquiryDate,
             inquiryNo: row.inquiryNo,
@@ -2336,8 +2422,6 @@
           };
 
           result.market_regression = await buildMarketRegressionForPayload(payload, result);
-
-          result.market_regression = estimateMarketFairFromHistory(payload, result, historyRows);
 
           const schema = buildEngineSchema(payload, result, null);
           store.push(schema);
@@ -2591,8 +2675,9 @@
       $("resultArea").innerHTML = `<div class="empty">請先輸入案例後，按「執行 M8 並留存」</div>`;
     }
 
-    document.addEventListener("DOMContentLoaded", () => {
-      console.log("m8_batch html loaded - market fair beta 20260510");
+    document.addEventListener("DOMContentLoaded", async () => {
+      console.log("m8_batch html loaded - template surface 20260511");
+      await loadM8TemplateSurface();
 
       $("inquiryDate").value = todayStr();
       refreshInquiryNo();
@@ -2630,80 +2715,7 @@
         }
       });
     });
-    let M8_TEMPLATE_SURFACE = null;
 
-async function loadM8TemplateSurface() {
-  try {
-    const res = await fetch("data/mm/m8_template_surface.json", {
-      cache: "no-store"
-    });
-    if (!res.ok) throw new Error("m8_template_surface.json not found");
-    M8_TEMPLATE_SURFACE = await res.json();
-    console.log("[M8] template surface loaded", M8_TEMPLATE_SURFACE);
-  } catch (err) {
-    console.warn("[M8] template surface load failed", err);
-    M8_TEMPLATE_SURFACE = null;
-  }
-}
-    function resolveSurfaceTemplate(symbols) {
-  if (!M8_TEMPLATE_SURFACE) {
-    return {
-      level: "legacy_fallback",
-      template: null
-    };
-  }
-
-  const key = normalizeBasketKey(symbols);
-
-  const small = M8_TEMPLATE_SURFACE.small_templates?.[key];
-  if (small) {
-    return {
-      level: "exact_small_template",
-      template: small
-    };
-  }
-
-  const parentKey = inferParentTemplate(symbols);
-  const parent = M8_TEMPLATE_SURFACE.templates?.[parentKey];
-
-  if (parent) {
-    return {
-      level: "parent_template",
-      template: parent
-    };
-  }
-
-  return {
-    level: "global_surface",
-    template: null
-  };
-}
-    function applyTemplateSurface(newFairRate, symbols) {
-  const match = resolveSurfaceTemplate(symbols);
-
-  if (!match.template) {
-    return {
-      new_fair_rate: newFairRate,
-      final_fair_rate: newFairRate,
-      surface_level: match.level,
-      surface_confidence: "none",
-      surface_premium: 0
-    };
-  }
-
-  const premium = Number(match.template.residual_premium || 0);
-  const finalFair = Number(newFairRate || 0) + premium;
-
-  return {
-    new_fair_rate: round2(newFairRate),
-    final_fair_rate: round2(finalFair),
-    surface_level: match.level,
-    surface_confidence: match.template.confidence || "low",
-    surface_premium: premium,
-    surface_count: match.template.count || 0,
-    surface_template_id: match.template.template_id
-  };
-}
-  </script>
+</script>
 </body>
 </html>
