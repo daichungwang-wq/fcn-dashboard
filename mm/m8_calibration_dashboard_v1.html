@@ -782,8 +782,16 @@ function getRowSymbolsForTheme(row){
 }
 
 function buildSubtemplateSummary(template){
+  const templateId = normalizeTemplateId(template);
   const rows = (REGRESSION?.calibrated_rows || REG_ROWS || [])
-    .filter(r => (r.basket_template_label || r.basket_template || "") === template || (r.basket_template || "") === template);
+    .filter(r => {
+      const rowTemplate = normalizeTemplateId(r.basket_template_label || r.basket_template || "");
+      const sameTemplate = rowTemplate === templateId || (r.basket_template || "") === template;
+      if (!sameTemplate) return false;
+      // Display-layer DNA guard: remove contaminated rows before grouping sub-templates.
+      // Example: AVGO+NVDA+TSM shown under C_TSLA is invalid because C requires TSLA.
+      return passTemplateDna(getRowSymbolsForTheme(r), templateId);
+    });
   const groups = {};
   const groupTypes = {};
 
@@ -1262,12 +1270,55 @@ function getM8TemplateDnaRules() {
       any_required: ["MU", "SNDK"]
     },
     E_DEFENSIVE_STABILIZER: {
-      any_required: ["LQD", "AAPL","MSFT", "BAC", "C", "UNH", "REGN", "TGT"]
+      any_required: ["LQD", "AAPL", "BAC", "C", "UNH", "REGN", "TGT"]
     },
     A_AI_CORE_INSTITUTIONAL: {
       any_required: ["NVDA", "TSM", "AVGO", "SMH", "QQQ", "AMD", "MRVL", "ARM", "AMAT"]
     }
   };
+}
+
+
+function normalizeTemplateId(templateId) {
+  const t = String(templateId || "").trim();
+  if (!t) return "F_OTHERS_M7_BASKET_DRIVEN";
+  if (t === "A" || t.startsWith("A_")) return "A_AI_CORE_INSTITUTIONAL";
+  if (t === "B" || t.startsWith("B_")) return "B_MEMORY_SEMI_TACTICAL";
+  if (t === "C" || t.startsWith("C_")) return "C_TSLA_MOMENTUM_CORE";
+  if (t === "D" || t.startsWith("D_")) return "D_SPECULATIVE_MOMENTUM";
+  if (t === "E" || t.startsWith("E_")) return "E_DEFENSIVE_STABILIZER";
+  if (t === "F" || t.startsWith("F_")) return "F_OTHERS_M7_BASKET_DRIVEN";
+  return t;
+}
+
+function passTemplateDna(symbols, templateId) {
+  const template = normalizeTemplateId(templateId);
+  const rules = getM8TemplateDnaRules();
+  const rule = rules[template];
+  if (!rule) return true;
+  const set = new Set(normalizeSurfaceSymbols(symbols));
+  const anyRequired = rule.any_required || [];
+  if (anyRequired.length && !anyRequired.some(s => set.has(String(s).toUpperCase()))) {
+    return false;
+  }
+  return true;
+}
+
+function repairTemplateByDna(symbols, rawTemplateId) {
+  const raw = normalizeTemplateId(rawTemplateId);
+  if (passTemplateDna(symbols, raw)) return raw;
+
+  // Hard DNA repair: a row cannot stay in a parent template whose mandatory DNA is missing.
+  // Example: AVGO+NVDA+TSM must not remain under C_TSLA_MOMENTUM_CORE because TSLA is absent.
+  const order = [
+    "C_TSLA_MOMENTUM_CORE",
+    "D_SPECULATIVE_MOMENTUM",
+    "B_MEMORY_SEMI_TACTICAL",
+    "E_DEFENSIVE_STABILIZER",
+    "A_AI_CORE_INSTITUTIONAL"
+  ];
+  const repaired = order.find(t => passTemplateDna(symbols, t));
+  return repaired || "F_OTHERS_M7_BASKET_DRIVEN";
 }
 
 function detectThemeTemplate(symbols) {
@@ -1313,8 +1364,9 @@ function buildM8TemplateSurface() {
   };
 
   rows.forEach(row => {
-    const parent = row.basket_template_label || row.template || row.parent_template || row.basket_template_name || "F_OTHERS_M7_BASKET_DRIVEN";
     const symbols = normalizeSurfaceSymbols(row.symbols || row.basket_symbols_key || row.basket_display || row.core_dna_3 || row.core_dna_2 || []);
+    const rawParent = row.basket_template_label || row.template || row.parent_template || row.basket_template_name || "F_OTHERS_M7_BASKET_DRIVEN";
+    const parent = repairTemplateByDna(symbols, rawParent);
     const smallKey = normalizeSurfaceKey(symbols);
 
     if (!surface.templates[parent]) surface.templates[parent] = createSurfaceBucket(parent);
