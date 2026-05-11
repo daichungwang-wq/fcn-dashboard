@@ -1184,6 +1184,128 @@ function pct(v){
 function escapeHtml(s){
   return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
 }
+  <button onclick="downloadM8TemplateSurface()">
+  Export M8 Template Surface
+</button>
+  function normalizeBasketKey(symbols) {
+  if (!symbols) return "";
+  if (typeof symbols === "string") {
+    symbols = symbols.split(/[,+\s]+/);
+  }
+  return symbols
+    .map(s => String(s).trim().toUpperCase())
+    .filter(Boolean)
+    .sort()
+    .join("+");
+}
+
+function downloadJson(filename, data) {
+  const blob = new Blob([JSON.stringify(data, null, 2)], {
+    type: "application/json"
+  });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function downloadM8TemplateSurface() {
+  const rows = window.m8CalibrationRows || [];
+
+  const surface = {
+    version: "m8_template_surface_v1",
+    generated_at: new Date().toISOString(),
+    source: "m8_calibration_dashboard_v1.html",
+    templates: {},
+    small_templates: {},
+    fallback_rules: {
+      min_count_for_small_template: 3,
+      match_order: [
+        "exact_small_template",
+        "partial_small_template",
+        "parent_template",
+        "global_surface"
+      ]
+    }
+  };
+
+  rows.forEach(row => {
+    const parentTemplate =
+      row.template ||
+      row.parent_template ||
+      row.major_template ||
+      "GLOBAL";
+
+    const symbols = row.symbols || row.basket || row.underlyings || [];
+    const smallKey = normalizeBasketKey(symbols);
+
+    if (!surface.templates[parentTemplate]) {
+      surface.templates[parentTemplate] = {
+        template_id: parentTemplate,
+        count: 0,
+        avg_market_coupon: 0,
+        avg_old_fair_rate: 0,
+        avg_new_fair_rate: 0,
+        residual_premium: 0,
+        confidence: "low"
+      };
+    }
+
+    const t = surface.templates[parentTemplate];
+    t.count += 1;
+    t.avg_market_coupon += Number(row.market_coupon || row.coupon || 0);
+    t.avg_old_fair_rate += Number(row.old_fair_rate || row.fair_rate || 0);
+    t.avg_new_fair_rate += Number(row.new_fair_rate || 0);
+
+    if (smallKey) {
+      if (!surface.small_templates[smallKey]) {
+        surface.small_templates[smallKey] = {
+          template_id: smallKey,
+          parent_template: parentTemplate,
+          count: 0,
+          avg_market_coupon: 0,
+          avg_old_fair_rate: 0,
+          avg_new_fair_rate: 0,
+          residual_premium: 0,
+          confidence: "low",
+          match_symbols: smallKey.split("+")
+        };
+      }
+
+      const st = surface.small_templates[smallKey];
+      st.count += 1;
+      st.avg_market_coupon += Number(row.market_coupon || row.coupon || 0);
+      st.avg_old_fair_rate += Number(row.old_fair_rate || row.fair_rate || 0);
+      st.avg_new_fair_rate += Number(row.new_fair_rate || 0);
+    }
+  });
+
+  finalizeSurface(surface.templates);
+  finalizeSurface(surface.small_templates);
+
+  downloadJson("m8_template_surface.json", surface);
+}
+
+function finalizeSurface(group) {
+  Object.values(group).forEach(t => {
+    if (!t.count) return;
+
+    t.avg_market_coupon = round2(t.avg_market_coupon / t.count);
+    t.avg_old_fair_rate = round2(t.avg_old_fair_rate / t.count);
+    t.avg_new_fair_rate = round2(t.avg_new_fair_rate / t.count);
+    t.residual_premium = round2(t.avg_market_coupon - t.avg_new_fair_rate);
+
+    if (t.count >= 10) t.confidence = "high";
+    else if (t.count >= 3) t.confidence = "medium";
+    else t.confidence = "low";
+  });
+}
+
+function round2(v) {
+  return Math.round(Number(v || 0) * 100) / 100;
+}
 </script>
 </body>
 </html>
