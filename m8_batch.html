@@ -773,8 +773,10 @@
     </section>
   </div>
 
+  <script src="./js/mm/modules/m8_overlay_engine_v1.js?v=20260510_beta"></script>
+  <script src="./js/mm/modules/m8_regression_engine_v1.js?v=20260510_beta"></script>
   <script type="module">
-    import { runM8Case, getM8Blueprint, runM8AnchorProxy } from "./js/core/m8_batch_engine.js?v=20260510_ui_vnext";
+    import { runM8Case, getM8Blueprint, runM8AnchorProxy } from "./js/core/m8_batch_engine.js?v=20260510_market_fair";
 
     const $ = (id) => document.getElementById(id);
     const STORAGE_KEY = "fcn_quote_history_v3";
@@ -794,6 +796,203 @@
 
     function fmt(v) {
       return Number(num(v).toFixed(2));
+    }
+
+    function avgNum(values) {
+      const xs = (Array.isArray(values) ? values : [])
+        .map(Number)
+        .filter(Number.isFinite);
+      if (!xs.length) return null;
+      return xs.reduce((a, b) => a + b, 0) / xs.length;
+    }
+
+    function normalizeQuoteSymbols(symbols) {
+      return (Array.isArray(symbols) ? symbols : [])
+        .map(s => String(s || "").replace(/\s+(UW|UN|US|JP|HK)$/i, "").trim().toUpperCase())
+        .filter(Boolean)
+        .sort();
+    }
+
+    function symbolsKey(symbols) {
+      return normalizeQuoteSymbols(symbols).join("+");
+    }
+
+    function classifyQuoteRisk(ki, strike) {
+      const s = num(strike);
+      const k = ki == null ? null : num(ki);
+      if (s >= 80 || (k !== null && k >= 70)) return "R9_vh_vh";
+      if (s >= 70 || (k !== null && k >= 60)) return "R7_mh_m";
+      if (s >= 60 || (k !== null && k >= 50)) return "R5_m_m";
+      return "R3_ml_m";
+    }
+
+    function classifyQuoteTenor(tenor) {
+      const t = num(tenor);
+      if (t <= 3) return "T1_0_3M";
+      if (t <= 6) return "T2_4_6M";
+      if (t <= 9) return "T3_7_9M";
+      return "T4_10_12M";
+    }
+
+    function calcBetaConvergenceStrength(gapPct) {
+      const g = Math.abs(num(gapPct));
+      if (g >= 20) return 0.99;
+      if (g >= 10) return 0.95;
+      if (g >= 2) return 0.85;
+      return 0.60;
+    }
+
+    async function loadMarketFcnHistory() {
+      try {
+        const res = await fetch("./data/mm/market_fcn_history.json?v=20260510_market_flat");
+        if (!res.ok) throw new Error(`market_fcn_history ${res.status}`);
+        const json = await res.json();
+
+        if (Array.isArray(json)) return json;
+        if (json && Array.isArray(json.records)) {
+          return json.records.map(r => ({ ...r, generated_at: r.generated_at || json.generated_at }));
+        }
+        return [];
+      } catch (err) {
+        console.warn("market_fcn_history load failed:", err);
+        return [];
+      }
+    }
+
+    function normalizeMarketQuoteRow(row) {
+      const symbols = normalizeQuoteSymbols(row.symbols);
+      const coupon = Number(row.coupon_pct ?? row.market_coupon ?? row.market_rate);
+      const tenor = Number(row.tenor_month ?? row.tenor ?? row.T);
+      const strike = Number(row.strike_pct ?? row.strike);
+      const kiRaw = row.ki_pct ?? row.KI ?? row.ki;
+      const ki = kiRaw === null || kiRaw === undefined || kiRaw === "" ? null : Number(kiRaw);
+      const barrier = String(row.barrier_type || row.type || "NA").trim().toUpperCase();
+      const risk = classifyQuoteRisk(ki, strike);
+      const tenorGroup = classifyQuoteTenor(tenor);
+
+      return {
+        ...row,
+        symbols,
+        symbols_key: symbols.join("+"),
+        coupon_pct: Number.isFinite(coupon) ? coupon : null,
+        tenor_month: Number.isFinite(tenor) ? tenor : null,
+        strike_pct: Number.isFinite(strike) ? strike : null,
+        ki_pct: Number.isFinite(ki) ? ki : null,
+        barrier_type: barrier,
+        risk_zone_9: risk,
+        tenor_group_4: tenorGroup,
+        small_template: symbols.join("+"),
+        template_risk_tenor_key: [symbols.join("+"), risk, tenorGroup].join("|")
+      };
+    }
+
+    function selectMarketHistoryRows(historyRows, query) {
+      const rows = historyRows
+        .map(normalizeMarketQuoteRow)
+        .filter(r => r.symbols.length && Number.isFinite(r.coupon_pct));
+
+      const q = normalizeMarketQuoteRow(query);
+      const qSet = new Set(q.symbols);
+      const overlap = (r) => r.symbols.filter(s => qSet.has(s)).length;
+
+      const exactRiskTenor = rows.filter(r =>
+        r.symbols_key === q.symbols_key &&
+        r.risk_zone_9 === q.risk_zone_9 &&
+        r.tenor_group_4 === q.tenor_group_4 &&
+        r.barrier_type === q.barrier_type
+      );
+      if (exactRiskTenor.length >= 2) {
+        return { level: "Small Template × Risk × Tenor", rows: exactRiskTenor };
+      }
+
+      const exactTemplate = rows.filter(r => r.symbols_key === q.symbols_key);
+      if (exactTemplate.length >= 2) {
+        return { level: "Small Template", rows: exactTemplate };
+      }
+
+      const partial = rows
+        .map(r => ({ row: r, overlap: overlap(r) }))
+        .filter(x => x.overlap >= Math.min(2, q.symbols.length))
+        .sort((a, b) => b.overlap - a.overlap)
+        .slice(0, 12)
+        .map(x => x.row);
+      if (partial.length >= 3) {
+        return { level: "Similar Symbols", rows: partial };
+      }
+
+      return { level: "Global Market History", rows };
+    }
+
+    async function buildMarketRegressionForPayload(payload, result) {
+      const historyRows = await loadMarketFcnHistory();
+      if (!historyRows.length) {
+        return {
+          status: "missing_history",
+          comment: "找不到 data/mm/market_fcn_history.json，暫無法產出 New Fair / Final Fair。"
+        };
+      }
+
+      const query = {
+        generated_at: payload.inquiryDate,
+        source: payload.issuer || "current_quote",
+        product_id: payload.inquiryNo,
+        symbols: payload.symbols || [],
+        coupon_pct: payload.marketYield,
+        tenor_month: payload.T,
+        strike_pct: payload.Strike,
+        ki_pct: payload.KI,
+        barrier_type: payload.type,
+        memory_type: "daily",
+        upstream_bank: payload.upstreamBank || null
+      };
+
+      const selected = selectMarketHistoryRows(historyRows, query);
+      const coupons = selected.rows.map(r => Number(r.coupon_pct)).filter(Number.isFinite);
+      const newFair = avgNum(coupons);
+      if (!Number.isFinite(newFair)) {
+        return {
+          status: "no_match",
+          comment: "market history 無有效 coupon，暫無法產出市場公平利率。"
+        };
+      }
+
+      const market = num(payload.marketYield);
+      const marketGap = market - newFair;
+      const gapPct = newFair ? (marketGap / newFair) * 100 : 0;
+      const beta = calcBetaConvergenceStrength(gapPct);
+      const finalFair = newFair + marketGap * beta;
+      const gapAfter = market - finalFair;
+      const gapAfterPct = finalFair ? (gapAfter / finalFair) * 100 : null;
+      const improvement = Math.abs(marketGap) > 0.0001
+        ? (1 - Math.abs(gapAfter) / Math.abs(marketGap)) * 100
+        : null;
+
+      const qn = normalizeMarketQuoteRow(query);
+      return {
+        status: "ok",
+        method: "market_fcn_history_flat + fast_beta_convergence",
+        large_template: "Market History",
+        template: selected.level,
+        small_template: qn.symbols_key,
+        surface_matched_key: [qn.symbols_key, qn.risk_zone_9, qn.tenor_group_4].join("|"),
+        new_fair_rate: fmt(newFair),
+        final_fair_rate: fmt(finalFair),
+        overlay_beta: fmt(beta),
+        convergence_strength: fmt(beta),
+        market_gap: fmt(marketGap),
+        gap_pct: fmt(gapPct),
+        gap_after: fmt(gapAfter),
+        gap_after_pct: fmt(gapAfterPct),
+        pricing_gap_vs_final: fmt(gapAfter),
+        pricing_gap_vs_final_pct: fmt(gapAfterPct),
+        improvement_pct: fmt(improvement),
+        lookup_count: selected.rows.length,
+        sample_count: selected.rows.length,
+        surface_confidence: Math.min(95, 30 + selected.rows.length * 8),
+        confidence: Math.min(95, 30 + selected.rows.length * 8),
+        history_rows_used: selected.rows.slice(0, 12),
+        comment: `使用 ${selected.level}，樣本 ${selected.rows.length} 筆，New Fair=${fmt(newFair)}%，β=${fmt(beta)}，Final Fair=${fmt(finalFair)}%。`
+      };
     }
 
     function parseSymbols(text) {
@@ -932,6 +1131,7 @@
           pricing_delta: num(result.pricing_delta),
           pricing_view: result.pricing_view || "",
           edge: edge,
+          market_regression: result.market_regression || null,
 
           base: num(result.base),
           BW: num(result.BW),
@@ -1181,7 +1381,7 @@
 
       // Market Regression placeholder. Next phase will be filled by:
       // data/mm/market_fcn_history.json + js/mm/modules/m8_regression_engine_v1.js
-      const marketRegression = r.market_regression || r.m8_market_regression || null;
+      const marketRegression = r.market_regression || r.m8_market_regression || schema?.engine?.market_regression || null;
       const newFair = marketRegression?.new_fair_rate ?? null;
       const finalFair = marketRegression?.final_fair_rate ?? null;
       const beta = marketRegression?.overlay_beta ?? marketRegression?.convergence_strength ?? null;
@@ -1217,9 +1417,9 @@
         return parts.join(" ");
       })();
 
-      const marketComment = marketRegression
-        ? `β 啟動原因：小模板近期 market coupon 與 New Fair 出現落差，β 依 gap 大小快速收斂到市場。New Fair ${fmt(newFair)}%，β ${fmt(beta)}，Final Fair ${fmt(finalFair)}%。`
-        : "Market Regression Engine 尚未接入；下一階段會讀取 data/mm/market_fcn_history.json，使用小模板 + β 產出 Final Market Fair。";
+      const marketComment = marketRegression && marketRegression.status !== "missing_history"
+        ? (marketRegression.comment || `β 啟動原因：小模板近期 market coupon 與 New Fair 出現落差，β 依 gap 大小快速收斂到市場。New Fair ${fmt(newFair)}%，β ${fmt(beta)}，Final Fair ${fmt(finalFair)}%。`)
+        : "Market Regression Engine 尚未接入；請先確認 data/mm/market_fcn_history.json 已上傳，系統會使用小模板 + β 產出 Final Market Fair。";
 
       function meter(label, value, max, cls = "") {
         const v = Math.max(0, Math.min(100, max ? (num(value) / max) * 100 : 0));
@@ -1314,13 +1514,14 @@
             </div>
             <div class="engine-card-body">
               <div class="meter-wrap">
-                ${meter("Base", r.base, 30)}
-                ${meter("Basket Premium", r.basket_premium, 10)}
-                ${meter("Structure Total", r.structure_total, 10)}
-                ${meter("BasketVol", r.basket_vol, 10, num(r.basket_vol) > 6 ? "bad" : "")}
-                ${meter("VolAdj", r.vol_adj, 10)}
-                ${meter("RatePressureAdj", r.rate_pressure_adj, 5, num(r.rate_pressure_adj) > 2 ? "warn" : "")}
-                ${meter("HighRateBrake", r.high_rate_brake, 12, num(r.high_rate_brake) > 6 ? "bad" : "")}
+                ${meter("Base", r.base, Math.max(num(r.pre_rate), num(r.fair_yield), 1))}
+                ${meter("Basket Premium", r.basket_premium, Math.max(num(r.pre_rate), num(r.fair_yield), 1))}
+                ${meter("Structure Total", r.structure_total, Math.max(num(r.pre_rate), num(r.fair_yield), 1))}
+                ${meter("VolAdj", r.vol_adj, Math.max(num(r.pre_rate), num(r.fair_yield), 1))}
+                ${meter("RatePressureAdj", r.rate_pressure_adj, Math.max(num(r.pre_rate), num(r.fair_yield), 1), num(r.rate_pressure_adj) > 2 ? "warn" : "")}
+                ${meter("PreRate", r.pre_rate, Math.max(num(r.pre_rate), num(r.fair_yield), 1))}
+                ${meter("HighRateBrake", r.high_rate_brake, Math.max(num(r.pre_rate), num(r.fair_yield), 1), "bad")}
+                ${meter("Final M8 Fair", r.fair_yield, Math.max(num(r.pre_rate), num(r.fair_yield), 1))}
               </div>
               <div class="engine-comment">${preferenceComment}</div>
             </div>
@@ -1901,6 +2102,8 @@
           result.note = payload.note;
         }
 
+        result.market_regression = await buildMarketRegressionForPayload(payload, result);
+
         const store = getInquiryStore();
         const old = store.find(x => x.inquiry?.inquiry_no === payload.inquiryNo);
         const schema = buildEngineSchema(payload, result, old?.created_at || null);
@@ -1993,6 +2196,8 @@
             marketYield: row.marketYield,
             note: row.note
           };
+
+          result.market_regression = await buildMarketRegressionForPayload(payload, result);
 
           const schema = buildEngineSchema(payload, result, null);
           store.push(schema);
@@ -2247,7 +2452,7 @@
     }
 
     document.addEventListener("DOMContentLoaded", () => {
-      console.log("m8_batch html loaded - ui vnext 20260510");
+      console.log("m8_batch html loaded - market fair beta 20260510");
 
       $("inquiryDate").value = todayStr();
       refreshInquiryNo();
