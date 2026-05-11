@@ -1226,6 +1226,30 @@ function finalizeSurfaceBucket(bucket) {
   return bucket;
 }
 
+
+function detectThemeTemplate(symbols) {
+  const set = new Set(normalizeSurfaceSymbols(symbols));
+  const hasEtf = set.has("SMH") || set.has("QQQ");
+  const core = ["TSM", "NVDA", "AVGO"].filter(s => set.has(s));
+  if (hasEtf && core.length >= 1) return "ETF_SEMI_CORE";
+  return null;
+}
+
+function createThemeTemplateBucket(themeKey) {
+  if (themeKey === "ETF_SEMI_CORE") {
+    return createSurfaceBucket(themeKey, {
+      parent_template: "A_AI_CORE_INSTITUTIONAL",
+      theme_type: "SMH_QQQ_PLUS_TSM_NVDA_AVGO",
+      match_etfs: ["SMH", "QQQ"],
+      match_core_symbols: ["TSM", "NVDA", "AVGO"],
+      derived: true,
+      derived_type: "ETF_SEMI_CORE",
+      source: "derived_from_full_basket"
+    });
+  }
+  return createSurfaceBucket(themeKey, { derived: true, source: "derived_from_full_basket" });
+}
+
 function buildM8TemplateSurface() {
   const rows = (REGRESSION?.calibrated_rows || REG_ROWS || DATASET?.rows || []).filter(r => r && (r.status === "ok" || r.market_coupon != null || r.market_rate != null));
   const surface = {
@@ -1236,9 +1260,10 @@ function buildM8TemplateSurface() {
     method: "clean_global_surface_plus_template_overlay",
     templates: {},
     small_templates: {},
+    theme_templates: {},
     fallback_rules: {
       min_count_for_small_template: 3,
-      match_order: ["exact_small_template", "partial_small_template", "parent_template", "global_surface"]
+      match_order: ["exact_small_template", "theme_template", "partial_small_template", "parent_template", "global_surface"]
     },
     global_surface: createSurfaceBucket("GLOBAL")
   };
@@ -1261,10 +1286,19 @@ function buildM8TemplateSurface() {
       }
       addSurfaceObservation(surface.small_templates[smallKey], row);
     }
+
+    const themeKey = detectThemeTemplate(symbols);
+    if (themeKey) {
+      if (!surface.theme_templates[themeKey]) {
+        surface.theme_templates[themeKey] = createThemeTemplateBucket(themeKey);
+      }
+      addSurfaceObservation(surface.theme_templates[themeKey], row);
+    }
   });
 
   Object.keys(surface.templates).forEach(k => finalizeSurfaceBucket(surface.templates[k]));
   Object.keys(surface.small_templates).forEach(k => finalizeSurfaceBucket(surface.small_templates[k]));
+  Object.keys(surface.theme_templates).forEach(k => finalizeSurfaceBucket(surface.theme_templates[k]));
   finalizeSurfaceBucket(surface.global_surface);
 
   Object.keys(surface.small_templates).forEach(k => {
@@ -1273,6 +1307,9 @@ function buildM8TemplateSurface() {
     } else {
       surface.small_templates[k].eligible = true;
     }
+  });
+  Object.keys(surface.theme_templates).forEach(k => {
+    surface.theme_templates[k].eligible = surface.theme_templates[k].count >= 1;
   });
 
   return surface;
@@ -1336,9 +1373,6 @@ function escapeHtml(s){
 </script>
 </body>
 </html>
-
-
-
 
 
 
