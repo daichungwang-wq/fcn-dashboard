@@ -1,0 +1,16 @@
+{
+  "version": "m8_template_surface_v1",
+  "generated_at": "",
+  "source": "m8_calibration_dashboard_v1.html",
+  "templates": {},
+  "small_templates": {},
+  "fallback_rules": {
+    "min_count_for_small_template": 3,
+    "match_order": [
+      "exact_small_template",
+      "partial_small_template",
+      "parent_template",
+      "global_surface"
+    ]
+  }
+}
