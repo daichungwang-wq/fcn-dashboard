@@ -1500,6 +1500,127 @@
 "fail_reasons": []
   }
 },
+  "GLW": {
+    "symbol": "GLW",
+    "name": "Corning Incorporated",
+    "type": "research_raw",
+    "company_overview": "Corning 是特種玻璃與材料公司，核心產品包含 Display Glass、Optical Communications、Gorilla Glass 與 Automotive Glass。2025 年市場重新定價 GLW 的原因不是傳統面板，而是 AI data center 光纖需求與車用玻璃滲透率提升；但公司仍有約 30% 以上營收與消費電子循環高度相關，因此不屬於純 AI 高成長股。",
+    "basic_info": {
+      "founded": "1851",
+      "headquarters": "Corning, New York, USA",
+      "industry": "Specialty Glass & Optical Materials",
+      "market_cap": "約 420 億美元"
+    },
+    "business_model": {
+      "summary": "GLW 主要靠高毛利特種玻璃與光通訊材料獲利，2024 年營收約 136 億美元，其中 Optical Communications 與 Display Technologies 是主要現金流來源。",
+      "segments": [
+        "Optical Communications 約占 2024 營收 34%，受 AI data center 與 hyperscaler 光纖需求帶動，2025 年 Q1 Enterprise 業務年增超過 100%。",
+        "Display Technologies 約占營收 30%，主要客戶為面板廠與電視供應鏈；2025 年面板玻璃價格僅低個位數成長，屬成熟現金流業務。",
+        "Specialty Materials 約占營收 15%，核心產品 Gorilla Glass 用於 Apple、Samsung 與中國手機品牌；手機市場 2024 全球出貨量僅年增約 6%，復甦仍偏溫和。"
+      ]
+    },
+    "customer_analysis": {
+      "summary": "GLW 客戶集中度偏高，前 10 大客戶占營收超過 45%；Display 與手機玻璃高度依賴大型 OEM 與面板廠，因此需求循環會直接影響獲利波動。",
+      "key_customers": [
+        {
+          "name": "Apple",
+          "role": "Gorilla Glass 與 cover glass 客戶",
+          "importance": "Apple 與高階手機供應鏈貢獻 GLW Specialty Materials 大量需求；iPhone 年出貨量約 2.2 億支，若高階機種需求放緩將影響玻璃 ASP。"
+        },
+        {
+          "name": "Samsung Electronics",
+          "role": "智慧手機與 OLED 生態系客戶",
+          "importance": "Samsung 為 Gorilla Glass 長期客戶，Galaxy 系列年度出貨量超過 2 億支，直接影響 mobile glass utilization。"
+        },
+        {
+          "name": "Amazon / Microsoft / Meta data center ecosystem",
+          "role": "AI data center 光纖需求來源",
+          "importance": "2025 年 hyperscaler capex 預估超過 2500 億美元，推動 GLW Optical Communications Enterprise 業務年增超過 100%。"
+        }
+      ],
+      "conclusion": "GLW 不是低集中度公司；AI data center 能提升光纖需求，但 Display 與手機仍占超過 45% 營收，因此 FCN 必須保守看待循環風險。"
+    },
+    "why_this_company": [
+      "2025 年 AI data center 光纖需求明顯加速，GLW Enterprise Optical Q1 年增超過 100%，比傳統 telecom 業務更具成長性。",
+      "GLW 2024 adjusted operating margin 約 16%，高於一般面板材料公司，代表特殊材料與玻璃技術仍有定價能力。",
+      "公司 annual dividend yield 約 2.5%，已連續超過 10 年提高股利，適合 defensive income 類型 stock_pool。"
+    ],
+    "market_view": "市場目前在 pricing AI 光纖需求與 hyperscaler capex；Meta、Microsoft、Amazon、Google 2025 合計 capex 預估超過 2500 億美元，因此 Optical Communications 被重新評價。但市場也擔心手機與 TV demand recovery 不足，因為全球 smartphone 2025 出貨成長預估僅中個位數。",
+    "financial_summary": {
+      "revenue": "2024 revenue 約 136 億美元",
+      "growth": "2024 YoY 約 -3%；2025 Q1 Optical Communications Enterprise 年增超過 100%",
+      "net_margin": "2024 GAAP net margin 約 4%；adjusted net margin 約 11%",
+      "fcf_margin": "2024 free cash flow 約 13 億美元，FCF margin 約 9.5%",
+      "eps": "2024 adjusted EPS 約 1.94 美元；2025 market expectation 約 2.20-2.30 美元",
+      "pe": "Forward PE 約 21x-22x",
+      "dividend_yield": "約 2.5%",
+      "beta": "約 1.05"
+    },
+    "competition": {
+      "summary": "GLW 的競爭優勢在特殊玻璃與光纖整合，不是低成本製造；但估值已高於傳統材料股，因此 AI optical story 若降溫，PE 有壓縮風險。",
+      "peers": [
+        {
+          "name": "Coherent",
+          "position": "光通訊與光學元件競爭者",
+          "comparison": "Coherent 偏 AI optics 與 transceiver，波動更大；GLW forward PE 約 22x，低於 AI optics 高成長股常見的 30x-40x。"
+        },
+        {
+          "name": "Lumentum",
+          "position": "光通訊元件公司",
+          "comparison": "Lumentum AI exposure 更高，但獲利波動大；GLW 2024 FCF 約 13 億美元，現金流穩定度較高。"
+        },
+        {
+          "name": "AGC / NEG",
+          "position": "面板玻璃競爭者",
+          "comparison": "GLW Display Technologies 毛利率高於一般面板玻璃供應商，因高世代玻璃與 OLED glass mix 較高。"
+        }
+      ],
+      "conclusion": "GLW 比純 AI optics 公司穩定，但 AI 成長性低於真正高 beta AI 光通訊股，因此比較適合 defensive growth，而非 aggressive AI momentum。"
+    },
+    "valuation_and_timing": {
+      "valuation_view": "GLW forward PE 約 21x-22x，高於其過去 10 年平均約 16x-18x；代表市場已提前反映 AI optical 成長預期。",
+      "buy_strategy": "不建議 AI hype 時追價；較適合等待 AI optical 熱度修正後分批布局，利用 dividend yield 與現金流做防守。",
+      "sweet_zone": "sweet zone 約 38-42 美元區間，或 forward PE 回到 17x-18x 以下再提高配置。",
+      "technical_view": {
+        "mid_trend": "中期趨勢偏多，AI optical 與 hyperscaler capex 支撐 2025 EPS 上修。",
+        "short_term": "短線容易跟 AI infrastructure 類股同步波動；若市場擔心 AI capex slowdown，GLW 會先修正。",
+        "structure": "股價已從 2024 低點反彈超過 40%，目前估值不屬便宜區。",
+        "conclusion": "timing 屬 watch-to-buy，不適合 momentum chase；FCN 建議低 strike、保守 KI。"
+      }
+    },
+    "pool30_fit": {
+      "stock_pool": true,
+      "pool30": false,
+      "category": "defensive",
+      "reason": "GLW 有穩定現金流與 dividend，但 2024 營收仍負成長，Display 與手機循環占比仍高，因此未達 Pool30 的高品質成長標準。",
+      "upgrade_condition": [
+        "Optical Communications 全年營收成長超過 20%，且 Enterprise AI optical 持續高雙位數成長。",
+        "Display Technologies 不再年減，且 company-wide operating margin 回升至 18% 以上。"
+      ]
+    },
+    "risk_opportunity": {
+      "risk": [
+        "Display Technologies 約占營收 30%，TV 與 monitor demand 若疲弱，將壓抑 utilization 與價格。",
+        "GLW forward PE 約 22x，高於歷史均值；若 AI optical growth 低於市場預期，PE 壓縮風險明顯。",
+        "Apple 與 Samsung smartphone demand 若轉弱，Specialty Materials ASP 與出貨量會同步下滑。"
+      ],
+      "opportunity": [
+        "Hyperscaler 2025 capex 超過 2500 億美元，AI data center fiber density 提升可推升 GLW Optical Communications 長期需求。",
+        "Automotive Gorilla Glass 與車載大尺寸 display 滲透率提升，車用玻璃 ASP 高於手機玻璃。",
+        "2025 EPS 若達 2.3 美元，以 historical PE 20x 計算，合理股價可上看 46 美元以上。"
+      ]
+    },
+    "final_view": "GLW 是 AI infrastructure cycle 的防守型材料股，不是純高 beta AI 股；適合 stock_pool 與 defensive FCN，但不適合高 strike aggressive FCN。若回到 38-42 美元區間，風險報酬比會明顯改善。",
+    "quality_check": {
+      "completeness": 9,
+      "specificity": 9,
+      "data_support": 9,
+      "decision_usefulness": 9,
+      "fcn_alignment": 9,
+      "total_score": 9,
+      "fail_reasons": []
+       }
+    },  
   "PLAR": {
     "symbol": "PLTR",
     "name": "Palantir Technologies Inc. (assumed from user input 'PLAR')",
