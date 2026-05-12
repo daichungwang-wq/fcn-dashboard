@@ -1822,6 +1822,96 @@
       "AI accelerator and EPYC demand remain major drivers"
     ]
   },
+  {
+  "ARM": {
+    "symbol": "ARM",
+    "name": "Arm Holdings plc",
+    "type": "research_raw",
+    "company_overview": "ARM 是全球 CPU IP 授權平台，核心收入來自 licensing 與 royalty。FY2025 top five customers 約占 total net revenue 56%，代表它不是完全分散型軟體授權公司；AI data center 對低功耗 CPU 與 custom silicon IP 的需求，是目前市場給高估值的主因。",
+    "basic_info": {
+      "founded": "1990。",
+      "headquarters": "Cambridge, United Kingdom。",
+      "industry": "Semiconductor IP / CPU architecture / AI data center IP。",
+      "market_cap": "高成長半導體 IP 股，估值高度反映 AI 與 data center royalty 預期。"
+    },
+    "business_model": {
+      "summary": "ARM 不直接大量製造晶片，主要靠授權架構、收取 upfront license fee 與後續 royalty。這種模式毛利率高、資本支出低，但 royalty 會受終端出貨與客戶晶片量產節奏影響。",
+      "segments": [
+        "Licensing：客戶支付授權費使用 ARM CPU / system IP，AI data center 與 custom ASIC 需求推升高階授權價值。",
+        "Royalty：客戶晶片出貨後按量收 royalty，手機仍是基礎盤，但 server / automotive / AI edge 是成長方向。",
+        "New AI chip / data center CPU：近期公司提到 AI data center CPU 需求強，但若往自有晶片走，可能與既有客戶形成競合。"
+      ]
+    },
+    "customer_analysis": {
+      "summary": "ARM 客戶包含 Apple、NVIDIA、Qualcomm、Amazon、Google、MediaTek 與 Arm China 等，top five customers 約占 FY2025 營收 56%。這表示 ARM 雖然覆蓋全球晶片生態，但真正營收仍集中在少數大型客戶與 Arm China。",
+      "key_customers": [
+        {
+          "name": "Apple",
+          "role": "高階行動與 PC SoC 授權客戶",
+          "importance": "Apple 自研晶片大量使用 ARM 架構，iPhone / Mac 出貨節奏會影響高階 royalty。"
+        },
+        {
+          "name": "NVIDIA",
+          "role": "AI / Grace CPU / data center 生態客戶",
+          "importance": "AI server 中 CPU 與 GPU 協同需求增加，對 ARM data center IP 是中長期利多。"
+        },
+        {
+          "name": "Arm China",
+          "role": "中國授權與 royalty 生態核心通路",
+          "importance": "Arm China 被列入 top customer concentration，地緣與治理風險需納入折價。"
+        }
+      ],
+      "conclusion": "ARM 的客戶品質高，但集中度也高。投資判斷不能只看 AI 故事，要看 royalty 是否真正從手機延伸到 server、AI accelerator 與 automotive。"
+    },
+    "why_this_company": [
+      "FY2025 top five customers 約占 total net revenue 56%，代表大客戶深度高。",
+      "AI data center 對低功耗 CPU 與 custom silicon IP 的需求提高，讓 ARM 從手機 IP 轉向 AI infrastructure IP。",
+      "授權模式資本支出低，若 server royalty 放大，營運槓桿會高於一般晶片製造商。"
+    ],
+    "market_view": "市場在 pricing ARM 從 mobile CPU IP 擴張到 AI data center CPU / custom silicon IP；市場擔心的是估值已非常高、royalty revenue 若低於預期，股價會大幅修正。",
+    "financial_summary": {
+      "revenue": "FY2025 revenue 以公司 20-F 為準，結構以 license 與 royalty 為主。",
+      "growth": "近期成長主軸來自 AI data center、automotive 與高階授權需求。",
+      "net_margin": "IP 授權模式通常具高毛利，但淨利會受 R&D、上市後股權費用與新業務投入影響。",
+      "fcf_margin": "資本支出低於晶圓製造與設備股，現金流品質理論上較佳。",
+      "eps": "需用最新 diluted EPS 補齊。",
+      "pe": "估值明顯高於多數成熟半導體股，屬 AI IP 溢價股。",
+      "dividend_yield": "0%。",
+      "beta": "上市歷史較短，beta 參考價值有限；實務上視為高波動 AI 半導體股。"
+    },
+    "competition": {
+      "summary": "ARM 的直接競爭不是單一公司，而是 x86、RISC-V 與客戶自研架構。Intel / AMD 的 x86 在 PC 與 server 仍有龐大 installed base，但 ARM 在低功耗與客製化 SoC 上具優勢。RISC-V 是長期威脅，尤其在中國與低成本 embedded 市場。若 ARM 往自有 AI chip 走，會與 NVIDIA、Amazon、Google 等既有授權客戶形成競合，這是估值需要折價的原因。",
+      "peers": [
+        {
+          "name": "Intel / AMD x86",
+          "position": "CPU 架構競爭者",
+          "comparison": "x86 在 PC / server 仍有龐大 base，但 ARM 的低功耗與客製化優勢更適合部分 AI data center 與 edge workload。"
+        },
+        {
+          "name": "RISC-V ecosystem",
+          "position": "開源指令集競爭者",
+          "comparison": "RISC-V 授權成本低，長期可能壓縮 ARM 在 embedded 與中國市場的 royalty 議價力。"
+        },
+        {
+          "name": "NVIDIA / hyperscaler custom silicon",
+          "position": "客戶也是潛在競爭者",
+          "comparison": "NVIDIA、Amazon、Google 都可能使用 ARM IP，但也會把更多價值留在自家系統設計。"
+        }
+      ],
+      "conclusion": "ARM 的競爭優勢是生態與授權黏著度，不是單一晶片性能。若 AI server royalty 成功放大，ARM 可進 pool30 成長股；若 royalty 仍主要靠手機，估值容錯率偏低。"
+    },
+    "warning": [
+      "高估值與客戶集中度需折價",
+      "Royalty growth 若低於市場預期，修正幅度可能很大"
+    ],
+    "data_quality": {
+      "profile_completeness": 8,
+      "specificity": 8,
+      "data_support": 8,
+      "fcn_alignment": 7,
+      "source_quality": "company_20f_and_recent_news"
+    }
+  },
   "CRDO": {
     "ticker": "CRDO",
     "company_name": "Credo Technology Group Holding Ltd",
