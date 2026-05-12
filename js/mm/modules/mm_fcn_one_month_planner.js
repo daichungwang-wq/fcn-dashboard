@@ -7,6 +7,8 @@
   const SCALE = 0.1;
   const TODAY = new Date('2026-05-12T00:00:00+08:00');
   const WINDOW_DAYS = 30;
+  const TRANSFER_FEE_USD = 20;
+  const MIN_TICKET = { 'Bank-w': 30000, 'Bank-t': 10000 };
   const BANK_ALIAS = {
     '永豐': 'Bank-w',
     'sinopac': 'Bank-w',
@@ -78,6 +80,9 @@
       const symbols = extractSymbols(r);
       const bank = aliasBank(r.bank ?? r.broker ?? r.source_bank ?? r.platform);
       const id = r.fcn_id || r.id || r.no || r.product_id || `FCN-${idx + 1}`;
+      const currentPrice = num(r.current_price ?? r.spot ?? r.worst_of_price ?? r.price_now, 0);
+      const kiPrice = num(r.ki_price ?? r.knock_in_price ?? r.lower_barrier_price, 0);
+      const rawStatus = String(r.status ?? r.state ?? '').toLowerCase();
       return {
         raw: r,
         id,
@@ -92,7 +97,9 @@
         symbols,
         strike: num(r.strike ?? r.strike_pct ?? r.strike_price, 0),
         ki: num(r.ki ?? r.ki_pct ?? r.knock_in ?? r.knock_in_pct, 0),
-        status: String(r.status ?? r.state ?? '').toLowerCase(),
+        currentPrice,
+        kiPrice,
+        status: rawStatus,
         worstOf: String(r.worst_of ?? r.worstOf ?? r.worst_symbol ?? symbols[0] ?? '').toUpperCase()
       };
     }).filter(r => r.amount > 0 || r.symbols.length || r.coupon > 0);
@@ -122,6 +129,17 @@
     if (row.coupon >= 12 && row.coupon <= 17.99) return 'stable_cashflow';
     if (row.coupon > 25) return 'short_term_speculative';
     return 'stable_cashflow';
+  }
+
+  function inferDeliveryRisk(row, health) {
+    const explicit = row.raw.stock_delivery_risk === true || row.raw.expected_stock_delivery === true || row.raw.must_take_stock === true;
+    const statusHit = /接股|入股|破下限|knock.?in|ki hit|barrier hit|delivery/.test(row.status);
+    const priceHit = row.currentPrice > 0 && row.kiPrice > 0 && row.currentPrice <= row.kiPrice;
+    const pctHit = row.ki >= 60 && health.basketScore < 5.8;
+    const criticalMaturity = row.isMaturing30d && (health.risk === 'Critical' || health.flags.includes('near_KI'));
+    const risk = explicit || statusHit || priceHit || pctHit || criticalMaturity;
+    const reason = explicit ? '原始資料標記可能接股' : statusHit ? '狀態含破下限/接股訊號' : priceHit ? '現價低於或接近 KI price' : pctHit ? 'KI 偏高且 basket score 偏弱' : criticalMaturity ? '30 天到期但風險為 Critical / near_KI' : '';
+    return { stockDeliveryRisk: risk, stockDeliveryReason: reason };
   }
 
   function healthCheck(row, m1, m7, opt, exposureBySymbol) {
@@ -154,7 +172,6 @@
   }
 
   function analyze(rows, m1, m7, opt) {
-    const end = new Date(TODAY.getTime() + WINDOW_DAYS * 86400000);
     const total = rows.reduce((s, r) => s + r.displayAmount, 0);
     const bySymbolAmt = {};
     rows.forEach(r => r.symbols.forEach(s => { bySymbolAmt[s] = (bySymbolAmt[s] || 0) + r.displayAmount; }));
@@ -165,13 +182,19 @@
       r.daysToMaturity = r.maturity ? daysBetween(TODAY, r.maturity) : null;
       r.isMaturing30d = r.daysToMaturity !== null && r.daysToMaturity >= 0 && r.daysToMaturity <= WINDOW_DAYS;
       r.isExpectedExit = /exit|autocall|called|出場|提前|到期/.test(r.status) || (r.raw.expected_exit === true);
-      r.excludeFromBase = r.isMaturing30d || r.isExpectedExit;
       Object.assign(r, healthCheck(r, m1, m7, opt, exposureBySymbol));
+      Object.assign(r, inferDeliveryRisk(r, r));
+      r.excludeFromBase = r.isMaturing30d || r.isExpectedExit;
+      r.cashAvailable = r.excludeFromBase && !r.stockDeliveryRisk;
+      r.bankCapacityHold = r.excludeFromBase && r.stockDeliveryRisk;
     });
 
-    const cashRows = rows.filter(r => r.excludeFromBase);
+    const exitRows = rows.filter(r => r.excludeFromBase);
+    const cashRows = rows.filter(r => r.cashAvailable);
+    const deliveryRows = rows.filter(r => r.bankCapacityHold);
     const baseRows = rows.filter(r => !r.excludeFromBase);
     const cash = sumBy(cashRows, r => r.bank, r => r.displayAmount);
+    const deliveryHold = sumBy(deliveryRows, r => r.bank, r => r.displayAmount);
     const mix = {};
     Object.keys(TARGETS).forEach(k => mix[k] = { ...TARGETS[k], amount: 0, pct: 0, gapPct: 0, gapAmount: 0 });
     baseRows.forEach(r => { mix[r.incomeClass].amount += r.displayAmount; });
@@ -186,7 +209,7 @@
     const flagCounts = {};
     baseRows.forEach(r => r.flags.forEach(f => { flagCounts[f] = (flagCounts[f] || 0) + 1; }));
     const avgScore = baseRows.length ? baseRows.reduce((s, r) => s + r.basketScore, 0) / baseRows.length : 0;
-    return { rows, cashRows, baseRows, total, baseTotal, excludedTotal: cashRows.reduce((s,r)=>s+r.displayAmount,0), cash, mix, worstBars, riskCounts, flagCounts, avgScore };
+    return { rows, exitRows, cashRows, deliveryRows, baseRows, total, baseTotal, excludedTotal: exitRows.reduce((s,r)=>s+r.displayAmount,0), availableCashTotal: cashRows.reduce((s,r)=>s+r.displayAmount,0), deliveryHoldTotal: deliveryRows.reduce((s,r)=>s+r.displayAmount,0), cash, deliveryHold, mix, worstBars, riskCounts, flagCounts, avgScore };
   }
 
   function sumBy(rows, keyFn, valFn) {
@@ -207,11 +230,12 @@
     const high = (a.riskCounts['High Risk'] || 0);
     const critical = (a.riskCounts['Critical'] || 0);
     const topWorst = Object.entries(a.worstBars).sort((x,y)=>y[1]-x[1])[0]?.[0] || '--';
+    const budget = cfg?.new_allocation_budget?.total_display || 140000;
     $('kpiGrid').innerHTML = [
-      ['30 天可回收', fmt(a.excludedTotal), '到期 / 預計出場 / 待入帳'],
-      ['本月新增配置', fmt(cfg?.new_allocation_budget?.total_display || 140000), 'Bank-t 90,000 + Bank-w 50,000'],
+      ['30 天可用現金', fmt(a.availableCashTotal), '排除高機率接股 FCN'],
+      ['接股 / 額度占用', fmt(a.deliveryHoldTotal), '不列入可配置資金'],
+      ['本月新增配置', fmt(budget), 'Bank-t 90,000 + Bank-w 50,000'],
       ['分析母體', fmt(a.baseTotal), '扣除一個月內離場後'],
-      ['原始 FCN 總額', fmt(a.total), '金額已 x0.1'],
       ['Basket 平均分數', a.avgScore ? a.avgScore.toFixed(2) : '--', '持股健檢核心指標'],
       ['High Risk', high, '不新增同類 basket'],
       ['Critical', critical, '停止加碼 / 列處理'],
@@ -221,23 +245,26 @@
 
   function renderCash(a) {
     $('cashSummary').innerHTML = `<h3>資金回收摘要</h3>` +
-      metric('30 天排除 / 回收', fmt(a.excludedTotal)) +
-      metric('筆數', fmt(a.cashRows.length)) +
-      metric('Bank-t 回收', fmt(a.cash['Bank-t'] || 0)) +
-      metric('Bank-w 回收', fmt(a.cash['Bank-w'] || 0)) +
-      `<p class="note">這些單會從分析母體扣除，避免用即將離場的 FCN 影響下一步配置。</p>`;
-    const max = Math.max(...Object.values(a.cash), 1);
-    $('cashBankBars').innerHTML = Object.entries(a.cash).map(([k,v]) => bar(k, v, max)).join('') || '<p class="note">目前沒有偵測到 30 天內回收單。</p>';
-    $('cashTimeline').innerHTML = a.cashRows.slice(0,8).map(r => bar(`${r.id}｜${r.daysToMaturity ?? '--'}d`, r.displayAmount, max, r.daysToMaturity !== null && r.daysToMaturity < 10 ? 'warn' : '')).join('') || '<p class="note">沒有可顯示的時間軸。</p>';
+      metric('30 天到期 / 出場總額', fmt(a.excludedTotal)) +
+      metric('可用現金', fmt(a.availableCashTotal)) +
+      metric('可能接股 / 額度占用', fmt(a.deliveryHoldTotal)) +
+      metric('Bank-t 可用', fmt(a.cash['Bank-t'] || 0)) +
+      metric('Bank-w 可用', fmt(a.cash['Bank-w'] || 0)) +
+      `<p class="note">到期 FCN 若有破下限、接股或 Critical/near_KI 訊號，不納入可配置現金；該銀行先視為額度被占用。</p>`;
+    const merged = { ...a.cash };
+    Object.entries(a.deliveryHold).forEach(([k,v]) => { merged[`${k} 接股占用`] = v; });
+    const max = Math.max(...Object.values(merged), 1);
+    $('cashBankBars').innerHTML = Object.entries(merged).map(([k,v]) => bar(k, v, max, k.includes('接股') ? 'bad' : '')).join('') || '<p class="note">目前沒有偵測到 30 天內回收單。</p>';
+    $('cashTimeline').innerHTML = a.exitRows.slice(0,10).map(r => bar(`${r.id}｜${r.daysToMaturity ?? '--'}d${r.stockDeliveryRisk ? '｜接股風險' : ''}`, r.displayAmount, max, r.stockDeliveryRisk ? 'bad' : r.daysToMaturity !== null && r.daysToMaturity < 10 ? 'warn' : '')).join('') || '<p class="note">沒有可顯示的時間軸。</p>';
   }
 
   function renderBase(a) {
     const excludedPct = a.total ? a.excludedTotal / a.total * 100 : 0;
     $('baseSummary').innerHTML = `<h3>扣除後母體</h3>` +
-      metric('原始總額', fmt(a.total)) + metric('排除金額', fmt(a.excludedTotal)) + metric('分析母體', fmt(a.baseTotal)) + metric('排除比例', pct(excludedPct)) +
-      `<p class="note">只用分析母體判斷未來一個月風險，避免錯估配置。</p>`;
+      metric('原始總額', fmt(a.total)) + metric('排除金額', fmt(a.excludedTotal)) + metric('其中接股占用', fmt(a.deliveryHoldTotal)) + metric('分析母體', fmt(a.baseTotal)) + metric('排除比例', pct(excludedPct)) +
+      `<p class="note">只用分析母體判斷未來一個月風險；接股占用不視為新單現金。</p>`;
     $('baseDonut').style.background = `conic-gradient(#2f80ed 0 ${100-excludedPct}%, #f4a261 ${100-excludedPct}% 100%)`;
-    $('baseDonutText').innerHTML = `保留 ${pct(100-excludedPct)} / 排除 ${pct(excludedPct)}`;
+    $('baseDonutText').innerHTML = `保留 ${pct(100-excludedPct)} / 排除 ${pct(excludedPct)}；接股占用 ${fmt(a.deliveryHoldTotal)}`;
     const entries = Object.entries(a.worstBars).sort((x,y)=>y[1]-x[1]).slice(0,8);
     const max = Math.max(...entries.map(x=>x[1]),1);
     $('worstOfBars').innerHTML = entries.map(([k,v]) => bar(k, v, max, v/a.baseTotal*100>25?'bad':'' )).join('') || '<p class="note">尚無 worst-of 資料。</p>';
@@ -267,18 +294,23 @@
 
   function renderPlan(a, cfg) {
     const budget = cfg?.new_allocation_budget?.by_bank_display || { 'Bank-t':90000, 'Bank-w':50000 };
+    const effectiveBudget = Object.fromEntries(Object.entries(budget).map(([bank, amt]) => [bank, Math.max(0, amt - (a.deliveryHold[bank] || 0))]));
     const needs = Object.entries(a.mix).sort((x,y)=>y[1].gapPct-x[1].gapPct).filter(([_,m])=>m.gapPct>0);
-    const blocked = a.baseRows.filter(r => ['Critical','High Risk'].includes(r.risk)).map(r => r.worst).filter(Boolean);
+    const blocked = a.baseRows.concat(a.deliveryRows).filter(r => ['Critical','High Risk'].includes(r.risk) || r.stockDeliveryRisk).map(r => r.worst).filter(Boolean);
     const blockedUnique = [...new Set(blocked)].slice(0,6);
+    const bankWNote = effectiveBudget['Bank-w'] > 0 && effectiveBudget['Bank-w'] < MIN_TICKET['Bank-w'] ? '低於永豐最低 30,000，不建議硬做或轉資。' : '滿足永豐最低 30,000 才規劃新單。';
+    const bankTNote = effectiveBudget['Bank-t'] > 0 && effectiveBudget['Bank-t'] < MIN_TICKET['Bank-t'] ? '低於富邦最低 10,000，不建議硬做或轉資。' : '滿足富邦最低 10,000 才規劃新單。';
+    const transferNote = `跨銀行轉資成本約 ${TRANSFER_FEE_USD} USD；除非能滿足最低投資門檻且配置缺口明確，否則不建議隨意轉移。`;
     const cards = [
-      ['Bank-t 主力', fmt(budget['Bank-t']||0), '優先補合理投資型與部分積極單，但避開高風險 worst-of。'],
-      ['Bank-w 輔助', fmt(budget['Bank-w']||0), '偏穩定現金流與小額戰術單，控制短投不超過 10%。'],
+      ['Bank-t 可規劃', fmt(effectiveBudget['Bank-t']||0), `原額度 ${fmt(budget['Bank-t']||0)}，扣除接股占用 ${fmt(a.deliveryHold['Bank-t']||0)}。${bankTNote}`],
+      ['Bank-w 可規劃', fmt(effectiveBudget['Bank-w']||0), `原額度 ${fmt(budget['Bank-w']||0)}，扣除接股占用 ${fmt(a.deliveryHold['Bank-w']||0)}。${bankWNote}`],
       ['優先補足', needs[0]?.[1]?.label || '暫無明顯缺口', '依收益配置缺口排序，但必須先通過持股健檢。'],
-      ['避免加碼', blockedUnique.join(', ') || '暫無', 'High Risk / Critical 的 worst-of 暫停新增。']
+      ['避免加碼', blockedUnique.join(', ') || '暫無', `High Risk / Critical / 接股風險的 worst-of 暫停新增。${transferNote}`]
     ];
     $('recommendCards').innerHTML = cards.map(([h,v,d])=>`<div class="rec-card"><h4>${h}</h4><div class="kpi"><div class="v">${v}</div><div class="d">${d}</div></div></div>`).join('');
     const max = Math.max(...Object.values(budget),1);
-    $('bankPlanBars').innerHTML = Object.entries(budget).map(([k,v])=>bar(k,v,max)).join('');
+    const planRows = Object.entries(budget).flatMap(([bank, amt]) => [[`${bank} 原配置`, amt, ''], [`${bank} 接股占用`, a.deliveryHold[bank] || 0, 'bad'], [`${bank} 可規劃`, effectiveBudget[bank] || 0, (effectiveBudget[bank] || 0) < (MIN_TICKET[bank] || 0) && (effectiveBudget[bank] || 0) > 0 ? 'warn' : '']]);
+    $('bankPlanBars').innerHTML = planRows.map(([k,v,c])=>bar(k,v,max,c)).join('');
   }
 
   function wireButtons() {
@@ -290,7 +322,7 @@
   }
 
   function renderNotes(rows, cfg) {
-    $('dataNotes').innerHTML = `讀取 FCN 筆數：${rows.length}<br>資安：${cfg?.security_mode?.amount_note || 'display_amount = real_amount / 10'}<br>限制：若原始資料缺少 KI / strike / worst_of，系統會用 basket 內最低 stock score 估算 worst-of。`;
+    $('dataNotes').innerHTML = `讀取 FCN 筆數：${rows.length}<br>資安：${cfg?.security_mode?.amount_note || 'display_amount = real_amount / 10'}<br>銀行最低投資：Bank-w 30,000、Bank-t 10,000；跨銀行轉資估計 ${TRANSFER_FEE_USD} USD。<br>限制：若原始資料缺少 KI / strike / worst_of，系統會用 basket 內最低 stock score 估算 worst-of；接股風險以資料標記、狀態文字、KI 與 basket score 做保守判斷。`;
   }
 
   async function init() {
