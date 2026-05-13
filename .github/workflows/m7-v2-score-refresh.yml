@@ -1,0 +1,106 @@
+name: M7 v2 Score Refresh
+
+on:
+  schedule:
+    # 08:10 Asia/Taipei (UTC+8) = 00:10 UTC
+    - cron: "10 0 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: m7-v2-score-refresh
+  cancel-in-progress: false
+
+jobs:
+  m7-v2-score-refresh:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Build long horizon runtime and M7 v2 scores
+        run: |
+          set -euo pipefail
+
+          if [ ! -f "scripts/build_market_runtime_long_horizon.py" ]; then
+            echo "Missing required script: scripts/build_market_runtime_long_horizon.py"
+            exit 1
+          fi
+
+          if [ ! -f "scripts/build_m7_v2_scores.py" ]; then
+            echo "Missing required script: scripts/build_m7_v2_scores.py"
+            exit 1
+          fi
+
+          python scripts/build_market_runtime_long_horizon.py
+          python scripts/build_m7_v2_scores.py
+
+      - name: Validate M7 v2 outputs
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import os
+          import sys
+
+          required = [
+              "data/runtime_staging/market_runtime_long_horizon.json",
+              "data/m7_sandbox/m7_v2_scores.json",
+          ]
+
+          missing = [p for p in required if not os.path.exists(p)]
+          if missing:
+              print("missing_required=" + ", ".join(missing))
+              sys.exit(1)
+
+          for path in required:
+              try:
+                  with open(path, "r", encoding="utf-8") as f:
+                      payload = json.load(f)
+              except Exception as exc:
+                  print(f"json_invalid={path}: {exc}")
+                  sys.exit(1)
+
+              if isinstance(payload, dict):
+                  rows = payload.get("rows") or payload.get("data") or payload
+                  count = len(rows) if hasattr(rows, "__len__") else 0
+              elif isinstance(payload, list):
+                  count = len(payload)
+              else:
+                  count = 0
+              print(f"validated={path}; count={count}")
+
+          print("m7_v2_score_refresh_status=ok")
+          PY
+
+      - name: Commit and push changed M7 v2 data
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+
+          git add data/runtime_staging/market_runtime_long_horizon.json data/m7_sandbox/m7_v2_scores.json
+
+          if git diff --cached --quiet; then
+            echo "No M7 v2 data changes to commit."
+            exit 0
+          fi
+
+          git commit -m "refresh m7 v2 scores"
+          git pull --rebase origin main
+          git push origin main
