@@ -1,244 +1,48 @@
-// MM/M2 cockpit engine extended Phase 1.5
+// ============================================================
+// MM/M2 新作戰中心 Engine v0.2
+// Layout: Top Dashboard + Left Menu + Right Detail + Bottom Query
+// ============================================================
 import { runM2HealthEngine } from '../../core/m2_health_engine_v1.js';
 
 const TARGET_BANK={富邦:900000,永豐:500000};
 const STOCK_CAP={core:500000,growth:300000,defensive:300000,income:200000,speculative:30000};
 const CAP_EXCEPTION={NVDA:700000,TSM:700000,SMH:700000,GOOG:700000};
 const BUCKET_COLOR={'長期穩定現金流':'#2563eb','合理投資型':'#0f766e','積極單':'#f97316','短期投機單':'#7c3aed','其他':'#94a3b8'};
-
-let runtime=null;
-let plannerRows=[];
-let poolMap={};
-
+const MODULE_META={
+  summary:['1. Summary Dashboard','資金水位 / 配置 / 健康 / 預計出場'],
+  zones:['2. Holding Zones','到期專區 / 預計提前到期 / Danger / Watch / Healthy'],
+  planning:['3. Maturity Cashflow','Planner A/B/C/D/E0：到期資金流與佈局重建'],
+  market:['4. Market FCN Analysis','市場單分析與推薦，下一階段接 M8 / market_fcn_history'],
+  management:['5. FCN / Stock Management','完整 FCN 查詢 + 股票風險分析'],
+  pool:['6. Pool Manual Ops','手動建新單 / 編輯 / 複製 / Soft Delete / 匯出']
+};
+let runtime=null, plannerRows=[], poolMap={}, currentModule='summary', stockCapacityRowsData=[];
 const n=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;
 const fmt=(v,d=0)=>n(v).toLocaleString('en-US',{maximumFractionDigits:d});
 const pct=(v,b,d=1)=>b?fmt(v/b*100,d):'0';
-
+const sum=list=>list.reduce((s,x)=>s+n(x.amt),0);
+function bucket(x){const r=n(x.rate),t=n(x.tenor);if(t<=6&&r>20.99)return'短期投機單';if(r>=21&&r<=25)return'積極單';if(r>=18&&r<=20.99)return'合理投資型';if(r>=12&&r<=17.99)return'長期穩定現金流';return'其他'}
+function kpi(k,v,d,a){return `<div class="kpi" style="--accent:${a}"><div class="kpi-label">${k}</div><div class="kpi-value">${v}</div><div class="kpi-sub">${d}</div></div>`}
 function flowCard(k,v,d,a){return `<div class="flow-card" style="--accent:${a}"><div class="flow-label">${k}</div><div class="flow-value">${v}</div><div class="flow-sub">${d}</div></div>`}
 function metricBlock(t,m,s,a){return `<div class="mini-metric" style="--accent:${a}"><div class="metric-title">${t}</div><div class="metric-main">${m}</div><div class="metric-sub">${s}</div></div>`}
-function sum(list){return list.reduce((s,x)=>s+n(x.amt),0)}
-
-function bucket(x){
-  const r=n(x.rate),t=n(x.tenor);
-  if(t<=6&&r>20.99)return'短期投機單';
-  if(r>=21&&r<=25)return'積極單';
-  if(r>=18&&r<=20.99)return'合理投資型';
-  if(r>=12&&r<=17.99)return'長期穩定現金流';
-  return'其他';
-}
-
+function listCard(title,body,cls=''){return `<div class="list-card ${cls}"><b>${title}</b><br>${body}</div>`}
 function conic(parts,total){let cur=0;return parts.map(p=>{const deg=total?p.amt/total*360:0;const s=`${BUCKET_COLOR[p.k]||'#ddd'} ${cur}deg ${cur+deg}deg`;cur+=deg;return s}).join(',')}
-
-function buildPlannerRows(fcns){
-  plannerRows=fcns.map(f=>{
-    const d=f.maturity?.days_to_maturity??9999;
-    let tag='Planning Base';
-    if(f.early_exit_ready)tag='Early Exit Ready';
-    else if(d<=30)tag='30D Maturity';
-    else if(f.early_exit_eligible&&f.early_exit_remark_count>0)tag='Early Exit Candidate';
-
-    return {...f,planner_tag:tag,excluded:tag!=='Planning Base'};
-  });
-}
-
-function renderHealthSummary(){
-  const r=runtime;
-  healthSummaryGrid.innerHTML=[
-    flowCard('Active FCN',`${r.total} 檔`,`USD ${fmt(r.total_amt)}`,'#2563eb'),
-    flowCard('Maturity Zone',`${r.maturity_zone.length} 檔`,'提早出場 / 到期前10天','#0f766e'),
-    flowCard('Danger + Watch',`${r.danger.length+r.watch.length} 檔`,`Danger ${r.danger.length}｜Watch ${r.watch.length}`,'#f97316'),
-    flowCard('Healthy',`${r.healthy.length} 檔`,'健康持倉母體','#7c3aed')
-  ].join('');
-
-  healthDecisionNote.innerHTML=`目前 Active FCN 共 <b>${r.total}</b> 檔、USD <b>${fmt(r.total_amt)}</b>。到期專區 <b>${r.maturity_zone.length}</b> 檔，Danger/Watch 共 <b>${r.danger.length+r.watch.length}</b> 檔。`;
-
-  maturityList.innerHTML=r.maturity_zone.slice(0,8).map(f=>`<div class="list-card"><b>${f.fcn_id}</b><br>${f.maturity?.maturity_label||f.early_exit_label||'Maturity'}<br>${f.tw_bank}｜USD ${fmt(f.amt)}</div>`).join('')||'<div class="muted">目前無資料</div>';
-
-  riskList.innerHTML=[...r.danger,...r.watch].slice(0,8).map(f=>`<div class="list-card"><b>${f.fcn_id}</b><br>Worst-of: ${f.worst_of}<br>${f.decision_label}</div>`).join('')||'<div class="muted">目前無資料</div>';
-
-  stockExposureList.innerHTML=r.stockMap.slice(0,10).map(s=>`<div class="list-card"><b>${s.symbol}</b>｜USD ${fmt(s.amt)}<br>FCN ${s.count}｜Danger ${s.danger}｜Watch ${s.watch}</div>`).join('');
-}
-
-function renderPlannerSummary(){
-  const active=plannerRows;
-  const base=plannerRows.filter(x=>x.planner_tag==='Planning Base');
-  const hard=plannerRows.filter(x=>x.planner_tag==='Early Exit Ready'||x.planner_tag==='30D Maturity');
-  const soft=plannerRows.filter(x=>x.planner_tag==='Early Exit Candidate');
-  const cash=[...hard,...soft];
-
-  plannerSummaryGrid.innerHTML=[
-    flowCard('Active FCN Total',`${active.length} / USD ${fmt(sum(active))}`,'目前正式持倉','#2563eb'),
-    flowCard('Cash-in 30D',`${cash.length} / USD ${fmt(sum(cash))}`,`Hard ${hard.length}｜Soft ${soft.length}`,'#f97316'),
-    flowCard('Planning Base',`${base.length} / USD ${fmt(sum(base))}`,'扣除出場後真正母體','#0f766e'),
-    flowCard('Planner Mode','Read-only Preview','第一階段不做修改','#7c3aed')
-  ].join('');
-
-  plannerNote.innerHTML=`目前 Active FCN 為 <b>${active.length}</b> 檔、USD <b>${fmt(sum(active))}</b>。未來一個月預估出場 / 可能出場 <b>${cash.length}</b> 檔、USD <b>${fmt(sum(cash))}</b>。`;
-}
-
-function renderCashDetail(){
-  const hard=plannerRows.filter(x=>x.planner_tag==='Early Exit Ready'||x.planner_tag==='30D Maturity');
-  const soft=plannerRows.filter(x=>x.planner_tag==='Early Exit Candidate');
-  const keep=plannerRows.filter(x=>x.planner_tag==='Planning Base');
-
-  cashInDetail.innerHTML=`
-  <div class="cash-card">
-    <div class="cash-title">Hard Release</div>
-    ${hard.slice(0,8).map(x=>`<div class="list-card"><b>${x.fcn_id}</b><br>${x.tw_bank}｜USD ${fmt(x.amt)}<br>${x.planner_tag}</div>`).join('')||'<div class="muted">none</div>'}
-  </div>
-
-  <div class="cash-card">
-    <div class="cash-title">Soft Candidate</div>
-    ${soft.slice(0,8).map(x=>`<div class="list-card"><b>${x.fcn_id}</b><br>${x.tw_bank}｜USD ${fmt(x.amt)}<br>${x.planner_tag}</div>`).join('')||'<div class="muted">none</div>'}
-  </div>
-
-  <div class="cash-card">
-    <div class="cash-title">Planning Base</div>
-    ${keep.slice(0,8).map(x=>`<div class="list-card"><b>${x.fcn_id}</b><br>${x.tw_bank}｜USD ${fmt(x.amt)}<br>${bucket(x)}</div>`).join('')||'<div class="muted">none</div>'}
-  </div>`;
-}
-
-function renderBroker(){
-  const cash=plannerRows.filter(x=>x.excluded);
-
-  brokerGrid.innerHTML=Object.keys(TARGET_BANK).map(b=>{
-    const target=TARGET_BANK[b];
-    const cur=plannerRows.filter(x=>(x.tw_bank||'').includes(b));
-    const base=plannerRows.filter(x=>x.planner_tag==='Planning Base'&&(x.tw_bank||'').includes(b));
-    const exit=cash.filter(x=>(x.tw_bank||'').includes(b));
-
-    const activeAmt=sum(cur),baseAmt=sum(base),exitAmt=sum(exit),future=Math.max(0,target-baseAmt);
-
-    return `<div class="broker-card"><div class="broker-head"><div><b>${b}</b><div class="muted">Future Available</div></div><div class="broker-avail">USD ${fmt(future)}</div></div><div class="broker-metrics">${metricBlock('出場',`${exit.length} / USD ${fmt(exitAmt)}`,`${pct(exitAmt,activeAmt)}% of Active`,'#f97316')}${metricBlock('剩餘母體',`${base.length} / USD ${fmt(baseAmt)}`,`${pct(baseAmt,activeAmt)}% of Active`,'#0f766e')}${metricBlock('原母體',`${cur.length} / USD ${fmt(activeAmt)}`,`${pct(activeAmt,target)}% of Target`,'#2563eb')}${metricBlock('Future Available',`USD ${fmt(future)}`,`${pct(future,target)}% open`,'#7c3aed')}</div></div>`;
-  }).join('');
-
-  brokerPlanBox.innerHTML='Broker Capacity 重點：不是看現在 active exposure，而是看一個月後剩下多少。';
-}
-
-function renderAlloc(){
-  const base=plannerRows.filter(x=>x.planner_tag==='Planning Base');
-  const exit=plannerRows.filter(x=>x.excluded);
-  const total=sum(base)||1;
-
-  const targets={'長期穩定現金流':40,'合理投資型':30,'積極單':20,'短期投機單':10,'其他':0};
-
-  const parts=Object.keys(targets).map(k=>({k,amt:sum(base.filter(x=>bucket(x)===k))}));
-
-  allocGrid.innerHTML=`<div class="alloc-layout"><div class="panel"><b>Planning Base 結構</b><div class="pie" style="background:conic-gradient(${conic(parts,total)})"></div>${parts.map(p=>`<div class="legend-row"><span><i class="legend-dot" style="background:${BUCKET_COLOR[p.k]}"></i>${p.k}</span><b>${fmt(p.amt/total*100,1)}%</b></div>`).join('')}</div><div class="panel">${parts.map(p=>{const bp=p.amt/total*100,gap=bp-targets[p.k];return `<div class="alloc-row"><div><b>${p.k}</b><div class="muted">USD ${fmt(p.amt)} / ${fmt(bp,1)}%</div><div class="bar"><span style="--bar:${BUCKET_COLOR[p.k]};width:${Math.min(100,bp)}%"></span></div></div><div><b>Target ${targets[p.k]}%</b><div class="muted">Gap ${fmt(gap,1)}%</div></div></div>`}).join('')}</div><div class="panel"><div class="interpret-box"><div class="interpret-title">Allocation Logic</div>不是單純補 target，而是看扣除出場後剩下什麼。</div></div></div>`;
-
-  allocNote.innerHTML='Allocation Preview：未來一個月後的真正 FCN 母體。';
-}
-
-function renderStockCapacity(){
-  const stockMap={};
-
-  plannerRows.forEach(f=>{
-    (f.basket||[]).forEach(s=>{
-      if(!stockMap[s])stockMap[s]={symbol:s,active:0,release:0,base:0,count:0};
-
-      stockMap[s].active+=n(f.amt);
-      stockMap[s].count+=1;
-
-      if(f.excluded)stockMap[s].release+=n(f.amt);
-      else stockMap[s].base+=n(f.amt);
-    });
-  });
-
-  const rows=Object.values(stockMap).map(r=>{
-    const meta=poolMap[r.symbol]||{};
-    const category=meta.category||'growth';
-    const max=CAP_EXCEPTION[r.symbol]||STOCK_CAP[category]||300000;
-    const staticRemain=Math.max(0,max-r.active);
-    const dynamic=Math.max(0,max-r.base);
-
-    let light='GREEN';
-    let comment='可正常布局';
-
-    if(dynamic<=0){light='RED';comment='超過上限'}
-    else if(dynamic/max<0.2){light='YELLOW';comment='接近滿載'}
-
-    return {...r,category,max,staticRemain,dynamic,light,comment};
-  }).sort((a,b)=>b.dynamic-a.dynamic);
-
-  const green=rows.filter(x=>x.light==='GREEN').length;
-  const yellow=rows.filter(x=>x.light==='YELLOW').length;
-  const red=rows.filter(x=>x.light==='RED').length;
-
-  stockCapacityGrid.innerHTML=[
-    flowCard('GREEN',green,'正常可加碼','#0f766e'),
-    flowCard('YELLOW',yellow,'接近容量上限','#f97316'),
-    flowCard('RED',red,'超過建議容量','#dc2626'),
-    flowCard('Tracked Stocks',rows.length,'Planning Base exposure','#2563eb')
-  ].join('');
-
-  stockCapacityRows.innerHTML=rows.map(x=>`
-    <tr class="${x.light==='RED'?'row-bad':x.light==='YELLOW'?'row-warn':'row-good'}">
-      <td><b>${x.symbol}</b></td>
-      <td>${x.category}</td>
-      <td>USD ${fmt(x.max)}</td>
-      <td>USD ${fmt(x.active)}</td>
-      <td>USD ${fmt(x.release)}</td>
-      <td>USD ${fmt(x.base)}</td>
-      <td>USD ${fmt(x.staticRemain)}</td>
-      <td>USD ${fmt(x.dynamic)}</td>
-      <td><span class="pill ${x.light==='GREEN'?'pill-good':x.light==='YELLOW'?'pill-warn':'pill-bad'}">${x.light}</span></td>
-      <td>${x.dynamic>200000?'Core / Growth':x.dynamic>50000?'合理單':'保守 / 暫停'}</td>
-      <td>${x.comment}</td>
-    </tr>
-  `).join('');
-}
-
-function renderTable(){
-  tableMeta.innerHTML=`Active ${plannerRows.length} 檔｜Read-only mode`;
-
-  fcnRows.innerHTML=plannerRows.map(x=>`<tr class="${x.fcn_health==='danger'?'row-bad':x.fcn_health==='watch'?'row-warn':'row-good'}"><td><b>${x.fcn_id}</b></td><td>${x.tw_bank||''}</td><td>USD ${fmt(x.amt)}</td><td>${fmt(x.rate,2)}%</td><td>${x.tenor||''}M</td><td>${(x.basket||[]).join(' / ')}</td><td>${x.worst_of||''}</td><td>${x.decision_label||''}</td><td>${x.planner_tag}</td><td>${x.maturity?.days_to_maturity??'-'}</td></tr>`).join('');
-}
-
-function bindSections(){
-  document.querySelectorAll('.section-toggle').forEach(btn=>btn.addEventListener('click',()=>{const card=btn.closest('.card');card.classList.toggle('open');btn.textContent=card.classList.contains('open')?'收合':'展開'}));
-
-  expandAllBtn.addEventListener('click',()=>document.querySelectorAll('.section').forEach(c=>{c.classList.add('open');const b=c.querySelector('.section-toggle');if(b)b.textContent='收合'}));
-  collapseAllBtn.addEventListener('click',()=>document.querySelectorAll('.section').forEach(c=>{c.classList.remove('open');const b=c.querySelector('.section-toggle');if(b)b.textContent='展開'}));
-}
-
-async function loadData(){
-  try{
-    runtimeMeta.textContent='載入資料中...';
-
-    const [poolRes,marketRes,pool30Res]=await Promise.all([
-      fetch('../../data/fcn_pool.json'),
-      fetch('../../data/market_runtime.json'),
-      fetch('../../data/pool30.json')
-    ]);
-
-    const fcnPool=await poolRes.json();
-    const marketRuntime=await marketRes.json();
-    const pool30=await pool30Res.json();
-
-    poolMap={};
-    pool30.forEach(p=>poolMap[p.symbol]=p);
-
-    runtime=runM2HealthEngine({fcnPool,marketRuntime:marketRuntime.rows||marketRuntime,pool30});
-
-    buildPlannerRows(runtime.fcns);
-
-    renderHealthSummary();
-    renderPlannerSummary();
-    renderCashDetail();
-    renderBroker();
-    renderAlloc();
-    renderStockCapacity();
-    renderTable();
-
-    runtimeMeta.innerHTML=`最後更新：${marketRuntime.generated_at||'unknown'}｜Active FCN ${runtime.total} 檔｜Stock Exposure ${runtime.stockMap.length} 檔`;
-  }catch(err){
-    console.error(err);
-    runtimeMeta.innerHTML=`<span class="bad">載入失敗：${err.message}</span>`;
-  }
-}
-
-runBtn.addEventListener('click',loadData);
-reloadBtn.addEventListener('click',loadData);
-
-bindSections();
-loadData();
+function getGroups(){const active=plannerRows,base=active.filter(x=>x.planner_tag==='Planning Base'),ready=active.filter(x=>x.planner_tag==='Early Exit Ready'),maturity=active.filter(x=>x.planner_tag==='30D Maturity'),candidate=active.filter(x=>x.planner_tag==='Early Exit Candidate'),cash=[...ready,...maturity,...candidate];return{active,base,ready,maturity,candidate,cash,hard:[...ready,...maturity]}}
+function buildPlannerRows(fcns){plannerRows=fcns.map(f=>{const d=f.maturity?.days_to_maturity??9999;let tag='Planning Base';if(f.early_exit_ready)tag='Early Exit Ready';else if(d<=30)tag='30D Maturity';else if(f.early_exit_eligible&&f.early_exit_remark_count>0)tag='Early Exit Candidate';return{...f,planner_tag:tag,excluded:tag!=='Planning Base'}})}
+function buildStockCapacityRows(){const stockMap={};plannerRows.forEach(f=>(f.basket||[]).forEach(s=>{if(!stockMap[s])stockMap[s]={symbol:s,active:0,release:0,base:0,count:0,danger:0,watch:0};stockMap[s].active+=n(f.amt);stockMap[s].count++;if(f.excluded)stockMap[s].release+=n(f.amt);else stockMap[s].base+=n(f.amt);const st=(f.stocks||[]).find(x=>x.symbol===s);if(st?.stock_health==='danger')stockMap[s].danger++;if(st?.stock_health==='watch')stockMap[s].watch++}));stockCapacityRowsData=Object.values(stockMap).map(r=>{const meta=poolMap[r.symbol]||{},category=meta.category||'growth',max=CAP_EXCEPTION[r.symbol]||STOCK_CAP[category]||300000,staticRemain=Math.max(0,max-r.active),dynamic=Math.max(0,max-r.base);let light='GREEN',comment='可正常布局';if(r.danger>0){light='RED';comment='有 danger 紀錄，先處理風險'}else if(dynamic<=0){light='RED';comment='超過上限'}else if(dynamic/max<0.2||r.watch>0){light='YELLOW';comment='接近滿載或有 watch'}return{...r,category,max,staticRemain,dynamic,light,comment}}).sort((a,b)=>a.light.localeCompare(b.light)||b.dynamic-a.dynamic)}
+function allocParts(list){const targets={'長期穩定現金流':40,'合理投資型':30,'積極單':20,'短期投機單':10,'其他':0};return Object.keys(targets).map(k=>({k,target:targets[k],amt:sum(list.filter(x=>bucket(x)===k))}))}
+function renderTopDashboard(){const g=getGroups(),parts=allocParts(g.active),total=sum(g.active)||1,bankF=sum(g.active.filter(x=>(x.tw_bank||'').includes('富邦'))),bankS=sum(g.active.filter(x=>(x.tw_bank||'').includes('永豐')));topDashboard.innerHTML=[kpi('FCN 資金水位',`USD ${fmt(sum(g.active))}`,`${g.active.length} 檔｜富邦 ${fmt(bankF)} / 永豐 ${fmt(bankS)}`,'#2563eb'),kpi('本月預計出場',`USD ${fmt(sum(g.cash))}`,`到期 ${fmt(sum(g.maturity))}｜提前 ${fmt(sum(g.ready))}｜候選 ${fmt(sum(g.candidate))}`,'#f97316'),kpi('健康狀態',`${runtime.danger.length+runtime.watch.length} 需看`, `Danger ${runtime.danger.length}｜Watch ${runtime.watch.length}｜Healthy ${runtime.healthy.length}`,'#dc2626'),kpi('Planning Base',`USD ${fmt(sum(g.base))}`,`${g.base.length} 檔｜扣除本月出場後母體`,'#0f766e'),kpi('配置主軸',parts.map(p=>`${p.k.slice(0,2)} ${fmt(p.amt/total*100,0)}%`).join('｜'),'目前 active 配置粗覽','#7c3aed'),kpi('系統模式','Read-only','不改舊 M2 / Planner，不寫回資料','#64748b')].join('')}
+function setModule(m){currentModule=m;document.querySelectorAll('.menu-btn').forEach(b=>b.classList.toggle('active',b.dataset.module===m));const meta=MODULE_META[m];activeTitle.textContent=meta[0];activeSub.textContent=meta[1];bottomTitle.textContent=`${meta[0]}｜大型資訊查詢區`;bottomSub.textContent=meta[1];renderCurrentModule()}
+function renderCurrentModule(){if(!runtime)return;({summary:renderSummary,zones:renderZones,planning:renderPlanning,market:renderMarket,management:renderManagement,pool:renderPool}[currentModule]||renderSummary)()}
+function renderSummary(){const g=getGroups();rightDetail.innerHTML=`<div class="flow-panel">${flowCard('Active',`${g.active.length} / USD ${fmt(sum(g.active))}`,'目前持倉','#2563eb')}${flowCard('Expected Exit',`${g.cash.length} / USD ${fmt(sum(g.cash))}`,'本月預計出場','#f97316')}${flowCard('Planning Base',`${g.base.length} / USD ${fmt(sum(g.base))}`,'真正分析母體','#0f766e')}${flowCard('Risk',`${runtime.danger.length+runtime.watch.length}`,'Danger + Watch','#dc2626')}</div>`;rightInsight.innerHTML=`<div class="decision-note">M2 Summary 要一眼看完：現在有多少 FCN、健康度如何、本月預計釋放多少資金，以及釋放來源。下一步配置必須以 Planning Base 為母體，不是拿 Active 全部直接分析。</div>`;bottomQuery.innerHTML=`<div class="grid-3"><div class="panel"><h3>本月出場來源</h3>${listCard('30D Maturity',`${g.maturity.length} 檔｜USD ${fmt(sum(g.maturity))}`)}${listCard('Early Exit Ready',`${g.ready.length} 檔｜USD ${fmt(sum(g.ready))}`)}${listCard('Early Exit Candidate',`${g.candidate.length} 檔｜USD ${fmt(sum(g.candidate))}`)}</div><div class="panel"><h3>銀行資金水位</h3>${Object.keys(TARGET_BANK).map(b=>{const a=sum(g.active.filter(x=>(x.tw_bank||'').includes(b)));return listCard(b,`Active USD ${fmt(a)}｜Target USD ${fmt(TARGET_BANK[b])}｜Util ${pct(a,TARGET_BANK[b])}%`)}).join('')}</div><div class="panel"><h3>健康摘要</h3>${listCard('到期專區',`${runtime.maturity_zone.length} 檔`)}${listCard('Danger / Watch',`${runtime.danger.length} / ${runtime.watch.length} 檔`)}${listCard('Healthy',`${runtime.healthy.length} 檔`)}</div></div>`}
+function renderZones(){const g=getGroups(),zone=[['到期專區',runtime.maturity_zone.length,`到期前10天或已提前出場`, 'blue'],['預計提前到期',g.candidate.length,`符合提前觀察但尚非正式 ready`, 'watch'],['積極處理｜破下限價',runtime.danger.length,`Danger / KI / 接股壓力`, 'danger'],['持續追蹤',runtime.watch.length,`Watch / Strike 壓力`, 'watch'],['健康',runtime.healthy.length,`正常續抱母體`, 'good']];rightDetail.innerHTML=`<div class="zone-grid">${zone.map(z=>`<div class="zone-card ${z[3]}"><b>${z[0]}</b><div class="zone-num">${z[1]}</div><div class="muted">${z[2]}</div><div class="hidden-detail">卡片只放數字，明細放下方大型查詢區。</div></div>`).join('')}</div>`;rightInsight.innerHTML=`<div class="decision-note">保留舊 M2「持倉分區」卡片式閱讀優點，但把長文字與細節移到下方。新增「預計提前到期」避免到期專區只看到正式 ready，而漏掉本月資金規劃的重要候選。</div>`;bottomQuery.innerHTML=`<div class="grid-3"><div class="panel"><h3>到期 / 提前 Ready</h3>${[...g.ready,...g.maturity].slice(0,12).map(f=>listCard(f.fcn_id,`${f.tw_bank}｜USD ${fmt(f.amt)}｜${f.planner_tag}<br>Worst-of ${f.worst_of||'-'}｜${f.decision_label||''}`)).join('')||'<div class="muted">none</div>'}</div><div class="panel"><h3>預計提前到期</h3>${g.candidate.slice(0,12).map(f=>listCard(f.fcn_id,`${f.tw_bank}｜USD ${fmt(f.amt)}｜Remark ${f.early_exit_remark_count}/${f.early_exit_total_count}<br>Worst-of ${f.worst_of||'-'}`)).join('')||'<div class="muted">none</div>'}</div><div class="panel"><h3>Danger / Watch</h3>${[...runtime.danger,...runtime.watch].slice(0,12).map(f=>listCard(f.fcn_id,`${f.tw_bank}｜USD ${fmt(f.amt)}｜Worst-of ${f.worst_of}<br>${f.decision_label||''}`)).join('')||'<div class="muted">none</div>'}</div></div>`}
+function renderBrokerBlock(){const g=getGroups();return `<div class="broker-grid">${Object.keys(TARGET_BANK).map(b=>{const target=TARGET_BANK[b],cur=g.active.filter(x=>(x.tw_bank||'').includes(b)),base=g.base.filter(x=>(x.tw_bank||'').includes(b)),exit=g.cash.filter(x=>(x.tw_bank||'').includes(b)),activeAmt=sum(cur),baseAmt=sum(base),exitAmt=sum(exit),future=Math.max(0,target-baseAmt);return `<div class="broker-card"><div class="broker-head"><div><b>${b}</b><div class="muted">Future Available</div></div><div class="broker-avail">USD ${fmt(future)}</div></div><div class="broker-metrics">${metricBlock('出場',`${exit.length} / USD ${fmt(exitAmt)}`,`${pct(exitAmt,activeAmt)}% Active`,'#f97316')}${metricBlock('剩餘母體',`${base.length} / USD ${fmt(baseAmt)}`,`${pct(baseAmt,activeAmt)}% Active`,'#0f766e')}${metricBlock('原母體',`${cur.length} / USD ${fmt(activeAmt)}`,`${pct(activeAmt,target)}% Target`,'#2563eb')}${metricBlock('可補',`USD ${fmt(future)}`,`${pct(future,target)}% open`,'#7c3aed')}</div></div>`}).join('')}</div>`}
+function renderAllocBlock(){const g=getGroups(),base=g.base,total=sum(base)||1,parts=allocParts(base);return `<div class="alloc-layout"><div class="panel"><b>Planning Base 結構</b><div class="pie" style="background:conic-gradient(${conic(parts,total)})"></div>${parts.map(p=>`<div class="legend-row"><span><i class="legend-dot" style="background:${BUCKET_COLOR[p.k]}"></i>${p.k}</span><b>${fmt(p.amt/total*100,1)}%</b></div>`).join('')}</div><div class="panel"><b>Real vs Target</b>${parts.map(p=>{const bp=p.amt/total*100,gap=bp-p.target;return `<div class="alloc-row"><div><b>${p.k}</b><div class="muted">USD ${fmt(p.amt)} / ${fmt(bp,1)}%</div><div class="bar"><span style="--bar:${BUCKET_COLOR[p.k]};width:${Math.min(100,bp)}%"></span></div></div><div><b>Target ${p.target}%</b><div class="muted">Gap ${fmt(gap,1)}%</div></div></div>`}).join('')}</div><div class="panel"><div class="interpret-box"><div class="interpret-title">Planning Logic</div>此區是 m2_planner A/B/C/D/E0 的位置，負責到期資金流與重建佈局，不應佔滿整個 M2。</div></div></div>`}
+function renderPlanning(){const g=getGroups();rightDetail.innerHTML=`<div class="flow-panel">${flowCard('Cash-in',`${g.cash.length} / USD ${fmt(sum(g.cash))}`,'本月預計釋放','#f97316')}${flowCard('Hard Release',`${g.hard.length} / USD ${fmt(sum(g.hard))}`,'到期 + ready','#dc2626')}${flowCard('Soft Candidate',`${g.candidate.length} / USD ${fmt(sum(g.candidate))}`,'預計提前到期候選','#b9770e')}${flowCard('Planning Base',`${g.base.length} / USD ${fmt(sum(g.base))}`,'扣除後母體','#0f766e')}</div>`;rightInsight.innerHTML=`<div class="decision-note">第3區才是 Planner 的主場：A 出場總覽、B 銀行容量、C 配置重建、D 單股容量、E0 出場明細。這裡用來回答：這個月會釋放多少錢、從哪裡來、釋放後該補哪裡。</div>`;bottomQuery.innerHTML=`${renderBrokerBlock()}<div style="height:12px"></div>${renderAllocBlock()}<div style="height:12px"></div><div class="cash-grid"><div class="cash-card"><div class="cash-title">Hard Release</div>${g.hard.map(x=>listCard(x.fcn_id,`${x.tw_bank}｜USD ${fmt(x.amt)}｜${x.planner_tag}`)).join('')||'<div class="muted">none</div>'}</div><div class="cash-card"><div class="cash-title">Soft Candidate</div>${g.candidate.map(x=>listCard(x.fcn_id,`${x.tw_bank}｜USD ${fmt(x.amt)}｜Remark ${x.early_exit_remark_count}/${x.early_exit_total_count}`)).join('')||'<div class="muted">none</div>'}</div><div class="cash-card"><div class="cash-title">Planning Base</div>${g.base.slice(0,12).map(x=>listCard(x.fcn_id,`${x.tw_bank}｜USD ${fmt(x.amt)}｜${bucket(x)}`)).join('')}</div></div>`}
+function renderMarket(){rightDetail.innerHTML=`<div class="note">第4區預留給市場單分析與推薦。下一階段會接 M8 Fair Rate、market_fcn_history、小模板比對與詢價單判斷。</div>`;rightInsight.innerHTML=`<div class="decision-note">這區不是管理舊持倉，而是判斷今天市場單是否值得做：票息是否高於 fair、是否補配置缺口、是否超過單股容量、富邦或永豐較適合。</div>`;bottomQuery.innerHTML=`<div class="grid-3"><div class="panel"><h3>Market Coupon Compare</h3><div class="muted">待接 M8 / market_fcn_history</div></div><div class="panel"><h3>Inquiry Desk</h3><div class="muted">待建立新詢價單輸入區</div></div><div class="panel"><h3>Recommendation</h3><div class="muted">待輸出建議金額、銀行、bucket</div></div></div>`}
+function renderManagement(){rightDetail.innerHTML=`<div class="flow-panel">${flowCard('FCN Rows',plannerRows.length,'完整 FCN 查詢母體','#2563eb')}${flowCard('Stock Rows',stockCapacityRowsData.length,'股票風險 + 容量','#0f766e')}${flowCard('Danger Stocks',stockCapacityRowsData.filter(x=>x.light==='RED').length,'需優先看','#dc2626')}${flowCard('Watch Stocks',stockCapacityRowsData.filter(x=>x.light==='YELLOW').length,'接近滿載或 watch','#f97316')}</div>`;rightInsight.innerHTML=`<div class="decision-note">第5區合併 m2_planner E 與 m2 的股票風險分析。這裡是查詢與風險管理，不是手動新增修改。</div>`;bottomQuery.innerHTML=`<div class="table-wrap"><table><thead><tr><th>Stock</th><th>Category</th><th>Max</th><th>Active</th><th>Exit Release</th><th>Planning Base</th><th>Static Rem.</th><th>Dynamic</th><th>Light</th><th>Comment</th></tr></thead><tbody>${stockCapacityRowsData.map(x=>`<tr class="${x.light==='RED'?'row-bad':x.light==='YELLOW'?'row-warn':'row-good'}"><td><b>${x.symbol}</b></td><td>${x.category}</td><td>USD ${fmt(x.max)}</td><td>USD ${fmt(x.active)}</td><td>USD ${fmt(x.release)}</td><td>USD ${fmt(x.base)}</td><td>USD ${fmt(x.staticRemain)}</td><td>USD ${fmt(x.dynamic)}</td><td><span class="pill ${x.light==='GREEN'?'pill-good':x.light==='YELLOW'?'pill-warn':'pill-bad'}">${x.light}</span></td><td>${x.comment}</td></tr>`).join('')}</tbody></table></div><div style="height:12px"></div>${renderFCNTable()}`}
+function renderFCNTable(){return `<div class="table-wrap"><table><thead><tr><th>FCN ID</th><th>Bank</th><th>Amount</th><th>Rate</th><th>Tenor</th><th>Basket</th><th>Worst-of</th><th>Health</th><th>Planner Tag</th><th>Days to Maturity</th></tr></thead><tbody>${plannerRows.map(x=>`<tr class="${x.fcn_health==='danger'?'row-bad':x.fcn_health==='watch'?'row-warn':'row-good'}"><td><b>${x.fcn_id}</b></td><td>${x.tw_bank||''}</td><td>USD ${fmt(x.amt)}</td><td>${fmt(x.rate,2)}%</td><td>${x.tenor||''}M</td><td>${(x.basket||[]).join(' / ')}</td><td>${x.worst_of||''}</td><td>${x.decision_label||''}</td><td>${x.planner_tag}</td><td>${x.maturity?.days_to_maturity??'-'}</td></tr>`).join('')}</tbody></table></div>`}
+function renderPool(){rightDetail.innerHTML=`<div class="note">第6區來源是舊 m2 / 6. FCN Pool 管理。此區未來放手動建新單、編輯、複製、Soft Delete、匯出。</div>`;rightInsight.innerHTML=`<div class="decision-note">這是後台作業區，不應混在 Summary 或 Planner。新版會先把手動鍵新單流程整理乾淨，再考慮寫回。</div>`;bottomQuery.innerHTML=`<div class="grid-3"><div class="panel"><h3>手動建新單</h3><div class="muted">待搬 m2 6.2 表單</div></div><div class="panel"><h3>FCN 清單</h3><div class="muted">待搬 m2 6.1 清單 / 搜尋 / filter</div></div><div class="panel"><h3>匯出 / Soft Delete</h3><div class="muted">保留舊 M2 作業邏輯，暫不寫回</div></div></div>`}
+function bindMenu(){document.querySelectorAll('.menu-btn').forEach(btn=>btn.addEventListener('click',()=>setModule(btn.dataset.module)))}
+async function loadData(){try{runtimeMeta.textContent='載入資料中...';const [poolRes,marketRes,pool30Res]=await Promise.all([fetch('../../data/fcn_pool.json'),fetch('../../data/market_runtime.json'),fetch('../../data/pool30.json')]);const fcnPool=await poolRes.json(),marketRuntime=await marketRes.json(),pool30=await pool30Res.json();poolMap={};pool30.forEach(p=>poolMap[p.symbol]=p);runtime=runM2HealthEngine({fcnPool,marketRuntime:marketRuntime.rows||marketRuntime,pool30});buildPlannerRows(runtime.fcns);buildStockCapacityRows();renderTopDashboard();renderCurrentModule();runtimeMeta.innerHTML=`最後更新：${marketRuntime.generated_at||'unknown'}｜Active FCN ${runtime.total} 檔｜Stock Exposure ${runtime.stockMap.length} 檔`;}catch(err){console.error(err);runtimeMeta.innerHTML=`<span class="bad">載入失敗：${err.message}</span>`}}
+runBtn.addEventListener('click',loadData);reloadBtn.addEventListener('click',loadData);bindMenu();loadData();
