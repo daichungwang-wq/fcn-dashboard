@@ -7,103 +7,73 @@
   <style>
     *{box-sizing:border-box}
     body{margin:0;background:#f5f6f8;color:#111;font-family:Arial,'Microsoft JhengHei',sans-serif}
-    .page{max-width:1500px;margin:0 auto;padding:20px 14px 64px}
-    h1{margin:0 0 8px;font-size:32px;letter-spacing:.2px}
-    h2{margin:0;font-size:22px}
-    h3{margin:0 0 10px;font-size:17px}
-    .subtitle{color:#555;line-height:1.65;margin-bottom:16px;font-size:15px}
-    .card{background:#fff;border:1px solid #ddd;border-radius:16px;padding:16px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,.03)}
-    .section-head{display:flex;justify-content:space-between;gap:12px;align-items:center}
-    .section-body{display:none;margin-top:14px}.card.open .section-body{display:block}
-    .toolbar,.filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0}
-    .btn,button{border:0;border-radius:10px;padding:9px 12px;background:#111;color:#fff;font-weight:700;cursor:pointer;text-decoration:none;font-size:14px}
-    .light{background:#e9ecef;color:#111;border:1px solid #d8dde6}.secondary{background:#666;color:#fff}
-    .muted{color:#666;font-size:13px}.note{font-size:13px;background:#fffbe6;border:1px solid #f1df9a;border-radius:10px;padding:10px;line-height:1.6}
-    .decision-note{font-size:14px;background:#f8fbff;border:1px solid #dbeafe;border-radius:12px;padding:12px;margin-top:10px;line-height:1.7}
-    .flow-panel{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.flow-card{position:relative;overflow:hidden;border:1px solid #e5e7eb;border-radius:18px;padding:14px;background:linear-gradient(135deg,#fff,#f8fafc);box-shadow:0 12px 22px rgba(15,23,42,.07)}
-    .flow-card:before,.mini-metric:before{content:"";position:absolute;left:0;top:0;width:6px;height:100%;background:var(--accent,#64748b)}
-    .flow-label{font-size:12px;color:#64748b;font-weight:800}.flow-value{font-size:26px;font-weight:950;margin-top:5px;letter-spacing:.2px}.flow-sub{font-size:12px;color:#667085;margin-top:4px;line-height:1.45}
-    .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.box{border:1px solid #e5e5e5;border-radius:14px;padding:14px;background:#fff}.label{font-size:13px;color:#666}.value{font-size:24px;font-weight:900;margin-top:5px}.sub{font-size:12px;color:#666;margin-top:4px;line-height:1.45}
-    .good{color:#188b58}.warn{color:#b9770e}.bad{color:#c62828}.blue{color:#1e3a8a}.pill{display:inline-block;border-radius:999px;padding:4px 9px;font-size:12px;font-weight:800;border:1px solid #ddd;background:#fafafa}.pill-good{background:#ecfff1;color:#188b58;border-color:#a9e2b4}.pill-warn{background:#fff7e8;color:#b9770e;border-color:#f0d298}.pill-bad{background:#fff0f0;color:#c62828;border-color:#f1b5b5}.pill-blue{background:#eef6ff;color:#1e3a8a;border-color:#cfe1ff}
-    .broker-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.broker-card{border:1px solid #e5e7eb;border-radius:18px;padding:15px;background:linear-gradient(135deg,#fff,#f8fafc);box-shadow:0 14px 28px rgba(15,23,42,.07)}.broker-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:12px}.broker-avail{font-size:26px;font-weight:950;color:#0f766e}.broker-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.mini-metric{position:relative;overflow:hidden;border:1px solid #eee;border-radius:14px;padding:11px 10px 11px 14px;background:#fff;box-shadow:0 6px 14px rgba(15,23,42,.04)}.metric-title{font-size:12px;color:#666}.metric-main{font-size:16px;font-weight:900;margin-top:5px}.metric-sub{font-size:12px;color:#666;margin-top:4px;line-height:1.4}
-    .alloc-layout{display:grid;grid-template-columns:310px 1.25fr 1fr;gap:14px;align-items:start}.panel{border:1px solid #e5e7eb;border-radius:16px;padding:14px;background:#fff}.pie{width:220px;height:220px;border-radius:50%;margin:16px auto;border:8px solid #fff;box-shadow:inset -14px -18px 28px rgba(0,0,0,.14),inset 10px 12px 22px rgba(255,255,255,.22),0 18px 30px rgba(15,23,42,.18)}.legend-row,.alloc-row{display:grid;grid-template-columns:1fr auto;gap:8px;border-bottom:1px solid #eee;padding:8px 0;font-size:13px}.legend-dot{display:inline-block;width:10px;height:10px;border-radius:999px;margin-right:6px;vertical-align:middle}.alloc-row{grid-template-columns:1.1fr 1fr}.bar{height:8px;background:#eef2f7;border-radius:999px;overflow:hidden;margin-top:5px}.bar span{display:block;height:100%;background:var(--bar,#111);border-radius:999px}.interpret-box{border:1px solid #dbeafe;background:#f8fbff;border-radius:14px;padding:12px;margin-bottom:10px;line-height:1.65;font-size:13px}.interpret-title{font-weight:900;margin-bottom:4px}
-    .table-wrap{overflow:auto;border:1px solid #e5e5e5;border-radius:14px}table{width:100%;border-collapse:collapse;min-width:1080px}th,td{border-bottom:1px solid #eee;padding:8px;text-align:left;white-space:nowrap;font-size:13px}th{background:#fafafa;color:#555;position:sticky;top:0}.row-bad{background:#fff7f7}.row-warn{background:#fffdf7}.row-good{background:#fbfffb}
-    .list-card{border:1px solid #eee;border-radius:12px;padding:10px;margin:8px 0;background:#fafafa;font-size:13px;line-height:1.55}.list-card b{font-size:14px}.cash-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.cash-card{border:1px solid #e5e7eb;border-radius:16px;padding:14px;background:#fff;min-height:160px}.cash-title{font-weight:900;margin-bottom:8px}
-    @media(max-width:1100px){.grid,.grid-3,.cash-grid,.broker-grid,.alloc-layout,.flow-panel{grid-template-columns:1fr}.broker-metrics{grid-template-columns:repeat(2,1fr)}}@media(max-width:680px){.broker-metrics{grid-template-columns:1fr}.toolbar{flex-direction:column;align-items:stretch}.btn,button{width:100%}}
+    .page{max-width:1540px;margin:0 auto;padding:18px 14px 64px}
+    h1{margin:0;font-size:30px;letter-spacing:.2px}h2{margin:0;font-size:21px}h3{margin:0 0 10px;font-size:16px}.subtitle{color:#555;line-height:1.55;font-size:14px;margin-top:6px}.muted{color:#666;font-size:13px}.bad{color:#c62828}.good{color:#188b58}.warn{color:#b9770e}
+    .topbar{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:12px}.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.btn,button{border:0;border-radius:10px;padding:9px 12px;background:#111;color:#fff;font-weight:800;cursor:pointer;text-decoration:none;font-size:13px}.light{background:#e9ecef;color:#111;border:1px solid #d8dde6}.secondary{background:#666;color:#fff}
+    .card{background:#fff;border:1px solid #ddd;border-radius:16px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.03)}.note{font-size:13px;background:#fffbe6;border:1px solid #f1df9a;border-radius:10px;padding:10px;line-height:1.6}.decision-note{font-size:14px;background:#f8fbff;border:1px solid #dbeafe;border-radius:12px;padding:12px;margin-top:10px;line-height:1.7}
+    .dashboard{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:14px}.kpi{position:relative;overflow:hidden;border:1px solid #e5e7eb;border-radius:18px;padding:13px 13px 13px 15px;background:linear-gradient(135deg,#fff,#f8fafc);box-shadow:0 10px 20px rgba(15,23,42,.06)}.kpi:before{content:"";position:absolute;left:0;top:0;width:6px;height:100%;background:var(--accent,#64748b)}.kpi-label{font-size:12px;color:#64748b;font-weight:900}.kpi-value{font-size:24px;font-weight:950;margin-top:4px}.kpi-sub{font-size:12px;color:#667085;margin-top:4px;line-height:1.4}
+    .cockpit{display:grid;grid-template-columns:250px 1fr;gap:14px;align-items:start}.side{position:sticky;top:12px}.menu{display:grid;gap:8px}.menu-btn{text-align:left;width:100%;background:#f8fafc;color:#111;border:1px solid #e2e8f0;border-radius:14px;padding:12px}.menu-btn.active{background:#111;color:#fff;border-color:#111}.menu-title{font-weight:950}.menu-sub{font-size:12px;opacity:.75;margin-top:4px;line-height:1.35}.main{display:grid;gap:14px}.detail-grid{display:grid;grid-template-columns:1.05fr 1.25fr;gap:14px}.detail-panel,.query-panel{min-height:260px}.panel-title{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:10px}.query-panel{min-height:430px}.module-title{font-size:20px;font-weight:950}.module-sub{font-size:13px;color:#666;margin-top:3px;line-height:1.45}
+    .flow-panel{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.flow-card{position:relative;overflow:hidden;border:1px solid #e5e7eb;border-radius:16px;padding:12px;background:#fff}.flow-card:before,.mini-metric:before{content:"";position:absolute;left:0;top:0;width:5px;height:100%;background:var(--accent,#64748b)}.flow-label{font-size:12px;color:#64748b;font-weight:900}.flow-value{font-size:22px;font-weight:950;margin-top:4px}.flow-sub{font-size:12px;color:#667085;margin-top:4px;line-height:1.4}.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.panel{border:1px solid #e5e7eb;border-radius:14px;padding:12px;background:#fff}.list-card{border:1px solid #eee;border-radius:12px;padding:10px;margin:8px 0;background:#fafafa;font-size:13px;line-height:1.55}.list-card b{font-size:14px}.cash-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.cash-card{border:1px solid #e5e7eb;border-radius:16px;padding:14px;background:#fff;min-height:160px}.cash-title{font-weight:900;margin-bottom:8px}
+    .broker-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.broker-card{border:1px solid #e5e7eb;border-radius:16px;padding:13px;background:linear-gradient(135deg,#fff,#f8fafc)}.broker-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:10px}.broker-avail{font-size:23px;font-weight:950;color:#0f766e}.broker-metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.mini-metric{position:relative;overflow:hidden;border:1px solid #eee;border-radius:12px;padding:10px 9px 10px 13px;background:#fff}.metric-title{font-size:12px;color:#666}.metric-main{font-size:15px;font-weight:900;margin-top:4px}.metric-sub{font-size:12px;color:#666;margin-top:3px;line-height:1.35}
+    .alloc-layout{display:grid;grid-template-columns:260px 1fr 1fr;gap:12px;align-items:start}.pie{width:180px;height:180px;border-radius:50%;margin:14px auto;border:8px solid #fff;box-shadow:inset -12px -16px 24px rgba(0,0,0,.13),0 14px 24px rgba(15,23,42,.14)}.legend-row,.alloc-row{display:grid;grid-template-columns:1fr auto;gap:8px;border-bottom:1px solid #eee;padding:8px 0;font-size:13px}.legend-dot{display:inline-block;width:10px;height:10px;border-radius:999px;margin-right:6px}.alloc-row{grid-template-columns:1.1fr 1fr}.bar{height:8px;background:#eef2f7;border-radius:999px;overflow:hidden;margin-top:5px}.bar span{display:block;height:100%;background:var(--bar,#111);border-radius:999px}.interpret-box{border:1px solid #dbeafe;background:#f8fbff;border-radius:14px;padding:12px;margin-bottom:10px;line-height:1.65;font-size:13px}.interpret-title{font-weight:900;margin-bottom:4px}
+    .table-wrap{overflow:auto;border:1px solid #e5e5e5;border-radius:14px}table{width:100%;border-collapse:collapse;min-width:1080px}th,td{border-bottom:1px solid #eee;padding:8px;text-align:left;white-space:nowrap;font-size:13px}th{background:#fafafa;color:#555;position:sticky;top:0}.row-bad{background:#fff7f7}.row-warn{background:#fffdf7}.row-good{background:#fbfffb}.pill{display:inline-block;border-radius:999px;padding:4px 9px;font-size:12px;font-weight:900;border:1px solid #ddd;background:#fafafa}.pill-good{background:#ecfff1;color:#188b58;border-color:#a9e2b4}.pill-warn{background:#fff7e8;color:#b9770e;border-color:#f0d298}.pill-bad{background:#fff0f0;color:#c62828;border-color:#f1b5b5}.pill-blue{background:#eef6ff;color:#1e3a8a;border-color:#cfe1ff}
+    .zone-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.zone-card{border:1px solid #e5e7eb;border-radius:16px;padding:13px;background:#fff;min-height:170px}.zone-card.danger{background:#fff7f7;border-color:#f1b5b5}.zone-card.watch{background:#fffaf0;border-color:#ecd7a3}.zone-card.good{background:#f5fff7;border-color:#b9e2c0}.zone-card.blue{background:#f0fdfa;border-color:#99f6e4}.zone-num{font-size:24px;font-weight:950;margin:5px 0}.hidden-detail{margin-top:8px;padding-top:8px;border-top:1px dashed #ddd;color:#555;font-size:12px;line-height:1.45}
+    @media(max-width:1180px){.dashboard{grid-template-columns:repeat(3,1fr)}.cockpit,.detail-grid{grid-template-columns:1fr}.side{position:static}.alloc-layout,.broker-grid,.zone-grid{grid-template-columns:1fr}.flow-panel,.grid-3,.cash-grid{grid-template-columns:1fr}}@media(max-width:680px){.dashboard{grid-template-columns:1fr}.toolbar{flex-direction:column;align-items:stretch}.btn,button{width:100%}}
   </style>
 </head>
 <body>
   <div class="page">
-    <h1>MM / M2 作戰中心｜FCN Cockpit</h1>
-    <div class="subtitle">
-      新版 M2 cockpit：只讀 <b>data/fcn_pool.json</b>、<b>data/market_runtime.json</b>、<b>data/pool30.json</b>。第一階段只做 <b>M2 Health Summary</b> 與 <b>Planner Preview</b>，不修改既有 m2.html / m2_planner.html。
-    </div>
-
-    <div class="card open">
+    <div class="topbar">
+      <div>
+        <h1>MM / M2 作戰中心｜FCN Cockpit</h1>
+        <div class="subtitle">新版 M2 = 舊 M2 Health + M2 Planner + 市場單分析 + Pool 作業。版型：上方 dashboard、左側主選單、右側明細、下方大型查詢區。</div>
+      </div>
       <div class="toolbar">
-        <button id="runBtn">執行 MM / M2 作戰中心</button>
-        <button class="light" id="reloadBtn">重新載入資料</button>
-        <button class="light" id="expandAllBtn">一鍵全部展開</button>
-        <button class="light" id="collapseAllBtn">一鍵全部收合</button>
-        <a class="btn light" href="../../m2.html">回舊 M2</a>
-        <a class="btn light" href="../../m2_planner.html">回 M2 Planner</a>
-        <a class="btn light" href="../engine_progress_dashboard.html">回 MM Dashboard</a>
+        <button id="runBtn">執行</button>
+        <button class="light" id="reloadBtn">重新載入</button>
+        <a class="btn light" href="../../m2.html">舊 M2</a>
+        <a class="btn light" href="../../m2_planner.html">Planner</a>
+        <a class="btn light" href="../engine_progress_dashboard.html">MM</a>
       </div>
+    </div>
+
+    <div class="card" style="margin-bottom:14px">
       <div id="runtimeMeta" class="muted">尚未執行</div>
-      <div class="note">規則：本頁為新作戰中心 shell，read-only。正式提早出場沿用 M2 Health Engine；Planner Preview 只用於一個月資金母體與配置方向預覽。</div>
     </div>
 
-    <div class="card section open" data-section="health">
-      <div class="section-head"><h2>1. M2 Health Summary｜持倉健康總覽</h2><button class="light section-toggle">收合</button></div>
-      <div class="section-body">
-        <div id="healthSummaryGrid" class="flow-panel"></div>
-        <div id="healthDecisionNote" class="decision-note"></div>
-        <div class="grid-3" style="margin-top:12px">
-          <div class="panel"><h3>到期 / 提早出場專區</h3><div id="maturityList"></div></div>
-          <div class="panel"><h3>Danger / Watch</h3><div id="riskList"></div></div>
-          <div class="panel"><h3>Top Stock Exposure</h3><div id="stockExposureList"></div></div>
+    <div id="topDashboard" class="dashboard"></div>
+
+    <div class="cockpit">
+      <aside class="card side">
+        <h3>M2 主選單</h3>
+        <div class="menu">
+          <button class="menu-btn active" data-module="summary"><div class="menu-title">1. Summary Dashboard</div><div class="menu-sub">資金水位 / 配置 / 健康 / 預計出場</div></button>
+          <button class="menu-btn" data-module="zones"><div class="menu-title">2. Holding Zones</div><div class="menu-sub">到期專區 / 預計提前到期 / Danger / Watch</div></button>
+          <button class="menu-btn" data-module="planning"><div class="menu-title">3. Maturity Cashflow</div><div class="menu-sub">Planner A/B/C/D/E0</div></button>
+          <button class="menu-btn" data-module="market"><div class="menu-title">4. Market FCN Analysis</div><div class="menu-sub">市場單分析與推薦</div></button>
+          <button class="menu-btn" data-module="management"><div class="menu-title">5. FCN / Stock Management</div><div class="menu-sub">FCN 查詢 + 股票風險</div></button>
+          <button class="menu-btn" data-module="pool"><div class="menu-title">6. Pool Manual Ops</div><div class="menu-sub">手動建新單 / 編輯 / 匯出</div></button>
         </div>
-      </div>
-    </div>
+      </aside>
 
-    <div class="card section open" data-section="planner">
-      <div class="section-head"><h2>2. Planner Preview｜未來一個月資金母體</h2><button class="light section-toggle">收合</button></div>
-      <div class="section-body">
-        <div id="plannerSummaryGrid" class="flow-panel"></div>
-        <div id="plannerNote" class="decision-note"></div>
-      </div>
-    </div>
+      <main class="main">
+        <div class="detail-grid">
+          <section class="card detail-panel">
+            <div class="panel-title"><div><div id="activeTitle" class="module-title">1. Summary Dashboard</div><div id="activeSub" class="module-sub">資金水位 / 配置 / 健康 / 預計出場</div></div></div>
+            <div id="rightDetail"></div>
+          </section>
 
-    <div class="card section" data-section="cashDetail">
-      <div class="section-head"><h2>3. Cash-in Detail｜一個月出場資金明細</h2><button class="light section-toggle">展開</button></div>
-      <div class="section-body"><div id="cashInDetail" class="cash-grid"></div></div>
-    </div>
+          <section class="card detail-panel">
+            <div class="panel-title"><div><div class="module-title">模組重點判讀</div><div class="module-sub">把結果說成人話，避免只看表格。</div></div></div>
+            <div id="rightInsight"></div>
+          </section>
+        </div>
 
-    <div class="card section" data-section="broker">
-      <div class="section-head"><h2>4. Broker Capacity Preview｜富邦 / 永豐容量預覽</h2><button class="light section-toggle">展開</button></div>
-      <div class="section-body"><div id="brokerGrid" class="broker-grid"></div><div id="brokerPlanBox" class="decision-note"></div></div>
-    </div>
-
-    <div class="card section" data-section="allocation">
-      <div class="section-head"><h2>5. Allocation Preview｜扣除出場後配置重建</h2><button class="light section-toggle">展開</button></div>
-      <div class="section-body"><div id="allocGrid"></div><div id="allocNote" class="decision-note"></div></div>
-    </div>
-
-    <div class="card section" data-section="stockCapacity">
-      <div class="section-head"><h2>6. Stock Capacity｜單股動態額度與燈號</h2><button class="light section-toggle">展開</button></div>
-      <div class="section-body">
-        <div class="note">D 區邏輯：用 Planning Base 重新計算單股額度。Static Remaining 看現在 active，Dynamic Available 看扣除 30D 出場後的可用額度。</div>
-        <div id="stockCapacityGrid" class="flow-panel" style="margin-top:12px"></div>
-        <div class="table-wrap" style="margin-top:12px"><table><thead><tr><th>Stock</th><th>Category</th><th>Max</th><th>Active</th><th>Exit Release</th><th>Planning Base</th><th>Static Rem.</th><th>Dynamic Available</th><th>Light</th><th>Suggested Bucket</th><th>Comment</th></tr></thead><tbody id="stockCapacityRows"></tbody></table></div>
-      </div>
-    </div>
-
-    <div class="card section" data-section="table">
-      <div class="section-head"><h2>7. FCN Read-only Table｜只讀持倉清單</h2><button class="light section-toggle">展開</button></div>
-      <div class="section-body">
-        <div id="tableMeta" class="muted" style="margin-bottom:8px">尚無資料</div>
-        <div class="table-wrap"><table><thead><tr><th>FCN ID</th><th>Bank</th><th>Amount</th><th>Rate</th><th>Tenor</th><th>Basket</th><th>Worst-of</th><th>Health</th><th>Planner Tag</th><th>Days to Maturity</th></tr></thead><tbody id="fcnRows"></tbody></table></div>
-      </div>
+        <section class="card query-panel">
+          <div class="panel-title"><div><div id="bottomTitle" class="module-title">大型資訊查詢區</div><div id="bottomSub" class="module-sub">依左側主選單切換卡片、明細與表格。</div></div></div>
+          <div id="bottomQuery"></div>
+        </section>
+      </main>
     </div>
   </div>
   <script type="module" src="../../js/mm/m2/m2_mm_engine.js"></script>
