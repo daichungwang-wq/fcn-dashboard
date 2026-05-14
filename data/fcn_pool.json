@@ -1398,7 +1398,7 @@
     "closed_time": "2026-04-21T09:00"
   },
   {
-    "date": "2026-04-07",
+    "date": "2026-06-07",
     "fcn_id": "FCN981M 富邦",
     "basket": [
       "TSM",
@@ -1406,7 +1406,7 @@
       "NVDA",
       "AVGO"
     ],
-    "tenor": 12,
+    "tenor": 10,
     "rate": 19.16,
     "autocall": 100,
     "strike": 68,
