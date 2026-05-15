@@ -4,7 +4,6 @@
 // ============================================================
 import { runM2HealthEngine } from '../../core/m2_health_engine_v1.js';
 import { renderLegacyHoldingZones } from './m2_holding_zones_legacy_cards.js';
-import { renderM8SingleMirrorResult } from './m8_single_ui_mirror.js';
 import {
   runBatchMarketWorkspace,
   buildTemplateSummary,
@@ -209,7 +208,9 @@ async function runSingleCheck(){
 
   try{
     const res=await runSingleMarketFcnCheck(input);
-    box.innerHTML=renderM8SingleMirrorResult(res,input,{stockCapacityRowsData});
+   box.innerHTML=window.renderM8SingleMirrorResult
+  ? window.renderM8SingleMirrorResult(res,input,{stockCapacityRowsData})
+  : renderSingleResult(res,input);
   }catch(err){
     console.error(err);
     box.innerHTML=`<div class="decision-note bad"><b>Single M8 計算失敗</b><br>${err.message}</div>`;
