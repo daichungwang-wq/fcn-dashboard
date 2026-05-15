@@ -1,6 +1,6 @@
 // ============================================================
-// MM/M2 新作戰中心 Engine v0.5.3
-// Patch: Single M8 adapter bridge
+// MM/M2 新作戰中心 Engine v0.5.4
+// Patch: M8 batch mirror single result UI
 // ============================================================
 import { runM2HealthEngine } from '../../core/m2_health_engine_v1.js';
 import { renderLegacyHoldingZones } from './m2_holding_zones_legacy_cards.js';
@@ -115,17 +115,86 @@ function renderPlanning(){const g=getGroups();rightDetail.innerHTML=`<div class=
 
 function normalizeBasket(symbols=[]){return [...new Set((symbols||[]).map(s=>String(s||'').trim().toUpperCase()).filter(Boolean).map(s=>s==='GOOGL'?'GOOG':s))].sort().join('+')}
 function safeVal(obj,keys){for(const k of keys){if(obj&&obj[k]!==undefined&&obj[k]!==null)return obj[k]}return null}
-function getSingleInput(){return{symbols:(document.getElementById('inqBasket')?.value||'').toUpperCase().split(/[,+\/\s]+/).map(x=>x.trim()).filter(Boolean),coupon:n(document.getElementById('inqCoupon')?.value,0),tenor:n(document.getElementById('inqTenor')?.value,0),strike:n(document.getElementById('inqStrike')?.value,0),ki:n(document.getElementById('inqKI')?.value,NaN),type:document.getElementById('inqType')?.value||'AKI',memory:document.getElementById('inqMemory')?.value||'daily',bank:document.getElementById('inqBank')?.value||'富邦'}}
-function renderSingleResult(res,input){
-  const market=n(input.coupon,NaN);
-  const fair=n(safeVal(res,['fair_rate','fairYield','m8_fair_rate','preference_fair','fair']),NaN);
-  const final=n(safeVal(res,['final_fair_rate','finalFair','final_fair','finalYield']),NaN);
-  const pre=n(safeVal(res,['pre_rate','preRate','pre_rate_pct']),NaN);
-  const gap=Number.isFinite(final)&&Number.isFinite(market)?market-final:null;
-  return `<div class="grid-2"><div class="panel"><h3>Single FCN Result</h3>${flowCard('Market Coupon',Number.isFinite(market)?fmt(market,2)+'%':'-',`${normalizeBasket(input.symbols)}｜${input.tenor}M`,'#2563eb')}${flowCard('Single M8 Fair',Number.isFinite(fair)?fmt(fair,2)+'%':'待接',`Preference Fair / 個人偏好`,'#0f766e')}${flowCard('Single Final Fair',Number.isFinite(final)?fmt(final,2)+'%':'待接',`單筆即時計算，不是模板平均`,'#7c3aed')}${flowCard('Single Gap',gap===null?'-':fmt(gap,2)+'%',`Market - Single Final Fair`,'#f97316')}</div><div class="panel"><h3>Decomposition / Raw Trace</h3>${listCard('PreRate / Brake',`PreRate ${Number.isFinite(pre)?fmt(pre,2)+'%':'-'}｜HighRateBrake ${fmt(n(safeVal(res,['high_rate_brake','highRateBrake']),0),2)}%`)}${listCard('Adj',`BasketPremium ${fmt(n(safeVal(res,['basket_premium','basketPremium']),0),2)}｜TailAdj ${fmt(n(safeVal(res,['tail_adj','tailAdj']),0),2)}｜VolAdj ${fmt(n(safeVal(res,['vol_adj','volAdj']),0),2)}｜RatePressure ${fmt(n(safeVal(res,['rate_pressure_adj','ratePressureAdj']),0),2)}`)}<pre style="white-space:pre-wrap;font-size:11px;max-height:220px;overflow:auto;background:#0f172a;color:#e5e7eb;border-radius:12px;padding:10px">${JSON.stringify(res,null,2)}</pre></div></div>`
+function getSingleInput(){return{symbols:(document.getElementById('inqBasket')?.value||'').toUpperCase().split(/[,+\/\s]+/).map(x=>x.trim()).filter(Boolean),coupon:n(document.getElementById('inqCoupon')?.value,0),tenor:n(document.getElementById('inqTenor')?.value,0),strike:n(document.getElementById('inqStrike')?.value,0),ki:n(document.getElementById('inqKI')?.value,NaN),type:document.getElementById('inqType')?.value||'AKI',memory:document.getElementById('inqMemory')?.value||'daily',bank:document.getElementById('inqBank')?.value||'富邦',amount:n(document.getElementById('inqAmount')?.value,0)}}
+function renderCapacityGate(input){
+  const syms=input.symbols||[];
+  const amt=n(input.amount,0);
+  const rows=syms.map(sym=>{
+    const r=stockCapacityRowsData.find(x=>x.symbol===sym)||{symbol:sym,max:CAP_EXCEPTION[sym]||300000,active:0,base:0,release:0,dynamic:CAP_EXCEPTION[sym]||300000,light:'GREEN',comment:'無既有曝險'};
+    const after=r.base+amt;
+    const util=r.max?after/r.max*100:0;
+    let status='OK',cls='pill-good';
+    if(util>=100){status='OVER';cls='pill-bad'}else if(util>=80){status='HOT';cls='pill-warn'}
+    return{...r,after,util,status,cls};
+  });
+  const vals=rows.filter(r=>Number.isFinite(r.dynamic)).map(r=>r.dynamic);
+  const maxAllowed=vals.length?Math.max(0,Math.min(...vals)):0;
+  return `<div class="panel" style="margin-top:12px"><h3>M2 Basket Capacity Gate｜Basket 投資水位分析</h3><div class="decision-note">以 Planning Base 曝險計算，不把一個月內預計出場部位當成長期占用。建議單筆上限取 basket 內最小 dynamic capacity。</div><div class="flow-panel">${flowCard('Input Amount',amt?`USD ${fmt(amt)}`:'未輸入','若輸入金額，會計算 after util','#2563eb')}${flowCard('Suggested Max',`USD ${fmt(maxAllowed)}`,'basket 最小可用 capacity','#0f766e')}${flowCard('Symbols',syms.length,normalizeBasket(syms),'#7c3aed')}${flowCard('Gate',rows.some(r=>r.status==='OVER')?'BLOCK':rows.some(r=>r.status==='HOT')?'CAUTION':'PASS','依 M2 stock capacity','#f97316')}</div><div class="table-wrap"><table><thead><tr><th>Stock</th><th>Max</th><th>Planning Base</th><th>Release</th><th>Dynamic</th><th>After</th><th>Util</th><th>Status</th><th>Comment</th></tr></thead><tbody>${rows.map(r=>`<tr><td><b>${r.symbol}</b></td><td>USD ${fmt(r.max)}</td><td>USD ${fmt(r.base)}</td><td>USD ${fmt(r.release)}</td><td>USD ${fmt(r.dynamic)}</td><td>USD ${fmt(r.after)}</td><td>${fmt(r.util,1)}%</td><td><span class="pill ${r.cls}">${r.status}</span></td><td>${r.comment}</td></tr>`).join('')}</tbody></table></div></div>`;
 }
-async function runSingleCheck(){const box=document.getElementById('singleResult');if(!box)return;const input=getSingleInput();box.innerHTML='<div class="muted">計算中...</div>';try{const res=await runSingleMarketFcnCheck(input);box.innerHTML=renderSingleResult(res,input)}catch(err){console.error(err);box.innerHTML=`<div class="decision-note bad"><b>Single M8 計算失敗</b><br>${err.message}</div>`}}
-function renderSingleMarketPanel(){return `<div class="panel"><h3>A. Single FCN Check｜單筆輸入 / 單筆輸出</h3><div class="decision-note">這區搬 m8_batch 單筆即時計算邏輯。這裡的 Final Fair 是 Single FCN Final Fair，不是模板平均。</div><div class="table-tools"><input id="inqBasket" placeholder="Basket: ORCL,TSLA,TSM"><input id="inqCoupon" type="number" step="0.01" placeholder="Market Coupon %"><input id="inqTenor" type="number" step="1" placeholder="Tenor 月"><input id="inqStrike" type="number" step="0.01" placeholder="Strike %"><input id="inqKI" type="number" step="0.01" placeholder="KI %"><select id="inqType"><option>AKI</option><option>EKI</option><option>NA</option><option>DACN</option></select><select id="inqMemory"><option>daily</option><option>monthly</option></select><select id="inqBank"><option>富邦</option><option>永豐</option></select><button id="inqRun" type="button">Run Single M8</button></div><div id="singleResult" class="muted">輸入市場單後按 Run Single M8。</div></div>`}
+function renderSingleResult(res,input){
+  const mr=res.market_regression||res.m8_market_regression||{};
+  const market=n(input.coupon,NaN);
+  const m8Fair=n(res.fair_yield??res.fair_rate??res.preference_fair,NaN);
+  const finalFair=n(res.final_fair_rate??mr.final_fair_rate,NaN);
+  const newFair=n(mr.new_fair_rate??res.new_fair_rate,NaN);
+  const beta=mr.overlay_beta??mr.convergence_strength??res.overlay_beta;
+  const marketGapPct=mr.pricing_gap_vs_final_pct??mr.gap_after_pct??res.pricing_gap_vs_final_pct;
+  const marketGap=Number.isFinite(finalFair)&&Number.isFinite(market)?market-finalFair:null;
+  const templateClass=mr.large_template||mr.template||res.template_parent||'-';
+  const usedTemplate=mr.surface_matched_key||mr.surface_template_id||mr.small_template||res.template_used||'-';
+  const globalRegression=mr.global_regression_rate??mr.clean_global_fair??newFair;
+  const templateCount=mr.lookup_count??mr.sample_count??res.template_count??'-';
+  const confidence=mr.surface_confidence??mr.confidence??res.confidence_label??res.confidence??'-';
+  const surfaceMarket=mr.history_weighted_market_rate??mr.surface_market_coupon??mr.market_coupon_avg??mr.avg_market_coupon??res.market_coupon_avg;
+  const surfaceCurrent=surfaceMarket==null||!Number.isFinite(market)?null:Number(surfaceMarket)-market;
+  const betaEffect=mr.improvement_pct??res.beta_effect_pct;
+  const view=res.pricing_view||'-';
+  const viewSub=mr.status?'雙引擎':'Preference';
+  const prefComment=Number.isFinite(market)&&Number.isFinite(m8Fair)
+    ? (market-m8Fair>1?`Market ${fmt(market,2)}% 高於 M8 Fair ${fmt(m8Fair,2)}%，偏好模型下有利差。`:market-m8Fair<-1?`Market ${fmt(market,2)}% 低於 M8 Fair ${fmt(m8Fair,2)}%，偏好模型下偏貴。`:`Market ${fmt(market,2)}% 接近 M8 Fair ${fmt(m8Fair,2)}%，偏好模型屬合理附近。`)
+    : 'Preference Engine 已回傳，但 fair_yield 欄位不足。';
+  const marketDecision=Number.isFinite(Number(marketGapPct))
+    ? (Math.abs(Number(marketGapPct))<=2?'市場判定：接近 Final Market Fair，屬合理報價。':Number(marketGapPct)>2?'市場判定：報價高於 Final Market Fair，屬偏甜 / aggressive quote。':'市場判定：報價低於 Final Market Fair，屬偏保守 / 可議價。')
+    : '市場判定：B2 尚未取得有效 gap。';
+  const marketComment=mr.comment||'Market Regression Engine 尚未取得 surface；請確認 data/mm/m8_template_surface.json。';
+  function f2(v,suffix='%'){return Number.isFinite(Number(v))?`${fmt(Number(v),2)}${suffix}`:'-'}
+  function meter(label,value,max,cls=''){
+    const raw=Number(value);const v=Math.max(0,Math.min(100,max?((Number.isFinite(raw)?raw:0)/max)*100:0));
+    return `<div class="meter-row"><div class="meter-label">${label}</div><div class="meter"><div class="meter-fill ${cls}" style="width:${v}%;"></div></div><div class="meter-value">${Number.isFinite(raw)?fmt(raw,2):'-'}</div></div>`;
+  }
+  const maxPref=Math.max(n(res.pre_rate,0),n(res.fair_yield,0),1);
+  return `<div class="m8-batch-mirror">
+    <div class="decision-grid">
+      <div class="decision-box"><div class="k">Market</div><div class="v">${f2(market)}</div><div class="sub">銀行報價｜${normalizeBasket(input.symbols)}</div></div>
+      <div class="decision-box"><div class="k">M8 Fair</div><div class="v">${f2(m8Fair)}</div><div class="sub">你的偏好</div></div>
+      <div class="decision-box"><div class="k">Final Fair</div><div class="v">${f2(finalFair)}</div><div class="sub">市場公平利率</div></div>
+      <div class="decision-box"><div class="k">Gap</div><div class="v">${Number.isFinite(Number(marketGapPct))?f2(marketGapPct):f2(marketGap)}</div><div class="sub">${Number.isFinite(Number(marketGapPct))?'vs Final Fair %':'Market - Final Fair'}</div></div>
+      <div class="decision-box"><div class="k">判定</div><div class="v" style="font-size:18px;">${view}</div><div class="sub">${viewSub}</div></div>
+      <div class="decision-box"><div class="k">Calibration</div><div class="v" style="font-size:14px;"><a class="calibration-link" href="./mm/m8_calibration_dashboard_v1.html" target="_blank">Go to m8_calibration</a></div><div class="sub">模板校正</div></div>
+    </div>
+    <div class="decision-comment">${marketDecision}</div>
+    <div class="template-line">
+      <div class="mini-kpi"><div class="k">分類模板</div><div class="v">${templateClass}</div></div>
+      <div class="mini-kpi"><div class="k">使用模板</div><div class="v">${usedTemplate}</div></div>
+      <div class="mini-kpi"><div class="k">New Fair</div><div class="v">${f2(newFair)}</div></div>
+      <div class="mini-kpi"><div class="k">全域回歸推估利率</div><div class="v">${f2(globalRegression)}</div></div>
+      <div class="mini-kpi"><div class="k">β 值 / β 效果</div><div class="v">${beta==null?'-':`${fmt(Number(beta),2)} / ${betaEffect==null?'-':f2(betaEffect)}`}</div></div>
+      <div class="mini-kpi"><div class="k">樣本 / 信心</div><div class="v">${templateCount} / ${confidence}</div></div>
+      <div class="mini-kpi"><div class="k">Market Coupon Avg</div><div class="v">${f2(surfaceMarket)}</div></div>
+      <div class="mini-kpi"><div class="k">Surface - Current</div><div class="v">${f2(surfaceCurrent)}</div></div>
+    </div>
+    <div class="engine-grid">
+      <div class="engine-card"><div class="engine-card-header"><h3>B1. M8 Preference Engine｜你的偏好</h3><span class="pill info">Preference</span></div><div class="engine-card-body"><div class="meter-wrap">
+        ${meter('Base',res.base,maxPref)}${meter('Basket Premium',res.basket_premium,maxPref)}${meter('Structure Total',res.structure_total,maxPref)}${meter('VolAdj',res.vol_adj,maxPref)}${meter('RatePressureAdj',res.rate_pressure_adj,maxPref,n(res.rate_pressure_adj)>2?'warn':'')}${meter('PreRate',res.pre_rate,maxPref)}${meter('HighRateBrake',res.high_rate_brake,maxPref,'bad')}${meter('Final M8 Fair',res.fair_yield,maxPref)}
+      </div><div class="engine-comment">${prefComment}</div></div></div>
+      <div class="engine-card"><div class="engine-card-header"><h3>B2. Market Regression Engine｜市場公平利率</h3><span class="pill warn">β Market</span></div><div class="engine-card-body"><div class="meter-wrap">
+        ${meter('New Fair',newFair,50)}${meter('Final Fair',finalFair,50)}${meter('β',beta,1)}${meter('Template Count',templateCount==='-'?0:templateCount,30)}${meter('Confidence',typeof confidence==='number'?confidence:0,100)}
+      </div><div class="engine-comment">${marketComment}</div></div></div>
+    </div>
+    ${renderCapacityGate(input)}
+    <details class="collapsible-section"><summary>C. Explainability｜Raw Trace / Stock Sources</summary><div class="collapsible-body"><pre style="white-space:pre-wrap;font-size:11px;max-height:320px;overflow:auto;background:#0f172a;color:#e5e7eb;border-radius:12px;padding:10px">${JSON.stringify(res,null,2)}</pre></div></details>
+  </div>`
+}
 function renderBatchTemplateList(summary=[]){return `<div class="panel"><h3>Template List｜左分類</h3>${summary.length?summary.map((t,i)=>`<button class="m2-hz-subnav-btn ${i===0?'action':''}" data-template-index="${i}" type="button"><b>${t.template}</b><br><span class="muted">${t.count} rows｜Mkt ${fmt(t.market,2)}%｜Final AVG ${fmt(t.final_fair,2)}%</span></button>`).join(''):'<div class="muted">尚無 market rows。</div>'}</div>`}
 function renderBatchTemplateDetail(t){if(!t)return `<div class="panel"><h3>Template Detail</h3><div class="muted">尚無資料。</div></div>`;return `<div class="panel"><h3>Template Detail｜${t.template}</h3><div class="flow-panel">${flowCard('Rows',t.count,'market_history rows','#2563eb')}${flowCard('Template Avg Market',fmt(t.market,2)+'%','整批市場平均','#0f766e')}${flowCard('Template Avg Final Fair',fmt(t.final_fair,2)+'%','模板平均，不是單筆','#7c3aed')}${flowCard('Gap After AVG',t.gap_final_pct===null?'-':fmt(t.gap_final_pct,2)+'%','Market vs Final AVG','#f97316')}</div><div class="grid-2" style="margin-top:12px"><div class="panel"><h3>Sub-template Cards</h3>${(t.subtemplates||[]).slice(0,12).map(s=>`<div class="list-card"><b>${s.key}</b>｜${s.group_type}｜${s.count} rows<br>Avg Market ${fmt(s.market,2)}%｜New Fair AVG ${fmt(s.new_fair,2)}%｜Final Fair AVG ${fmt(s.final_fair,2)}%｜Gap ${s.gap_after_pct===null?'-':fmt(s.gap_after_pct,2)+'%'}</div>`).join('')||'<div class="muted">No subtemplate</div>'}</div><div class="panel"><h3>Included Rows</h3><div class="table-wrap"><table><thead><tr><th>FCN</th><th>Basket</th><th>Market</th><th>Final AVG</th><th>Strike/KI</th><th>Tenor</th></tr></thead><tbody>${(t.subtemplates?.[0]?.included_rows||[]).slice(0,20).map(r=>`<tr><td>${r.fcn_id}</td><td>${r.basket}</td><td>${fmt(r.market_coupon,2)}%</td><td>${fmt(r.final_fair,2)}%</td><td>${fmt(r.strike,1)} / ${fmt(r.ki,1)}</td><td>${r.tenor}</td></tr>`).join('')}</tbody></table></div></div></div></div>`}
 function renderRadar(radar=[]){return `<div class="panel" style="margin-top:12px"><h3>Template Update Radar</h3>${radar.slice(0,20).map(r=>`<div class="list-card"><b>${r.key}</b>｜${r.parent_template}｜${r.coverage}<br>Count ${r.count}｜Avg Coupon ${fmt(r.market,2)}%｜Action：${r.action}<br>${r.reason}</div>`).join('')||'<div class="muted">No radar rows.</div>'}</div>`}
