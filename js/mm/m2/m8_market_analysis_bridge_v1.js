@@ -1,7 +1,8 @@
 // ============================================================
-// M8 Market Analysis Bridge v1
+// M8 Market Analysis Bridge v1.0.1
 // Path: js/mm/m2/m8_market_analysis_bridge_v1.js
 // Purpose: bridge M2 Market FCN Analysis to M8 batch + calibration workspace
+// Fix: paths for GitHub Pages subfolder /mm/m2/
 // ============================================================
 import { runM8Case } from '../../core/m8_batch_engine.js';
 import { buildM8CalibrationDataset, buildCalibrationRegressionRows } from '../modules/m8_calibration_engine_v1.js';
@@ -11,6 +12,21 @@ const round2=v=>Number.isFinite(Number(v))?Math.round(Number(v)*100)/100:null;
 const arr=v=>Array.isArray(v)?v:[];
 const avg=xs=>{const a=arr(xs).map(Number).filter(Number.isFinite);return a.length?a.reduce((s,x)=>s+x,0)/a.length:null};
 const up=v=>String(v||'').trim().toUpperCase();
+const ROOT='../../';
+
+function withRootFetch(){
+  if(window.__M8_M2_FETCH_PATCHED__)return;
+  const nativeFetch=window.fetch.bind(window);
+  window.fetch=(input,init)=>{
+    try{
+      const url=typeof input==='string'?input:input?.url;
+      if(typeof url==='string'&&url.startsWith('data/')) return nativeFetch(ROOT+url,init);
+    }catch(err){}
+    return nativeFetch(input,init);
+  };
+  window.__M8_M2_FETCH_PATCHED__=true;
+}
+
 export function normalizeSurfaceSymbols(symbols){
   if(!symbols)return[];
   if(typeof symbols==='string')symbols=symbols.split(/[,+|\s]+/);
@@ -30,15 +46,16 @@ export function repairTemplateByDna(symbols,rawTemplateId){const raw=normalizeTe
 export function detectThemeTemplate(symbols){const set=new Set(normalizeSurfaceSymbols(symbols));const hasEtf=set.has('SMH')||set.has('QQQ');const core=['TSM','NVDA','AVGO'].filter(s=>set.has(s));return hasEtf&&core.length>=1?'ETF_SEMI_CORE':null}
 function pick(...xs){for(const x of xs){const n=Number(x);if(Number.isFinite(n))return n}return null}
 function pctGap(market,fair){const m=Number(market),f=Number(fair);return Number.isFinite(m)&&Number.isFinite(f)&&f!==0?round2((m-f)/f*100):null}
-function absGap(market,fair){const m=Number(market),f=Number(fair);return Number.isFinite(m)&&Number.isFinite(f)?round2(m-f):null}
 function rowSymbols(r){return normalizeSurfaceSymbols(r?.symbols||r?.basket_symbols_key||r?.basket_display||r?.core_dna_3||r?.core_dna_2||[])}
 function rowKey(r,templateId){const symbols=rowSymbols(r);const raw=r?.core_dna_3||r?.core_dna_2||r?.basket_symbols_key||r?.basket_display||'UNKNOWN';const rawSymbols=normalizeSurfaceSymbols(raw);const tpl=normalizeTemplateId(templateId);if(passTemplateDna(rawSymbols,tpl))return normalizeSurfaceKey(rawSymbols);if(symbols.length&&passTemplateDna(symbols,tpl))return normalizeSurfaceKey(symbols);return normalizeSurfaceKey(rawSymbols.length?rawSymbols:symbols)||'UNKNOWN'}
 export async function runSingleMarketFcnCheck(input){
+  withRootFetch();
   const symbols=normalizeSurfaceSymbols(input.symbols||input.basket);
   return await runM8Case({caseName:'M2_SINGLE_MARKET_FCN',symbols,KI:toNum(input.ki),Strike:toNum(input.strike),T:toNum(input.tenor),type:input.type||input.barrier_type||'AKI',marketYield:toNum(input.coupon)});
 }
 export async function runBatchMarketWorkspace(options={}){
-  const dataset=await buildM8CalibrationDataset({current_path:options.current_path||'./data/fcn_pool.json',old_path:options.old_path||'./data/fcn_pool_old.json',market_history_path:options.market_history_path||'./data/mm/market_fcn_history.json',max_rows:options.max_rows});
+  withRootFetch();
+  const dataset=await buildM8CalibrationDataset({current_path:options.current_path||'../../data/fcn_pool.json',old_path:options.old_path||'../../data/fcn_pool_old.json',market_history_path:options.market_history_path||'../../data/mm/market_fcn_history.json',max_rows:options.max_rows});
   const regRows=buildCalibrationRegressionRows(dataset);
   let regression=null;
   if(window.M8RegressionEngineV1?.runM8Regression)regression=window.M8RegressionEngineV1.runM8Regression(regRows);
