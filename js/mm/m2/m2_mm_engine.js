@@ -199,6 +199,21 @@ function renderBatchTemplateList(summary=[]){return `<div class="panel"><h3>Temp
 function renderBatchTemplateDetail(t){if(!t)return `<div class="panel"><h3>Template Detail</h3><div class="muted">尚無資料。</div></div>`;return `<div class="panel"><h3>Template Detail｜${t.template}</h3><div class="flow-panel">${flowCard('Rows',t.count,'market_history rows','#2563eb')}${flowCard('Template Avg Market',fmt(t.market,2)+'%','整批市場平均','#0f766e')}${flowCard('Template Avg Final Fair',fmt(t.final_fair,2)+'%','模板平均，不是單筆','#7c3aed')}${flowCard('Gap After AVG',t.gap_final_pct===null?'-':fmt(t.gap_final_pct,2)+'%','Market vs Final AVG','#f97316')}</div><div class="grid-2" style="margin-top:12px"><div class="panel"><h3>Sub-template Cards</h3>${(t.subtemplates||[]).slice(0,12).map(s=>`<div class="list-card"><b>${s.key}</b>｜${s.group_type}｜${s.count} rows<br>Avg Market ${fmt(s.market,2)}%｜New Fair AVG ${fmt(s.new_fair,2)}%｜Final Fair AVG ${fmt(s.final_fair,2)}%｜Gap ${s.gap_after_pct===null?'-':fmt(s.gap_after_pct,2)+'%'}</div>`).join('')||'<div class="muted">No subtemplate</div>'}</div><div class="panel"><h3>Included Rows</h3><div class="table-wrap"><table><thead><tr><th>FCN</th><th>Basket</th><th>Market</th><th>Final AVG</th><th>Strike/KI</th><th>Tenor</th></tr></thead><tbody>${(t.subtemplates?.[0]?.included_rows||[]).slice(0,20).map(r=>`<tr><td>${r.fcn_id}</td><td>${r.basket}</td><td>${fmt(r.market_coupon,2)}%</td><td>${fmt(r.final_fair,2)}%</td><td>${fmt(r.strike,1)} / ${fmt(r.ki,1)}</td><td>${r.tenor}</td></tr>`).join('')}</tbody></table></div></div></div></div>`}
 function renderRadar(radar=[]){return `<div class="panel" style="margin-top:12px"><h3>Template Update Radar</h3>${radar.slice(0,20).map(r=>`<div class="list-card"><b>${r.key}</b>｜${r.parent_template}｜${r.coverage}<br>Count ${r.count}｜Avg Coupon ${fmt(r.market,2)}%｜Action：${r.action}<br>${r.reason}</div>`).join('')||'<div class="muted">No radar rows.</div>'}</div>`}
 async function renderBatchWorkspacePanel(){const wrap=document.getElementById('marketWorkspaceContent');if(!wrap)return;wrap.innerHTML='<div class="muted">載入 M8 Batch Workspace...</div>';try{if(!batchWorkspaceCache)batchWorkspaceCache=await runBatchMarketWorkspace();const summary=batchWorkspaceCache.templateSummary||buildTemplateSummary(batchWorkspaceCache.marketRows||[]);const radar=batchWorkspaceCache.radar||buildUpdateRadar(batchWorkspaceCache.marketRows||[]);wrap.innerHTML=`<div class="market-ab-layout"><aside>${renderBatchTemplateList(summary)}</aside><main id="templateDetailBox">${renderBatchTemplateDetail(summary[0])}${renderRadar(radar)}</main></div>`;wrap.querySelectorAll('[data-template-index]').forEach(btn=>btn.addEventListener('click',()=>{wrap.querySelectorAll('[data-template-index]').forEach(b=>b.classList.remove('action'));btn.classList.add('action');const idx=n(btn.dataset.templateIndex,0);document.getElementById('templateDetailBox').innerHTML=renderBatchTemplateDetail(summary[idx])+renderRadar(radar)}));}catch(err){console.error(err);wrap.innerHTML=`<div class="decision-note bad"><b>Batch Workspace 載入失敗</b><br>${err.message}</div>`}}
+async function runSingleCheck(){
+  const box=document.getElementById('singleResult');
+  if(!box)return;
+
+  const input=getSingleInput();
+  box.innerHTML='<div class="muted">計算中...</div>';
+
+  try{
+    const res=await runSingleMarketFcnCheck(input);
+    box.innerHTML=renderSingleResult(res,input);
+  }catch(err){
+    console.error(err);
+    box.innerHTML=`<div class="decision-note bad"><b>Single M8 計算失敗</b><br>${err.message}</div>`;
+  }
+}
 function setMarketTab(tab){marketTab=tab;document.querySelectorAll('[data-market-tab]').forEach(b=>b.classList.toggle('action',b.dataset.marketTab===tab));const box=document.getElementById('marketWorkspaceContent');if(!box)return;if(tab==='single'){box.innerHTML=renderSingleMarketPanel();document.getElementById('inqRun')?.addEventListener('click',runSingleCheck)}else renderBatchWorkspacePanel()}
 function renderSingleMarketPanel(){
   return `<div class="panel">
