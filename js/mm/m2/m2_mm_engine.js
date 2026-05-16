@@ -263,7 +263,27 @@ function bindMarketSubnav(){
 }
 
 function setMarketTab(tab){marketTab=tab;document.querySelectorAll('[data-market-tab]').forEach(b=>b.classList.toggle('action',b.dataset.marketTab===tab));const box=document.getElementById('marketWorkspaceContent');if(!box)return;if(tab==='single'){box.innerHTML=renderSingleMarketPanel();document.getElementById('inqRun')?.addEventListener('click',runSingleCheck);return}if(tab==='b1'||tab==='b2'){renderBatchWorkspacePanel(tab);return}box.innerHTML=renderRecommendationPanel()}
-function renderRecommendationPanel(){return `<div class="panel"><h3>C. Recommendation / Allocation Planner</h3><div class="decision-note">C 區會接回 Maturity Cashflow / Bank capacity / Category allocation，負責把 A 單筆判斷與 B1/B2 模板市場結構轉成下一個月配置建議。</div><div class="flow-panel">${flowCard('Available Capital','待接 M9/M2','本月可用資金','#2563eb')}${flowCard('Bank Priority','富邦 / 永豐','依水位與釋放資金','#0f766e')}${flowCard('Category Gap','40/30/20/10','依配置缺口補單','#7c3aed')}${flowCard('Order Queue','待建立','候選市場單排序','#f97316')}</div></div>`}
+function buildAvailableCapitalPlan(){
+  const g=getGroups();
+  const maturity=sum(g.maturity),ready=sum(g.ready),candidate=sum(g.candidate),hard=maturity+ready,total=hard+candidate;
+  return{maturity,ready,candidate,hard,total,lines:[{k:'30D Maturity',amt:maturity,desc:`${g.maturity.length} 檔到期`},{k:'Early Exit Ready',amt:ready,desc:`${g.ready.length} 檔提前出場 ready`},{k:'Early Exit Candidate',amt:candidate,desc:`${g.candidate.length} 檔候選`}]} ;
+}
+function buildCategoryGapPlan(){
+  const g=getGroups();
+  const base=g.base,total=sum(base)||1;
+  return allocParts(base).filter(p=>p.target>0).map(p=>{const targetAmt=total*p.target/100,gapAmt=Math.max(0,targetAmt-p.amt),gapRatio=targetAmt?gapAmt/targetAmt:0,curPct=p.amt/total*100;return{...p,total,targetAmt,gapAmt,gapRatio,curPct,rankText:gapAmt>0?`缺口 ${fmt(gapAmt)}，需求比例 ${fmt(gapRatio*100,1)}%`:'已達標'}}).sort((a,b)=>b.gapRatio-a.gapRatio||b.gapAmt-a.gapAmt);
+}
+function buildBankGapPlan(){
+  const g=getGroups();
+  return Object.keys(TARGET_BANK).map(bank=>{const target=TARGET_BANK[bank],active=sum(g.active.filter(x=>(x.tw_bank||'').includes(bank))),exitAmt=sum(g.cash.filter(x=>(x.tw_bank||'').includes(bank))),baseAmt=sum(g.base.filter(x=>(x.tw_bank||'').includes(bank))),gapAmt=Math.max(0,target-baseAmt),gapRatio=target?gapAmt/target:0;return{bank,target,active,exitAmt,baseAmt,gapAmt,gapRatio,priorityTie:bank==='永豐'?1:0}}).sort((a,b)=>b.gapRatio-a.gapRatio||b.priorityTie-a.priorityTie||b.gapAmt-a.gapAmt);
+}
+function renderRecommendationPanel(){
+  const cap=buildAvailableCapitalPlan(),cats=buildCategoryGapPlan(),banks=buildBankGapPlan();
+  const topCat=cats[0],topBank=banks[0];
+  const totalTxt=`USD ${fmt(cap.total)}`;
+  const decision=topCat&&topBank?`優先補「${topCat.k}」，銀行優先用「${topBank.bank}」。原因：${topCat.k} 需求比例 ${fmt(topCat.gapRatio*100,1)}%，${topBank.bank} 銀行缺口比例 ${fmt(topBank.gapRatio*100,1)}%。若銀行比例相同，規則固定優先永豐。`:'資料不足，暫不產生配置排序。';
+  return `<div class="panel"><h3>C. Recommendation / Allocation Planner</h3><div class="decision-note"><b>綜合判定</b><br>${decision}</div><div class="flow-panel">${flowCard('Available Capital',totalTxt,`30D ${fmt(cap.maturity)} + Ready ${fmt(cap.ready)} + Candidate ${fmt(cap.candidate)}`,'#2563eb')}${flowCard('Category Priority',topCat?topCat.k:'-',topCat?topCat.rankText:'無資料','#7c3aed')}${flowCard('Bank Priority',topBank?topBank.bank:'-',topBank?`Gap ${fmt(topBank.gapAmt)} / Target ${fmt(topBank.target)} = ${fmt(topBank.gapRatio*100,1)}%`:'無資料','#0f766e')}${flowCard('Rule','Ratio First','比例相同 → 永豐優先','#f97316')}</div><div class="grid-2" style="margin-top:12px"><div class="panel"><h3>1. Available Capital｜可用資金來源</h3>${cap.lines.map(x=>listCard(x.k,`USD ${fmt(x.amt)}｜${x.desc}`)).join('')}<div class="decision-note">公式：Available Capital = 30D Maturity + Early Exit Ready + Early Exit Candidate。你要的 2 + 4 + 7 = 13 會在這裡拆開顯示。</div></div><div class="panel"><h3>2. Category Gap｜投資方向缺口</h3><div class="table-wrap"><table><thead><tr><th>類別</th><th>Target</th><th>Current</th><th>Target Amt</th><th>Gap</th><th>Need Ratio</th></tr></thead><tbody>${cats.map(c=>`<tr><td><b>${c.k}</b></td><td>${fmt(c.target,0)}%</td><td>USD ${fmt(c.amt)} / ${fmt(c.curPct,1)}%</td><td>USD ${fmt(c.targetAmt)}</td><td>USD ${fmt(c.gapAmt)}</td><td><b>${fmt(c.gapRatio*100,1)}%</b></td></tr>`).join('')}</tbody></table></div></div><div class="panel"><h3>3. Bank Priority｜銀行缺口 after exit</h3><div class="table-wrap"><table><thead><tr><th>Bank</th><th>Target</th><th>Active</th><th>Expected Exit</th><th>Planning Base</th><th>Gap</th><th>Gap Ratio</th></tr></thead><tbody>${banks.map(b=>`<tr><td><b>${b.bank}</b>${b.bank==='永豐'?' <span class="pill pill-good">Tie breaker</span>':''}</td><td>USD ${fmt(b.target)}</td><td>USD ${fmt(b.active)}</td><td>USD ${fmt(b.exitAmt)}</td><td>USD ${fmt(b.baseAmt)}</td><td>USD ${fmt(b.gapAmt)}</td><td><b>${fmt(b.gapRatio*100,1)}%</b></td></tr>`).join('')}</tbody></table></div><div class="decision-note">銀行缺口用扣除預計出場後的 Planning Base：Bank Gap Ratio = (Target - Planning Base after exit) / Target。</div></div><div class="panel"><h3>4. Final Allocation Queue｜下一步配置順序</h3>${cats.slice(0,3).map((c,i)=>listCard(`${i+1}. ${c.k}`,`建議優先補缺口：USD ${fmt(c.gapAmt)}｜Need Ratio ${fmt(c.gapRatio*100,1)}%｜優先銀行：${topBank?.bank||'-'}`)).join('')}<div class="decision-note">單筆 FCN 進來後，再套用：Category fit → Bank fit → Basket Capacity → Market Fair。若 Basket capacity 後低於銀行 min，輸出「不建議做」。若符合缺口且 capacity 足夠，輸出「值得做 / 可做但控量」。</div></div></div></div>`
+}
 function renderSingleMarketPanel(){
   return `<div class="panel">
     <h3>A. Single FCN Check｜單筆輸入 / 單筆輸出</h3>
