@@ -198,67 +198,34 @@ function renderSingleResult(res,input){
 function renderBatchTemplateList(summary=[]){return `<div class="panel"><h3>Template List｜左分類</h3>${summary.length?summary.map((t,i)=>`<button class="m2-hz-subnav-btn ${i===0?'action':''}" data-template-index="${i}" type="button"><b>${t.template}</b><br><span class="muted">${t.count} rows｜Mkt ${fmt(t.market,2)}%｜Final AVG ${fmt(t.final_fair,2)}%</span></button>`).join(''):'<div class="muted">尚無 market rows。</div>'}</div>`}
 function renderBatchTemplateDetail(t){if(!t)return `<div class="panel"><h3>Template Detail</h3><div class="muted">尚無資料。</div></div>`;return `<div class="panel"><h3>Template Detail｜${t.template}</h3><div class="flow-panel">${flowCard('Rows',t.count,'market_history rows','#2563eb')}${flowCard('Template Avg Market',fmt(t.market,2)+'%','整批市場平均','#0f766e')}${flowCard('Template Avg Final Fair',fmt(t.final_fair,2)+'%','模板平均，不是單筆','#7c3aed')}${flowCard('Gap After AVG',t.gap_final_pct===null?'-':fmt(t.gap_final_pct,2)+'%','Market vs Final AVG','#f97316')}</div><div class="grid-2" style="margin-top:12px"><div class="panel"><h3>Sub-template Cards</h3>${(t.subtemplates||[]).slice(0,12).map(s=>`<div class="list-card"><b>${s.key}</b>｜${s.group_type}｜${s.count} rows<br>Avg Market ${fmt(s.market,2)}%｜New Fair AVG ${fmt(s.new_fair,2)}%｜Final Fair AVG ${fmt(s.final_fair,2)}%｜Gap ${s.gap_after_pct===null?'-':fmt(s.gap_after_pct,2)+'%'}</div>`).join('')||'<div class="muted">No subtemplate</div>'}</div><div class="panel"><h3>Included Rows</h3><div class="table-wrap"><table><thead><tr><th>FCN</th><th>Basket</th><th>Market</th><th>Final AVG</th><th>Strike/KI</th><th>Tenor</th></tr></thead><tbody>${(t.subtemplates?.[0]?.included_rows||[]).slice(0,20).map(r=>`<tr><td>${r.fcn_id}</td><td>${r.basket}</td><td>${fmt(r.market_coupon,2)}%</td><td>${fmt(r.final_fair,2)}%</td><td>${fmt(r.strike,1)} / ${fmt(r.ki,1)}</td><td>${r.tenor}</td></tr>`).join('')}</tbody></table></div></div></div></div>`}
 function renderRadar(radar=[]){return `<div class="panel" style="margin-top:12px"><h3>Template Update Radar</h3>${radar.slice(0,20).map(r=>`<div class="list-card"><b>${r.key}</b>｜${r.parent_template}｜${r.coverage}<br>Count ${r.count}｜Avg Coupon ${fmt(r.market,2)}%｜Action：${r.action}<br>${r.reason}</div>`).join('')||'<div class="muted">No radar rows.</div>'}</div>`}
-async function renderBatchWorkspacePanel(){
+async function renderBatchWorkspacePanel(mode='b1'){
   const wrap=document.getElementById('marketWorkspaceContent');
   if(!wrap)return;
-
   wrap.innerHTML='<div class="muted">載入 M8 Batch Decision Board...</div>';
-
   try{
     if(!batchWorkspaceCache)batchWorkspaceCache=await runBatchMarketWorkspace();
-
     const workspace={
       ...(batchWorkspaceCache||{}),
       templateSummary:batchWorkspaceCache.templateSummary||buildTemplateSummary(batchWorkspaceCache.marketRows||[]),
       radar:batchWorkspaceCache.radar||buildUpdateRadar(batchWorkspaceCache.marketRows||[])
     };
-
-    wrap.innerHTML='';
-
     if(typeof window.renderM8BatchDecisionBoard==='function'){
-      const rendered=window.renderM8BatchDecisionBoard(workspace,{
-        mode:'b1',
-        index:0,
-        collapseSmallTemplate:true,
-        collapseIncludedRows:true,
-        enableAnalysisSync:true,
-        enableRadarSync:true
-      });
-
-      if(typeof rendered==='string'){
-        wrap.innerHTML=rendered;
-      }else if(rendered instanceof Node){
-        wrap.appendChild(rendered);
-      }else if(!wrap.innerHTML.trim()){
-        wrap.innerHTML='<div id="m8BatchDecisionBoardMount"></div>';
-        const mount=document.getElementById('m8BatchDecisionBoardMount');
-        if(mount&&typeof window.renderM8BatchDecisionBoard==='function'){
-          const renderedToMount=window.renderM8BatchDecisionBoard(workspace,{
-            mode:'b1',
-            index:0,
-            mount,
-            collapseSmallTemplate:true,
-            collapseIncludedRows:true,
-            enableAnalysisSync:true,
-            enableRadarSync:true
-          });
-          if(typeof renderedToMount==='string')mount.innerHTML=renderedToMount;
-          else if(renderedToMount instanceof Node)mount.appendChild(renderedToMount);
-        }
-      }
+      const renderBoard=(index=0)=>{
+        const rendered=window.renderM8BatchDecisionBoard(workspace,{mode,index,embedded:true});
+        wrap.innerHTML=typeof rendered==='string'?rendered:'';
+        if(rendered instanceof Node)wrap.appendChild(rendered);
+        const selector=mode==='b2'?'[data-bdui-radar]':'[data-bdui-template]';
+        wrap.querySelectorAll(selector).forEach(btn=>btn.addEventListener('click',()=>{
+          const idx=n(mode==='b2'?btn.dataset.bduiRadar:btn.dataset.bduiTemplate,0);
+          renderBoard(idx);
+        }));
+      };
+      renderBoard(0);
       return;
     }
-
     const summary=workspace.templateSummary||[];
     const radar=workspace.radar||[];
-    wrap.innerHTML=`<div class="decision-note bad"><b>B1/B2 helper 未載入</b><br>找不到 window.renderM8BatchDecisionBoard，暫時回退舊版 Template List / Radar。請確認 m8_batch_decision_ui_v061.js 已在 index.html 載入。</div><div class="market-ab-layout"><aside>${renderBatchTemplateList(summary)}</aside><main id="templateDetailBox">${renderBatchTemplateDetail(summary[0])}${renderRadar(radar)}</main></div>`;
-    wrap.querySelectorAll('[data-template-index]').forEach(btn=>btn.addEventListener('click',()=>{
-      wrap.querySelectorAll('[data-template-index]').forEach(b=>b.classList.remove('action'));
-      btn.classList.add('action');
-      const idx=n(btn.dataset.templateIndex,0);
-      document.getElementById('templateDetailBox').innerHTML=renderBatchTemplateDetail(summary[idx])+renderRadar(radar);
-    }));
-
+    wrap.innerHTML=`<div class="decision-note bad"><b>B1/B2 helper 未載入</b><br>找不到 window.renderM8BatchDecisionBoard，暫時回退舊版 Template List / Radar。</div><div class="market-ab-layout"><aside>${renderBatchTemplateList(summary)}</aside><main id="templateDetailBox">${renderBatchTemplateDetail(summary[0])}${renderRadar(radar)}</main></div>`;
   }catch(err){
     console.error(err);
     wrap.innerHTML=`<div class="decision-note bad"><b>Batch Workspace 載入失敗</b><br>${err.message}</div>`;
@@ -281,7 +248,8 @@ async function runSingleCheck(){
     box.innerHTML=`<div class="decision-note bad"><b>Single M8 計算失敗</b><br>${err.message}</div>`;
   }
 }
-function setMarketTab(tab){marketTab=tab;document.querySelectorAll('[data-market-tab]').forEach(b=>b.classList.toggle('action',b.dataset.marketTab===tab));const box=document.getElementById('marketWorkspaceContent');if(!box)return;if(tab==='single'){box.innerHTML=renderSingleMarketPanel();document.getElementById('inqRun')?.addEventListener('click',runSingleCheck)}else renderBatchWorkspacePanel()}
+function setMarketTab(tab){marketTab=tab;document.querySelectorAll('[data-market-tab]').forEach(b=>b.classList.toggle('action',b.dataset.marketTab===tab));const box=document.getElementById('marketWorkspaceContent');if(!box)return;if(tab==='single'){box.innerHTML=renderSingleMarketPanel();document.getElementById('inqRun')?.addEventListener('click',runSingleCheck);return}if(tab==='b1'||tab==='b2'){renderBatchWorkspacePanel(tab);return}box.innerHTML=renderRecommendationPanel()}
+function renderRecommendationPanel(){return `<div class="panel"><h3>C. Recommendation / Allocation Planner</h3><div class="decision-note">C 區會接回 Maturity Cashflow / Bank capacity / Category allocation，負責把 A 單筆判斷與 B1/B2 模板市場結構轉成下一個月配置建議。</div><div class="flow-panel">${flowCard('Available Capital','待接 M9/M2','本月可用資金','#2563eb')}${flowCard('Bank Priority','富邦 / 永豐','依水位與釋放資金','#0f766e')}${flowCard('Category Gap','40/30/20/10','依配置缺口補單','#7c3aed')}${flowCard('Order Queue','待建立','候選市場單排序','#f97316')}</div></div>`}
 function renderSingleMarketPanel(){
   return `<div class="panel">
     <h3>A. Single FCN Check｜單筆輸入 / 單筆輸出</h3>
@@ -301,7 +269,7 @@ function renderSingleMarketPanel(){
     <div id="singleResult" class="muted">輸入市場單後按 Run Single M8。</div>
   </div>`;
 }
-function renderMarket(){rightDetail.innerHTML=`<div class="flow-panel">${flowCard('A. Single','m8_batch','單筆輸入 / 單筆輸出','#2563eb')}${flowCard('B. Batch','Calibration Workspace','整批 market history / 模板決策','#0f766e')}${flowCard('Naming','Single vs Template AVG','避免 final fair 混淆','#7c3aed')}${flowCard('Mode','Bridge','引用 M8，不自創規則','#f97316')}</div>`;rightInsight.innerHTML=`<div class="decision-note">第 4 區改為 A/B 左右連動。A 使用 m8_batch 單筆即時計算；B 使用 m8_calibration_dashboard_v1 的整批模板決策區概念。B 區所有 fair 都顯示 Template Avg，不能當成單筆 fair。</div>`;bottomQuery.innerHTML=`<div class="grid-2 market-workspace-shell" style="grid-template-columns:220px 1fr"><aside class="panel"><h3>Market FCN Analysis</h3><button class="m2-hz-subnav-btn action" data-market-tab="single" type="button">A. Single FCN Check<br><span class="muted">單筆輸入 / 單筆 M8 定價</span></button><button class="m2-hz-subnav-btn" data-market-tab="batch" type="button">B. Batch Market Workspace<br><span class="muted">整批輸入 / 模板決策區</span></button></aside><main id="marketWorkspaceContent"></main></div>`;document.querySelectorAll('[data-market-tab]').forEach(btn=>btn.addEventListener('click',()=>setMarketTab(btn.dataset.marketTab)));setMarketTab(marketTab||'single')}
+function renderMarket(){rightDetail.innerHTML=`<div class="flow-panel">${flowCard('A. Single','單筆 M8','市場單即時計算','#2563eb')}${flowCard('B1. Template List','六大模板','市場結構理解','#0f766e')}${flowCard('B2. Radar','Action','Surface 更新 / 校正','#7c3aed')}${flowCard('C. Planner','Recommendation','配置建議','#f97316')}</div>`;rightInsight.innerHTML=`<div class="decision-note">4. Market FCN Analysis 採 A / B1 / B2 / C 一階導航。B1 是 template understanding；B2 是 template action；C 才把結果轉成配置建議。</div>`;bottomQuery.innerHTML=`<div class="grid-2 market-workspace-shell" style="grid-template-columns:220px 1fr"><aside class="panel"><h3>4. Market FCN Analysis</h3><button class="m2-hz-subnav-btn action" data-market-tab="single" type="button">A. Single FCN Check<br><span class="muted">單筆輸入 / 單筆 M8 定價</span></button><button class="m2-hz-subnav-btn" data-market-tab="b1" type="button">B1. Template List<br><span class="muted">六大模板 / What happened</span></button><button class="m2-hz-subnav-btn" data-market-tab="b2" type="button">B2. Template Update Radar<br><span class="muted">校正 / promote / watch</span></button><button class="m2-hz-subnav-btn" data-market-tab="recommendation" type="button">C. Recommendation Planner<br><span class="muted">資金 / 銀行 / 配置</span></button></aside><main id="marketWorkspaceContent"></main></div>`;document.querySelectorAll('[data-market-tab]').forEach(btn=>btn.addEventListener('click',()=>setMarketTab(btn.dataset.marketTab)));setMarketTab(marketTab||'single')}
 function renderManagement(){rightDetail.innerHTML=`<div class="flow-panel">${flowCard('FCN Rows',plannerRows.length,'完整 FCN 查詢母體','#2563eb')}${flowCard('Stock Rows',stockCapacityRowsData.length,'股票風險 + 容量','#0f766e')}${flowCard('Danger Stocks',stockCapacityRowsData.filter(x=>x.light==='RED').length,'需優先看','#dc2626')}${flowCard('Watch Stocks',stockCapacityRowsData.filter(x=>x.light==='YELLOW').length,'接近滿載或 watch','#f97316')}</div>`;rightInsight.innerHTML=`<div class="decision-note">第5區合併 m2_planner E 與 m2 的股票風險分析。這裡是查詢與風險管理，不是手動新增修改。</div>`;bottomQuery.innerHTML=`<div class="table-tools"><input id="fcnSearch" placeholder="搜尋 FCN / Stock / Bank"><select id="fcnTagFilter"><option value="all">Planner Tag: All</option><option>Planning Base</option><option>30D Maturity</option><option>Early Exit Ready</option><option>Early Exit Candidate</option></select><select id="stockLightFilter"><option value="all">Stock Light: All</option><option>GREEN</option><option>YELLOW</option><option>RED</option></select></div><div id="managementTables"></div>`;renderManagementTables()}
 function renderManagementTables(){const q=(document.getElementById('fcnSearch')?.value||'').toUpperCase(),tag=document.getElementById('fcnTagFilter')?.value||'all',light=document.getElementById('stockLightFilter')?.value||'all';const stocks=stockCapacityRowsData.filter(x=>(light==='all'||x.light===light)&&(x.symbol.includes(q)||x.category.toUpperCase().includes(q)));const fcns=plannerRows.filter(x=>(tag==='all'||x.planner_tag===tag)&&(`${x.fcn_id} ${x.tw_bank} ${(x.basket||[]).join(' ')}`.toUpperCase().includes(q)));managementTables.innerHTML=`<div class="table-wrap"><table><thead><tr><th>Stock</th><th>Category</th><th>Max</th><th>Active</th><th>Exit Release</th><th>Planning Base</th><th>Static Rem.</th><th>Dynamic</th><th>Light</th><th>Comment</th></tr></thead><tbody>${stocks.map(x=>`<tr class="${x.light==='RED'?'row-bad':x.light==='YELLOW'?'row-warn':'row-good'}"><td><b>${x.symbol}</b></td><td>${x.category}</td><td>USD ${fmt(x.max)}</td><td>USD ${fmt(x.active)}</td><td>USD ${fmt(x.release)}</td><td>USD ${fmt(x.base)}</td><td>USD ${fmt(x.staticRemain)}</td><td>USD ${fmt(x.dynamic)}</td><td><span class="pill ${x.light==='GREEN'?'pill-good':x.light==='YELLOW'?'pill-warn':'pill-bad'}">${x.light}</span></td><td>${x.comment}</td></tr>`).join('')}</tbody></table></div><div style="height:12px"></div>${renderFCNTable(fcns)}`}
 function renderFCNTable(rows=plannerRows){return `<div class="table-wrap"><table><thead><tr><th>FCN ID</th><th>Bank</th><th>Amount</th><th>Rate</th><th>Tenor</th><th>Basket</th><th>Worst-of</th><th>Health</th><th>Planner Tag</th><th>Days to Maturity</th></tr></thead><tbody>${rows.map(x=>`<tr class="${x.fcn_health==='danger'?'row-bad':x.fcn_health==='watch'?'row-warn':'row-good'}"><td><b>${x.fcn_id}</b></td><td>${x.tw_bank||''}</td><td>USD ${fmt(x.amt)}</td><td>${fmt(x.rate,2)}%</td><td>${x.tenor||''}M</td><td>${(x.basket||[]).join(' / ')}</td><td>${x.worst_of||''}</td><td>${x.maturity_state||x.decision_label||''}</td><td>${x.planner_tag}</td><td>${x.maturity?.days_to_maturity??'-'}</td></tr>`).join('')}</tbody></table></div>`}
