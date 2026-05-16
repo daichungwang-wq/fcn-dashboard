@@ -271,8 +271,8 @@ function buildCPlannerV066(){
   const ready=sum(g.ready), maturity=sum(g.maturity), candidate=sum(g.candidate), total=ready+maturity+candidate;
   const baseTotal=sum(g.base)||1;
   const categories=['短期投機單','積極單','合理投資型','長期穩定現金流'];
-  const targetPct={'長期穩定現金流':40,'合理投資型':30,'積極單':20,'短期投機單':10};
-  const categoryRows=categories.map(k=>{const amt=sum(g.base.filter(x=>bucket(x)===k));const target=baseTotal*(targetPct[k]||0)/100;const gap=Math.max(0,target-amt);return{k,amt,target,gap,needRatio:target?gap/target:0}}).sort((a,b)=>b.needRatio-a.needRatio||b.gap-a.gap);
+  const categoryTargetPct={'長期穩定現金流':40,'合理投資型':30,'積極單':20,'短期投機單':10};
+  const categoryRows=categories.map(k=>{const amt=sum(g.base.filter(x=>bucket(x)===k));const tp=categoryTargetPct[k]||0;const target=baseTotal*tp/100;const gap=Math.max(0,target-amt);return{k,targetPct:tp,amt,target,gap,needRatio:target?gap/target:0}}).sort((a,b)=>b.needRatio-a.needRatio||b.gap-a.gap);
   const bankRows=Object.keys(TARGET_BANK).map(b=>{const base=sum(g.base.filter(x=>(x.tw_bank||'').includes(b)));const exit=sum(g.cash.filter(x=>(x.tw_bank||'').includes(b)));const target=TARGET_BANK[b];const gap=Math.max(0,target-base);return{bank:b,target,base,exit,gap,needRatio:target?gap/target:0}}).sort((a,b)=>b.needRatio-a.needRatio||(a.bank==='永豐'?-1:1));
   return{ready,maturity,candidate,total,categoryRows,bankRows};
 }
@@ -286,7 +286,7 @@ function renderRecommendationPanel(){
     {step:5,bank:'待分配',cat:'待分配',amt:30000,why:'剩餘 3萬暫不硬配，等待下一批市場單或更合適 basket'}
   ];
   const stepRows=marketSteps.map(s=>`<div class="list-card"><b>Step ${s.step}｜${s.bank}｜${s.cat}｜${moneyWan(s.amt)}</b><br>${s.why}<br><span class="muted">每一步後重新計算 category / bank need ratio，不用初始比例一路分配到底。</span></div>`).join('');
-  const catTable=p.categoryRows.map(r=>`<tr><td><b>${r.k}</b></td><td>${fmt(targetPct[r.k]||0,0)}%</td><td>${moneyWan(r.amt)}</td><td>${moneyWan(r.target)}</td><td>${moneyWan(r.gap)}</td><td>${fmt(r.needRatio*100,1)}%</td></tr>`).join('');
+  const catTable=p.categoryRows.map(r=>`<tr><td><b>${r.k}</b></td><td>${fmt(r.targetPct||0,0)}%</td><td>${moneyWan(r.amt)}</td><td>${moneyWan(r.target)}</td><td>${moneyWan(r.gap)}</td><td>${fmt(r.needRatio*100,1)}%</td></tr>`).join('');
   const bankTable=p.bankRows.map((r,i)=>`<tr><td><b>${r.bank}</b>${i===0?' <span class="pill pill-good">Priority</span>':''}</td><td>${moneyWan(r.target)}</td><td>${moneyWan(r.base)}</td><td>${moneyWan(r.exit)}</td><td>${moneyWan(r.gap)}</td><td>${fmt(r.needRatio*100,1)}%</td></tr>`).join('');
   return `<div class="panel"><h3>C. Recommendation / Allocation Planner｜v066 Result-first</h3>
     <div class="decision-note"><b>本月結論：</b>以市場跟單為主；優先補永豐，執行順序為「永豐投機 3萬 → 永豐積極 6萬 → 富邦投機 1萬 → 待分配 3萬」。每一次分配後都重新計算缺口比例。</div>
