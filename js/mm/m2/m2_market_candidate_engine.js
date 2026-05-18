@@ -1,5 +1,5 @@
 // ============================================================
-// M2 Market Candidate Engine v70
+// M2 Market Candidate Engine v72
 // Path: js/mm/m2/m2_market_candidate_engine.js
 // Purpose: plannerResult x market_fcn_history matching.
 // ============================================================
@@ -64,26 +64,35 @@
     return clamp(score,0,10);
   }
 
-  function needMatchScore(need,row){
-    let score=0;
-    const dna=row.basket_dna||{};
+  function hardBankMatch(need,row){
+    return need.bank===row.bank;
+  }
 
-    if(need.bank && row.bank===need.bank) score+=2;
-    if((row.slot_candidates||[]).includes(need.category)) score+=4;
+  function needMatchScore(need,row){
+    if(!hardBankMatch(need,row)) return 0;
+
+    let score=0;
+    const basketType=row.basket_type||'';
+
+    if((row.slot_candidates||[]).includes(need.category)) score+=5;
 
     if(need.category==='aggressive'){
-      if(dna.speculative_required) return 0;
-      if(['AI_CORE','MEMORY_TACTICAL','TURNAROUND_TACTICAL'].includes(dna.personality)) score+=3;
+      if(basketType==='SPECULATIVE') return 0;
+      if(basketType==='AGGRESSIVE') score+=4;
     }
 
     if(need.category==='short_spec'){
-      if(dna.speculative_required) score+=4;
-      if(dna.dual_type_allowed) score+=2;
+      if(basketType==='SPECULATIVE') score+=5;
+      if(basketType==='AGGRESSIVE') score+=2;
       if(n(row.tenor_month,0)<=6) score+=1;
     }
 
+    if(need.category==='core_income'){
+      if(basketType==='CONSERVATIVE_INCOME') score+=4;
+    }
+
     if(need.category==='defensive_balance'){
-      if(dna.personality==='DEFENSIVE_PLATFORM') score+=5;
+      if(basketType==='DEFENSIVE_INCOME') score+=5;
     }
 
     return clamp(score,0,10);
@@ -96,8 +105,8 @@
     return {LOW:10,MEDIUM_LOW:9,MEDIUM:7,MEDIUM_HIGH:5,HIGH:3,VERY_HIGH:1}[r]??5;
   }
 
-  function bankFitScore(need,row){
-    return need.bank===row.bank?10:5;
+  function buildCandidateKey(row){
+    return `${row.source||'-'}::${row.product_id||'UNKNOWN'}`;
   }
 
   function buildMarketCandidatesFromPlanner(plannerResult, marketRows){
@@ -109,7 +118,11 @@
 
     const rows=(Array.isArray(marketRows)?marketRows:[])
       .map((r,i)=>classifier.classifyMarketRow(r,i))
-      .filter(r=>Number.isFinite(Number(r.coupon_pct))&&Number.isFinite(Number(r.tenor_month))&&r.symbols.length);
+      .filter(r=>Number.isFinite(Number(r.coupon_pct))&&Number.isFinite(Number(r.tenor_month))&&r.symbols.length)
+      .map(r=>({
+        ...r,
+        candidate_key:buildCandidateKey(r)
+      }));
 
     const result={};
 
@@ -132,8 +145,6 @@
         const risk=riskFitScore(need,row);
         if(risk>=4) counters.risk_fit++;
 
-        const bank=bankFitScore(need,row);
-
         const couponScore=marketCouponScore(row.coupon_pct);
         const conditionScore=fcnConditionScore(row);
 
@@ -150,6 +161,8 @@
           ...row,
           need_id:need.need_id,
           need_title:need.title||need.category,
+          planner_bank:need.bank,
+          planner_category:need.category,
           target_amount:need.target_amount,
           min_amount:need.min_amount,
 
@@ -165,7 +178,6 @@
 
           planner_need_match:match,
           risk_fit_score:risk,
-          bank_fit_score:bank,
 
           amount_wan:Math.max(1,Math.round(n(need.min_amount,30000)/10000)),
 
