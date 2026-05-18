@@ -69,7 +69,6 @@
       const slot=slotFor(bank,category);
       if(!slot) return;
 
-      // V67B temporary estimate. V68 will replace this with runBatchMarketWorkspace final_fair/new_fair/beta.
       const estimatedFair=Math.max(8,coupon-2);
       const finalFair=estimatedFair+0.5;
       const gap=coupon-finalFair;
@@ -202,4 +201,33 @@
 
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',install);
   else install();
+})();
+
+// ============================================================
+// M2 v69 bootstrap loader
+// Keep index.html untouched. v067B is already mounted by index.html,
+// so it safely loads v69 engines and lets v69 runtime take over D selector.
+// ============================================================
+(function(){
+  if(window.__M2_V069_BOOTSTRAP__) return;
+  window.__M2_V069_BOOTSTRAP__=true;
+  const base='../../js/mm/m2/';
+  const files=[
+    'm2_market_row_classifier.js?v=20260518_v069',
+    'm2_market_diversity_engine.js?v=20260518_v069',
+    'm2_market_candidate_engine.js?v=20260518_v069',
+    'm2_v069_selector_runtime.js?v=20260518_v069'
+  ];
+  function load(src){
+    return new Promise((resolve,reject)=>{
+      if(document.querySelector(`script[data-m2-v69="${src}"]`)) return resolve();
+      const s=document.createElement('script');
+      s.src=base+src;
+      s.dataset.m2V69=src;
+      s.onload=resolve;
+      s.onerror=()=>reject(new Error(`Failed to load ${src}`));
+      document.head.appendChild(s);
+    });
+  }
+  files.reduce((p,f)=>p.then(()=>load(f)),Promise.resolve()).catch(err=>console.error('[M2 v69 bootstrap]',err));
 })();
