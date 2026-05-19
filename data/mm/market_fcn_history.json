@@ -1507,6 +1507,21 @@
   {
     "generated_at": "2026-05-19",
     "source": "fubon",
+    "product_id": "FCN770456",
+    "symbols": ["NAVGO", "TSM", "SMH", "MU", "MRVL"],
+    "coupon_pct": 25.0,
+    "tenor_month": 7,
+    "strike_pct": 56.09,
+    "ki_pct": 50,
+    "barrier_type": "EKI",
+    "memory_type": "monthly",
+    "upstream_bank": "BBVA",
+    "currency": "USD",
+    "issue_price_pct": 100
+  },
+  {
+    "generated_at": "2026-05-19",
+    "source": "fubon",
     "product_id": "FCN2602055",
     "symbols": ["AVGO", "GOOG", "NVDA", "AMD"],
     "coupon_pct": 20.0,
