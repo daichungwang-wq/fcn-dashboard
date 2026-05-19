@@ -1536,6 +1536,36 @@
   },
   {
     "generated_at": "2026-05-19",
+    "source": "fubon",
+    "product_id": "FCN2605001",
+    "symbols": ["NVDA", "TSM", "AMZN", "MU", "MRVL"],
+    "coupon_pct": 32.09,
+    "tenor_month": 7,
+    "strike_pct": 65,
+    "ki_pct": 55,
+    "barrier_type": "EKI",
+    "memory_type": "monthly",
+    "upstream_bank": "BBVA",
+    "currency": "USD",
+    "issue_price_pct": 100
+  },
+    {
+    "generated_at": "2026-05-19",
+    "source": "fubon",
+    "product_id": "FCN2605002",
+    "symbols": ["AVGO", "TSM", "SMH", "MU", "MRVL"],
+    "coupon_pct": 27.91,
+    "tenor_month": 7,
+    "strike_pct": 60,
+    "ki_pct": 50,
+    "barrier_type": "EKI",
+    "memory_type": "monthly",
+    "upstream_bank": "BBVA",
+    "currency": "USD",
+    "issue_price_pct": 100
+  },
+  {
+    "generated_at": "2026-05-19",
     "source": "sinopac",
     "product_id": "FCN2602046",
     "symbols": [
