@@ -1,6 +1,7 @@
 // ============================================================
-// MM/M2 v070d Planning UI
-// Purpose: Section 3 Strategy Gap First, using __M2_RUNTIME_CONTEXT__ from m2_mm_engine.
+// MM/M2 v070e Planning UI
+// Purpose: Strategy Gap First + staged allocation engine.
+// Source: window.__M2_RUNTIME_CONTEXT__ from m2_mm_engine.
 // ============================================================
 (function(){
   if(window.__M2_V070_PLANNING_UI_BLUEPRINT__) return;
@@ -8,6 +9,15 @@
 
   const PLAN_BASE_WAN = 140;
   const TARGETS = {'長期穩定現金流':40,'合理投資型':30,'積極單':20,'短期投機單':10};
+  const STAGES = [
+    {stage_id:'priority',title:'第一階段｜優先規劃',available_wan:5,status:'結果優先',activation:'confirmed_release'},
+    {stage_id:'short_term',title:'第二階段｜短期規劃',available_wan:15,status:'條件式',activation:'conditional_release'},
+    {stage_id:'strategic',title:'第三階段｜策略佈局',available_wan:15,status:'候補',activation:'candidate_only'}
+  ];
+  const BANK_RULES = {
+    '永豐': {min_wan:3,max_wan:3,priority:1},
+    '富邦': {min_wan:1,max_wan:3,priority:2}
+  };
   const n=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;
   const fmt=(v,d=0)=>n(v).toLocaleString('en-US',{maximumFractionDigits:d});
   const wan=v=>`${fmt(n(v,0),0)}萬`;
@@ -27,35 +37,73 @@
     Object.keys(TARGETS).forEach(k=>{out[k]=Number.isFinite(Number(src[k]))?Number(src[k]):null;});
     return out;
   }
-
-  function buildStaticGapRows(){
-    const current=getRuntimeAmounts();
+  function rowsFromAmounts(amounts){
     return Object.keys(TARGETS).map(k=>{
-      const cur=current[k]; const target=TARGETS[k];
+      const cur=amounts[k]; const target=TARGETS[k];
       const real=cur==null?null:cur/PLAN_BASE_WAN*100;
       const gap=real==null?null:real-target;
       const need=gap==null?null:(gap<0?Math.floor(PLAN_BASE_WAN*Math.abs(gap)/100):0);
       return {strategy:k,current_wan:cur,target_pct:target,real_pct:real,gap_pct:gap,need_wan:need};
-    }).sort((a,b)=>{if(a.gap_pct==null&&b.gap_pct==null)return 0;if(a.gap_pct==null)return 1;if(b.gap_pct==null)return -1;return a.gap_pct-b.gap_pct;});
+    }).sort((a,b)=>{if(a.gap_pct==null&&b.gap_pct==null)return 0;if(a.gap_pct==null)return 1;if(b.gap_pct==null)return -1;const d=a.gap_pct-b.gap_pct;if(Math.abs(d)>0.5)return d;return n(b.need_wan)-n(a.need_wan);});
   }
-  const firstUnder=rows=>rows.filter(r=>r.gap_pct!=null&&r.gap_pct<0).sort((a,b)=>a.gap_pct-b.gap_pct)[0];
-
-  function stageData(){
-    const rows=buildStaticGapRows(); const first=firstUnder(rows);
-    const strategy=first?.strategy||'待接 runtime context'; const need=first?.need_wan;
-    const s1Amt=Math.min(5, need==null?5:need);
-    return [
-      {title:'第一階段｜優先規劃',available:5,planned:s1Amt,remaining:5-s1Amt,status:'結果優先',resultStrategy:`${strategy} ${wan(s1Amt)}｜gap% 最負者先補`,resultBank:s1Amt>3?`永豐 3萬、富邦 ${wan(s1Amt-3)}`:'依銀行 min/max lot 判斷',note:'確定 release，可立即規劃。每一步補完後重算策略 gap 與銀行 gap。',steps:[[strategy,'永豐',Math.min(3,s1Amt),`先補 gap% 最負者；Step 格式固定為策略類別在前。`],[strategy,'富邦',Math.max(0,s1Amt-3),'若尾數低於永豐 min 3萬，改富邦補尾數。']]},
-      {title:'第二階段｜短期規劃',available:15,planned:null,remaining:null,status:'條件式',resultStrategy:'承接第一階段剩餘缺口，繼續以 gap% 最負者優先。',resultBank:'依銀行 gap% 與 min/max lot 決定。',note:'候選 release 成立後再啟用；若四類缺口已補滿，多餘資金保留，不硬補。',steps:[['待推演','待分配',0,'第二階段將讀取第一階段後的 remaining need，再重新排序。']]},
-      {title:'第三階段｜策略佈局',available:15,planned:null,remaining:null,status:'候補',resultStrategy:'只在市場單條件合理時啟用。',resultBank:'需同時通過銀行水位、M8 gap、風險限制。',note:'未來一月候補資金，不視為本月必做。',steps:[['候補','待分配',0,'第三階段預設只保留；市場條件好才轉交第 4 區配對。']]}
-    ];
+  function buildStaticGapRows(){return rowsFromAmounts(getRuntimeAmounts());}
+  function firstUnderFromAmounts(amounts){return rowsFromAmounts(amounts).filter(r=>r.gap_pct!=null&&r.gap_pct<0&&r.need_wan>0)[0]||null;}
+  function chooseBank(stageRemaining, preferredIndex){
+    const order=preferredIndex%2===0?['永豐','富邦']:['富邦','永豐'];
+    for(const bank of order){
+      const rule=BANK_RULES[bank];
+      if(stageRemaining>=rule.min_wan) return bank;
+    }
+    return stageRemaining>=1?'富邦':null;
+  }
+  function allocateLot(bank, stageRemaining, strategyNeed){
+    const rule=BANK_RULES[bank]||BANK_RULES['富邦'];
+    return Math.max(0, Math.min(rule.max_wan, stageRemaining, strategyNeed));
+  }
+  function summarizeAmounts(steps, key){
+    const out={};
+    steps.forEach(s=>{out[s[key]]=(out[s[key]]||0)+s.amount_wan;});
+    return out;
+  }
+  function fmtMap(map){
+    const entries=Object.entries(map||{}).filter(([,v])=>n(v)>0);
+    return entries.length?entries.map(([k,v])=>`${k} ${wan(v)}`).join('、'):'無配置';
+  }
+  function buildAllocationPlan(){
+    const start=getRuntimeAmounts();
+    const working={...start};
+    const stages=[]; const allocation_steps=[];
+    let stepNo=1; let bankTurn=0;
+    STAGES.forEach(stage=>{
+      let remaining=stage.available_wan;
+      const stageSteps=[];
+      const trace=[];
+      while(remaining>0){
+        const target=firstUnderFromAmounts(working);
+        if(!target){trace.push('四類策略已無負 gap，本階段停止。');break;}
+        const bank=chooseBank(remaining, bankTurn);
+        if(!bank){trace.push(`剩餘 ${wan(remaining)} 低於可執行 lot，本階段停止。`);break;}
+        const amt=allocateLot(bank, remaining, target.need_wan);
+        if(amt<=0){trace.push('金額不足或 strategy need 已滿足，本階段停止。');break;}
+        const s={step:stepNo++,stage_id:stage.stage_id,stage_title:stage.title,operation_type:target.strategy,strategy_title:target.strategy,bank,amount_wan:amt,display_title:`Step ${stepNo-1}｜${target.strategy}｜${bank}｜${wan(amt)}`,reason_strategy:`${target.strategy} gap ${fmt(target.gap_pct,1)}% 最負，待補 ${wan(target.need_wan)}。`,reason_bank:`${bank} 符合 min/max lot；本階段剩餘 ${wan(remaining)}。`,status:stage.stage_id==='strategic'?'candidate_only':'planned'};
+        allocation_steps.push(s); stageSteps.push(s);
+        working[target.strategy]=n(working[target.strategy])+amt;
+        remaining-=amt; bankTurn++;
+        trace.push(`${s.display_title}；補完後 ${target.strategy} 變 ${wan(working[target.strategy])}。`);
+      }
+      const byStrategy=summarizeAmounts(stageSteps,'strategy_title');
+      const byBank=summarizeAmounts(stageSteps,'bank');
+      stages.push({...stage,planned_wan:stage.available_wan-remaining,remaining_wan:remaining,steps:stageSteps,trace,by_strategy:byStrategy,by_bank:byBank,remaining_gap_rows:rowsFromAmounts(working)});
+    });
+    const handoff_to_market_fcn=allocation_steps.map(s=>({step:s.step,find:{bank:s.bank,strategy_title:s.strategy_title,amount_wan:s.amount_wan,market_source:'market_fcn_history',ranking:'m8_gap_then_risk_then_coupon'}}));
+    return {version:'v070e_stage_allocation',unit:'wan_usd',base_policy:{total_plan_base_wan:140,fubon_plan_base_wan:90,sinopac_plan_base_wan:50,gap_base_rule:'strategy_gap_uses_static_total_plan_base_140',release_rule:'release_controls_stage_capital_only'},strategy_gap_rows:buildStaticGapRows(),stages,allocation_steps,handoff_to_market_fcn,runtime_context:window.__M2_RUNTIME_CONTEXT__||null};
   }
 
   function renderKpis(){return `<div class="m2v070-kpis"><div class="m2v070-kpi" style="--accent:#0f766e"><label>優先規劃｜確定可用</label><b>5萬</b><span>確定 release，可立即規劃。</span></div><div class="m2v070-kpi" style="--accent:#2563eb"><label>短期規劃｜條件式啟用</label><b>15萬</b><span>20萬 - 優先 5萬。</span></div><div class="m2v070-kpi" style="--accent:#7c3aed"><label>策略佈局｜候補資金</label><b>15萬</b><span>35萬 - 5萬 - 15萬，不硬做。</span></div><div class="m2v070-kpi" style="--accent:#f97316"><label>Total Plan Base</label><b>140萬</b><span>富邦 90萬 + 永豐 50萬；策略 gap 分母。</span></div></div>`;}
-  function renderStrategyGap(){const rows=buildStaticGapRows(); const ctx=window.__M2_RUNTIME_CONTEXT__; const body=rows.map(r=>`<tr class="${r.gap_pct!=null&&r.gap_pct<0?'m2v070-under':'m2v070-over'}"><td><b>${r.strategy}</b></td><td>${r.current_wan==null?'-':wan(r.current_wan)}</td><td>${r.real_pct==null?'-':fmt(r.real_pct,1)+'%'}</td><td>${fmt(r.target_pct,0)}%</td><td>${r.gap_pct==null?'-':fmt(r.gap_pct,1)+'%'}</td><td>${r.need_wan==null?'-':wan(r.need_wan)}</td><td>${r.gap_pct==null?'待接資料':r.gap_pct<0?'Underweight':'OK / Over'}</td></tr>`).join('');return `<div class="m2v070-panel" id="planner-strategy-refill"><h3>C. 投資策略補單｜Strategy Gap First</h3><div class="m2v070-note"><b>口徑：</b>四類策略全部用 Total Plan Base 140萬計算 Real / Target / Gap；Gap% 最負者優先補。</div><div class="table-wrap" style="margin-top:10px"><table class="m2v070-table"><thead><tr><th>策略類別</th><th>目前金額</th><th>Real</th><th>Target</th><th>Gap</th><th>待補萬</th><th>狀態</th></tr></thead><tbody>${body}</tbody></table></div><div class="m2v070-note">v070d：資料來源改為 <b>window.__M2_RUNTIME_CONTEXT__.strategy_amounts_wan</b>。Context：${ctx?.version||'尚未建立，請先按執行或重新整理'}</div></div>`;}
-  function renderStageCards(){return `<div class="m2v070-panel" id="planner-stage-simulation"><h3>D. 補單步驟推演｜Stage Result First</h3><div class="m2v070-note">預設顯示各階段結果；中間推演過程隱藏。每一步格式固定為：<b>Step N｜策略類別｜銀行｜金額</b>。</div><div class="m2v070-actions"><button type="button" data-m2v070="expand">全部展開</button><button type="button" data-m2v070="collapse">全部收合</button></div>${stageData().map(s=>`<div class="m2v070-stage"><div class="m2v070-stage-head"><div><div class="m2v070-stage-title">${s.title}</div><div class="m2v070-stage-sub">可用 ${wan(s.available)}｜已規劃 ${s.planned==null?'待推演':wan(s.planned)}｜剩餘 ${s.remaining==null?'待推演':wan(s.remaining)}</div></div><span class="m2v070-pill">${s.status}</span></div><div class="m2v070-result"><div><label>策略結果</label>${s.resultStrategy}</div><div><label>銀行配置</label>${s.resultBank}</div><div><label>階段說明</label>${s.note}</div></div><details class="m2v070-trace"><summary>展開推演過程</summary>${s.steps.filter(x=>n(x[2],0)>0||x[0]==='待推演'||x[0]==='候補').map((x,i)=>`<div class="m2v070-step"><b>Step ${i+1}｜${x[0]}｜${x[1]}｜${wan(x[2])}</b><br>${x[3]}</div>`).join('')}<div class="m2v070-note">分配規則：allocate one executable lot → recompute strategy gap / bank gap → next priority。</div></details></div>`).join('')}</div>`;}
-  function renderOutput(){const plan={version:'v070d_runtime_context',unit:'wan_usd',strategy_gap_rows:buildStaticGapRows(),base_policy:{total_plan_base_wan:140,fubon_plan_base_wan:90,sinopac_plan_base_wan:50},stage_capital:[{stage_id:'priority',available_wan:5},{stage_id:'short_term',available_wan:15},{stage_id:'strategic',available_wan:15}],step_display_rule:'Step N｜策略類別｜銀行｜金額',runtime_context:window.__M2_RUNTIME_CONTEXT__||null};window.__M2_ALLOCATION_PLAN_BLUEPRINT__=plan;return `<div class="m2v070-panel" id="planner-output"><h3>E0. Planner Output｜給第 4 區讀</h3><div class="m2v070-note">目前輸出：<b>window.__M2_ALLOCATION_PLAN_BLUEPRINT__</b>。</div><details class="m2v070-trace"><summary>查看 blueprint JSON</summary><pre style="white-space:pre-wrap;font-size:12px;background:#0f172a;color:#e5e7eb;border-radius:12px;padding:10px;max-height:320px;overflow:auto">${JSON.stringify(plan,null,2)}</pre></details></div>`;}
-  function buildHtml(){return `<div class="m2v070-wrap" id="m2v070PlanningBlueprint"><div class="m2v070-head"><b>M2 v070d Planning UI</b><br>第 3 區直接讀 runtime context，不再抓畫面文字；策略缺口用 140萬靜態母數。</div>${renderKpis()}${renderStrategyGap()}${renderStageCards()}${renderOutput()}</div>`;}
+  function renderStrategyGap(){const rows=buildStaticGapRows(); const ctx=window.__M2_RUNTIME_CONTEXT__; const body=rows.map(r=>`<tr class="${r.gap_pct!=null&&r.gap_pct<0?'m2v070-under':'m2v070-over'}"><td><b>${r.strategy}</b></td><td>${r.current_wan==null?'-':wan(r.current_wan)}</td><td>${r.real_pct==null?'-':fmt(r.real_pct,1)+'%'}</td><td>${fmt(r.target_pct,0)}%</td><td>${r.gap_pct==null?'-':fmt(r.gap_pct,1)+'%'}</td><td>${r.need_wan==null?'-':wan(r.need_wan)}</td><td>${r.gap_pct==null?'待接資料':r.gap_pct<0?'Underweight':'OK / Over'}</td></tr>`).join('');return `<div class="m2v070-panel" id="planner-strategy-refill"><h3>C. 投資策略補單｜Strategy Gap First</h3><div class="m2v070-note"><b>口徑：</b>四類策略全部用 Total Plan Base 140萬計算 Real / Target / Gap；Gap% 最負者優先補。</div><div class="table-wrap" style="margin-top:10px"><table class="m2v070-table"><thead><tr><th>策略類別</th><th>目前金額</th><th>Real</th><th>Target</th><th>Gap</th><th>待補萬</th><th>狀態</th></tr></thead><tbody>${body}</tbody></table></div><div class="m2v070-note">v070e：資料來源 <b>window.__M2_RUNTIME_CONTEXT__.strategy_amounts_wan</b>；Context：${ctx?.version||'尚未建立'}</div></div>`;}
+  function renderStageCards(){const plan=buildAllocationPlan();window.__M2_ALLOCATION_PLAN_BLUEPRINT__=plan;return `<div class="m2v070-panel" id="planner-stage-simulation"><h3>D. 補單步驟推演｜Stage Result First</h3><div class="m2v070-note">每階段依 C 區 gap% 動態推演；每補一筆後重算 strategy gap。每一步格式固定為：<b>Step N｜策略類別｜銀行｜金額</b>。</div><div class="m2v070-actions"><button type="button" data-m2v070="expand">全部展開</button><button type="button" data-m2v070="collapse">全部收合</button></div>${plan.stages.map(stage=>`<div class="m2v070-stage"><div class="m2v070-stage-head"><div><div class="m2v070-stage-title">${stage.title}</div><div class="m2v070-stage-sub">可用 ${wan(stage.available_wan)}｜已規劃 ${wan(stage.planned_wan)}｜剩餘 ${wan(stage.remaining_wan)}</div></div><span class="m2v070-pill">${stage.status}</span></div><div class="m2v070-result"><div><label>策略結果</label>${fmtMap(stage.by_strategy)}</div><div><label>銀行配置</label>${fmtMap(stage.by_bank)}</div><div><label>階段說明</label>${stage.activation==='candidate_only'?'候補資金，不硬做；市場條件合理才轉第 4 區。':'依 gap% 最負者優先；每一步補完後重算。'}</div></div><details class="m2v070-trace"><summary>展開推演過程</summary>${stage.steps.map(s=>`<div class="m2v070-step"><b>${s.display_title}</b><br>${s.reason_strategy}<br>${s.reason_bank}</div>`).join('')||'<div class="m2v070-step">本階段沒有可執行配置。</div>'}<div class="m2v070-note"><b>Trace</b><br>${stage.trace.join('<br>')||'無'}</div></details></div>`).join('')}</div>`;}
+  function renderOutput(){const plan=window.__M2_ALLOCATION_PLAN_BLUEPRINT__||buildAllocationPlan();window.__M2_ALLOCATION_PLAN_BLUEPRINT__=plan;return `<div class="m2v070-panel" id="planner-output"><h3>E0. Planner Output｜給第 4 區讀</h3><div class="m2v070-note">目前輸出：<b>window.__M2_ALLOCATION_PLAN_BLUEPRINT__</b>，包含 stages / allocation_steps / handoff_to_market_fcn。</div><details class="m2v070-trace"><summary>查看 planner JSON</summary><pre style="white-space:pre-wrap;font-size:12px;background:#0f172a;color:#e5e7eb;border-radius:12px;padding:10px;max-height:320px;overflow:auto">${JSON.stringify(plan,null,2)}</pre></details></div>`;}
+  function buildHtml(){return `<div class="m2v070-wrap" id="m2v070PlanningBlueprint"><div class="m2v070-head"><b>M2 v070e Planning UI</b><br>第 3 區已進入 Stage Allocation Engine：C 區決定策略缺口，D 區按 5萬 / 15萬 / 15萬 分階段推演。</div>${renderKpis()}${renderStrategyGap()}${renderStageCards()}${renderOutput()}</div>`;}
   function refresh(){const old=document.getElementById('m2v070PlanningBlueprint');if(old){old.outerHTML=buildHtml();bindActions(document.getElementById('m2v070PlanningBlueprint'));}}
   function injectSubnav(){const nav=document.getElementById('m2MaturityCashflowSubnav');if(!nav||nav.querySelector('[data-planner-nav="strategy"]'))return;[['strategy','C. 投資策略補單'],['stage','D. 補單推演'],['output','E0. Planner Output']].forEach(([key,label])=>{const b=document.createElement('button');b.className='m2-hz-subnav-btn';b.dataset.plannerNav=key;b.type='button';b.textContent=label;nav.insertBefore(b,nav.querySelector('[data-planner-nav="detail"]')||null);});}
   function bindActions(root){if(!root)return;root.querySelectorAll('[data-m2v070]').forEach(btn=>btn.addEventListener('click',()=>{const open=btn.dataset.m2v070==='expand';root.querySelectorAll('details.m2v070-trace').forEach(d=>d.open=open);}));}
