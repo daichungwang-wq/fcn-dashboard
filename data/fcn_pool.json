@@ -2312,7 +2312,7 @@
   },
   {
   "date": "2026-05-15",
-  "fcn_id": "FCN981 睿睿",
+  "fcn_id": "FCN981N 睿睿",
   "basket": [
     "MU",
     "NVDA",
@@ -2337,9 +2337,9 @@
   "is_portfolio": true,
   "note": "",
   "entry_prices": {
-    "MU": 800,
-    "NVDA": 236,
-    "TSM": 418
+    "MU": 735.2575,
+    "NVDA": 227.5712,
+    "TSM": 405.7464
   },
   "maturity_time": "",
   "has_ki_breach": false,
