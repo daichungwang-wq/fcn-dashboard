@@ -799,7 +799,7 @@
   },
   {
     "generated_at": "2026-05-19",
-    "source": "dbs",
+    "source": "sinopac",
     "product_id": "FCN2602014",
     "symbols": [
       "NVDA",
@@ -818,7 +818,7 @@
   },
   {
     "generated_at": "2026-05-19",
-    "source": "dbs",
+    "source": "sinopac",
     "product_id": "FCN2602036",
     "symbols": [
       "NVDA",
@@ -837,7 +837,7 @@
   },
   {
     "generated_at": "2026-05-19",
-    "source": "dbs",
+    "source": "sinopac",
     "product_id": "FCN2602043",
     "symbols": [
       "AVGO",
@@ -856,7 +856,7 @@
   },
   {
     "generated_at": "2026-05-19",
-    "source": "dbs",
+    "source": "sinopac",
     "product_id": "FCN2602049",
     "symbols": [
       "AVGO",
@@ -876,7 +876,7 @@
   },
   {
     "generated_at": "2026-05-19",
-    "source": "dbs",
+    "source": "sinopac",
     "product_id": "FCN2602045",
     "symbols": [
       "INTC",
@@ -895,7 +895,7 @@
   },
   {
     "generated_at": "2026-05-19",
-    "source": "ms",
+    "source": "sinopac",
     "product_id": "FCN2602041",
     "symbols": [
       "MU",
@@ -913,7 +913,7 @@
   },
   {
     "generated_at": "2026-05-19",
-    "source": "ms",
+    "source": "sinopac",
     "product_id": "FCN2602048",
     "symbols": [
       "NVDA",
@@ -932,7 +932,7 @@
   },
   {
     "generated_at": "2026-05-19",
-    "source": "gs",
+    "source": "sinopac",
     "product_id": "FCN2602027",
     "symbols": [
       "TSM"
@@ -949,7 +949,7 @@
   },
   {
     "generated_at": "2026-05-19",
-    "source": "citi",
+    "source": "sinopac",
     "product_id": "FCN2602029",
     "symbols": [
       "TSLA",
@@ -967,7 +967,7 @@
   },
   {
     "generated_at": "2026-05-19",
-    "source": "citi",
+    "source": "sinopac",
     "product_id": "FCN2602015",
     "symbols": [
       "TSLA",
@@ -987,7 +987,7 @@
   },
   {
     "generated_at": "2026-05-19",
-    "source": "natixis",
+    "source": "sinopac",
     "product_id": "FCN2602039",
     "symbols": [
       "NVDA",
@@ -1006,7 +1006,7 @@
   },
   {
     "generated_at": "2026-05-19",
-    "source": "citi",
+    "source": "sinopac",
     "product_id": "FCN2602051",
     "symbols": [
       "TSLA",
@@ -1026,7 +1026,7 @@
   },
   {
     "generated_at": "2026-05-19",
-    "source": "dbs",
+    "source": "sinopac",
     "product_id": "FCN2602017",
     "symbols": [
       "TSM",
@@ -1046,7 +1046,7 @@
   },
   {
     "generated_at": "2026-05-19",
-    "source": "jpm",
+    "source": "sinopac",
     "product_id": "FCN2602003",
     "symbols": [
       "MU",
@@ -1065,7 +1065,7 @@
   },
   {
     "generated_at": "2026-05-19",
-    "source": "ubs",
+    "source": "sinopac",
     "product_id": "FCN2601988",
     "symbols": [
       "NKE",
@@ -1084,7 +1084,7 @@
   },
   {
     "generated_at": "2026-05-19",
-    "source": "gs",
+    "source": "sinopac",
     "product_id": "FCN2602037",
     "symbols": [
       "AMAT",
@@ -1103,7 +1103,7 @@
   },
   {
     "generated_at": "2026-05-19",
-    "source": "gs",
+    "source": "sinopac",
     "product_id": "FCN2602040",
     "symbols": [
       "NVDA",
@@ -1123,7 +1123,7 @@
   },
   {
     "generated_at": "2026-05-19",
-    "source": "citi",
+    "source": "sinopac",
     "product_id": "FCN2602025",
     "symbols": [
       "NVDA",
@@ -1141,7 +1141,7 @@
   },
   {
     "generated_at": "2026-05-19",
-    "source": "ubs",
+    "source": "sinopac",
     "product_id": "FCN2602026",
     "symbols": [
       "NVDA",
@@ -1160,7 +1160,7 @@
   },
   {
     "generated_at": "2026-05-19",
-    "source": "dbs",
+    "source": "sinopac",
     "product_id": "FCN2602056",
     "symbols": [
       "INTC",
@@ -1178,7 +1178,7 @@
   },
   {
     "generated_at": "2026-05-19",
-    "source": "barclays",
+    "source": "sinopac",
     "product_id": "FCN2602022",
     "symbols": [
       "AVGO",
@@ -1197,7 +1197,7 @@
   },
   {
     "generated_at": "2026-05-19",
-    "source": "barclays",
+    "source": "sinopac",
     "product_id": "FCN2602020",
     "symbols": [
       "NVDA",
@@ -1216,7 +1216,7 @@
   },
   {
     "generated_at": "2026-05-19",
-    "source": "barclays",
+    "source": "sinopac",
     "product_id": "FCN2602042",
     "symbols": [
       "GOOG",
@@ -1235,7 +1235,7 @@
   },
   {
     "generated_at": "2026-05-19",
-    "source": "dbs",
+    "source": "sinopac",
     "product_id": "FCN2602054",
     "symbols": [
       "AVGO",
@@ -1254,7 +1254,7 @@
   },
   {
     "generated_at": "2026-05-19",
-    "source": "dbs",
+    "source": "sinopac",
     "product_id": "FCN2602055",
     "symbols": [
       "AVGO",
@@ -1274,7 +1274,7 @@
   },
   {
     "generated_at": "2026-05-19",
-    "source": "gs",
+    "source": "sinopac",
     "product_id": "FCN2602053",
     "symbols": [
       "MU",
@@ -1293,7 +1293,7 @@
   },
   {
     "generated_at": "2026-05-19",
-    "source": "citi",
+    "source": "sinopac",
     "product_id": "FCN2602023",
     "symbols": [
       "GOOG",
@@ -1312,7 +1312,7 @@
   },
   {
     "generated_at": "2026-05-19",
-    "source": "citi",
+    "source": "sinopac",
     "product_id": "FCN2602021",
     "symbols": [
       "TSM",
@@ -1331,7 +1331,7 @@
   },
   {
     "generated_at": "2026-05-19",
-    "source": "nomura",
+    "source": "sinopac",
     "product_id": "FCN2602047",
     "symbols": [
       "NVDA",
@@ -1350,7 +1350,7 @@
   },
   {
     "generated_at": "2026-05-19",
-    "source": "gs",
+    "source": "sinopac",
     "product_id": "FCN2602018",
     "symbols": [
       "TSM"
@@ -1367,7 +1367,7 @@
   },
   {
     "generated_at": "2026-05-19",
-    "source": "gs",
+    "source": "sinopac",
     "product_id": "FCN2602024",
     "symbols": [
       "MU",
@@ -1386,7 +1386,7 @@
   },
   {
     "generated_at": "2026-05-19",
-    "source": "nomura",
+    "source": "sinopac",
     "product_id": "FCN2602046",
     "symbols": [
       "AVGO",
@@ -1421,3 +1421,4 @@
     "upstream_bank": "CA"
   }
 ]
+
