@@ -15,10 +15,7 @@
     {stage_id:'short_term',title:'第二階段｜短期規劃',available_wan:15,status:'條件式',activation:'conditional_release'},
     {stage_id:'strategic',title:'第三階段｜策略佈局',available_wan:15,status:'候補',activation:'candidate_only'}
   ];
-  const BANK_RULES = {
-    '永豐': {min_wan:3,max_wan:3,priority:1},
-    '富邦': {min_wan:1,max_wan:3,priority:2}
-  };
+  const BANK_RULES = {'永豐': {min_wan:3,max_wan:3,priority:1},'富邦': {min_wan:1,max_wan:3,priority:2}};
   const n=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;
   const fmt=(v,d=0)=>n(v).toLocaleString('en-US',{maximumFractionDigits:d});
   const wan=v=>`${fmt(n(v,0),0)}萬`;
@@ -54,6 +51,7 @@
   function bindActions(root){if(!root)return;root.querySelectorAll('[data-m2v070]').forEach(btn=>btn.addEventListener('click',()=>{const open=btn.dataset.m2v070==='expand';root.querySelectorAll('details.m2v070-trace').forEach(d=>d.open=open);}));root.querySelectorAll('[data-m2v070-panel]').forEach(btn=>btn.addEventListener('click',()=>{const open=btn.dataset.m2v070Panel==='expand';['planner-strategy-refill','planner-stage-simulation'].forEach(id=>{const d=document.getElementById(id);if(d)d.open=open;});}));}
   function inject(){injectCss();injectSubnav();const bottom=document.getElementById('bottomQuery');const active=document.getElementById('activeTitle');if(!bottom||!active||!/Maturity Cashflow/.test(active.textContent||''))return;if(document.getElementById('m2v070PlanningBlueprint')){refresh();return;}bottom.insertAdjacentHTML('afterbegin',buildHtml());bindActions(document.getElementById('m2v070PlanningBlueprint'));}
   document.addEventListener('click',function(ev){const btn=ev.target.closest('[data-planner-nav]');if(btn){const map={strategy:'planner-strategy-refill',stage:'planner-stage-simulation',output:'planner-output'};setTimeout(()=>{inject();const el=document.getElementById(map[btn.dataset.plannerNav]);if(el){if(el.tagName==='DETAILS')el.open=true;el.scrollIntoView({behavior:'smooth',block:'start'});}},520);}else setTimeout(inject,260);},true);
+  document.addEventListener('click',function(ev){const panelBtn=ev.target.closest('[data-m2v070-panel]');if(panelBtn){ev.preventDefault();ev.stopPropagation();const open=panelBtn.getAttribute('data-m2v070-panel')==='expand';['planner-strategy-refill','planner-stage-simulation'].forEach(id=>{const d=document.getElementById(id);if(d)d.open=open;});}const traceBtn=ev.target.closest('[data-m2v070]');if(traceBtn){const root=document.getElementById('m2v070PlanningBlueprint');const open=traceBtn.getAttribute('data-m2v070')==='expand';if(root)root.querySelectorAll('details.m2v070-trace').forEach(d=>d.open=open);}},true);
   new MutationObserver(()=>setTimeout(inject,220)).observe(document.documentElement,{childList:true,subtree:true,characterData:true});
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',inject);else inject();
 })();
