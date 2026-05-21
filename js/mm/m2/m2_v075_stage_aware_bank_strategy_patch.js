@@ -1,0 +1,115 @@
+// ============================================================
+// M2 v075 Stage-aware Bank + Strategy Allocation Patch
+// Purpose: override v073/v074 planning output without touching main engine.
+// ============================================================
+(function(){
+  if(window.__M2_V075_STAGE_AWARE_PATCH__) return;
+  window.__M2_V075_STAGE_AWARE_PATCH__ = true;
+
+  const TARGETS = { '長期穩定現金流':40, '合理投資型':30, '積極單':20, '短期投機單':10 };
+  const BANK_TARGETS = { '富邦':110, '永豐':40 };
+  const BANK_RULES = { '永豐':{min:3,max:3,priority:1}, '富邦':{min:1,max:3,priority:2} };
+  const BANK_SOURCE = { '永豐':'sinopac', '富邦':'fubon' };
+  const n=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;
+  const floor=v=>Math.floor(n(v,0));
+  const pos=v=>Math.max(0,Math.floor(n(v,0)));
+  const wan=v=>`${floor(v).toLocaleString('en-US')}萬`;
+  const pct=v=>Number.isFinite(Number(v))?`${Math.floor(Number(v))}%`:'-';
+
+  function ctx(){return window.__M2_RUNTIME_CONTEXT__||{};}
+  function arr(v){return Array.isArray(v)?v:[];}
+  function bankOf(r){const s=String((r&&(r.tw_bank||r.bank||r.broker))||''); return s.includes('永豐')?'永豐':s.includes('富邦')?'富邦':'';}
+  function bucket(x){const r=n(x.rate),t=n(x.tenor);if(t<=6&&r>20.99)return'短期投機單';if(r>=21&&r<=25)return'積極單';if(r>=18&&r<=20.99)return'合理投資型';if(r>=12&&r<=17.99)return'長期穩定現金流';return'其他';}
+  function add(map,k,v){if(!k)return; map[k]=(map[k]||0)+n(v,0);}
+  function sums(rows,by){const out={}; arr(rows).forEach(r=>add(out,by(r),Math.floor(n(r.amt,0)/10000))); return out;}
+  function merge(a,b,sign=1){const o={...a}; Object.keys(b||{}).forEach(k=>o[k]=n(o[k])+sign*n(b[k])); return o;}
+  function scale(m,rate){const o={}; Object.keys(m||{}).forEach(k=>o[k]=floor(n(m[k])*rate)); return o;}
+  function targets(){return ctx().bank_targets_wan||BANK_TARGETS;}
+  function totalTarget(){return n(ctx().total_target_wan,0)||Object.values(targets()).reduce((s,v)=>s+n(v),0);}
+
+  function buildSources(){
+    const g=ctx().groups||{};
+    const active=arr(g.active), hard=arr(g.hard), candidate=arr(g.candidate);
+    return {
+      bankActive: ctx().bank_amounts_wan || sums(active,bankOf),
+      bankHard: sums(hard,bankOf),
+      bankCandidate: sums(candidate,bankOf),
+      stratActive: ctx().strategy_amounts_wan || sums(active,bucket),
+      stratHard: sums(hard,bucket),
+      stratCandidate: sums(candidate,bucket)
+    };
+  }
+
+  function bankRows(amounts){
+    const tg=targets();
+    return Object.keys(tg).map(bank=>{const used=n(amounts[bank]); const target=n(tg[bank]); const gap=target-used; return {bank,used,target,gap_raw:gap,gap:pos(gap),gap_pct:target>0?Math.max(0,gap)/target*100:0};})
+      .sort((a,b)=>b.gap_pct-a.gap_pct||(BANK_RULES[a.bank]?.priority||99)-(BANK_RULES[b.bank]?.priority||99));
+  }
+  function stratRows(amounts){
+    const total=totalTarget();
+    return Object.keys(TARGETS).map(k=>{const cur=n(amounts[k]); const target=total*TARGETS[k]/100; const gap=target-cur; return {strategy:k,current:cur,target_pct:TARGETS[k],target:floor(target),real_pct:total>0?cur/total*100:0,gap_raw:gap,gap:floor(gap),gap_pct:target>0?gap/target*100:0,need:pos(gap)};})
+      .sort((a,b)=>b.gap_pct-a.gap_pct||b.need-a.need);
+  }
+  function choose(remaining,stratW,bankW){
+    const ss=stratRows(stratW).filter(x=>x.need>0&&x.gap_pct>0);
+    const bs=bankRows(bankW).filter(x=>x.gap>0);
+    for(const s of ss){
+      for(const b of bs){
+        const rule=BANK_RULES[b.bank]||BANK_RULES['富邦'];
+        const amt=pos(Math.min(rule.max,remaining,s.need,b.gap));
+        if(amt>=rule.min) return {s,b,amt};
+      }
+    }
+    return null;
+  }
+  function allocStage(stage,stageNo,stratStart,bankStart,stepStart){
+    const strat={...stratStart}, bank={...bankStart}, steps=[]; let remaining=stage.available, step=stepStart, safe=0;
+    while(remaining>0 && safe++<80){
+      const c=choose(remaining,strat,bank); if(!c) break;
+      const beforeS=stratRows(strat).find(x=>x.strategy===c.s.strategy)||c.s;
+      const beforeB=bankRows(bank).find(x=>x.bank===c.b.bank)||c.b;
+      strat[c.s.strategy]=n(strat[c.s.strategy])+c.amt;
+      bank[c.b.bank]=n(bank[c.b.bank])+c.amt;
+      remaining-=c.amt;
+      const afterS=stratRows(strat).find(x=>x.strategy===c.s.strategy)||{};
+      const afterB=bankRows(bank).find(x=>x.bank===c.b.bank)||{};
+      steps.push({step:step++,stage_id:stage.id,stage:stage.title,strategy:c.s.strategy,bank:c.b.bank,amount:c.amt,remaining,before_strategy_gap_pct:beforeS.gap_pct,after_strategy_gap_pct:afterS.gap_pct,before_strategy_gap_wan:beforeS.need,after_strategy_gap_wan:afterS.need,before_bank_gap_pct:beforeB.gap_pct,after_bank_gap_pct:afterB.gap_pct,before_bank_gap_wan:beforeB.gap,after_bank_gap_wan:afterB.gap});
+    }
+    return {strat,bank,steps,remaining,nextStep:step};
+  }
+  function sumBy(steps,key){const o={}; steps.forEach(s=>o[s[key]]=(o[s[key]]||0)+s.amount); return o;}
+  function fmtMap(m){const e=Object.entries(m||{}).filter(([,v])=>v>0); return e.length?e.map(([k,v])=>`${k} ${wan(v)}`).join('、'):'無配置';}
+
+  function buildPlan(){
+    const src=buildSources();
+    const caps={stage1:pos(n(ctx().confirmed_maturity_wan)+n(ctx().confirmed_early_exit_wan)-n(ctx().confirmed_assignment_wan)),expectedPool:pos(n(ctx().expected_maturity_wan)+n(ctx().expected_early_exit_wan)-n(ctx().expected_assignment_wan))};
+    caps.stage2=pos(caps.expectedPool*0.5); caps.stage3=pos(caps.expectedPool-caps.stage2);
+    const stagesDef=[{id:'priority',title:'第一階段｜優先規劃',available:caps.stage1,sub:'used - 確定出場'}, {id:'short_term',title:'第二階段｜短期規劃',available:caps.stage2,sub:'used - 確定出場 + 第一階段補 - 預計出場×50%'}, {id:'strategic',title:'第三階段｜策略佈局',available:caps.stage3,sub:'used - 確定出場 + 第一階段補 + 第二階段補 - 預計出場'}];
+    let step=1, all=[], stageOut=[];
+    let s1Start=merge(src.stratActive,src.stratHard,-1), b1Start=merge(src.bankActive,src.bankHard,-1);
+    let r1=allocStage(stagesDef[0],1,s1Start,b1Start,step); step=r1.nextStep; all=all.concat(r1.steps); stageOut.push({def:stagesDef[0],startS:s1Start,startB:b1Start,result:r1});
+    let s2Start=merge(merge(src.stratActive,src.stratHard,-1),sumBy(r1.steps,'strategy'),1); s2Start=merge(s2Start,scale(src.stratCandidate,0.5),-1);
+    let b2Start=merge(merge(src.bankActive,src.bankHard,-1),sumBy(r1.steps,'bank'),1); b2Start=merge(b2Start,scale(src.bankCandidate,0.5),-1);
+    let r2=allocStage(stagesDef[1],2,s2Start,b2Start,step); step=r2.nextStep; all=all.concat(r2.steps); stageOut.push({def:stagesDef[1],startS:s2Start,startB:b2Start,result:r2});
+    let s3Start=merge(merge(src.stratActive,src.stratHard,-1),sumBy(r1.steps,'strategy'),1); s3Start=merge(s3Start,sumBy(r2.steps,'strategy'),1); s3Start=merge(s3Start,src.stratCandidate,-1);
+    let b3Start=merge(merge(src.bankActive,src.bankHard,-1),sumBy(r1.steps,'bank'),1); b3Start=merge(b3Start,sumBy(r2.steps,'bank'),1); b3Start=merge(b3Start,src.bankCandidate,-1);
+    let r3=allocStage(stagesDef[2],3,s3Start,b3Start,step); all=all.concat(r3.steps); stageOut.push({def:stagesDef[2],startS:s3Start,startB:b3Start,result:r3});
+    const handoff={source:'maturity_cashflow_d',version:'v075_stage_aware_bank_strategy',updated_at:new Date().toISOString(),steps:all.map(x=>({step:x.step,stage:x.stage,stage_id:x.stage_id,strategy:x.strategy,bank:x.bank,source:BANK_SOURCE[x.bank]||'',amount_wan:x.amount,before_strategy_gap_pct:x.before_strategy_gap_pct,after_strategy_gap_pct:x.after_strategy_gap_pct,before_bank_gap_pct:x.before_bank_gap_pct,after_bank_gap_pct:x.after_bank_gap_pct,before_bank_gap_wan:x.before_bank_gap_wan,after_bank_gap_wan:x.after_bank_gap_wan,rank_rule:'stage_aware_used_minus_confirmed_and_expected_exit_gap_pct_priority'}))};
+    window.__M2_TO_MARKET_FCN_HANDOFF__=handoff;
+    window.__M2_ALLOCATION_PLAN_BLUEPRINT__={version:'v075_stage_aware_bank_strategy',caps,source:src,stages:stageOut,allocation_steps:all,handoff_to_market_fcn:handoff.steps};
+    return window.__M2_ALLOCATION_PLAN_BLUEPRINT__;
+  }
+
+  function render(){
+    const root=document.getElementById('m2v070PlanningBlueprint');
+    const active=document.getElementById('activeTitle');
+    if(!root||!/Maturity Cashflow/.test(active?.textContent||'')) return;
+    const plan=buildPlan();
+    const html=`<div class="m2v070-wrap" id="m2v070PlanningBlueprint"><div class="m2v070-head"><b>M2 v075 Stage-aware Allocation</b><br>Bank 與策略類別都用階段式 used：第一階段扣確定出場；第二階段再扣 50% 預計出場；第三階段扣完整預計出場。排序用 Gap%。</div>${plan.stages.map(st=>`<details class="m2v070-panel" open><summary>${st.def.title}｜${st.def.sub}</summary><div class="m2v070-result"><div><label>可用</label><b>${wan(st.def.available)}</b></div><div><label>已規劃</label><b>${wan(st.def.available-st.result.remaining)}</b></div><div><label>剩餘</label><b>${wan(st.result.remaining)}</b></div><div><label>策略結果</label>${fmtMap(sumBy(st.result.steps,'strategy'))}</div></div><div class="m2v070-step-table"><table class="m2v070-table"><thead><tr><th>Step</th><th>Strategy</th><th>Strategy Gap%</th><th>Bank</th><th>Bank Gap%</th><th>Bank Gap</th><th>Amount</th><th>Remain</th></tr></thead><tbody>${st.result.steps.length?st.result.steps.map(s=>`<tr><td><b>${s.step}</b></td><td>${s.strategy}</td><td>${pct(s.before_strategy_gap_pct)} → ${pct(s.after_strategy_gap_pct)}</td><td>${s.bank}</td><td>${pct(s.before_bank_gap_pct)} → ${pct(s.after_bank_gap_pct)}</td><td>${wan(s.before_bank_gap_wan)} → ${wan(s.after_bank_gap_wan)}</td><td><b>${wan(s.amount)}</b></td><td>${wan(s.remaining)}</td></tr>`).join(''):`<tr><td colspan="8">本階段無可執行配置</td></tr>`}</tbody></table></div></details>`).join('')}<div class="m2v070-panel"><h3>E0. Planner Output｜v075</h3><div class="m2v070-note">已輸出 window.__M2_TO_MARKET_FCN_HANDOFF__，第 4 區 D 可依 stage-aware steps 連動。</div></div></div>`;
+    root.outerHTML=html;
+  }
+  function boot(){setTimeout(render,300)}
+  document.addEventListener('click',boot,true);
+  setInterval(boot,1500);
+  document.addEventListener('DOMContentLoaded',boot);
+})();
