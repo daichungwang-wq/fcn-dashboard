@@ -13,10 +13,13 @@
     const m2=window.MMM2CashflowEngine.build(state)||{};
     const lines=Array.isArray(m2.monthly_action_plan_lines)?m2.monthly_action_plan_lines:[];
     const planHtml=lines.length?lines.join('<br>'):(m2.input_plan_wan>0?`第一階段：預計投入 ${wan(m2.input_plan_wan)}`:'目前無需投入規劃');
-    const stageHtml=Object.entries(m2.stages||{}).map(([k,v])=>`${k}：${wan(v)}`).join('<br>');
     const signal=m2.fcn_pool_signal||{};
     const danger=safeObj(m2.danger), tracking=safeObj(m2.tracking), health=safeObj(m2.health);
     const color=signal.level==='good'?'#188b58':signal.level==='warn'?'#b9770e':'#c62828';
+    const bankTarget=m2.bank_target_wan||{};
+    const bankInput=m2.bank_input_wan||{};
+    const bankGap=m2.bank_gap_wan||{};
+    const bankDemand=['永豐','富邦'].map(b=>`${b}｜Target ${wan(bankTarget[b])}｜Used ${wan(bankInput[b])}｜Out ${wan(0)}｜待補 ${wan(bankGap[b])}`).join('<br>');
     e.innerHTML=`
       <div class='metric'><span>FCN Target AMT</span><b>${wan(m2.fcn_target_amt_wan||m2.total_amt_wan)}</b></div>
       <div class='metric'><span>FCN Pool 目前已投資</span><b>${wan(m2.fcn_pool_amt_wan||m2.input_amt_wan)}</b></div>
@@ -25,7 +28,7 @@
       <div class='metric'><span>Input Plan 第一階段投入</span><b>${wan(m2.input_plan_wan)}</b></div>
       <div class='metric'><span>FCN Pool Evaluation</span><b style='color:${color}'>${m2.fcn_pool_evaluation||'--'} ${pct(m2.fcn_pool_evaluation_pct)}</b></div>
       <div class='sub' style='margin-top:8px'><b>本月投資計畫</b><br>${planHtml}</div>
-      <div class='sub' style='margin-top:8px'><b>三階段現金流</b><br>${stageHtml}</div>
+      <div class='sub' style='margin-top:8px'><b>銀行資金需求</b><br>${bankDemand}</div>
       <div class='metric'><span>今日規劃 / 已選 FCN</span><b>${wan(m2.in_plan_wan)} / ${wan(m2.selected_total_wan)}</b></div>
       <div class='sub' style='margin-top:8px;color:#667085'>${m2.dashboard_note||''}<br>${m2.planner_hint||''}</div>
       <div class='metric'><span>Danger / Tracking / Health</span><b>${danger.qty||0} / ${tracking.qty||0} / ${health.qty||0}</b></div>
