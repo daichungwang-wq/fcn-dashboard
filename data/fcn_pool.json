@@ -2568,6 +2568,67 @@
     }
   },
   {
+  "date": "2026-05-19",
+  "fcn_id": "FCN050P 富邦",
+  "basket": [
+    "AVGO",
+    "MRVL",
+    "MU",
+    "SMH",
+    "TSM"
+  ],
+  "tenor": 7,
+  "rate": 25,
+  "autocall": 100,
+  "strike": 56.09,
+  "ki": 50,
+  "eki": true,
+  "bank": "BBVA",
+  "has_position": true,
+  "amt": 60000,
+  "currency": "USD",
+  "status": "active",
+  "tw_bank": "富邦",
+  "created_time": "2026-05-19T16:48",
+  "entry_time": "2026-05-19T16:48",
+  "exit_time": "",
+  "decision_flag": "manual",
+  "is_portfolio": true,
+  "note": "",
+  "entry_prices": {
+    "AVGO": 411.3099,
+    "MRVL": 173.4918,
+    "MU": 691.5703,
+    "SMH": 542.269,
+    "TSM": 391.8855
+  },
+  "maturity_time": "",
+  "has_ki_breach": false,
+  "first_ki_breach_time": "",
+  "early_exit_record": {
+    "AVGO": {
+      "hit": false,
+      "first_hit_time": ""
+    },
+    "MRVL": {
+      "hit": false,
+      "first_hit_time": ""
+    },
+    "MU": {
+      "hit": false,
+      "first_hit_time": ""
+    },
+    "SMH": {
+      "hit": false,
+      "first_hit_time": ""
+    },
+    "TSM": {
+      "hit": false,
+      "first_hit_time": ""
+    }
+  }
+},
+  {
   "date": "2026-05-14",
   "fcn_id": "FCN947N 富邦",
   "basket": [
