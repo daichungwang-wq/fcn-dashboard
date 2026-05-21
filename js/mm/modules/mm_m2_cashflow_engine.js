@@ -11,12 +11,14 @@
   const sum=(list,fn)=>arr(list).reduce((s,x)=>s+n(fn(x),0),0);
   const statusText=x=>String(x&&(x.status||x.lifecycle||x.zone||x.state||x.label)||'').toLowerCase();
   const amountWan=x=>{
-    const v=n(x&&(x.amt??x.amount_usd??x.notional_usd??x.principal_usd??x.amount_wan??x.amount??x.principal_wan??x.principal??x.exposure??x.total_exposure),0);
-    return v>10000?v/10000:v;
+    const v=n(x&&(x.amt??x.amount_usd??x.notional_usd??x.principal_usd),NaN);
+    if(Number.isFinite(v)) return v/10000;
+    const w=n(x&&(x.amount_wan??x.principal_wan),NaN);
+    if(Number.isFinite(w)) return w;
+    const legacy=n(x&&(x.amount??x.principal??x.exposure??x.total_exposure),0);
+    return legacy>1000?legacy/10000:legacy;
   };
-  function isActive(row){
-    return row&&row.status==='active'&&row.has_position===true&&row.is_portfolio===true;
-  }
+  function isActive(row){return row&&row.status==='active'&&row.has_position===true&&row.is_portfolio===true;}
   function getBank(row){
     const raw=String(row&&(row.tw_bank||row.broker_tw||row.channel_bank||row.bank_channel||row.bank||row.broker||row.source||row.bank_source)||'').toLowerCase();
     if(raw.includes('sinopac')||raw.includes('永豐')) return '永豐';
@@ -66,7 +68,7 @@
     const planner=buildPlanner();
     const selected=window.__M2_MARKET_FCN_SELECTION_SUMMARY__||null;
     return {
-      version:'mm_m2_cashflow_engine_v1_full_active_fcn_pool',
+      version:'mm_m2_cashflow_engine_v1_fixed_units',
       total_amt_wan:totalPlanWan,
       input_amt_wan:inputAmtWan,
       achieve_rate_pct:achieveRatePct,
