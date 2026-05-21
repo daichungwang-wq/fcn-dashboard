@@ -1,15 +1,13 @@
 (function(){
   if(window.MMM2CashflowEngine) return;
-  const TARGET_BANK_WAN={"富邦":90,"永豐":50};
-  const STAGES=[
-    {id:'priority',title:'第一階段｜優先規劃',amount_wan:5},
-    {id:'short_term',title:'第二階段｜短期規劃',amount_wan:15},
-    {id:'strategic',title:'第三階段｜策略佈局',amount_wan:15}
-  ];
+
+  const TARGET_BANK_WAN={"富邦":110,"永豐":40};
+  const TOTAL_TARGET_WAN=150;
   const n=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;
   const arr=v=>Array.isArray(v)?v:[];
   const sum=(list,fn)=>arr(list).reduce((s,x)=>s+n(fn(x),0),0);
-  const statusText=x=>String(x&&(x.status||x.lifecycle||x.zone||x.state||x.label)||'').toLowerCase();
+  const wan=v=>Math.floor(n(v,0));
+
   const amountWan=x=>{
     const v=n(x&&(x.amt??x.amount_usd??x.notional_usd??x.principal_usd),NaN);
     if(Number.isFinite(v)) return v/10000;
@@ -25,73 +23,59 @@
     if(raw.includes('fubon')||raw.includes('富邦')) return '富邦';
     return '';
   }
-  function countAmt(rows){return {qty:arr(rows).length,amt_wan:sum(rows,amountWan)}}
-  function inputByBank(rows){
-    const out={"富邦":0,"永豐":0};
-    arr(rows).forEach(r=>{const b=getBank(r); if(out[b]!=null) out[b]+=amountWan(r);});
-    return out;
+  function inputByBank(rows){const out={"富邦":0,"永豐":0};arr(rows).forEach(r=>{const b=getBank(r);if(out[b]!=null)out[b]+=amountWan(r);});return out;}
+  function evalSignal(rate){
+    if(rate>=95) return {label:'健康',color:'green',color_class:'good',level:'good'};
+    if(rate>=90) return {label:'注意',color:'yellow',color_class:'warn',level:'warn'};
+    return {label:'偏低',color:'red',color_class:'bad',level:'bad'};
   }
-  function buildPlanner(){
-    const steps=[
-      {step:1,stage:STAGES[0].title,strategy:'長期穩定現金流',bank:'永豐',source:'sinopac',amount_wan:3},
-      {step:2,stage:STAGES[0].title,strategy:'長期穩定現金流',bank:'富邦',source:'fubon',amount_wan:2},
-      {step:3,stage:STAGES[1].title,strategy:'長期穩定現金流',bank:'富邦',source:'fubon',amount_wan:3},
-      {step:4,stage:STAGES[1].title,strategy:'積極單',bank:'富邦',source:'fubon',amount_wan:3},
-      {step:5,stage:STAGES[1].title,strategy:'長期穩定現金流',bank:'永豐',source:'sinopac',amount_wan:3},
-      {step:6,stage:STAGES[1].title,strategy:'短期投機單',bank:'富邦',source:'fubon',amount_wan:3},
-      {step:7,stage:STAGES[1].title,strategy:'積極單',bank:'永豐',source:'sinopac',amount_wan:3},
-      {step:8,stage:STAGES[2].title,strategy:'合理投資型',bank:'富邦',source:'fubon',amount_wan:3},
-      {step:9,stage:STAGES[2].title,strategy:'短期投機單',bank:'富邦',source:'fubon',amount_wan:3},
-      {step:10,stage:STAGES[2].title,strategy:'長期穩定現金流',bank:'永豐',source:'sinopac',amount_wan:3},
-      {step:11,stage:STAGES[2].title,strategy:'合理投資型',bank:'富邦',source:'fubon',amount_wan:2},
-      {step:12,stage:STAGES[2].title,strategy:'積極單',bank:'富邦',source:'fubon',amount_wan:1},
-      {step:13,stage:STAGES[2].title,strategy:'長期穩定現金流',bank:'富邦',source:'fubon',amount_wan:1}
-    ];
-    const stageSummary={},strategySummary={},bankSummary={};
-    steps.forEach(s=>{stageSummary[s.stage]=(stageSummary[s.stage]||0)+s.amount_wan;strategySummary[s.strategy]=(strategySummary[s.strategy]||0)+s.amount_wan;bankSummary[s.bank]=(bankSummary[s.bank]||0)+s.amount_wan;});
-    return {steps,stageSummary,strategySummary,bankSummary,firstStage:steps.filter(s=>s.stage===STAGES[0].title)};
-  }
-  function getRuntimeZones(data,activeRows){
-    const rt=data.m2Runtime||data.m2_runtime||data.runtime||data.healthRuntime||data.health_runtime||{};
-    const has=Array.isArray(rt.danger)||Array.isArray(rt.watch)||Array.isArray(rt.healthy);
-    if(has) return {danger:countAmt(rt.danger||[]),tracking:countAmt(rt.watch||[]),health:countAmt(rt.healthy||[]),source:'m2_runtime'};
-    return {danger:{qty:0,amt_wan:0},tracking:{qty:0,amt_wan:0},health:{qty:arr(activeRows).length,amt_wan:sum(activeRows,amountWan)},source:'active_fcn_fallback'};
-  }
+  function pickRuntime(data){return data.m2Runtime||data.m2_runtime||data.runtime||data.healthRuntime||data.health_runtime||{};}
+  function firstNumber(){for(const v of arguments){const x=n(v,NaN);if(Number.isFinite(x))return x;}return 0;}
+
   function build(state){
     const data=(state&&state.data)||{};
     const fcn=arr(data.fcnPool||data.fcn_pool);
     const pos=arr(data.positions);
-    const runtime=arr(data.marketRuntime||data.market_runtime);
-    const allRows=fcn.length?fcn:(pos.length?pos:runtime);
+    const runtimeRows=arr(data.marketRuntime||data.market_runtime);
+    const allRows=fcn.length?fcn:(pos.length?pos:runtimeRows);
     const activeRows=fcn.length?fcn.filter(isActive):allRows;
-    const totalPlanWan=TARGET_BANK_WAN['富邦']+TARGET_BANK_WAN['永豐'];
+    const rt=pickRuntime(data);
+
     const bankInput=inputByBank(activeRows);
     const inputAmtWan=bankInput['富邦']+bankInput['永豐'];
-    const achieveRatePct=totalPlanWan?inputAmtWan/totalPlanWan*100:0;
-    const output={qty:arr(allRows).filter(x=>/hard|release|maturity|exit|到期|出場/.test(statusText(x))||(x&&x.has_position===false&&!!x.exit_time)).length,amt_wan:sum(arr(allRows).filter(x=>/hard|release|maturity|exit|到期|出場/.test(statusText(x))||(x&&x.has_position===false&&!!x.exit_time)),amountWan)};
-    const zones=getRuntimeZones(data,activeRows);
-    const planner=buildPlanner();
-    const selected=window.__M2_MARKET_FCN_SELECTION_SUMMARY__||null;
+    const achieveRatePct=TOTAL_TARGET_WAN?inputAmtWan/TOTAL_TARGET_WAN*100:0;
+
+    const confirmedOutWan=firstNumber(rt.confirmed_output_wan,rt.output_amt_wan,rt.confirmed_maturity_wan)+firstNumber(rt.confirmed_early_exit_wan)-firstNumber(rt.confirmed_assignment_wan);
+    const expectedPoolWan=firstNumber(rt.expected_output_wan,rt.expected_maturity_wan)+firstNumber(rt.expected_early_exit_wan)-firstNumber(rt.expected_assignment_wan);
+    const softOutputWan=Math.max(0,Math.floor(expectedPoolWan*0.5));
+    const strategicOutputWan=Math.max(0,Math.floor(expectedPoolWan-softOutputWan));
+    const inputPlanWan=Math.max(0,Math.floor(confirmedOutWan));
+    const inPlanWan=inputPlanWan+softOutputWan+strategicOutputWan;
+    const signal=evalSignal(achieveRatePct);
+
     return {
-      version:'mm_m2_cashflow_engine_v1_follow_m2_logic',
-      total_amt_wan:totalPlanWan,
+      version:'mm_m2_cashflow_engine_v2_dashboard_summary_only',
+      total_amt_wan:TOTAL_TARGET_WAN,
+      fcn_target_amt_wan:TOTAL_TARGET_WAN,
       input_amt_wan:inputAmtWan,
+      fcn_pool_amt_wan:inputAmtWan,
       achieve_rate_pct:achieveRatePct,
-      output_amt_wan:output.amt_wan,
-      output_qty:output.qty,
+      output_amt_wan:Math.max(0,Math.floor(confirmedOutWan)),
+      input_plan_wan:inputPlanWan,
+      soft_output_amt_wan:softOutputWan,
+      strategic_output_amt_wan:strategicOutputWan,
+      in_plan_wan:inPlanWan,
+      stages:{'第一階段｜確定資金':inputPlanWan,'第二階段｜預計資金50%':softOutputWan,'第三階段｜本月投資計畫':strategicOutputWan},
       bank_target_wan:TARGET_BANK_WAN,
       bank_input_wan:bankInput,
       bank_gap_wan:{'富邦':TARGET_BANK_WAN['富邦']-bankInput['富邦'],'永豐':TARGET_BANK_WAN['永豐']-bankInput['永豐']},
-      input_plan_steps:planner.firstStage,
-      input_plan_strategy_wan:planner.firstStage.reduce((o,s)=>{o[s.strategy]=(o[s.strategy]||0)+s.amount_wan;return o;},{}),
-      stages:planner.stageSummary,
-      strategy_plan_wan:planner.strategySummary,
-      bank_plan_wan:planner.bankSummary,
-      all_steps:planner.steps,
-      fcn_pool_evaluation: zones.danger.qty>0?'需處理風險':zones.tracking.qty>0?'需追蹤':'健康',
-      danger:zones.danger,tracking:zones.tracking,health:zones.health,zone_source:zones.source,
-      selected_total_wan:n(selected&&selected.selected_total_wan,0),
-      selected_summary:selected||null,
+      fcn_pool_evaluation_pct:achieveRatePct,
+      fcn_pool_evaluation:signal.label,
+      fcn_pool_signal:signal,
+      dashboard_note:confirmedOutWan>0?'本月已有確定出場資金，可進入第一階段投入規劃。':'目前無確定出場金額，第一階段無需投入規劃。',
+      planner_hint:inPlanWan>0?'本月投資計畫以預計出場資金為主，仍需等實際出場確認。':'目前沒有本月投入規劃。',
+      selected_total_wan:n(window.__M2_MARKET_FCN_SELECTION_SUMMARY__&&window.__M2_MARKET_FCN_SELECTION_SUMMARY__.selected_total_wan,0),
+      selected_summary:window.__M2_MARKET_FCN_SELECTION_SUMMARY__||null,
       source_rows:allRows.length,
       active_rows:activeRows.length
     };
