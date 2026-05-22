@@ -958,6 +958,278 @@
 "risk_opportunity": "機會在 Firefly AI、企業內容工作流與文件雲，風險在新工具競爭與 AI 變現不如預期。",
 "final_decision": "可進 stock_pool/core 邊緣名單，但需要看到 AI 升級真正拉動商業化才適合提高權重。"
 },
+ "SNPS": {
+    "symbol": "SNPS",
+    "name": "Synopsys",
+    "type": "research_light",
+    "company_positioning": [
+      "SNPS 做的是 EDA 軟體、IP 與晶片設計驗證工具，核心需求來自 AI ASIC、先進製程與複雜 SoC 設計。",
+      "它的客戶是 NVIDIA、AMD、Broadcom、hyperscaler 自研晶片團隊、晶圓廠與系統公司，不是單一晶片產品生意。",
+      "影響股價的主因是 EDA 訂閱續約、IP 授權需求、AI custom silicon 專案數，以及 Ansys 整合後的 simulation TAM 擴張。"
+    ],
+    "company_structure": "SNPS 的結構是高續約率 EDA 軟體加 IP licensing，營收穩定性比一般半導體硬體股高。",
+    "customer_analysis": "SNPS 客戶集中在晶片設計與先進製程生態，當 AI ASIC 與 chiplet 專案增加時，設計工具與驗證需求會同步提高。",
+    "financial_quality": "SNPS 的財務品質重點在軟體毛利率、recurring revenue 與 operating margin，而不是晶片週期庫存。",
+    "market_view": "市場把 SNPS 當成 AI 設計基礎設施股定價，但也擔心 Ansys 併購整合、反壟斷審查與估值偏高。",
+    "competition": "主要對手是 Cadence、Siemens EDA 與部分自研設計工具。SNPS 的差異在於 EDA + IP + verification toolchain 覆蓋完整，較容易吃到先進製程與 AI ASIC 複雜度提升。風險是客戶集中在大型半導體與雲端公司，若 capex 或 chip design 專案延後，成長預期會被下修。",
+    "risk_opportunity": "機會在 AI ASIC、chiplet、HBM controller 與 Ansys simulation 擴大 TAM，風險在於高估值、併購執行與中國 EDA 限制。",
+    "final_decision": "可列為 stock_pool 與 special company，適合升級深度研究卡；FCN 上比純 AI 硬體股穩，但買點仍要避開估值高檔。"
+  },
+  "VRT": {
+    "symbol": "VRT",
+    "name": "Vertiv",
+    "type": "research_light",
+    "company_positioning": [
+      "VRT 做的是資料中心電源、冷卻與機櫃基礎設施，直接受 AI server rack power density 提升影響。",
+      "它的客戶是 hyperscaler、colocation 資料中心、企業機房與電信基礎設施業者。",
+      "影響股價的主因是 AI data center capex、液冷導入速度、backlog 與毛利率改善。"
+    ],
+    "company_structure": "VRT 的結構是 data center power + thermal management + service，受益點在 AI rack 從傳統風冷走向高功率液冷。",
+    "customer_analysis": "VRT 客戶集中於大型資料中心與雲端建設，訂單節奏會跟 hyperscaler capex 與電力交付能力同步波動。",
+    "financial_quality": "VRT 的財務品質看訂單轉營收、gross margin 與 operating leverage，因為硬體設備股比軟體股更受供應鏈與交付節奏影響。",
+    "market_view": "市場把 VRT 當成 AI power cooling 核心受益股，但也擔心估值已反映多年資料中心成長。",
+    "competition": "主要對手是 Schneider Electric、Eaton、nVent 與部分機房設備供應商。VRT 的差異在於資料中心電源與熱管理產品組合更集中，AI liquid cooling 導入會放大單 rack 價值。風險是它不是軟體平台，若 capex 放慢或毛利率無法提升，估值會快速壓縮。",
+    "risk_opportunity": "機會在液冷、UPS、power distribution 與服務合約增加，風險在於 AI 資料中心交付延後、供電限制與設備週期下修。",
+    "final_decision": "可列為 pool30 邊緣或 AI infra core，適合研究但 FCN 需控制 strike，因為股價對 AI capex 預期非常敏感。"
+  },
+  "ANET": {
+    "symbol": "ANET",
+    "name": "Arista Networks",
+    "type": "research_light",
+    "company_positioning": [
+      "ANET 做的是 cloud data center Ethernet switch 與網路作業系統，核心需求來自 AI cluster networking。",
+      "它的客戶以 hyperscaler、cloud titan、金融與大型企業網路為主，收入與大型雲端建設節奏高度相關。",
+      "影響股價的主因是 AI Ethernet 滲透、400G/800G switch 轉換、Microsoft/Meta 採購節奏與毛利率。"
+    ],
+    "company_structure": "ANET 的結構是高階交換器硬體加 EOS 軟體生態，價值在 AI cluster networking 的低延遲與可管理性。",
+    "customer_analysis": "ANET 客戶有大型 cloud titan 集中度，當 Microsoft、Meta 或其他 hyperscaler capex 波動時，營收預期會同步修正。",
+    "financial_quality": "ANET 財務品質看 gross margin、operating margin 與 inventory cycle，因為高階 switch 需求放量時營業槓桿很明顯。",
+    "market_view": "市場把 ANET 當成 AI Ethernet 受益股，但也擔心 NVIDIA InfiniBand、白牌交換器與 hyperscaler 自研壓價。",
+    "competition": "主要對手是 Cisco、NVIDIA networking、Juniper 與白牌 switch 供應鏈。ANET 的差異在 EOS 軟體與 cloud-scale switching 經驗，不只是硬體規格。風險是客戶集中與大型雲端客戶議價力，會限制長期 margin 擴張。",
+    "risk_opportunity": "機會在 AI cluster 從 InfiniBand 擴到 Ethernet，風險在 cloud capex 延後、單一大客戶砍單與交換器週期修正。",
+    "final_decision": "可列為 AI infra quality stock，適合進 stock_pool；若估值拉高，FCN 要用較保守 KI 與較低投入比例。"
+  },
+  "GLW": {
+    "symbol": "GLW",
+    "name": "Corning",
+    "type": "research_light",
+    "company_positioning": [
+      "GLW 做的是玻璃、光纖、陶瓷與材料科技，AI 相關焦點在資料中心光纖與高速連接需求。",
+      "它的客戶包括電信商、cloud data center、手機/顯示器供應鏈、汽車與生命科學設備商。",
+      "影響股價的主因是 optical communications 復甦、AI data center fiber demand、display glass 價格與毛利率。"
+    ],
+    "company_structure": "GLW 是材料平台公司，不是純 AI 股，營收由 optical、display、specialty materials、environmental 與 life sciences 分散。",
+    "customer_analysis": "GLW 客戶比小型光通訊公司分散，但 display 與光纖需求週期會讓單季營收波動。",
+    "financial_quality": "GLW 財務品質看 operating margin 與 free cash flow 修復，因為材料與製造資產較重，景氣下行時利潤彈性不如軟體。",
+    "market_view": "市場把 GLW 當成 AI optical infrastructure 的低 beta 受益者，但也擔心傳統 display 與消費電子拖累。",
+    "competition": "主要對手是 Prysmian、CommScope、Furukawa 與部分玻璃材料供應商。GLW 的差異是材料科學與光纖製造能力完整，較能同時服務 data center 與電信網路。缺點是 AI 純度不如 COHR 或 LITE，估值重估速度通常較慢。",
+    "risk_opportunity": "機會在 AI data center fiber 與高密度互連需求增加，風險在 display 價格、資本支出重與傳統通訊需求復甦不穩。",
+    "final_decision": "可列為 universe growth/watch，適合做 AI optical 低波動觀察股，但不急著升 pool30。"
+  },
+  "COHR": {
+    "symbol": "COHR",
+    "name": "Coherent",
+    "type": "research_light",
+    "company_positioning": [
+      "COHR 做的是光通訊元件、雷射與工程材料，AI 焦點在 800G/1.6T optical transceiver supply chain。",
+      "它的客戶是雲端資料中心、電信設備商、工業雷射與半導體設備供應鏈。",
+      "影響股價的主因是 datacom 光模組需求、margin 修復、債務壓力與 AI optical order visibility。"
+    ],
+    "company_structure": "COHR 是光學與材料平台公司，AI datacom 是成長引擎，但工業與傳統通訊仍會影響整體毛利率。",
+    "customer_analysis": "COHR 客戶受 cloud capex 與光模組升級節奏影響，若大型雲端客戶延後 800G/1.6T 轉換，股價波動會很大。",
+    "financial_quality": "COHR 財務品質要看 gross margin 修復、free cash flow 與 debt reduction，因為它不是輕資產軟體股。",
+    "market_view": "市場把 COHR 當成 AI optical 週期復甦股，但也擔心過去併購後負債與整合壓力。",
+    "competition": "主要對手是 Lumentum、Fabrinet、Broadcom optical、Marvell DSP 生態與中國光模組供應鏈。COHR 的差異在材料、雷射與光元件垂直能力較深，不只是代工組裝。風險是競爭價格壓力與高槓桿會放大景氣下行衝擊。",
+    "risk_opportunity": "機會在 AI datacom、800G/1.6T 與 margin improvement，風險在負債、客戶認證延後與光通訊價格競爭。",
+    "final_decision": "可列為 AI optical tactical stock，適合研究但不宜當保守 FCN 接股核心。"
+  },
+  "LITE": {
+    "symbol": "LITE",
+    "name": "Lumentum",
+    "type": "research_light",
+    "company_positioning": [
+      "LITE 做的是光通訊元件與雷射產品，AI 相關重點在 datacenter optical components。",
+      "它的客戶包括 cloud data center、光模組供應鏈、電信設備商與工業雷射應用。",
+      "影響股價的主因是 800G/1.6T 光通訊需求、telecom 去庫存、毛利率修復與客戶認證進度。"
+    ],
+    "company_structure": "LITE 的結構比 GLW 更偏光通訊元件與雷射，所以 AI optical beta 較高但傳統 telecom 週期壓力也更大。",
+    "customer_analysis": "LITE 客戶集中於少數大型光通訊與 cloud supply chain，單一產品認證或砍單會直接影響營收預期。",
+    "financial_quality": "LITE 財務品質看 revenue recovery、gross margin 與 inventory normalization，若 telecom 庫存未清完，獲利反彈會延後。",
+    "market_view": "市場把 LITE 當成 AI optical turnaround，但也擔心基本面還沒完全證明持續復甦。",
+    "competition": "主要對手是 Coherent、Fabrinet、Innolight、Broadcom optical 與其他光元件供應商。LITE 的差異是 optical component 與 laser know-how，但規模與產品組合不如大型多元供應商。風險是 AI 題材先行而營收與 margin 還在追趕。",
+    "risk_opportunity": "機會在 AI datacenter optical ramp 與 telecom 庫存正常化，風險在客戶集中、價格競爭與 turnaround 失敗。",
+    "final_decision": "可列為 speculative/watch，適合小部位研究，不適合當 pool30 核心或高金額 FCN。"
+  },
+  "CRDO": {
+    "symbol": "CRDO",
+    "name": "Credo Technology",
+    "type": "research_light",
+    "company_positioning": [
+      "CRDO 做的是高速 connectivity、SerDes、AEC 與資料中心互連晶片，核心題材是 AI cluster bandwidth。",
+      "它的客戶是 hyperscaler、networking OEM、AI server 與資料中心連接供應鏈。",
+      "影響股價的主因是 AEC 滲透、customer concentration、AI cluster networking demand 與毛利率。"
+    ],
+    "company_structure": "CRDO 是小型高速互連晶片公司，成長彈性高但收入集中與產品週期風險也高。",
+    "customer_analysis": "CRDO 客戶集中度高，當單一 hyperscaler 或大型 networking 客戶採購節奏變動時，營收與股價會劇烈波動。",
+    "financial_quality": "CRDO 財務品質要看 revenue scale、gross margin 與 operating leverage，因為小型成長股在放量前常出現獲利不穩。",
+    "market_view": "市場把 CRDO 當成 AI connectivity enhancer，但也擔心估值對未來訂單預期過度提前反映。",
+    "competition": "主要對手是 Broadcom、Marvell、Astera Labs、NVIDIA networking 與內部自研連接方案。CRDO 的差異在 AEC 與高速互連特定產品切入，但規模與客戶分散度不如大型半導體平台。風險是設計案若被替代，營收基數會被快速重估。",
+    "risk_opportunity": "機會在 AEC、高速 SerDes 與 AI rack connectivity 擴張，風險在客戶集中、估值高與單一 design win 依賴。",
+    "final_decision": "可列為 speculative AI connectivity，適合 M8 投機模板觀察，不適合保守型 FCN。"
+  },
+  "ALAB": {
+    "symbol": "ALAB",
+    "name": "Astera Labs",
+    "type": "research_light",
+    "company_positioning": [
+      "ALAB 做的是 PCIe、CXL 與 AI server connectivity 晶片，核心是 GPU cluster 內部資料傳輸瓶頸。",
+      "它的客戶是 hyperscaler、AI server OEM、GPU/accelerator 生態與高速資料中心平台。",
+      "影響股價的主因是 PCIe retimer、CXL adoption、AI server platform ramp 與高估值消化。"
+    ],
+    "company_structure": "ALAB 是 AI server connectivity 純度很高的小型平台，營收成長快但估值與客戶集中風險也高。",
+    "customer_analysis": "ALAB 客戶與 AI server platform 綁定度高，若 GPU server 代際切換或 hyperscaler 採購調整，營收預期會快速變動。",
+    "financial_quality": "ALAB 財務品質看 gross margin、revenue growth 與研發投入效率，因為市場要求它維持高成長才支撐估值。",
+    "market_view": "市場把 ALAB 當成 AI connectivity pure play，但也擔心股價已提前反映 PCIe/CXL 的多年成長。",
+    "competition": "主要對手是 Broadcom、Marvell、Rambus、Credo 與客戶內部連接方案。ALAB 的差異在 AI server connectivity 專注度高，較容易被市場視為純題材標的。缺點是規模小、估值高，任何 design win 延後都會放大股價波動。",
+    "risk_opportunity": "機會在 PCIe Gen5/Gen6、CXL 與 AI rack bandwidth demand，風險在高估值、客戶集中與大型半導體公司競爭。",
+    "final_decision": "可列為 speculative AI connectivity，適合研究與小模板觀察，不適合當 pool30 core。"
+  },
+  "PWR": {
+    "symbol": "PWR",
+    "name": "Quanta Services",
+    "type": "research_light",
+    "company_positioning": [
+      "PWR 做的是電網工程、輸配電、能源基建與公用事業外包服務，AI 相關重點在資料中心用電需求。",
+      "它的客戶是 utility、電力公司、pipeline operator、renewable developer 與大型基建業主。",
+      "影響股價的主因是 grid capex、utility backlog、資料中心接電工程與利率。"
+    ],
+    "company_structure": "PWR 是工程服務與基建施工公司，不是科技股，價值來自長期電網投資與 backlog 可見度。",
+    "customer_analysis": "PWR 客戶以公用事業與能源基建業主為主，需求較受政策、利率與大型工程排程影響。",
+    "financial_quality": "PWR 財務品質看 backlog、operating margin 與現金轉換，因為工程公司常有專案成本超支風險。",
+    "market_view": "市場把 PWR 當成 AI power grid 間接受益者，但也擔心估值把多年電網投資提前反映。",
+    "competition": "主要對手是 MasTec、MYR Group、EMCOR 與區域工程承包商。PWR 的差異在規模、utility 關係與跨區域施工能力，不是單一設備產品。風險是工程毛利率薄，若成本上升或專案延後，獲利彈性有限。",
+    "risk_opportunity": "機會在電網升級、資料中心接電與能源轉型 capex，風險在利率、工程成本與政策延後。",
+    "final_decision": "可列為 AI power infrastructure watch，適合 universe 觀察，不急著升 pool30。"
+  },
+  "BE": {
+    "symbol": "BE",
+    "name": "Bloom Energy",
+    "type": "research_light",
+    "company_positioning": [
+      "BE 做的是固態氧化物燃料電池與分散式電力系統，AI 相關焦點在資料中心備援與 onsite power。",
+      "它的客戶包括資料中心、企業園區、公用事業與需要高可靠電力的工業客戶。",
+      "影響股價的主因是資料中心 power deal、gross margin、現金流與政策補貼。"
+    ],
+    "company_structure": "BE 是高波動 clean power 設備公司，和 utility 不同，它更依賴專案交付與設備 economics。",
+    "customer_analysis": "BE 客戶訂單通常大型且專案化，若資料中心案場延後或融資成本上升，收入認列會不穩。",
+    "financial_quality": "BE 財務品質重點在 gross margin、cash burn 與 backlog 轉換，因為它仍有成長股與設備製造雙重風險。",
+    "market_view": "市場把 BE 當成 AI data center power solution 選擇權，但也擔心商業模式是否能穩定轉成正自由現金流。",
+    "competition": "主要對手是 Caterpillar、Cummins、Generac、燃氣渦輪、電池儲能與公用電網方案。BE 的差異是 onsite fuel cell power，可繞過部分電網等待時間。風險是成本、燃料來源與長期 maintenance economics 仍需驗證。",
+    "risk_opportunity": "機會在 data center onsite power 與 grid constraint，風險在 cash flow、補貼依賴、專案延後與技術成本。",
+    "final_decision": "可列為 speculative AI power watch，不適合保守 FCN，只有事件明確時才考慮小部位。"
+  },
+  "APLD": {
+    "symbol": "APLD",
+    "name": "Applied Digital",
+    "type": "research_light",
+    "company_positioning": [
+      "APLD 做的是高功率資料中心與 GPU hosting，從 crypto hosting 轉向 AI infrastructure。",
+      "它的客戶是 AI compute 租用方、雲端 GPU 需求者與高功率 data center 用戶。",
+      "影響股價的主因是資料中心租約、融資能力、建設進度與 GPU hosting 利用率。"
+    ],
+    "company_structure": "APLD 是 AI hosting / data center developer，不是成熟雲端公司，商業模式高度依賴建設與租約兌現。",
+    "customer_analysis": "APLD 客戶集中度與合約品質很重要，若單一大客戶或融資案延遲，股價波動會很大。",
+    "financial_quality": "APLD 財務品質看 capex funding、debt、lease conversion 與 cash burn，因為資料中心建設前期資金壓力高。",
+    "market_view": "市場把 APLD 當成 AI GPU hosting 槓桿股，但也擔心融資稀釋與專案交付風險。",
+    "competition": "主要對手是 CoreWeave、IREN、Core Scientific、傳統 colocation 與 hyperscaler 自建資料中心。APLD 的差異是高功率場地與轉型速度，但規模、資本成本與客戶分散度仍弱。風險是 AI hosting 供給過剩時，租金與估值都會下修。",
+    "risk_opportunity": "機會在 AI compute shortage 與大型租約，風險在融資、建設延誤、稀釋與單一客戶依賴。",
+    "final_decision": "可列為 speculative AI hosting，只適合觀察與小模板，不適合核心 pool30。"
+  },
+  "IREN": {
+    "symbol": "IREN",
+    "name": "IREN",
+    "type": "research_light",
+    "company_positioning": [
+      "IREN 原本是 bitcoin miner，現在市場焦點轉向高功率資料中心與 AI cloud hosting。",
+      "它的客戶可能包含 AI compute 租用方、GPU cloud 需求者與傳統加密挖礦收益來源。",
+      "影響股價的主因是 BTC 價格、hash economics、AI hosting 合約、電力成本與資料中心 capex。"
+    ],
+    "company_structure": "IREN 是 crypto mining + AI hosting 轉型公司，價值同時受 BTC 週期與 AI data center 敘事影響。",
+    "customer_analysis": "IREN 若能把電力與機房容量轉成長約 AI hosting，客戶品質會比純挖礦提高，但目前仍需看合約落地。",
+    "financial_quality": "IREN 財務品質要看 electricity cost、mining margin、GPU capex funding 與 cash flow，波動高於成熟資料中心。",
+    "market_view": "市場把 IREN 當成 BTC miner to AI hosting 轉型股，但也擔心 AI 敘事先行而合約與現金流落後。",
+    "competition": "主要對手是 CORZ、CLSK、RIOT、HIVE、CoreWeave 與傳統 colocation。IREN 的差異在可用電力與轉型彈性，但資本成本與商業驗證仍弱於成熟 data center。風險是 BTC 下跌與 AI hosting 延後同時發生。",
+    "risk_opportunity": "機會在低成本電力、AI hosting 長約與 BTC 上行，風險在挖礦週期、融資稀釋與資料中心交付。",
+    "final_decision": "可列為 speculative AI hosting / crypto infrastructure watch，不適合保守 FCN。"
+  },
+  "CORZ": {
+    "symbol": "CORZ",
+    "name": "Core Scientific",
+    "type": "research_light",
+    "company_positioning": [
+      "CORZ 是 bitcoin mining 與 high-performance compute hosting 公司，市場重點在 AI/HPC data center 轉型。",
+      "它的客戶包括挖礦業務、AI compute 租用方與可能的長約 HPC 客戶。",
+      "影響股價的主因是 AI hosting 合約、BTC 價格、電力容量、資產負債表與資料中心改造速度。"
+    ],
+    "company_structure": "CORZ 從破產重組後重新定位，兼具 BTC mining 與 AI/HPC hosting 選擇權。",
+    "customer_analysis": "CORZ 的投資重點在能否取得高品質 AI hosting 長約，否則仍會被市場當成 BTC beta 股。",
+    "financial_quality": "CORZ 財務品質看重組後負債、capex funding、hosting margin 與 BTC mining cash flow。",
+    "market_view": "市場把 CORZ 當成 AI hosting 轉型槓桿股，但也擔心重組後股權稀釋與執行風險。",
+    "competition": "主要對手是 IREN、APLD、RIOT、CLSK、HIVE 與傳統資料中心業者。CORZ 的差異是可用電力與既有大型場地，但過去破產紀錄讓資本市場信任折價較高。風險是 AI hosting 合約若不如預期，估值會回到 mining multiple。",
+    "risk_opportunity": "機會在 AI/HPC hosting 長約、BTC 上行與場地重估，風險在重組後執行、融資、客戶集中與 mining economics。",
+    "final_decision": "可列為 high speculative AI hosting，不適合一般 pool30，只能做事件型觀察。"
+  },
+  "CLSK": {
+    "symbol": "CLSK",
+    "name": "CleanSpark",
+    "type": "research_light",
+    "company_positioning": [
+      "CLSK 是 bitcoin miner，AI 相關邏輯來自電力資產與資料中心轉型可能性。",
+      "它的客戶本質上不是傳統產品客戶，而是透過 hashpower 取得 BTC 收益，未來才可能延伸 AI hosting。",
+      "影響股價的主因是 BTC 價格、hashrate、電力成本、挖礦難度與 AI hosting 轉型預期。"
+    ],
+    "company_structure": "CLSK 目前仍以 mining economics 為核心，AI hosting 只是選擇權，不應把它直接當 data center stock。",
+    "customer_analysis": "CLSK 的收入不像軟體公司有 recurring customer base，主要受 BTC network economics 影響。",
+    "financial_quality": "CLSK 財務品質看每 BTC 成本、hashrate efficiency、capex 與現金部位，因為 mining 週期會快速改變獲利能力。",
+    "market_view": "市場把 CLSK 當成 BTC beta 加 AI power option，但也擔心 halving 後 margin 與挖礦難度壓力。",
+    "competition": "主要對手是 MARA、RIOT、IREN、HIVE、CORZ 與其他 mining fleet。CLSK 的差異在營運效率與擴張速度，但它缺少成熟 AI hosting 長約證明。風險是 BTC 價格下跌時，AI 敘事無法保護估值。",
+    "risk_opportunity": "機會在 BTC 上行、低成本電力與 AI hosting 轉型，風險在挖礦難度、capex、稀釋與能源成本。",
+    "final_decision": "可列為 crypto / AI hosting speculative watch，不適合 pool30 或保守 FCN。"
+  },
+  "BTDR": {
+    "symbol": "BTDR",
+    "name": "Bitdeer Technologies",
+    "type": "research_light",
+    "company_positioning": [
+      "BTDR 做的是 bitcoin mining、雲端算力與 mining infrastructure，AI 相關邏輯來自 data center 與 power asset 重估。",
+      "它的客戶包括 mining cloud service 用戶、機構算力需求者與未來可能的 AI compute 用戶。",
+      "影響股價的主因是 BTC 價格、mining rig economics、資料中心 capacity、AI hosting 轉型與融資能力。"
+    ],
+    "company_structure": "BTDR 是 crypto infrastructure 公司，不是成熟 AI cloud，營運仍受 mining cycle 與設備投資影響。",
+    "customer_analysis": "BTDR 客戶與收益來源較偏 mining ecosystem，若 AI hosting 無法形成長約，估值仍會回到 BTC beta。",
+    "financial_quality": "BTDR 財務品質看 mining margin、設備效率、capex 與現金流，因為高成長轉型需要資金。",
+    "market_view": "市場把 BTDR 當成 BTC miner to AI infrastructure 選擇權，但也擔心商業模式分散與執行複雜。",
+    "competition": "主要對手是 MARA、RIOT、IREN、CLSK、HIVE 與自建 data center 業者。BTDR 的差異在亞洲背景與 mining infrastructure 經驗，但 AI hosting 客戶驗證仍是關鍵。風險是 BTC 下行與 AI 轉型進度慢會同時壓估值。",
+    "risk_opportunity": "機會在 BTC 上行、data center capacity 與 AI hosting 轉型，風險在挖礦週期、融資成本、政策與客戶驗證不足。",
+    "final_decision": "可列為 speculative crypto infrastructure，不適合 pool30，只能做小模板與事件追蹤。"
+  },
+  "HIVE": {
+    "symbol": "HIVE",
+    "name": "HIVE Digital Technologies",
+    "type": "research_light",
+    "company_positioning": [
+      "HIVE 是 crypto mining 與 digital infrastructure 公司，AI 相關邏輯是把電力與資料中心資產轉作 GPU compute。",
+      "它的客戶與收益來自 BTC mining、digital asset infrastructure，以及未來可能的 AI/HPC hosting。",
+      "影響股價的主因是 BTC 價格、hashrate、能源成本、GPU hosting 轉型與資本市場融資。"
+    ],
+    "company_structure": "HIVE 仍是 mining-driven 公司，AI/HPC 是轉型選擇權，不是已成熟的 cloud revenue engine。",
+    "customer_analysis": "HIVE 的客戶基礎不像軟體公司穩定，主要由 mining economics 與未來 hosting 合約決定。",
+    "financial_quality": "HIVE 財務品質看 cash cost per BTC、energy contract、GPU capex 與稀釋壓力，波動高。",
+    "market_view": "市場把 HIVE 當成 BTC beta 加 AI infrastructure option，但也擔心規模小與轉型可見度不足。",
+    "competition": "主要對手是 IREN、RIOT、CLSK、BTDR、CORZ 與大型 colocation 業者。HIVE 的差異是 digital infrastructure 轉型彈性，但規模、客戶與資本成本都不是優勢。風險是 AI hosting 敘事若沒有合約支撐，股價會回到 crypto cycle。",
+    "risk_opportunity": "機會在 BTC 上行、低成本電力與 GPU hosting，風險在規模小、融資稀釋、挖礦難度與轉型慢。",
+    "final_decision": "可列為 high speculative watch，不適合 pool30，也不適合保守 FCN。"
+  },  
 "LVS": {
 "symbol": "LVS",
 "name": "Las Vegas Sands",
