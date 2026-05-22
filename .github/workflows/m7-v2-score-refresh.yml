@@ -2,8 +2,8 @@ name: M7 v2 Score Refresh
 
 on:
   schedule:
-    # 08:10 Asia/Taipei (UTC+8) = 00:10 UTC
-    - cron: "10 0 * * *"
+    # Weekly Sunday 08:10 Asia/Taipei (UTC+8) = Saturday 00:10 UTC
+    - cron: "10 0 * * 0"
   workflow_dispatch:
 
 permissions:
@@ -16,6 +16,7 @@ concurrency:
 jobs:
   m7-v2-score-refresh:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
 
     steps:
       - name: Checkout repo
@@ -47,7 +48,14 @@ jobs:
             exit 1
           fi
 
+          echo "============================================================"
+          echo "Building long horizon runtime"
+          echo "============================================================"
           python scripts/build_market_runtime_long_horizon.py
+
+          echo "============================================================"
+          echo "Building M7 v2 scores"
+          echo "============================================================"
           python scripts/build_m7_v2_scores.py
 
       - name: Validate M7 v2 outputs
@@ -83,6 +91,7 @@ jobs:
                   count = len(payload)
               else:
                   count = 0
+
               print(f"validated={path}; count={count}")
 
           print("m7_v2_score_refresh_status=ok")
@@ -94,7 +103,8 @@ jobs:
           git config user.name "github-actions"
           git config user.email "actions@github.com"
 
-          git add data/runtime_staging/market_runtime_long_horizon.json data/m7_sandbox/m7_v2_scores.json
+          git add data/runtime_staging/market_runtime_long_horizon.json
+          git add data/m7_sandbox/m7_v2_scores.json
 
           if git diff --cached --quiet; then
             echo "No M7 v2 data changes to commit."
