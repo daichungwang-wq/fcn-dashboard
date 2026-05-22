@@ -115,53 +115,19 @@ function exposeM2RuntimeContext(){
   try{
     const g=getGroups();
     const base=g.base||[];
-    const maturityRows=g.maturity||[];
-    const readyRows=g.ready||[];
-    const candidateRows=g.candidate||[];
-    const wan=v=>Math.floor(n(v,0)/10000);
-    const byState=state=>maturityRows.filter(x=>x.maturity_state===state);
-    const confirmedMaturity=sum(byState('safe_maturity'));
-    const confirmedEarly=sum(readyRows);
-    const confirmedAssignment=sum(byState('stock_delivery_risk'));
-    const expectedMaturity=sum(byState('maturity_observe'));
-    const expectedEarly=sum(candidateRows);
-    const expectedAssignment=0;
-    const expectedPool=Math.max(0, expectedMaturity + expectedEarly - expectedAssignment);
     const strategy_amounts={};
     const strategy_amounts_wan={};
     ['長期穩定現金流','合理投資型','積極單','短期投機單'].forEach(k=>{
       const amt=sum(base.filter(x=>bucket(x)===k));
       strategy_amounts[k]=amt;
-      strategy_amounts_wan[k]=wan(amt);
+      strategy_amounts_wan[k]=Math.floor(amt/10000);
     });
     window.__M2_RUNTIME_CONTEXT__={
-      version:'v071_runtime_context_stage_caps',
+      version:'v070d_runtime_context',
       groups:g,
       strategy_amounts,
       strategy_amounts_wan,
       target_bank:TARGET_BANK,
-      confirmed_maturity:confirmedMaturity,
-      confirmed_early_exit:confirmedEarly,
-      confirmed_assignment:confirmedAssignment,
-      expected_maturity:expectedMaturity,
-      expected_early_exit:expectedEarly,
-      expected_assignment:expectedAssignment,
-      confirmed_maturity_wan:wan(confirmedMaturity),
-      confirmed_early_exit_wan:wan(confirmedEarly),
-      confirmed_assignment_wan:wan(confirmedAssignment),
-      expected_maturity_wan:wan(expectedMaturity),
-      expected_early_exit_wan:wan(expectedEarly),
-      expected_assignment_wan:wan(expectedAssignment),
-      expected_pool_wan:wan(expectedPool),
-      release_stage_source:{
-        confirmed_maturity_count:byState('safe_maturity').length,
-        confirmed_early_exit_count:readyRows.length,
-        confirmed_assignment_count:byState('stock_delivery_risk').length,
-        expected_maturity_count:byState('maturity_observe').length,
-        expected_early_exit_count:candidateRows.length,
-        expected_assignment_count:0,
-        formula:'stage1=confirmed_maturity+confirmed_early_exit-confirmed_assignment; stage2=floor(expected_pool*50%); stage3=expected_pool-stage2'
-      },
       updated_at:new Date().toISOString()
     };
   }catch(err){
