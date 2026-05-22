@@ -2474,8 +2474,7 @@
       "AI accelerator and EPYC demand remain major drivers"
     ]
   },
-  {
-  "ARM": {
+    "ARM": {
     "symbol": "ARM",
     "name": "Arm Holdings plc",
     "type": "research_raw",
