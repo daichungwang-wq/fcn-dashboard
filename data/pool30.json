@@ -8,6 +8,7 @@
   { "symbol": "MRVL", "name": "Marvell", "sector": "AI_SEMI", "subsector": "NETWORKING", "category": "growth" },
   { "symbol": "CRDO", "name": "Credo", "sector": "AI_SEMI", "subsector": "CONNECTIVITY", "category": "speculative" },
   { "symbol": "ALAB", "name": "Astera Labs", "sector": "AI_SEMI", "subsector": "CONNECTIVITY", "category": "speculative" },
+  { "symbol": "SNPS", "name": "Synopsys", "sector": "AI_SEMI", "subsector": "EDA_SOFTWARE", "category": "core" },
 
   { "symbol": "MSFT", "name": "Microsoft", "sector": "AI_APPLICATION", "subsector": "CLOUD_PLATFORM", "category": "core" },
   { "symbol": "GOOG", "name": "Google", "sector": "AI_APPLICATION", "subsector": "AI_CLOUD", "category": "growth" },
