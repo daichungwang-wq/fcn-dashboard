@@ -26,6 +26,11 @@ LONG_YEARS = {"3y": 3, "5y": 5, "10y": 10}
 REF_KEYS = ["d1", "d2", "d3", "d4", "d5", "1w", "1m", "3m", "6m", "12m", "3y", "5y", "10y"]
 WEEKLY_HORIZON_FALLBACK = [("10y", "10Y"), ("5y", "5Y"), ("3y", "3Y"), ("1y", "1Y")]
 
+SKIP_KEYS = {
+    "rows", "data", "meta", "metadata", "summary", "generated_at", "updated_at",
+    "source", "version", "symbol_count", "generated_from", "config"
+}
+
 
 def num(x):
     try:
@@ -43,6 +48,53 @@ def to_ref(price_now, ret):
     if price_now is None or ret is None or (1.0 + ret) == 0:
         return None
     return round(price_now / (1.0 + ret), 6)
+
+
+def normalize_runtime_rows(raw):
+    """
+    Accept both production shapes:
+    1. {"rows": {"NVDA": {...}, "SNPS": {...}}}
+    2. {"NVDA": {...}, "SNPS": {...}}
+
+    The old version iterated raw.items() directly, so it treated the top-level
+    key "rows" as ticker ROWS and produced symbol_count=1 with empty prices.
+    """
+    if isinstance(raw, dict) and isinstance(raw.get("rows"), dict):
+        source = raw["rows"]
+        shape = "rows_dict_by_symbol"
+    elif isinstance(raw, dict) and isinstance(raw.get("data"), dict):
+        source = raw["data"]
+        shape = "data_dict_by_symbol"
+    elif isinstance(raw, dict):
+        source = raw
+        shape = "top_level_dict_by_symbol"
+    else:
+        raise ValueError(f"Unsupported runtime JSON shape: {type(raw).__name__}")
+
+    rows = {}
+    skipped = []
+    for key, row in source.items():
+        key_s = str(key or "").strip()
+        key_u = key_s.upper()
+        if not key_s or key_s.lower() in SKIP_KEYS:
+            skipped.append(key_s)
+            continue
+        if not isinstance(row, dict):
+            skipped.append(key_s)
+            continue
+        sym = str(row.get("symbol") or row.get("ticker") or key_s).strip().upper()
+        if not sym or sym.lower() in SKIP_KEYS:
+            skipped.append(key_s)
+            continue
+        clean = dict(row)
+        clean["symbol"] = sym
+        rows[sym] = clean
+
+    print(f"Runtime shape: {shape}")
+    print(f"Runtime symbols normalized: {len(rows)}")
+    if skipped:
+        print("Skipped runtime keys:", ", ".join(skipped[:20]))
+    return rows, shape
 
 
 def _nearest_close(close: pd.Series, target_ts: pd.Timestamp) -> float | None:
@@ -127,29 +179,27 @@ def _compute_long_refs_from_weekly(close: pd.Series | None, price_now: float | N
 
 
 def main():
-    raw = json.load(SRC.open())
+    raw = json.load(SRC.open(encoding="utf-8"))
+    runtime_rows, runtime_shape = normalize_runtime_rows(raw)
     out = {}
     weekly_cache = {}
 
-    for sym, row in raw.items():
+    for sym, row in runtime_rows.items():
         if not isinstance(row, dict):
             continue
 
-        price_now = num(row.get("price_now"))
+        price_now = num(row.get("price_now") or row.get("today_price") or row.get("price") or row.get("last_price") or row.get("close") or row.get("current_price"))
         obj = {
             "price_now": price_now,
             "volume": num(row.get("volume")),
             "volume_ratio": num(row.get("volume_ratio")),
         }
 
-        # timing inputs from swing_days + ret_1w
         swing_days = row.get("swing_days") if isinstance(row.get("swing_days"), list) else []
         for i, key in enumerate(SWING_KEYS):
             swing_val = num(swing_days[i]) if i < len(swing_days) else None
-            # swing_days in source are percentage points (e.g. -1.08), convert to decimal return
             obj[f"ret_{key}"] = None if swing_val is None else round(swing_val / 100.0, 6)
 
-        # short horizon from source runtime (production behavior remains source-of-truth)
         for k, src_ret in SHORT_RET_MAP.items():
             rv = num(row.get(src_ret))
             obj[f"ret_{k}"] = rv
@@ -166,7 +216,6 @@ def main():
         long_vals = _compute_long_refs_from_weekly(close, price_now)
         obj.update(long_vals)
 
-        # map timing day refs from mapped swing returns
         for key in SWING_KEYS:
             obj[f"price_ref_{key}"] = to_ref(price_now, obj.get(f"ret_{key}"))
 
@@ -188,17 +237,19 @@ def main():
     OUT.parent.mkdir(parents=True, exist_ok=True)
     payload = {
         "generated_from": "scripts/runtime/build_market_runtime_long_horizon.py",
+        "runtime_shape": runtime_shape,
         "symbol_count": len(out),
         "rows": out,
     }
-    json.dump(payload, OUT.open("w"), indent=2, ensure_ascii=False)
+    json.dump(payload, OUT.open("w", encoding="utf-8"), indent=2, ensure_ascii=False)
 
     weekly_payload = {
         "generated_from": "scripts/runtime/build_market_runtime_long_horizon.py",
+        "runtime_shape": runtime_shape,
         "symbol_count": len(weekly_cache),
         "rows": weekly_cache,
     }
-    json.dump(weekly_payload, WEEKLY_CACHE_OUT.open("w"), indent=2, ensure_ascii=False)
+    json.dump(weekly_payload, WEEKLY_CACHE_OUT.open("w", encoding="utf-8"), indent=2, ensure_ascii=False)
 
     print(f"written {OUT}")
     print(f"written {WEEKLY_CACHE_OUT}")
