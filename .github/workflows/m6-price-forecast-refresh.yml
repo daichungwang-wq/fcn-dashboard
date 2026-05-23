@@ -1,0 +1,99 @@
+name: M6 Price Forecast Refresh
+
+on:
+  schedule:
+    # Monday / Wednesday / Friday 07:45 Asia/Taipei (UTC+8) = 23:45 UTC previous day
+    - cron: "45 23 * * 0,2,4"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: m6-price-forecast-refresh
+  cancel-in-progress: false
+
+jobs:
+  m6-price-forecast-refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Build M6 price forecast debug runtime
+        run: |
+          set -euo pipefail
+          python scripts/m6/build_price_forecast_debug.py
+
+      - name: Validate M6 output
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import os
+          import sys
+
+          path = "data/m6/price_forecast_debug.json"
+          if not os.path.exists(path):
+              print(f"missing_required={path}")
+              sys.exit(1)
+
+          with open(path, "r", encoding="utf-8") as f:
+              payload = json.load(f)
+
+          if isinstance(payload, dict):
+              rows = payload.get("rows") or payload.get("data") or payload
+              count = len(rows) if hasattr(rows, "__len__") else 0
+          elif isinstance(payload, list):
+              rows = payload
+              count = len(payload)
+          else:
+              count = 0
+
+          print(f"m6_forecast_count={count}")
+          if count <= 0:
+              print("m6_output_empty=true")
+              sys.exit(1)
+
+          focus = ["SNPS", "NVDA", "TSM", "AVGO", "MU", "MRVL"]
+          if isinstance(rows, dict):
+              found = [s for s in focus if s in rows]
+          elif isinstance(rows, list):
+              symbols = {str(r.get("symbol", "")).upper() for r in rows if isinstance(r, dict)}
+              found = [s for s in focus if s in symbols]
+          else:
+              found = []
+
+          print("m6_focus_symbols=" + (", ".join(found) if found else "none"))
+          PY
+
+      - name: Commit and push M6 forecast data
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+
+          git add data/m6/price_forecast_debug.json
+
+          if git diff --cached --quiet; then
+            echo "No M6 forecast changes to commit."
+            exit 0
+          fi
+
+          git commit -m "refresh m6 price forecast"
+          git pull --rebase origin main
+          git push origin main
