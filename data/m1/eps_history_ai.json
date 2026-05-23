@@ -3494,12 +3494,17 @@
         {
           "fiscal_year": 2024,
           "eps": 14.51
+        },
+        {
+          "fiscal_year": 2025,
+          "eps": 8.04
         }
       ],
       "eps_forward": [
         {
           "fiscal_year": 2025,
-          "eps": 8.04
+          "eps_estimate": 8.04,
+          "analyst_count": 10
         },
         {
           "fiscal_year": 2026,
@@ -3526,26 +3531,27 @@
       "data_quality": {
         "history_years": 14,
         "has_forward_eps": true,
-        "forward_years_with_analyst_count_ge_5": 2,
+        "forward_years_with_analyst_count_ge_5": 3,
         "confidence": "high",
         "warning": [
           "2025 EPS drop; verify fiscal-year basis"
         ],
-        "forward_years_with_analyst_count_ge_5_strict": 2,
+        "forward_years_with_analyst_count_ge_5_strict": 3,
         "history_years_strict": 14
       },
       "engine_flags": {
         "use_in_competition": true,
         "sandbox_ready": true,
-        "engine_ready_v3": false,
+        "engine_ready_v3": true,
         "quality_level": "A",
         "history_years": 14,
-        "valid_forward_years": 2,
+        "valid_forward_years": 3,
         "valid_forward_year_list": [
+          2025,
           2026,
           2027
         ],
-        "reason": "backfilled estimate; verify before production"
+        "reason": ""
       }
     },
     "ALAB": {
