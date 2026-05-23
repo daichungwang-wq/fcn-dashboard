@@ -3298,15 +3298,8 @@ def main() -> int:
             regression_valuation = compute_regression_valuation_band(feature, structure)
             m6_price_overlay = extract_m6_price_overlay(norm_sym)
 
-            final_actual_price_now = (
-                m6_price_overlay.get("m6_actual_price_now")
-                if m6_price_overlay.get("m6_actual_price_now") is not None
-                else regression_valuation.get("regression_actual_price_now")
-            )
-
             if isinstance(feature.get("valuation"), dict):
                 feature["valuation"].update(regression_valuation)
-                feature["valuation"]["m7_fair_price_source"] = final_fair_price_source
                 feature["valuation"]["m6_fair_price_now"] = m6_price_overlay.get("m6_fair_price_now")
                 feature["valuation"]["m6_actual_price_now"] = m6_price_overlay.get("m6_actual_price_now")
             if sym == "TSM":
@@ -3361,48 +3354,36 @@ def main() -> int:
 
             eps_engine = compute_eps_engine_v26(feature, trend, structure, global_eps_model)
 
-            # M7 fair price priority update:
-            # 1) EPS engine annual price model is the preferred M7 valuation fair-price source.
-            # 2) M6 remains tactical / timing price overlay.
-            # 3) M7 internal weekly regression remains fallback and self-band reference.
             eps_price_model_2025 = eps_engine.get("price_model_2025")
             eps_price_model_2026 = eps_engine.get("price_model_2026")
             eps_price_model_2027 = eps_engine.get("price_model_2027")
             eps_price_model_r2 = eps_engine.get("price_regression_r2")
-            eps_price_model_name = eps_engine.get("price_regression_model")
+            eps_price_model_source = eps_engine.get("price_regression_model")
 
-            eps_fair_candidate = safe_num(eps_price_model_2026, None)
-            eps_fair_source = "eps_engine.price_model_2026"
-            if eps_fair_candidate is None or eps_fair_candidate <= 0:
-                eps_fair_candidate = safe_num(eps_price_model_2027, None)
-                eps_fair_source = "eps_engine.price_model_2027"
-            if eps_fair_candidate is not None and eps_fair_candidate > 0:
-                final_fair_price_now = round2(eps_fair_candidate)
-                final_fair_price_source = eps_fair_source
-            else:
-                final_fair_price_now = (
-                    m6_price_overlay.get("m6_fair_price_now")
-                    if m6_price_overlay.get("m6_fair_price_now") is not None
-                    else regression_valuation.get("regression_fair_price_now")
-                )
-                final_fair_price_source = (
-                    m6_price_overlay.get("m6_price_forecast_source") or "m6_price_forecast_debug"
-                    if m6_price_overlay.get("m6_fair_price_now") is not None
-                    else "m7_internal_regression"
-                )
+            final_fair_price_now = regression_valuation.get("regression_fair_price_now")
+            final_actual_price_now = regression_valuation.get("regression_actual_price_now")
+            final_fair_price_source = "m7_internal_regression"
+
+            if m6_price_overlay.get("m6_fair_price_now") is not None:
+                final_fair_price_now = m6_price_overlay.get("m6_fair_price_now")
+                final_actual_price_now = m6_price_overlay.get("m6_actual_price_now") or final_actual_price_now
+                final_fair_price_source = "m6_price_forecast_debug"
+
+            if eps_price_model_2027 is not None:
+                final_fair_price_now = eps_price_model_2027
+                final_fair_price_source = "eps_engine.price_model_2027"
+
+            if eps_price_model_2026 is not None:
+                final_fair_price_now = eps_price_model_2026
+                final_fair_price_source = "eps_engine.price_model_2026"
 
             if isinstance(feature.get("valuation"), dict):
-                feature["valuation"].update({
-                    "regression_fair_price_now": final_fair_price_now,
-                    "regression_actual_price_now": final_actual_price_now,
-                    "m7_fair_price_source": final_fair_price_source,
-                    "eps_price_model_2025": eps_price_model_2025,
-                    "eps_price_model_2026": eps_price_model_2026,
-                    "eps_price_model_2027": eps_price_model_2027,
-                    "eps_price_model_source": eps_fair_source if eps_fair_candidate is not None and eps_fair_candidate > 0 else None,
-                    "eps_price_model_name": eps_price_model_name,
-                    "eps_price_model_r2": eps_price_model_r2,
-                })
+                feature["valuation"]["m7_fair_price_source"] = final_fair_price_source
+                feature["valuation"]["eps_price_model_2025"] = eps_price_model_2025
+                feature["valuation"]["eps_price_model_2026"] = eps_price_model_2026
+                feature["valuation"]["eps_price_model_2027"] = eps_price_model_2027
+                feature["valuation"]["eps_price_model_source"] = eps_price_model_source
+                feature["valuation"]["eps_price_model_r2"] = eps_price_model_r2
 
             weekly_count = len([
                 x for x in feature.get("weekly_prices", [])
@@ -3444,12 +3425,6 @@ def main() -> int:
                 "regression_fair_price_now": final_fair_price_now,
                 "regression_actual_price_now": final_actual_price_now,
                 "m7_fair_price_source": final_fair_price_source,
-                "eps_price_model_2025": eps_price_model_2025,
-                "eps_price_model_2026": eps_price_model_2026,
-                "eps_price_model_2027": eps_price_model_2027,
-                "eps_price_model_source": eps_fair_source if eps_fair_candidate is not None and eps_fair_candidate > 0 else None,
-                "eps_price_model_name": eps_price_model_name,
-                "eps_price_model_r2": eps_price_model_r2,
                 "m7_internal_regression_fair_price_now": regression_valuation.get("regression_fair_price_now"),
                 "m7_internal_regression_actual_price_now": regression_valuation.get("regression_actual_price_now"),
                 "m7_internal_regression_price_models_now": regression_valuation.get("regression_price_models_now"),
@@ -3462,6 +3437,11 @@ def main() -> int:
                 "m6_forecast_1d": m6_price_overlay.get("m6_forecast_1d"),
                 "m6_forecast_1w": m6_price_overlay.get("m6_forecast_1w"),
                 "m6_forecast_1m": m6_price_overlay.get("m6_forecast_1m"),
+                "eps_price_model_2025": eps_price_model_2025,
+                "eps_price_model_2026": eps_price_model_2026,
+                "eps_price_model_2027": eps_price_model_2027,
+                "eps_price_model_source": eps_price_model_source,
+                "eps_price_model_r2": eps_price_model_r2,
                 "regression_price_models_now": regression_valuation.get("regression_price_models_now"),
                 "m7_price_models_now": regression_valuation.get("m7_price_models_now"),
                 "m7_linear_fair_price": m6_price_overlay.get("m6_linear_fair_price") or regression_valuation.get("m7_linear_fair_price"),
@@ -3616,8 +3596,7 @@ def main() -> int:
             "scope": {
                 "scenarios": ["M7_RAW", "M7_V2", "M7_EFFECTIVE", "M7_FINAL"],
                 "price_model_outputs": [
-                    "EPS primary: eps_engine.price_model_2026",
-                    "M6 tactical: data/m6/price_forecast_debug.json",
+                    "M6 primary: data/m6/price_forecast_debug.json",
                     "regression_fair_price_now",
                     "m6_fair_price_now",
                     "m6_forecast_1d",
@@ -3696,6 +3675,5 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
 
 
