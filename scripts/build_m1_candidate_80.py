@@ -5,8 +5,8 @@
 # 2. 讀取主 runtime：data/market_runtime.json
 # 3. 支援 runtime 兩種格式：{ rows: {SYMBOL: ...} } 或 {SYMBOL: ...}
 # 4. 用 M7-lite 邏輯計算 market score
-# 5. pool30 / deep profile / special stocks 強制進 Candidate
-# 6. 輸出 Candidate 80 到 data/m1/m1_candidate_80.json
+# 5. Candidate = Top 80 score core + mandatory pool30/deep/fcn/special stocks
+# 6. 輸出到 data/m1/m1_candidate_80.json；實際筆數可能 > 80
 # ==========================================
 
 import json
@@ -19,6 +19,8 @@ OUTPUT_PATH = "data/m1/m1_candidate_80.json"
 POOL30_PATH = "data/pool30.json"
 DEEP_PROFILE_PATH = "data/m1/m1_stock_profile.json"
 FCN_POOL_PATH = "data/fcn_pool.json"
+
+CORE_TARGET_COUNT = 80
 
 SPECIAL_SYMBOLS = {
     "SNPS",
@@ -63,11 +65,9 @@ def extract_symbols(payload):
                     symbols.add(str(sym).upper())
 
     elif isinstance(payload, dict):
-        # keyed by symbol format: { "NVDA": {...} }
         for key, item in payload.items():
             if isinstance(key, str) and key.upper() not in {"META", "SUMMARY", "DATA", "ROWS", "ITEMS"}:
                 if isinstance(item, dict) or isinstance(item, list) or isinstance(item, str):
-                    # deep profile is keyed directly by symbol
                     if len(key) <= 8:
                         symbols.add(key.upper())
 
@@ -78,7 +78,6 @@ def extract_symbols(payload):
             elif isinstance(item, list):
                 symbols |= extract_symbols(item)
 
-        # common container formats
         for container_key in ["rows", "data", "stocks", "items", "holdings", "positions"]:
             if container_key in payload:
                 symbols |= extract_symbols(payload.get(container_key))
@@ -125,8 +124,6 @@ def load_mandatory_symbols():
 
 # ---------- M7-lite scoring ----------
 def valuation_score(stock):
-    # 先留接口，現在沒有 valuation raw，就先給中性 5
-    # 之後可接 PE / growth / quality
     return 5.0
 
 
@@ -136,7 +133,6 @@ def trend_score(rt):
     r6m = to_num(rt.get("ret_6m"))
     r12m = to_num(rt.get("ret_12m"))
 
-    # 長中期趨勢
     x = (
         0.15 * r1m +
         0.25 * r3m +
@@ -144,7 +140,6 @@ def trend_score(rt):
         0.35 * r12m
     ) * 100
 
-    # 映射到 0~10
     if x >= 40: return 10
     if x >= 25: return 8.5
     if x >= 15: return 7.5
@@ -163,7 +158,6 @@ def quality_score(stock, rt):
 
     base = 5.0
 
-    # 類別微調
     if cat == "core":
         base += 2.0
     elif cat == "growth":
@@ -175,13 +169,11 @@ def quality_score(stock, rt):
     elif cat == "speculative":
         base -= 1.5
 
-    # 長期報酬加分
     if r12m > 0.30:
         base += 1.0
     elif r12m < -0.20:
         base -= 1.0
 
-    # 成交量異常太大，先不當品質加分
     if vol_ratio > 2.5:
         base -= 0.5
 
@@ -211,7 +203,6 @@ def m7_lite_score(stock, rt):
     quality = quality_score(stock, rt)
     snap = snapshot_score(rt)
 
-    # M1 上游用，不納入 news / timing / 短結構
     score = (
         0.35 * val +
         0.35 * trend +
@@ -268,6 +259,7 @@ def main():
             "quality_score": s["quality_score"],
             "snapshot_score": s["snapshot_score"],
             "mandatory_candidate": is_mandatory,
+            "in_candidate_core_80": False,
             "candidate_source": "mandatory" if is_mandatory else "score_rank",
             "ret_1d": rt.get("ret_1d", 0),
             "ret_1w": rt.get("ret_1w", 0),
@@ -280,15 +272,39 @@ def main():
 
     scored.sort(key=lambda x: x["m7_lite_score"], reverse=True)
 
-    mandatory_rows = [row for row in scored if row["mandatory_candidate"]]
-    other_rows = [row for row in scored if not row["mandatory_candidate"]]
+    # Core 80 = pure score top 80, regardless of pool30.
+    core_rows = scored[:CORE_TARGET_COUNT]
+    core_symbols = {row["symbol"] for row in core_rows}
 
-    # Candidate 80 = mandatory first + score-ranked fillers.
-    # If mandatory exceeds 80, keep all mandatory rows because pool30 / special stocks must be visible in M1.
-    if len(mandatory_rows) >= 80:
-        candidate_rows = mandatory_rows
-    else:
-        candidate_rows = mandatory_rows + other_rows[:80 - len(mandatory_rows)]
+    mandatory_rows = [row for row in scored if row["mandatory_candidate"]]
+    mandatory_symbols_scored = {row["symbol"] for row in mandatory_rows}
+
+    # Final candidate = Top80 union mandatory. Duplicates removed.
+    final_by_symbol = {}
+    for row in core_rows:
+        row = dict(row)
+        row["in_candidate_core_80"] = True
+        row["candidate_source"] = "core80+mandatory" if row["symbol"] in mandatory_symbols_scored else "core80"
+        final_by_symbol[row["symbol"]] = row
+
+    for row in mandatory_rows:
+        if row["symbol"] not in final_by_symbol:
+            row = dict(row)
+            row["in_candidate_core_80"] = False
+            row["candidate_source"] = "mandatory_addon"
+            final_by_symbol[row["symbol"]] = row
+
+    candidate_rows = list(final_by_symbol.values())
+    candidate_rows.sort(
+        key=lambda x: (
+            0 if x.get("in_candidate_core_80") else 1,
+            -to_num(x.get("m7_lite_score")),
+            str(x.get("symbol", ""))
+        )
+    )
+
+    mandatory_in_core = len(core_symbols & mandatory_symbols_scored)
+    mandatory_addon = len(mandatory_symbols_scored - core_symbols)
 
     Path("data/m1").mkdir(parents=True, exist_ok=True)
     with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
@@ -296,9 +312,12 @@ def main():
 
     print(f"Universe total: {len(universe)}")
     print(f"Total scored: {len(scored)}")
-    print(f"Candidate output: {len(candidate_rows)}")
-    print(f"Mandatory included: {len(mandatory_rows)}")
-    print(f"Score fillers: {max(0, len(candidate_rows) - len(mandatory_rows))}")
+    print(f"Core target count: {CORE_TARGET_COUNT}")
+    print(f"Core 80 output: {len(core_rows)}")
+    print(f"Mandatory scored: {len(mandatory_rows)}")
+    print(f"Mandatory already in core80: {mandatory_in_core}")
+    print(f"Mandatory addon: {mandatory_addon}")
+    print(f"Final Candidate output: {len(candidate_rows)}")
     print(f"Missing runtime: {len(missing_runtime)}")
     if missing_runtime:
         print("Missing runtime symbols:", ", ".join(missing_runtime[:80]))
@@ -307,9 +326,10 @@ def main():
     if mandatory_missing_runtime:
         print("Mandatory missing runtime:", ", ".join(mandatory_missing_runtime[:80]))
     print(f"Saved Candidate to {OUTPUT_PATH}")
-    print("Mandatory sample:")
-    for row in mandatory_rows[:20]:
-        print(row["symbol"], row["m7_lite_score"], row["category"], row["sector"])
+    print("Mandatory addon sample:")
+    for row in candidate_rows:
+        if row.get("candidate_source") == "mandatory_addon":
+            print(row["symbol"], row["m7_lite_score"], row["category"], row["sector"])
     print("Top 10 overall:")
     for row in candidate_rows[:10]:
         print(row["symbol"], row["m7_lite_score"], row["category"], row["sector"], row["candidate_source"])
