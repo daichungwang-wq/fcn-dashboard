@@ -420,6 +420,126 @@ UNIVERSE_BY_SYMBOL = {
 
 
 # -------------------------
+# M6 price forecast input adapter
+# -------------------------
+M6_PRICE_FORECAST_DATA = load_optional_json(Path("data/m6/price_forecast_debug.json"), {})
+
+
+def _iter_symbol_rows(payload: Any) -> list[dict[str, Any]]:
+    """Generic symbol row iterator for M6/M7/M1 style JSON payloads."""
+    if isinstance(payload, list):
+        return [x for x in payload if isinstance(x, dict)]
+    if isinstance(payload, dict):
+        for key in ["rows", "data", "items", "stocks", "results", "forecasts"]:
+            part = payload.get(key)
+            if isinstance(part, list):
+                return [x for x in part if isinstance(x, dict)]
+            if isinstance(part, dict):
+                out = []
+                for sym_key, row in part.items():
+                    if isinstance(row, dict):
+                        r = dict(row)
+                        r.setdefault("symbol", sym_key)
+                        out.append(r)
+                return out
+        out = []
+        for sym_key, row in payload.items():
+            if isinstance(row, dict):
+                r = dict(row)
+                r.setdefault("symbol", sym_key)
+                out.append(r)
+        return out
+    return []
+
+
+def get_m6_price_forecast(symbol: str) -> dict[str, Any]:
+    sym = normalize_symbol(symbol)
+    for row in _iter_symbol_rows(M6_PRICE_FORECAST_DATA):
+        row_sym = normalize_symbol(row.get("symbol") or row.get("ticker") or row.get("Symbol") or row.get("underlying"))
+        if row_sym == sym:
+            return row
+    return {}
+
+
+def _pick_first_number(row: dict[str, Any], keys: list[str]) -> float | None:
+    if not isinstance(row, dict):
+        return None
+    for key in keys:
+        num = safe_num(row.get(key), None)
+        if num is not None:
+            return num
+    return None
+
+
+def extract_m6_price_overlay(symbol: str) -> dict[str, Any]:
+    """
+    M6 is the formal price / fair-price / forecast engine.
+    M7 should use M6 fair price first, and keep M7 internal regression as fallback only.
+    """
+    row = get_m6_price_forecast(symbol)
+    empty = {
+        "has_m6_price_forecast": False,
+        "m6_price_forecast_source": None,
+        "m6_actual_price_now": None,
+        "m6_fair_price_now": None,
+        "m6_linear_fair_price": None,
+        "m6_quadratic_fair_price": None,
+        "m6_logarithmic_fair_price": None,
+        "m6_forecast_1d": None,
+        "m6_forecast_1w": None,
+        "m6_forecast_1m": None,
+    }
+    if not row:
+        return empty
+
+    actual = _pick_first_number(row, ["actual_price_now", "price_now", "today_price", "current_price", "last_price", "spot"])
+    fair = _pick_first_number(row, ["fair_price_now", "adjusted_fair_price_now", "regression_fair_price_now", "m6_fair_price_now", "fair_price"])
+    linear = _pick_first_number(row, ["linear_fair_price", "m6_linear_fair_price", "price_linear_fair_price"])
+    quadratic = _pick_first_number(row, ["quadratic_fair_price", "m6_quadratic_fair_price", "price_quadratic_fair_price"])
+    logarithmic = _pick_first_number(row, ["logarithmic_fair_price", "log_fair_price", "m6_logarithmic_fair_price", "price_log_fair_price"])
+    forecast_1d = _pick_first_number(row, ["forecast_1d", "price_forecast_1d", "adjusted_forecast_1d", "pred_1d"])
+    forecast_1w = _pick_first_number(row, ["forecast_1w", "price_forecast_1w", "adjusted_forecast_1w", "pred_1w"])
+    forecast_1m = _pick_first_number(row, ["forecast_1m", "price_forecast_1m", "adjusted_forecast_1m", "pred_1m"])
+
+    models = row.get("models") if isinstance(row.get("models"), dict) else {}
+    price_models = row.get("price_models") if isinstance(row.get("price_models"), dict) else {}
+    regression_models = row.get("regression_price_models_now") if isinstance(row.get("regression_price_models_now"), dict) else {}
+
+    def nested_model_price(model_key: str) -> float | None:
+        for container in [models, price_models, regression_models]:
+            model_row = container.get(model_key) if isinstance(container, dict) else None
+            if isinstance(model_row, dict):
+                n = _pick_first_number(model_row, ["fair_price_now", "fair_price", "adjusted_price", "price_now", "forecast_now"])
+                if n is not None:
+                    return n
+        return None
+
+    if linear is None:
+        linear = nested_model_price("linear")
+    if quadratic is None:
+        quadratic = nested_model_price("quadratic")
+    if logarithmic is None:
+        logarithmic = nested_model_price("logarithmic") or nested_model_price("log")
+
+    model_vals = [x for x in [linear, quadratic, logarithmic] if x is not None and x > 0]
+    if fair is None and model_vals:
+        fair = sum(model_vals) / len(model_vals)
+
+    return {
+        "has_m6_price_forecast": True,
+        "m6_price_forecast_source": "data/m6/price_forecast_debug.json",
+        "m6_actual_price_now": round2(actual) if actual is not None else None,
+        "m6_fair_price_now": round2(fair) if fair is not None else None,
+        "m6_linear_fair_price": round2(linear) if linear is not None else None,
+        "m6_quadratic_fair_price": round2(quadratic) if quadratic is not None else None,
+        "m6_logarithmic_fair_price": round2(logarithmic) if logarithmic is not None else None,
+        "m6_forecast_1d": round2(forecast_1d) if forecast_1d is not None else None,
+        "m6_forecast_1w": round2(forecast_1w) if forecast_1w is not None else None,
+        "m6_forecast_1m": round2(forecast_1m) if forecast_1m is not None else None,
+    }
+
+
+# -------------------------
 # M1 score input adapter
 # -------------------------
 M1_SCORES_DATA = load_optional_json(Path("data/m1/m1_scores.json"), {})
@@ -3176,8 +3296,29 @@ def main() -> int:
             trend = compute_trend(feature)
             structure = compute_structure(feature)
             regression_valuation = compute_regression_valuation_band(feature, structure)
+            m6_price_overlay = extract_m6_price_overlay(norm_sym)
+
+            final_fair_price_now = (
+                m6_price_overlay.get("m6_fair_price_now")
+                if m6_price_overlay.get("m6_fair_price_now") is not None
+                else regression_valuation.get("regression_fair_price_now")
+            )
+            final_actual_price_now = (
+                m6_price_overlay.get("m6_actual_price_now")
+                if m6_price_overlay.get("m6_actual_price_now") is not None
+                else regression_valuation.get("regression_actual_price_now")
+            )
+            final_fair_price_source = (
+                "m6_price_forecast_debug"
+                if m6_price_overlay.get("m6_fair_price_now") is not None
+                else "m7_internal_regression"
+            )
+
             if isinstance(feature.get("valuation"), dict):
                 feature["valuation"].update(regression_valuation)
+                feature["valuation"]["m7_fair_price_source"] = final_fair_price_source
+                feature["valuation"]["m6_fair_price_now"] = m6_price_overlay.get("m6_fair_price_now")
+                feature["valuation"]["m6_actual_price_now"] = m6_price_overlay.get("m6_actual_price_now")
             if sym == "TSM":
                 tsm_weekly_len = len([x for x in feature.get("weekly_prices", []) if safe_num(x, None) is not None and safe_num(x, 0.0) > 0])
                 print(
@@ -3266,13 +3407,26 @@ def main() -> int:
                 "historical_median_multiple": regression_valuation.get("historical_median_multiple"),
                 "historical_p25_multiple": regression_valuation.get("historical_p25_multiple"),
                 "historical_p75_multiple": regression_valuation.get("historical_p75_multiple"),
-                "regression_fair_price_now": regression_valuation.get("regression_fair_price_now"),
-                "regression_actual_price_now": regression_valuation.get("regression_actual_price_now"),
+                "regression_fair_price_now": final_fair_price_now,
+                "regression_actual_price_now": final_actual_price_now,
+                "m7_fair_price_source": final_fair_price_source,
+                "m7_internal_regression_fair_price_now": regression_valuation.get("regression_fair_price_now"),
+                "m7_internal_regression_actual_price_now": regression_valuation.get("regression_actual_price_now"),
+                "m7_internal_regression_price_models_now": regression_valuation.get("regression_price_models_now"),
+                "m6_price_forecast_source": m6_price_overlay.get("m6_price_forecast_source"),
+                "m6_fair_price_now": m6_price_overlay.get("m6_fair_price_now"),
+                "m6_actual_price_now": m6_price_overlay.get("m6_actual_price_now"),
+                "m6_linear_fair_price": m6_price_overlay.get("m6_linear_fair_price"),
+                "m6_quadratic_fair_price": m6_price_overlay.get("m6_quadratic_fair_price"),
+                "m6_logarithmic_fair_price": m6_price_overlay.get("m6_logarithmic_fair_price"),
+                "m6_forecast_1d": m6_price_overlay.get("m6_forecast_1d"),
+                "m6_forecast_1w": m6_price_overlay.get("m6_forecast_1w"),
+                "m6_forecast_1m": m6_price_overlay.get("m6_forecast_1m"),
                 "regression_price_models_now": regression_valuation.get("regression_price_models_now"),
                 "m7_price_models_now": regression_valuation.get("m7_price_models_now"),
-                "m7_linear_fair_price": regression_valuation.get("m7_linear_fair_price"),
-                "m7_quadratic_fair_price": regression_valuation.get("m7_quadratic_fair_price"),
-                "m7_logarithmic_fair_price": regression_valuation.get("m7_logarithmic_fair_price"),
+                "m7_linear_fair_price": m6_price_overlay.get("m6_linear_fair_price") or regression_valuation.get("m7_linear_fair_price"),
+                "m7_quadratic_fair_price": m6_price_overlay.get("m6_quadratic_fair_price") or regression_valuation.get("m7_quadratic_fair_price"),
+                "m7_logarithmic_fair_price": m6_price_overlay.get("m6_logarithmic_fair_price") or regression_valuation.get("m7_logarithmic_fair_price"),
                 "regression_valuation_model": regression_valuation.get("regression_valuation_model"),
                 "regression_valuation_r2": regression_valuation.get("regression_valuation_r2"),
                 "regression_valuation_history_weeks": regression_valuation.get("regression_valuation_history_weeks"),
@@ -3421,7 +3575,16 @@ def main() -> int:
             "generated_at": now_iso(),
             "scope": {
                 "scenarios": ["M7_RAW", "M7_V2", "M7_EFFECTIVE", "M7_FINAL"],
-                "price_model_outputs": ["regression_price_models_now", "m7_price_models_now", "eps_engine.price_model_forecast_all"],
+                "price_model_outputs": [
+                    "M6 primary: data/m6/price_forecast_debug.json",
+                    "regression_fair_price_now",
+                    "m6_fair_price_now",
+                    "m6_forecast_1d",
+                    "m6_forecast_1w",
+                    "m6_forecast_1m",
+                    "M7 fallback: m7_internal_regression_fair_price_now",
+                    "eps_engine.price_model_forecast_all",
+                ],
                 "symbol_count": len(rows_out),
                 "global_eps_model_sample_count": global_eps_model.get("global_sample_count"),
             },
@@ -3492,6 +3655,9 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+
+
 
 
 
