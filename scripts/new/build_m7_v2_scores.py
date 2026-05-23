@@ -14,7 +14,6 @@ from __future__ import annotations
 import hashlib
 import json
 import math
-import os
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -3131,10 +3130,6 @@ def compute_historical_score(feature: dict[str, Any]) -> float:
 
 
 
-def debug_full_enabled() -> bool:
-    return str(os.getenv("M7_EXPORT_DEBUG_FULL", "0")).lower() in {"1", "true", "yes", "y", "on"}
-
-
 def strip_heavy_m7_fields(row: dict[str, Any]) -> dict[str, Any]:
     out = dict(row)
     out.pop("weekly_prices", None)
@@ -3189,7 +3184,6 @@ def main() -> int:
         "ab_compare": Path("data/m7_sandbox/m7_v2_ab_compare.json"),
         "manifest": Path("data/m7_sandbox/m7_v2_run_manifest.json"),
     }
-    export_debug_full = debug_full_enabled()
 
     started_at = now_iso()
     notes: list[str] = []
@@ -3511,9 +3505,8 @@ def main() -> int:
 
         rows_out.sort(key=lambda r: r["m7_final_score"], reverse=True)
         ab_rows.sort(key=lambda r: r["m7_final_score"], reverse=True)
-        rows_debug = [strip_heavy_m7_fields(row) for row in rows_out] if export_debug_full else None
-        rows_slim_source = rows_debug if rows_debug is not None else [strip_heavy_m7_fields(row) for row in rows_out]
-        rows_slim = [strip_debug_model_fields(row) for row in rows_slim_source]
+        rows_debug = [strip_heavy_m7_fields(row) for row in rows_out]
+        rows_slim = [strip_debug_model_fields(row) for row in rows_debug]
 
         scores_payload = {
             "generated_at": now_iso(),
@@ -3529,7 +3522,6 @@ def main() -> int:
                 "symbol_count": len(rows_slim),
                 "global_eps_model_sample_count": global_eps_model.get("global_sample_count"),
                 "output_mode": "slim",
-                "debug_full_exported": export_debug_full,
                 "debug_full_path": "data/m7_sandbox/m7_v2_scores_v1.json",
             },
             "rows": rows_slim,
@@ -3552,7 +3544,7 @@ def main() -> int:
                 "global_eps_model_sample_count": global_eps_model.get("global_sample_count"),
                 "output_mode": "debug_full",
             },
-            "rows": rows_debug or [],
+            "rows": rows_debug,
         }
 
         ab_payload = {
@@ -3603,8 +3595,7 @@ def main() -> int:
         }
 
         save_json(output_paths["scores"], scores_payload)
-        if export_debug_full:
-            save_json(output_paths["scores_debug"], scores_debug_payload)
+        save_json(output_paths["scores_debug"], scores_debug_payload)
         save_json(output_paths["ab_compare"], ab_payload)
         save_json(output_paths["manifest"], manifest)
 
@@ -3622,6 +3613,7 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
 
 
 
