@@ -38,25 +38,25 @@ jobs:
         run: |
           set -euo pipefail
 
-          if [ ! -f "scripts/build_market_runtime_long_horizon.py" ]; then
-            echo "Missing required script: scripts/build_market_runtime_long_horizon.py"
+          if [ ! -f "scripts/runtime/build_market_runtime_long_horizon.py" ]; then
+            echo "Missing required script: scripts/runtime/build_market_runtime_long_horizon.py"
             exit 1
           fi
 
-          if [ ! -f "scripts/build_m7_v2_scores.py" ]; then
-            echo "Missing required script: scripts/build_m7_v2_scores.py"
+          if [ ! -f "scripts/new/build_m7_v2_scores.py" ]; then
+            echo "Missing required script: scripts/new/build_m7_v2_scores.py"
             exit 1
           fi
 
           echo "============================================================"
           echo "Building long horizon runtime"
           echo "============================================================"
-          python scripts/build_market_runtime_long_horizon.py
+          python scripts/runtime/build_market_runtime_long_horizon.py
 
           echo "============================================================"
           echo "Building M7 v2 scores"
           echo "============================================================"
-          python scripts/build_m7_v2_scores.py
+          python scripts/new/build_m7_v2_scores.py
 
       - name: Validate M7 v2 outputs
         run: |
