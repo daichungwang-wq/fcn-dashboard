@@ -16,7 +16,7 @@ h1{font-size:30px;margin:0;color:#0f172a}.subtitle{font-size:14px;color:var(--mu
 a.btn,button{border:1px solid #cbd5e1;border-radius:8px;background:#172033;color:#fff;padding:9px 12px;text-decoration:none;font-weight:800;cursor:pointer}
 a.btn.light,button.light{background:#fff;color:#172033}
 .card,.kpi{background:var(--panel);border:1px solid var(--line);border-radius:8px;box-shadow:var(--shadow)}
-.card{padding:14px;margin-bottom:14px}.grid{display:grid;gap:12px}.summary{grid-template-columns:repeat(5,1fr);margin-bottom:14px}.coverage{grid-template-columns:repeat(6,1fr)}
+.card{padding:14px;margin-bottom:14px}.grid{display:grid;gap:12px}.summary{grid-template-columns:repeat(6,1fr);margin-bottom:14px}.coverage{grid-template-columns:repeat(6,1fr)}
 .kpi{padding:14px}.kpi-label{font-size:12px;color:var(--muted);font-weight:900}.kpi-value{font-size:28px;font-weight:950;margin-top:5px}.kpi-note{font-size:12px;color:var(--muted);line-height:1.45;margin-top:4px}
 .section-title{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:10px}h2{font-size:18px;margin:0}.small{font-size:12px;color:var(--muted);line-height:1.55}
 .pill{display:inline-flex;align-items:center;border:1px solid #d8dee8;border-radius:999px;padding:4px 9px;font-size:12px;font-weight:900;background:#f8fafc}
@@ -31,7 +31,7 @@ a.btn.light,button.light{background:#fff;color:#172033}
   <div class="topbar">
     <div>
       <h1>System Data Pipeline Health Dashboard</h1>
-      <div class="subtitle">偵測新增股票後哪些資料還沒補、哪些 JSON 過期、哪些 script 沒跑。只做偵測、盤點、dashboard，不自動修復、不自動新增股票資料、不修改 M1/M7 score。</div>
+      <div class="subtitle">檢查新增股票後，universe、candidate、pool、runtime、M7、M1 是否同步；同時顯示過期 JSON、缺少 script mapping、GitHub Actions workflow failure，以及下一批應該逐一改善的修復項。</div>
     </div>
     <div class="toolbar">
       <button id="reloadBtn" class="light" type="button">Reload</button>
@@ -45,6 +45,16 @@ a.btn.light,button.light{background:#fff;color:#172033}
   <section class="grid summary" id="summary"></section>
 
   <section class="card">
+    <div class="section-title"><div><h2>GitHub Actions / Workflow Health</h2><div class="small">顯示 daily-runtime-refresh 最新失敗狀態與建議修復方向。dependency install 或 requirements.txt 缺失一律標成 P0。</div></div></div>
+    <div class="table-wrap"><table><thead><tr><th>Workflow</th><th>Status</th><th>Failed Step</th><th>Error Message</th><th>Suggested Fix</th><th>Priority</th></tr></thead><tbody id="workflowRows"></tbody></table></div>
+  </section>
+
+  <section class="card">
+    <div class="section-title"><div><h2>Daily Runtime Requirements</h2><div class="small">每日 runtime 更新前必須先確認依賴安裝成功，否則 market_runtime 與 long horizon runtime 會停止更新。</div></div></div>
+    <div class="explain" id="requirementsBox"></div>
+  </section>
+
+  <section class="card">
     <div class="section-title"><div><h2>A. Stock Coverage</h2><div class="small">檢查 universe / candidate / pool / runtime / M7 / M1 是否一致。</div></div></div>
     <div class="grid coverage" id="coverageGrid"></div>
   </section>
@@ -55,28 +65,28 @@ a.btn.light,button.light{background:#fff;color:#172033}
   </section>
 
   <section class="card">
-    <div class="section-title"><div><h2>C. Freshness Check</h2><div class="small">檢查 updated_at / generated_at / file modified time 與建議更新頻率。</div></div></div>
+    <div class="section-title"><div><h2>C. Freshness Check</h2><div class="small">檢查 updated_at / generated_at / file modified time，並標示是否已超過建議更新週期。</div></div></div>
     <div class="table-wrap"><table><thead><tr><th>File</th><th>Status</th><th>Age</th><th>Recommended</th><th>Updated At</th><th>Generated At</th><th>Modified At</th><th>Source</th></tr></thead><tbody id="freshRows"></tbody></table></div>
   </section>
 
   <section class="card">
-    <div class="section-title"><div><h2>D. Required Script Map</h2><div class="small">每個資料檔應知道由哪個 script 產生；找不到就標記 MISSING_SCRIPT_MAPPING。</div></div></div>
+    <div class="section-title"><div><h2>D. Required Script Map</h2><div class="small">列出每個資料檔由哪個 script 產生；找不到來源時標記 MISSING_SCRIPT_MAPPING。</div></div></div>
     <div class="table-wrap"><table><thead><tr><th>File</th><th>Mapping</th><th>Scripts</th></tr></thead><tbody id="scriptRows"></tbody></table></div>
   </section>
 
   <section class="card">
-    <div class="section-title"><div><h2>E. New Stock Onboarding Checklist</h2><div class="small">新增股票後必須逐一跑完，避免資料鏈斷掉。</div></div></div>
+    <div class="section-title"><div><h2>E. New Stock Onboarding Checklist</h2><div class="small">新增股票後必須逐一跑完，避免資料生產鏈斷掉。</div></div></div>
     <div class="table-wrap"><table><thead><tr><th>Step</th><th>Item</th><th>Target File</th><th>Script</th></tr></thead><tbody id="checkRows"></tbody></table></div>
   </section>
 
   <section class="card">
-    <div class="section-title"><div><h2>F. Health Score</h2><div class="small">用一個簡單分數提醒資料鏈目前是否可信；分數只作偵測，不會觸發自動修復。</div></div><div id="scoreBadge"></div></div>
+    <div class="section-title"><div><h2>F. Health Score</h2><div class="small">用總分、重大缺口、過期檔案、workflow failure 與下一個優先項，判斷資料鏈是否穩定。</div></div><div id="scoreBadge"></div></div>
     <div class="grid summary" id="healthScoreGrid"></div>
   </section>
 
   <section class="card">
-    <div class="section-title"><div><h2>G. Next 10 Fix Items</h2><div class="small">按 priority 排序，一次處理一個清楚問題。</div></div></div>
-    <div class="explain">這個 dashboard 不會自動改資料。它只指出下一個最該做的修復項，讓資料生產鏈能逐一改善。</div>
+    <div class="section-title"><div><h2>G. Next 4 Fix Items</h2><div class="small">目前 stale_file_count 是 4，因此直接列出 4 個過期 JSON 的下一步修復項。</div></div></div>
+    <div class="explain">這個 dashboard 不會自動改資料。它只指出接下來應該逐一改善的項目，讓資料生產鏈先恢復可觀察、可追蹤、可修正。</div>
     <div class="table-wrap"><table><thead><tr><th>Priority</th><th>Issue</th><th>Affected File</th><th>Symbols</th><th>Suggested Script</th><th>Reason</th></tr></thead><tbody id="fixRows"></tbody></table></div>
   </section>
 </div>
@@ -84,38 +94,46 @@ a.btn.light,button.light{background:#fff;color:#172033}
 <script>
 const HEALTH_PATH="data/mm/data_pipeline_health.json";
 const $=id=>document.getElementById(id);
-const esc=v=>String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+const value=(v,fallback="")=>v===undefined||v===null?fallback:v;
+const esc=v=>String(value(v)).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
 const pill=(text,type="fair")=>`<span class="pill ${type}">${esc(text)}</span>`;
 function statusPill(v){return v?pill("stale","avoid"):pill("fresh","good")}
+function priorityType(v){return v==="P0"?"avoid":v==="P1"?"weak":"fair"}
 function scoreType(s){return s>=85?"good":s>=70?"fair":s>=50?"weak":"avoid"}
 async function loadJson(path){const res=await fetch(path,{cache:"no-store"});if(!res.ok)throw new Error(`${path} ${res.status}`);return res.json();}
 function render(data){
   const hs=data.health_score||{};
   $("summary").innerHTML=[
-    ["Pipeline Score",hs.pipeline_health_score??"N/A","資料鏈健康分"],
-    ["Critical Missing",hs.critical_missing_count??0,"重大缺口"],
-    ["Stale Files",hs.stale_file_count??0,"過期 JSON"],
-    ["Missing Symbols",hs.missing_symbol_count??0,"coverage 缺口"],
+    ["Pipeline Score",value(hs.pipeline_health_score,"N/A"),"資料鏈健康分"],
+    ["Critical Missing",value(hs.critical_missing_count,0),"重大缺口"],
+    ["Workflow Failure",value(hs.workflow_failure_count,0),"Actions 失敗數"],
+    ["Stale Files",value(hs.stale_file_count,0),"過期 JSON"],
+    ["Missing Symbols",value(hs.missing_symbol_count,0),"coverage 缺口"],
     ["Next Action",hs.next_action_priority||"N/A","下一個優先項"]
   ].map(([a,b,c],i)=>`<div class="kpi"><div class="kpi-label">${a}</div><div class="kpi-value">${i===0?pill(b,scoreType(Number(b)||0)):esc(b)}</div><div class="kpi-note">${c}</div></div>`).join("");
-  $("scoreBadge").innerHTML=pill(hs.pipeline_health_score??"N/A",scoreType(Number(hs.pipeline_health_score)||0));
+  $("workflowRows").innerHTML=(data.workflow_health||[]).map(r=>`<tr><td>${esc(r.workflow_name)}</td><td>${pill(r.last_run_status,r.last_run_status==="success"?"good":"avoid")}</td><td>${esc(r.failed_step)}</td><td>${esc(r.error_message)}</td><td>${esc(r.suggested_fix)}</td><td>${pill(r.priority,priorityType(r.priority))}</td></tr>`).join("");
+  const req=data.daily_runtime_requirements||{};
+  $("requirementsBox").innerHTML=`${pill(req.severity||"P0",priorityType(req.severity))} ${esc(req.detection_reason||"尚未建立 daily runtime requirements 檢查。")}<br><strong>建議：</strong>${esc(req.suggested_fix||"確認 requirements.txt 與 workflow dependency install。")}`;
+  $("scoreBadge").innerHTML=pill(value(hs.pipeline_health_score,"N/A"),scoreType(Number(hs.pipeline_health_score)||0));
   $("healthScoreGrid").innerHTML=[
-    ["pipeline_health_score",hs.pipeline_health_score??"N/A","目前資料鏈健康分"],
-    ["critical_missing_count",hs.critical_missing_count??0,"重大 coverage / freshness 缺口"],
-    ["stale_file_count",hs.stale_file_count??0,"超過建議更新週期的 JSON"],
-    ["missing_symbol_count",hs.missing_symbol_count??0,"symbol coverage 缺口總數"],
+    ["pipeline_health_score",value(hs.pipeline_health_score,"N/A"),"目前資料鏈健康分"],
+    ["critical_missing_count",value(hs.critical_missing_count,0),"重大 coverage / freshness / workflow 缺口"],
+    ["workflow_failure_count",value(hs.workflow_failure_count,0),"目前 workflow 失敗數"],
+    ["stale_file_count",value(hs.stale_file_count,0),"超過建議更新週期的 JSON"],
+    ["missing_symbol_count",value(hs.missing_symbol_count,0),"symbol coverage 缺口總數"],
     ["next_action_priority",hs.next_action_priority||"N/A","下一個最該處理項"]
   ].map(([a,b,c])=>`<div class="kpi"><div class="kpi-label">${a}</div><div class="kpi-value">${esc(b)}</div><div class="kpi-note">${c}</div></div>`).join("");
   const c=data.stock_coverage||{};
   $("coverageGrid").innerHTML=[
     ["Universe",c.universe_count],["Candidate",c.candidate_count],["Pool30",c.pool30_count],["Market Runtime",c.market_runtime_count],["M7 Scores",c.m7_v2_scores_count],["M1 Scores",c.m1_scores_count],
-    ["Universe ∩ Runtime",c.universe_runtime_overlap],["Universe ∩ M7",c.universe_m7_overlap],["Universe ∩ M1",c.universe_m1_overlap],["Universe ∩ Candidate",c.universe_candidate_overlap],["Universe ∩ Pool30",c.universe_pool30_overlap]
-  ].map(([a,b])=>`<div class="kpi"><div class="kpi-label">${a}</div><div class="kpi-value">${esc(b??0)}</div></div>`).join("");
+    ["Universe / Runtime",c.universe_runtime_overlap],["Universe / M7",c.universe_m7_overlap],["Universe / M1",c.universe_m1_overlap],["Universe / Candidate",c.universe_candidate_overlap],["Universe / Pool30",c.universe_pool30_overlap]
+  ].map(([a,b])=>`<div class="kpi"><div class="kpi-label">${a}</div><div class="kpi-value">${esc(value(b,0))}</div></div>`).join("");
   $("missingRows").innerHTML=Object.entries(data.missing_symbols||{}).map(([k,v])=>`<tr><td>${esc(k)}</td><td>${esc(v.count)}</td><td>${esc((v.symbols||[]).join(", "))}</td></tr>`).join("");
   $("freshRows").innerHTML=(data.freshness_check||[]).map(r=>`<tr><td>${esc(r.file)}</td><td>${statusPill(r.stale)}</td><td>${esc(r.age_days)} days</td><td>${esc(r.recommended_update_days)} days</td><td>${esc(r.updated_at||"")}</td><td>${esc(r.generated_at||"")}</td><td>${esc(r.modified_at||"")}</td><td>${esc(r.source||"")}</td></tr>`).join("");
   $("scriptRows").innerHTML=(data.required_script_map||[]).map(r=>`<tr><td>${esc(r.file)}</td><td>${pill(r.mapping_status,r.mapping_status==="mapped"?"good":"avoid")}</td><td>${esc((r.scripts||[]).join(" && "))}</td></tr>`).join("");
   $("checkRows").innerHTML=(data.new_stock_onboarding_checklist||[]).map(r=>`<tr><td>${esc(r.step)}</td><td>${esc(r.item)}</td><td>${esc(r.target_file)}</td><td>${esc(r.script)}</td></tr>`).join("");
-  $("fixRows").innerHTML=(data.next_10_fix_items||[]).map(r=>`<tr><td>${pill(r.priority,r.priority==="P0"?"avoid":r.priority==="P1"?"weak":"fair")}</td><td>${esc(r.issue)}</td><td>${esc(r.affected_file)}</td><td>${esc((r.affected_symbols||[]).join(", "))}</td><td>${esc(r.suggested_script)}</td><td>${esc(r.reason)}</td></tr>`).join("");
+  const fixItems=data.next_4_stale_fix_items||[];
+  $("fixRows").innerHTML=fixItems.map(r=>`<tr><td>${pill(r.priority,priorityType(r.priority))}</td><td>${esc(r.issue)}</td><td>${esc(r.affected_file)}</td><td>${esc((r.affected_symbols||[]).join(", "))}</td><td>${esc(r.suggested_script)}</td><td>${esc(r.reason)}</td></tr>`).join("");
 }
 async function init(){try{$("errorBox").innerHTML="";render(await loadJson(HEALTH_PATH));}catch(err){$("errorBox").innerHTML=`<div class="error">資料載入失敗：${esc(err.message)}</div>`;}}
 $("reloadBtn").addEventListener("click",init);
