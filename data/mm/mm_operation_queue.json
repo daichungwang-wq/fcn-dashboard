@@ -1,0 +1,147 @@
+{
+  "version": "mm_operation_queue_v1",
+  "generated_at": "2026-05-25T00:00:00+08:00",
+  "source_health_snapshot": {
+    "file": "data/mm/data_pipeline_health.json",
+    "version": "data_pipeline_health_v1_1"
+  },
+  "policy": {
+    "auto_repair": false,
+    "auto_rerun_scripts": false,
+    "auto_commit": false,
+    "auto_push": false,
+    "auto_modify_engine": false,
+    "auto_modify_m1_scores": false,
+    "auto_modify_m7_scores": false,
+    "mode": "detect_only_operation_assist"
+  },
+  "summary": {
+    "today_p0_count": 1,
+    "today_p1_count": 0,
+    "stale_runtime_count": 0,
+    "onboarding_incomplete_count": 0,
+    "pending_operations": 7,
+    "completed_today": 0
+  },
+  "priority_levels": [
+    {"priority":"P0","definition":"workflow failure / runtime pipeline broken / stale runtime causing stale M1/M7/MM","action_bias":"先處理，因為會阻斷 daily operation 或正式 judgment"},
+    {"priority":"P1","definition":"stale M1/M7 / missing runtime / onboarding incomplete","action_bias":"影響正式 judgment 品質，需排在 research 類問題前"},
+    {"priority":"P2","definition":"missing research card / missing EPS / partial coverage / stale support data","action_bias":"補強資料完整性與 explainability"},
+    {"priority":"P3","definition":"document / mapping improvements","action_bias":"改善維護性與後續追蹤"}
+  ],
+  "queue_ordering_rules": [
+    "是否影響正式 judgment",
+    "是否影響 runtime freshness",
+    "是否影響多模組",
+    "是否會造成錯誤 GOOD",
+    "是否重複發生"
+  ],
+  "today_operations": [
+    {
+      "operation_id": "op-20260525-001",
+      "priority": "P0",
+      "issue": "workflow_dependency_failure",
+      "reason": "daily-runtime-refresh 今日失敗；requirements.txt 缺失或 dependency install 失敗會阻斷每日 runtime 更新。",
+      "affected_file": ".github/workflows/daily-runtime-refresh.yml / requirements.txt",
+      "affected_symbols": [],
+      "suggested_action": "fix workflow dependency install",
+      "suggested_script": "manual workflow fix, then rerun daily-runtime-refresh",
+      "expected_impact": "恢復 daily runtime refresh，避免 market_runtime / long horizon runtime 逐步過期。",
+      "verification_target": ["GitHub Actions daily-runtime-refresh success","data/market_runtime.json generated_at updated","data/runtime_staging/market_runtime_long_horizon.json generated_at updated","stale runtime count remains 0"],
+      "operation_status": "detected",
+      "sort_score": 100,
+      "ordering_reason": "P0 + runtime freshness + multi-module impact + recurring workflow risk"
+    },
+    {
+      "operation_id": "op-20260525-002",
+      "priority": "P2",
+      "issue": "stale_json_file",
+      "reason": "data/m7_sandbox/m7_formula_input_audit.json age is 30 days; recommended update cadence is 7 days.",
+      "affected_file": "data/m7_sandbox/m7_formula_input_audit.json",
+      "affected_symbols": [],
+      "suggested_action": "refresh M7 formula input audit",
+      "suggested_script": "scripts/new/build_m7_formula_input_audit.py",
+      "expected_impact": "讓 M7 formula input audit 回到可觀察狀態，降低 M7 debug blind spot。",
+      "verification_target": ["modified_at updated","freshness stale flag becomes false","dashboard stale_file_count reduced"],
+      "operation_status": "detected",
+      "sort_score": 54,
+      "ordering_reason": "P2 + M7 support layer + stale beyond cadence"
+    },
+    {
+      "operation_id": "op-20260525-003",
+      "priority": "P2",
+      "issue": "stale_json_file",
+      "reason": "data/m1/m1_stock_profile.json age is 32 days; recommended update cadence is 30 days.",
+      "affected_file": "data/m1/m1_stock_profile.json",
+      "affected_symbols": [],
+      "suggested_action": "refresh stock profile workflow",
+      "suggested_script": "manual stock profile workflow",
+      "expected_impact": "改善 M1 explainability 與新增股票 onboarding 的基本資料完整性。",
+      "verification_target": ["modified_at updated","stock profile coverage reviewed","dashboard stale_file_count reduced"],
+      "operation_status": "detected",
+      "sort_score": 48,
+      "ordering_reason": "P2 + M1 support data + stale beyond cadence"
+    },
+    {
+      "operation_id": "op-20260525-004",
+      "priority": "P2",
+      "issue": "stale_json_file",
+      "reason": "data/m1/research_cards_raw.json age is 32 days; recommended update cadence is 30 days.",
+      "affected_file": "data/m1/research_cards_raw.json",
+      "affected_symbols": [],
+      "suggested_action": "refresh research card source data",
+      "suggested_script": "manual research card workflow",
+      "expected_impact": "改善研究卡與 M1/M7 解釋資料同步狀態。",
+      "verification_target": ["modified_at updated","research card source count reviewed","dashboard stale_file_count reduced"],
+      "operation_status": "detected",
+      "sort_score": 46,
+      "ordering_reason": "P2 + research support data + stale beyond cadence"
+    },
+    {
+      "operation_id": "op-20260525-005",
+      "priority": "P2",
+      "issue": "stale_json_file",
+      "reason": "data/m1/competitive_cards.json age is 32 days; recommended update cadence is 30 days.",
+      "affected_file": "data/m1/competitive_cards.json",
+      "affected_symbols": [],
+      "suggested_action": "refresh competitive cards",
+      "suggested_script": "scripts/generate_competitive_cards.js",
+      "expected_impact": "改善 competitive score explainability，降低 M1 輔助判斷資料過期。",
+      "verification_target": ["modified_at updated","competitive card count reviewed","dashboard stale_file_count reduced"],
+      "operation_status": "detected",
+      "sort_score": 45,
+      "ordering_reason": "P2 + M1 explainability data + stale beyond cadence"
+    },
+    {
+      "operation_id": "op-20260525-006",
+      "priority": "P3",
+      "issue": "missing_script_mapping",
+      "reason": "data/m1/universe_150.json currently has MISSING_SCRIPT_MAPPING and is likely manually maintained.",
+      "affected_file": "data/m1/universe_150.json",
+      "affected_symbols": [],
+      "suggested_action": "document universe owner and update rule",
+      "suggested_script": "manual documentation",
+      "expected_impact": "降低新增股票後忘記更新 universe 或無法追溯來源的風險。",
+      "verification_target": ["script mapping status documented","manual owner recorded","MISSING_SCRIPT_MAPPING count reduced if appropriate"],
+      "operation_status": "detected",
+      "sort_score": 30,
+      "ordering_reason": "P3 + maintenance clarity"
+    },
+    {
+      "operation_id": "op-20260525-007",
+      "priority": "P3",
+      "issue": "missing_script_mapping",
+      "reason": "data/pool30.json currently has MISSING_SCRIPT_MAPPING and likely needs manual ownership documented.",
+      "affected_file": "data/pool30.json",
+      "affected_symbols": [],
+      "suggested_action": "document pool30 owner and update rule",
+      "suggested_script": "manual pool review documentation",
+      "expected_impact": "讓 pool / candidate 更新流程更清楚，減少新增股票後 pool 失配。",
+      "verification_target": ["pool30 process documented","MISSING_SCRIPT_MAPPING count reduced if appropriate","MM / M1 dashboard links remain readable"],
+      "operation_status": "detected",
+      "sort_score": 28,
+      "ordering_reason": "P3 + pool maintenance clarity"
+    }
+  ],
+  "status_definitions": ["detected","reviewing","approved","executing","verifying","completed","rejected"]
+}
