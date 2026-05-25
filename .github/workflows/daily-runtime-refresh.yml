@@ -32,111 +32,133 @@ jobs:
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          else
+            pip install yfinance requests
+          fi
 
-      - name: Run lightweight daily runtime scripts
+      - name: Run market runtime refresh
+        run: |
+          set -euo pipefail
+          python scripts/update_market_runtime.py
+
+      - name: Validate market runtime output
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import os
+          import sys
+          path = "data/market_runtime.json"
+          if not os.path.exists(path):
+              print(f"missing_required={path}")
+              sys.exit(1)
+          try:
+              with open(path, "r", encoding="utf-8") as f:
+                  payload = json.load(f)
+              rows = payload.get("rows", payload) if isinstance(payload, dict) else {}
+              print(f"market_runtime_symbols={len(rows) if isinstance(rows, dict) else 0}")
+          except Exception as exc:
+              print(f"market_runtime_schema_check_failed={exc}")
+              sys.exit(1)
+          PY
+
+      - name: Commit market runtime data
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add data/market_runtime.json
+          if git diff --cached --quiet; then
+            echo "No market runtime changes to commit."
+            exit 0
+          fi
+          git commit -m "daily market runtime refresh"
+          git pull --rebase origin main
+          git push origin main
+
+      - name: Run M1 candidate refresh
+        run: |
+          set -euo pipefail
+          python scripts/build_m1_candidate_80.py
+
+      - name: Validate M1 candidate output
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import os
+          import sys
+          path = "data/m1/m1_candidate_80.json"
+          if not os.path.exists(path):
+              print(f"missing_required={path}")
+              sys.exit(1)
+          try:
+              with open(path, "r", encoding="utf-8") as f:
+                  payload = json.load(f)
+              count = len(payload) if isinstance(payload, list) else 0
+              print(f"m1_candidate_count={count}")
+              symbols = [row.get("symbol") for row in payload if isinstance(row, dict)] if isinstance(payload, list) else []
+              focus = [s for s in ["SNPS", "VRT", "ANET", "GLW", "COHR", "LITE", "CRDO", "ALAB"] if s in symbols]
+              print("m1_candidate_focus_symbols=" + (", ".join(focus) if focus else "none"))
+          except Exception as exc:
+              print(f"m1_candidate_schema_check_failed={exc}")
+              sys.exit(1)
+          PY
+
+      - name: Commit M1 candidate data
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add data/m1/m1_candidate_80.json
+          if git diff --cached --quiet; then
+            echo "No M1 candidate changes to commit."
+            exit 0
+          fi
+          git commit -m "daily m1 candidate refresh"
+          git pull --rebase origin main
+          git push origin main
+
+      - name: Run dashboard data refresh
         env:
           NEWSAPI_KEY: ${{ secrets.NEWSAPI_KEY }}
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
         run: |
           set -euo pipefail
-          failure_point="none"
+          python scripts/update_data.py
 
-          run_required() {
-            local script="$1"
-            echo "============================================================"
-            echo "Running required script: ${script}"
-            echo "============================================================"
-            if ! python "${script}"; then
-              failure_point="${script}"
-              echo "failure_point=${failure_point}" >> "$GITHUB_ENV"
-              exit 1
-            fi
-          }
-
-          # Core daily data: shared market runtime for MM / M1 / M6 / M7 timing.
-          run_required "scripts/update_market_runtime.py"
-
-          # Build M1 candidate directly from data/m1/universe_150.json + data/market_runtime.json.
-          run_required "scripts/build_m1_candidate_80.py"
-
-          # Existing lightweight daily updater, keep for current system compatibility.
-          run_required "scripts/update_data.py"
-
-          # NOTE:
-          # Heavy long-horizon / M7 v2 scripts are intentionally NOT run here.
-          # They are handled by .github/workflows/m7-v2-score-refresh.yml on a weekly/manual cadence.
-
-          echo "failure_point=${failure_point}" >> "$GITHUB_ENV"
-
-      - name: Validate outputs and print summary
-        if: always()
+      - name: Validate dashboard data output
         run: |
           set -euo pipefail
           python - <<'PY'
-          import glob
           import json
           import os
           import sys
-
-          required = [
-              "data/market_runtime.json",
-              "data/m1/m1_candidate_80.json",
-              "data.json",
-          ]
-
-          missing_required = [p for p in required if not os.path.exists(p)]
-
-          json_files = glob.glob("data/**/*.json", recursive=True)
-          mm_files = glob.glob("data/mm/*.json")
-          m7_sandbox_files = glob.glob("data/m7_sandbox/*.json")
-
-          print(f"total_data_json_files={len(json_files)}")
-          print(f"mm_json_files={len(mm_files)}")
-          print(f"m7_sandbox_json_files={len(m7_sandbox_files)}")
-          print("missing_required=" + (", ".join(missing_required) if missing_required else "none"))
-          print("abnormal_failure_point=" + os.getenv("failure_point", "none"))
-
+          path = "data.json"
+          if not os.path.exists(path):
+              print(f"missing_required={path}")
+              sys.exit(1)
           try:
-              with open("data/market_runtime.json", "r", encoding="utf-8") as f:
-                  m = json.load(f)
-              rows = m.get("rows", m) if isinstance(m, dict) else {}
-              print(f"market_runtime_symbols={len(rows) if isinstance(rows, dict) else 0}")
+              with open(path, "r", encoding="utf-8") as f:
+                  json.load(f)
+              print("data_json_status=ok")
           except Exception as exc:
-              print(f"market_runtime_schema_check_failed={exc}")
-              missing_required.append("data/market_runtime.json_schema")
-
-          try:
-              with open("data/m1/m1_candidate_80.json", "r", encoding="utf-8") as f:
-                  c = json.load(f)
-              print(f"m1_candidate_count={len(c) if isinstance(c, list) else 0}")
-              symbols = [row.get("symbol") for row in c if isinstance(row, dict)]
-              focus = [s for s in ["SNPS", "VRT", "ANET", "GLW", "COHR", "LITE", "CRDO", "ALAB"] if s in symbols]
-              print("m1_candidate_focus_symbols=" + (", ".join(focus) if focus else "none"))
-          except Exception as exc:
-              print(f"m1_candidate_schema_check_failed={exc}")
-              missing_required.append("data/m1/m1_candidate_80.json_schema")
-
-          if missing_required:
+              print(f"data_json_schema_check_failed={exc}")
               sys.exit(1)
           PY
 
-      - name: Commit and push changed daily data files
+      - name: Commit dashboard data
         run: |
           set -euo pipefail
           git config user.name "github-actions"
           git config user.email "actions@github.com"
-
           git add data.json
-          git add data/market_runtime.json
-          git add data/runtime_staging/market_runtime_long_horizon.json
-          git add data/m1/m1_candidate_80.json
-
           if git diff --cached --quiet; then
-            echo "No daily data changes to commit."
+            echo "No dashboard data changes to commit."
             exit 0
           fi
-
-          git commit -m "daily runtime refresh"
+          git commit -m "daily dashboard data refresh"
           git pull --rebase origin main
           git push origin main
