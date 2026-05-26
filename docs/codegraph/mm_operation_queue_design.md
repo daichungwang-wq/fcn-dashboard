@@ -1,7 +1,7 @@
 # MM System Operations & Evolution Center v1
 
 更新日期：2026-05-26  
-範圍：MM system operations / local approval lifecycle / Codex command generation  
+範圍：MM system operations / local approval lifecycle / global Codex command generation  
 模式：detect-only + operation-assist + local-only approval state
 
 ## 1. Local Approval State
@@ -40,33 +40,41 @@ window.localStorage["mm_operation_queue_local_state_v1"]
 
 清除 localStorage，回到 JSON 原始狀態。
 
-## 3. Generate Codex Command
+## 3. Global Generate Codex Commands
 
-當 operation 被 Approve 後，Approved / Ready to Execute 卡片會顯示：
+右上方 toolbar 放置全域按鈕：
 
 ```text
-[Generate Codex Command]
+[Generate Codex Commands]
 ```
 
-點擊後只產生可複製給 Codex 的文字指令，不會執行任何 script。
+位置與 `Reload`、`Reset Local State`、`Design Doc`、`Center JSON` 並列。
 
-指令內容包含：
+點擊後掃描目前所有 `operation_status = approved` 的 operations，統一產出一份可複製給 Codex 的 command report，顯示在 modal / textarea 中。
 
-- operation id
-- issue
-- suggested_action
-- suggested_script
-- affected_file
-- verification_target
-- 限制：
-  - 不要改 engine
-  - 不要改非授權檔案
-  - 不要自動 merge
-- 完成後需要回報：
-  - 修改哪些檔案
-  - 是否成功
-  - 如何驗證
-  - dashboard health score 是否改善
+若沒有 approved operation，顯示：
+
+```text
+目前沒有已核可 operation。
+```
+
+Report 內容包含：
+
+- approved operation count
+- 每筆 operation 的：
+  - operation id
+  - issue
+  - priority
+  - queue_type
+  - affected_file
+  - suggested_action
+  - suggested_script
+  - verification_target
+- 固定限制條件：
+  - 不要修改 M1/M7/M8 engine
+  - 不要修改非授權檔案
+  - 不要 merge
+  - 完成後回報修改檔案、驗證結果、是否需要進入 verifying
 
 ## 4. Guardrails
 
