@@ -115,6 +115,11 @@ function exposeM2RuntimeContext(){
   try{
     const g=getGroups();
     const base=g.base||[];
+    const hard=g.hard||[];
+    const maturity=g.maturity||[];
+    const ready=g.ready||[];
+    const candidate=g.candidate||[];
+
     const strategy_amounts={};
     const strategy_amounts_wan={};
     ['長期穩定現金流','合理投資型','積極單','短期投機單'].forEach(k=>{
@@ -122,12 +127,62 @@ function exposeM2RuntimeContext(){
       strategy_amounts[k]=amt;
       strategy_amounts_wan[k]=Math.floor(amt/10000);
     });
+
+    const bank_amounts={};
+    const bank_amounts_wan={};
+    const bank_targets_wan={};
+    const bank_hard_release_wan={};
+    const bank_expected_release_wan={};
+    const bank_planning_base_wan={};
+
+    Object.keys(TARGET_BANK).forEach(bank=>{
+      const bankBase=sum(base.filter(x=>(x.tw_bank||'').includes(bank)));
+      const bankHard=sum(hard.filter(x=>(x.tw_bank||'').includes(bank)));
+      const bankCandidate=sum(candidate.filter(x=>(x.tw_bank||'').includes(bank)));
+
+      bank_amounts[bank]=bankBase;
+      bank_amounts_wan[bank]=Math.floor(bankBase/10000);
+      bank_targets_wan[bank]=Math.floor(TARGET_BANK[bank]/10000);
+      bank_hard_release_wan[bank]=Math.floor(bankHard/10000);
+      bank_expected_release_wan[bank]=Math.floor(bankCandidate/10000);
+      bank_planning_base_wan[bank]=Math.floor(bankBase/10000);
+    });
+
+    const confirmed_maturity=sum(maturity);
+    const confirmed_early_exit=sum(ready);
+    const confirmed_assignment=0;
+    const expected_maturity=0;
+    const expected_early_exit=sum(candidate);
+    const expected_assignment=0;
+
     window.__M2_RUNTIME_CONTEXT__={
-      version:'v070d_runtime_context',
+      version:'v070d_runtime_context_stage_caps',
       groups:g,
+
       strategy_amounts,
       strategy_amounts_wan,
+
       target_bank:TARGET_BANK,
+      bank_amounts,
+      bank_amounts_wan,
+      bank_targets_wan,
+      bank_hard_release_wan,
+      bank_expected_release_wan,
+      bank_planning_base_wan,
+
+      total_target_wan:Object.values(TARGET_BANK).reduce((s,v)=>s+Math.floor(n(v,0)/10000),0),
+
+      confirmed_maturity_wan:Math.floor(confirmed_maturity/10000),
+      confirmed_early_exit_wan:Math.floor(confirmed_early_exit/10000),
+      confirmed_assignment_wan:Math.floor(confirmed_assignment/10000),
+
+      expected_maturity_wan:Math.floor(expected_maturity/10000),
+      expected_early_exit_wan:Math.floor(expected_early_exit/10000),
+      expected_assignment_wan:Math.floor(expected_assignment/10000),
+
+      stage1_available_wan:Math.max(0,Math.floor((confirmed_maturity+confirmed_early_exit-confirmed_assignment)/10000)),
+      expected_pool_wan:Math.max(0,Math.floor((expected_maturity+expected_early_exit-expected_assignment)/10000)),
+
       updated_at:new Date().toISOString()
     };
   }catch(err){
