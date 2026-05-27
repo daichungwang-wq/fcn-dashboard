@@ -1,0 +1,80 @@
+name: M1 Deep Research Card Backfill
+
+on:
+  schedule:
+    # 08:20 Asia/Taipei (UTC+8) = 00:20 UTC
+    - cron: "20 0 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  m1-deep-research-card-backfill:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Build next deep research card queue
+        run: |
+          set -euo pipefail
+          python scripts/m1/build_deep_research_card_backfill_queue.py --limit 5
+
+      - name: Validate backfill report
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import os
+          import sys
+
+          report_path = "data/m1/m1_deep_research_card_backfill_report.json"
+          if not os.path.exists(report_path):
+              print(f"missing_report={report_path}")
+              sys.exit(1)
+
+          with open(report_path, "r", encoding="utf-8") as fp:
+              report = json.load(fp)
+
+          summary = report.get("summary", {})
+          queue = report.get("next_5_symbol_queue", [])
+          coverage = report.get("coverage_verification", [])
+
+          print("covered_by_deep_card_count=" + str(summary.get("covered_by_deep_card_count", 0)))
+          print("missing_deep_card_count=" + str(summary.get("missing_deep_card_count", 0)))
+          print("legacy_fallback_only_count=" + str(summary.get("legacy_fallback_only_count", 0)))
+          print("coverage_verification_count=" + str(len(coverage)))
+          print("next_queue_count=" + str(len(queue)))
+          print("next_queue=" + ", ".join(item.get("symbol", "") for item in queue))
+
+          if report.get("policy", {}).get("auto_generate_research_content"):
+              print("auto content generation is not allowed")
+              sys.exit(1)
+
+          if any(item.get("in_m1_stock_profile") for item in queue):
+              print("queue contains a symbol already covered by m1_stock_profile.json")
+              sys.exit(1)
+          PY
+
+      - name: Commit and push backfill diagnostic report
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+
+          git add data/m1/m1_deep_research_card_backfill_report.json
+
+          if git diff --cached --quiet; then
+            echo "No backfill report changes to commit."
+            exit 0
+          fi
+
+          git commit -m "daily m1 deep research card backfill report"
+          git push
