@@ -4,11 +4,11 @@
   const MARKET_RUNTIME_PATH = "../data/market_runtime.json";
 
   const A1_MARKET_PULSE = [
-    { label: "美股（S&P500）", symbol: "SPY" },
-    { label: "NASDAQ", symbol: "QQQ" },
-    { label: "費半 / SMH", symbol: "SMH" },
-    { label: "道瓊", symbol: "DIA" },
-    { label: "台股", symbol: "0050.TW", fallback: "^TWII" }
+    { label: "美股（S&P500）", symbol: "SPY", type: "price" },
+    { label: "NASDAQ", symbol: "QQQ", type: "price" },
+    { label: "費半 / SMH", symbol: "SMH", type: "price" },
+    { label: "道瓊", symbol: "DIA", type: "price" },
+    { label: "台股", symbol: "0050.TW", fallback: "^TWII", type: "price" }
   ];
 
   const A2_MACRO_PULSE = [
@@ -34,20 +34,73 @@
     return Number.isFinite(n) ? n : null;
   }
 
+  function inferPriceRef(item){
+    return num(item && (item.price_ref_1d ?? item.previous_close ?? item.prev_close));
+  }
+
+  function calcDelta(item){
+    const priceNow = num(item && item.price_now);
+    const ref = inferPriceRef(item);
+    if(priceNow === null || ref === null) return null;
+    return priceNow - ref;
+  }
+
+  function calcRet1d(item){
+    const existing = num(item && item.ret_1d);
+    if(existing !== null) return existing;
+    const priceNow = num(item && item.price_now);
+    const ref = inferPriceRef(item);
+    if(priceNow === null || ref === null || ref === 0) return null;
+    return (priceNow / ref - 1) * 100;
+  }
+
+  function signText(n){
+    if(n === null) return "";
+    return n > 0 ? "+" : "";
+  }
+
+  function arrowText(n){
+    if(n === null) return "";
+    return n > 0 ? "↑" : (n < 0 ? "↓" : "→");
+  }
+
   function formatPct(v){
     const n = num(v);
-    if(n === null) return "待接資料";
-    const sign = n > 0 ? "+" : "";
-    const arrow = n > 0 ? "↑ " : (n < 0 ? "↓ " : "");
-    return `${arrow}${sign}${n.toFixed(1)}%`;
+    if(n === null) return "--";
+    return `${signText(n)}${n.toFixed(1)}%`;
+  }
+
+  function formatDelta(v, decimals){
+    const n = num(v);
+    if(n === null) return "--";
+    return `${signText(n)}${n.toFixed(decimals)}`;
   }
 
   function formatMacroValue(v, type){
     const n = num(v);
-    if(n === null) return "待接資料";
+    if(n === null) return "--";
     if(type === "yield") return `${n.toFixed(2)}%`;
     if(type === "fx") return n.toFixed(2);
     return n.toFixed(2);
+  }
+
+  function formatPriceValue(v){
+    const n = num(v);
+    if(n === null) return "--";
+    if(Math.abs(n) >= 1000) return n.toLocaleString(undefined, { maximumFractionDigits: 0 });
+    if(Math.abs(n) >= 100) return n.toFixed(1);
+    return n.toFixed(2);
+  }
+
+  function formatTriple(item, type){
+    if(!item) return "待接資料";
+    const priceNow = num(item.price_now);
+    const delta = calcDelta(item);
+    const ret = calcRet1d(item);
+    const arrow = arrowText(ret ?? delta);
+    const deltaDecimals = type === "yield" ? 2 : 2;
+    const valueText = type === "price" ? formatPriceValue(priceNow) : formatMacroValue(priceNow, type);
+    return `${valueText} <span class="mm-a-mini-delta">${arrow} ${formatDelta(delta, deltaDecimals)}｜${formatPct(ret)}</span>`;
   }
 
   function lineHtml(label, value, extraClass){
@@ -59,7 +112,7 @@
     if(!el) return;
     el.innerHTML = A1_MARKET_PULSE.map(row => {
       const item = getRuntimeItem(rows, row);
-      return lineHtml(row.label, item ? formatPct(item.ret_1d) : "待接資料", item ? "" : "is-missing");
+      return lineHtml(row.label, item ? formatTriple(item, row.type) : "待接資料", item ? "" : "is-missing");
     }).join("");
 
     const note = document.getElementById("a1-market-runtime-note");
@@ -74,7 +127,7 @@
     if(!el) return;
     el.innerHTML = A2_MACRO_PULSE.map(row => {
       const item = getRuntimeItem(rows, row);
-      return lineHtml(row.label, item ? formatMacroValue(item.price_now, row.type) : "待接資料", item ? "" : "is-missing");
+      return lineHtml(row.label, item ? formatTriple(item, row.type) : "待接資料", item ? "" : "is-missing");
     }).join("");
 
     const note = document.getElementById("a2-market-runtime-note");
@@ -125,7 +178,8 @@
     init: initMacroContext,
     checkRuntimeMissing,
     formatPct,
-    formatMacroValue
+    formatMacroValue,
+    formatTriple
   };
 
   document.addEventListener("DOMContentLoaded", initMacroContext);
