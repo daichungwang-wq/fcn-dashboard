@@ -15,6 +15,7 @@
   const EXCLUDED = new Set(["DX-Y.NYB", "TWD=X", "JPY=X", "CL=F", "GC=F", "SPY", "QQQ", "SMH", "DIA", "0050.TW", "^TWII", "^VIX", "^TNX"]);
   const SPECIAL_TARGETS = new Set(["NVDA", "TSM", "SMH", "GOOG"]);
   const CACHE = {};
+  const RISK_RANK = { Low: 0, Fair: 1, High: 2, "Very High": 3, Extreme: 4 };
   let ALL_ROWS = [];
 
   function esc(v) {
@@ -121,6 +122,12 @@
     return null;
   }
 
+  function pctValue(value) {
+    const n = safeNum(value);
+    if (n === null) return null;
+    return Math.abs(n) <= 1 ? n * 100 : n;
+  }
+
   function getAmount(deal) {
     return firstPositiveNum(deal.amount, deal.notional, deal.principal, deal.investment_amount, deal.face_value, deal.amt) || 0;
   }
@@ -165,6 +172,153 @@
     return null;
   }
 
+  function pickMetric(...sources) {
+    for (const [row, keys] of sources) {
+      for (const key of keys) {
+        const n = safeNum(row?.[key]);
+        if (n !== null) return n;
+      }
+    }
+    return null;
+  }
+
+  function tierScore(value, tiers) {
+    const n = safeNum(value);
+    if (n === null) return null;
+    let score = 0;
+    tiers.forEach(([threshold, points]) => {
+      if (n > threshold) score = points;
+    });
+    return score;
+  }
+
+  function priceHighRatio(price, ...highs) {
+    const p = safeNum(price);
+    if (p === null || p <= 0) return null;
+    const high = firstPositiveNum(...highs);
+    if (high === null || high <= 0) return null;
+    return p / high;
+  }
+
+  function riskLabel(score, hasData) {
+    if (!hasData) return "No Data";
+    if (score <= 20) return "Low";
+    if (score <= 40) return "Fair";
+    if (score <= 60) return "High";
+    if (score <= 80) return "Very High";
+    return "Extreme";
+  }
+
+  function riskRank(risk) {
+    return Object.prototype.hasOwnProperty.call(RISK_RANK, risk) ? RISK_RANK[risk] : null;
+  }
+
+  function isRiskAtLeast(risk, minRisk) {
+    const rank = riskRank(risk);
+    return rank !== null && rank >= RISK_RANK[minRisk];
+  }
+
+  function isRiskAtMost(risk, maxRisk) {
+    const rank = riskRank(risk);
+    return rank !== null && rank <= RISK_RANK[maxRisk];
+  }
+
+  function buildValuationRisk(runtime, m1, m7, price, oneMonth) {
+    let score = 0;
+    let hasData = false;
+    const reasons = [];
+    const forwardPe = pickMetric([runtime, ["forward_pe", "forwardPE", "forwardPe"]], [m1, ["forward_pe", "forwardPE"]], [m7, ["forward_pe", "forwardPE"]]);
+    const trailingPe = pickMetric([runtime, ["trailing_pe", "trailingPE", "pe_ratio", "trailingPe"]], [m1, ["trailing_pe", "pe_ratio", "trailingPE"]], [m7, ["trailing_pe", "pe_ratio", "trailingPE"]]);
+    const ps = pickMetric([runtime, ["price_to_sales", "priceToSalesTrailing12Months", "ps_ratio"]], [m1, ["price_to_sales", "ps_ratio"]], [m7, ["price_to_sales", "ps_ratio"]]);
+    const priceNow = firstPositiveNum(price, runtime.price_now, runtime.price, runtime.last_price, runtime.close, runtime.current_price, runtime.regularMarketPrice);
+    const nearHigh = priceHighRatio(priceNow, runtime.price_ref_12m, runtime.price_ref_52w_high, runtime.high_52w, runtime.fiftyTwoWeekHigh, runtime.year_high);
+    const ret1m = pctValue(firstNum(runtime.ret_1m, runtime.change_1m_pct, oneMonth));
+    const ret3m = pctValue(firstNum(runtime.ret_3m, runtime.change_3m_pct));
+    const ret6m = pctValue(firstNum(runtime.ret_6m, runtime.change_6m_pct));
+    const m7Valuation = pickScore(m7, "valuation_score", "m7_valuation_score", "valuation", "valuationScore");
+
+    const peForwardScore = tierScore(forwardPe, [[35, 15], [50, 25], [70, 35]]);
+    if (peForwardScore !== null) {
+      hasData = true;
+      score += peForwardScore;
+      if (peForwardScore) reasons.push(`Forward PE ${num(forwardPe, 1)}`);
+    }
+
+    const peTrailingScore = tierScore(trailingPe, [[50, 15], [80, 25], [100, 35]]);
+    if (peTrailingScore !== null) {
+      hasData = true;
+      score += peTrailingScore;
+      if (peTrailingScore) reasons.push(`Trailing PE ${num(trailingPe, 1)}`);
+    }
+
+    const psScore = tierScore(ps, [[12, 15], [20, 25]]);
+    if (psScore !== null) {
+      hasData = true;
+      score += psScore;
+      if (psScore) reasons.push(`P/S ${num(ps, 1)}`);
+    }
+
+    if (nearHigh !== null) {
+      hasData = true;
+      if (nearHigh > 0.95) {
+        score += 20;
+        reasons.push("Near 52W/12M high >95%");
+      } else if (nearHigh > 0.90) {
+        score += 15;
+        reasons.push("Near 52W/12M high >90%");
+      }
+    }
+
+    if (ret1m !== null) {
+      hasData = true;
+      if (ret1m > 15) {
+        score += 10;
+        reasons.push(`1M +${num(ret1m, 1)}%`);
+      }
+    }
+    if (ret3m !== null) {
+      hasData = true;
+      if (ret3m > 30) {
+        score += 15;
+        reasons.push(`3M +${num(ret3m, 1)}%`);
+      }
+    }
+    if (ret6m !== null) {
+      hasData = true;
+      if (ret6m > 60) {
+        score += 20;
+        reasons.push(`6M +${num(ret6m, 1)}%`);
+      }
+    }
+
+    if (m7Valuation !== null) {
+      hasData = true;
+      if (m7Valuation < 4) {
+        score += 25;
+        reasons.push(`M7 valuation ${num(m7Valuation, 1)}`);
+      } else if (m7Valuation < 5) {
+        score += 15;
+        reasons.push(`M7 valuation ${num(m7Valuation, 1)}`);
+      }
+    }
+
+    const capped = Math.min(100, score);
+    return {
+      score: hasData ? capped : null,
+      label: riskLabel(capped, hasData),
+      reasons
+    };
+  }
+
+  function buildFcnView(row) {
+    if (row.available <= 0 && row.invested > row.target) return "Over";
+    if (row.available <= 0) return "No Room";
+    if (isRiskAtLeast(row.valuationRisk.label, "Very High") && safeNum(row.deltaPct) !== null && row.deltaPct > 0) return "Avoid Chase";
+    if (isRiskAtLeast(row.valuationRisk.label, "High") && safeNum(row.m1) !== null && row.m1 >= 8 && safeNum(row.oneWeek) !== null && row.oneWeek < 0) return "Wait Pullback";
+    if (safeNum(row.m1) !== null && row.m1 >= 7 && safeNum(row.m7) !== null && row.m7 >= 7 && row.available > 0 && isRiskAtMost(row.valuationRisk.label, "Fair")) return "OK";
+    return "Watch";
+  }
+
   async function buildRows() {
     const [fcnPool, pool30, universe, marketRuntime, prepost, m1Scores, m7Scores] = await Promise.all(Object.values(PATHS).map(fetchJson));
     const fcnSymbols = collectSymbols(fcnPool);
@@ -188,24 +342,29 @@
       const available = target - invested;
       const m1 = m1Map.get(symbol) || {};
       const m7 = m7Map.get(symbol) || {};
-      return {
+      const price = firstPositiveNum(runtime.price, runtime.last_price, runtime.close, runtime.current_price, runtime.regularMarketPrice, runtime.price_now, pp.price_regular, pp.price_active);
+      const oneMonth = firstNum(runtime.ret_1m, runtime.change_1m_pct);
+      const baseRow = {
         symbol,
         source: sourceLabel(symbol, fcnSymbols, pool30Symbols),
         category,
-        price: firstPositiveNum(runtime.price, runtime.last_price, runtime.close, runtime.current_price, runtime.regularMarketPrice, runtime.price_now, pp.price_regular, pp.price_active),
+        price,
         delta: firstNum(runtime.change, runtime.change_1d, runtime.delta_1d),
         deltaPct: firstNum(runtime.change_pct, runtime.change_1d_pct, runtime.ret_1d),
         oneWeek: firstNum(runtime.ret_1w, runtime.change_1w_pct),
-        oneMonth: firstNum(runtime.ret_1m, runtime.change_1m_pct),
+        oneMonth,
         prepost: firstPositiveNum(pp.price_active, pp.price_pre, pp.price_post),
         session: pp.session || "regular",
         invested,
         target,
         available,
         m1: pickScore(m1, "M1_score", "m1_score", "score"),
-        m7: pickScore(m7, "m7_v2_score", "M7_score", "m7_score", "score"),
-        fcnView: invested > target ? "Over" : invested > 0 ? "Invested" : "Available"
+        m7: pickScore(m7, "m7_v2_score", "M7_score", "m7_score", "score")
       };
+      baseRow.valuationRisk = buildValuationRisk(runtime, m1, m7, price, oneMonth);
+      baseRow.goodButExpensive = safeNum(baseRow.m1) !== null && baseRow.m1 >= 8 && isRiskAtLeast(baseRow.valuationRisk.label, "Very High");
+      baseRow.fcnView = buildFcnView(baseRow);
+      return baseRow;
     });
   }
 
@@ -215,10 +374,29 @@
     return n > 0 ? "c2-up" : "c2-down";
   }
 
+  function riskClass(risk) {
+    if (risk === "Extreme" || risk === "Very High") return "c2-risk-high";
+    if (risk === "High") return "c2-risk-warn";
+    if (risk === "Low" || risk === "Fair") return "c2-risk-ok";
+    return "c2-risk-nodata";
+  }
+
+  function filterByValuation(row, valuation) {
+    if (valuation === "all") return true;
+    const risk = row.valuationRisk?.label;
+    if (valuation === "not_expensive") return isRiskAtMost(risk, "Fair");
+    if (valuation === "high_risk") return isRiskAtLeast(risk, "High");
+    if (valuation === "very_high_extreme") return isRiskAtLeast(risk, "Very High");
+    if (valuation === "good_expensive") return row.goodButExpensive;
+    if (valuation === "pullback") return safeNum(row.m1) !== null && row.m1 >= 8 && isRiskAtLeast(risk, "High") && safeNum(row.oneWeek) !== null && row.oneWeek < 0;
+    return true;
+  }
+
   function filterRows(rows) {
     const query = normalizeSymbol(document.getElementById("c2-radar-search")?.value || "");
     const source = document.getElementById("c2-radar-source")?.value || "all";
     const session = document.getElementById("c2-radar-session")?.value || "all";
+    const valuation = document.getElementById("c2-radar-valuation")?.value || "all";
     const minM1 = safeNum(document.getElementById("c2-radar-m1min")?.value);
     const minM7 = safeNum(document.getElementById("c2-radar-m7min")?.value);
 
@@ -228,8 +406,17 @@
       if (session !== "all" && row.session !== session) return false;
       if (minM1 !== null && (row.m1 === null || row.m1 < minM1)) return false;
       if (minM7 !== null && (row.m7 === null || row.m7 < minM7)) return false;
+      if (!filterByValuation(row, valuation)) return false;
       return true;
     });
+  }
+
+  function valuationCell(row) {
+    const risk = row.valuationRisk || { label: "No Data", score: null, reasons: [] };
+    const score = risk.score === null ? "--" : num(risk.score, 0);
+    const note = row.goodButExpensive ? "<div class='c2-risk-note'>好公司，但價格偏高</div>" : "";
+    const title = esc((risk.reasons || []).join("; ") || "No valuation inputs available");
+    return `<span class="c2-risk ${riskClass(risk.label)}" title="${title}">${esc(risk.label)} ${score}</span>${note}`;
   }
 
   function renderRows() {
@@ -254,6 +441,7 @@
       <td>${row.available < 0 ? `Over ${num(Math.abs(row.available), 0)}` : num(row.available, 0)}</td>
       <td>${num(row.m1)}</td>
       <td>${num(row.m7)}</td>
+      <td>${valuationCell(row)}</td>
       <td>${esc(row.fcnView)}</td>
     </tr>`).join("");
   }
@@ -262,24 +450,31 @@
     ALL_ROWS = rows;
     el.innerHTML = `
       <style>
-        .c2-filter-bar{display:grid;grid-template-columns:1.4fr repeat(4,minmax(110px,.7fr)) auto;gap:8px;margin-bottom:10px;align-items:center}
+        .c2-filter-bar{display:grid;grid-template-columns:1.4fr repeat(5,minmax(110px,.7fr)) auto;gap:8px;margin-bottom:10px;align-items:center}
         .c2-filter-bar input,.c2-filter-bar select{min-width:0}
         .c2-symbol{font-size:16px;font-weight:950;letter-spacing:.3px}
         .c2-up{color:#188b58;font-weight:950}
         .c2-down{color:#be3f3f;font-weight:950}
         .c2-flat{color:#667085;font-weight:900}
-        @media(max-width:960px){.c2-filter-bar{grid-template-columns:1fr 1fr}}
+        .c2-risk{display:inline-flex;align-items:center;border-radius:999px;padding:3px 8px;font-size:11px;font-weight:950;border:1px solid #d0d5dd;white-space:nowrap}
+        .c2-risk-ok{background:#eaf8f1;color:#188b58;border-color:#ccead9}
+        .c2-risk-warn{background:#fff4df;color:#b9770e;border-color:#f1dfb5}
+        .c2-risk-high{background:#fff0f0;color:#be3f3f;border-color:#f0cfcf}
+        .c2-risk-nodata{background:#f2f4f7;color:#667085;border-color:#d0d5dd}
+        .c2-risk-note{margin-top:3px;color:#be3f3f;font-size:11px;font-weight:900;white-space:nowrap}
+        @media(max-width:1120px){.c2-filter-bar{grid-template-columns:1fr 1fr}}
       </style>
       <div class="c2-filter-bar">
         <input id="c2-radar-search" placeholder="Search Symbol" />
         <select id="c2-radar-source"><option value="all">All Source</option><option value="FCN">FCN</option><option value="Pool30">Pool30</option><option value="Universe">Universe</option></select>
         <select id="c2-radar-session"><option value="all">All Session</option><option value="pre_market">Pre</option><option value="post_market">Post</option><option value="regular">Regular</option></select>
+        <select id="c2-radar-valuation"><option value="all">All Valuation</option><option value="not_expensive">Not Expensive</option><option value="high_risk">High Valuation Risk</option><option value="very_high_extreme">Very High / Extreme</option><option value="good_expensive">Good Company but Expensive</option><option value="pullback">Pullback Candidate</option></select>
         <input id="c2-radar-m1min" type="number" step="0.1" placeholder="M1 min" />
         <input id="c2-radar-m7min" type="number" step="0.1" placeholder="M7 min" />
         <span id="c2-radar-count" class="sub"></span>
       </div>
-      <div class="table-wrap"><table><thead><tr><th>Link</th><th>Symbol</th><th>Source</th><th>Price</th><th>Delta</th><th>Delta%</th><th>1W</th><th>1M</th><th>Pre/Post</th><th>Session</th><th>FCN Invested</th><th>Target Amount</th><th>Available Amount</th><th>M1</th><th>M7</th><th>FCN View</th></tr></thead><tbody id="c2-radar-body"></tbody></table></div>`;
-    ["c2-radar-search", "c2-radar-source", "c2-radar-session", "c2-radar-m1min", "c2-radar-m7min"].forEach(id => {
+      <div class="table-wrap"><table><thead><tr><th>Link</th><th>Symbol</th><th>Source</th><th>Price</th><th>Delta</th><th>Delta%</th><th>1W</th><th>1M</th><th>Pre/Post</th><th>Session</th><th>FCN Invested</th><th>Target Amount</th><th>Available Amount</th><th>M1</th><th>M7</th><th>Valuation Risk</th><th>FCN View</th></tr></thead><tbody id="c2-radar-body"></tbody></table></div>`;
+    ["c2-radar-search", "c2-radar-source", "c2-radar-session", "c2-radar-valuation", "c2-radar-m1min", "c2-radar-m7min"].forEach(id => {
       document.getElementById(id)?.addEventListener("input", renderRows);
       document.getElementById(id)?.addEventListener("change", renderRows);
     });
