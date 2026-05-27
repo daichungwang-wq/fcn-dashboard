@@ -60,7 +60,8 @@ def is_stock_symbol(symbol: str) -> bool:
 
 
 def collect_symbols(raw: Any, out: set[str] | None = None, depth: int = 0) -> set[str]:
-    out = out or set()
+    if out is None:
+        out = set()
     if raw is None or depth > 6:
         return out
 
