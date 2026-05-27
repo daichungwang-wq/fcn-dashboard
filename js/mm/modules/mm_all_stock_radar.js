@@ -22,32 +22,60 @@
     ['radar-category','radar-m7min','radar-m1min','radar-maxexp'].forEach(id=>MMUI.q(id)?.addEventListener('change',()=>MMState.set({radar:{...MMState.get().radar,category:MMUI.q('radar-category').value,m7min:MMUI.q('radar-m7min').value,m1min:MMUI.q('radar-m1min').value,maxExposure:MMUI.q('radar-maxexp').value}})));
   }
 
-  function ensureV2(callback){
+  function hasV2Script(){
+    return !!document.querySelector('script[src*="mm_c2_stock_radar_v2.js"]');
+  }
+
+  function waitForV2(callback, attempts = 20){
     if(window.MMModuleRadarV2?.render){
-      callback();
+      window.MM_C2_STOCK_RADAR_V2_LOADED = true;
+      callback(true);
+      return;
+    }
+    if(attempts <= 0){
+      callback(false);
+      return;
+    }
+    setTimeout(() => waitForV2(callback, attempts - 1), 100);
+  }
+
+  function ensureV2(callback){
+    if(window.MM_C2_STOCK_RADAR_V2_LOADED && window.MMModuleRadarV2?.render){
+      callback(true);
+      return;
+    }
+    if(window.MMModuleRadarV2?.render){
+      window.MM_C2_STOCK_RADAR_V2_LOADED = true;
+      callback(true);
+      return;
+    }
+    if(hasV2Script()){
+      loadingV2 = true;
+      waitForV2(callback);
       return;
     }
     if(loadingV2){
-      setTimeout(()=>ensureV2(callback), 80);
+      waitForV2(callback);
       return;
     }
     loadingV2 = true;
     const script = document.createElement('script');
     script.src = '../js/mm/modules/mm_c2_stock_radar_v2.js';
-    script.onload = () => callback();
+    script.onload = () => {
+      window.MM_C2_STOCK_RADAR_V2_LOADED = true;
+      waitForV2(callback);
+    };
     script.onerror = () => {
-      console.warn('[MMModuleRadar] C2 radar v2 load failed; using legacy radar.');
-      callback();
+      console.warn('[MMModuleRadar] C2 radar v2 load failed; keep existing C2 placeholder.');
+      callback(false);
     };
     document.head.appendChild(script);
   }
 
   function render(state){
-    ensureV2(() => {
-      if(window.MMModuleRadarV2?.render) {
+    ensureV2((loaded) => {
+      if(loaded && window.MMModuleRadarV2?.render) {
         window.MMModuleRadarV2.render(state);
-      } else {
-        legacyRender(state);
       }
     });
   }
@@ -59,6 +87,10 @@
     render(state);
   }
 
-  window.MMModuleRadar = { render };
-  window.addEventListener('DOMContentLoaded', () => setTimeout(renderFromCurrentState, 250));
+  window.MMModuleRadar = { render, legacyRender };
+  window.addEventListener('DOMContentLoaded', () => {
+    if(document.getElementById('c2-all-stock-radar')) {
+      setTimeout(renderFromCurrentState, 250);
+    }
+  });
 })();
