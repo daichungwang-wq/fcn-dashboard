@@ -762,6 +762,60 @@
     container.appendChild(label);
   }
 
+  function selectedRow() {
+    return ALL_ROWS.find(row => row.symbol === SELECTED_SYMBOL) || null;
+  }
+
+  function updateSelectedNews(row) {
+    const el = document.getElementById("c2-selected-news");
+    if (!el) return;
+    const symbol = SELECTED_SYMBOL;
+    const tv = chartSymbol(symbol);
+    el.innerHTML = `
+      <div class="c2-info-head">
+        <b>Selected Stock News / 該股 News</b>
+        <span>${esc(symbol)}</span>
+      </div>
+      <div class="c2-news-links">
+        <a href="https://finance.yahoo.com/quote/${encodeURIComponent(symbol)}/news" target="_blank" rel="noopener">Yahoo Finance News</a>
+        <a href="https://www.tradingview.com/symbols/${encodeURIComponent(tv.replace(":", "-"))}/news/" target="_blank" rel="noopener">TradingView News</a>
+        <a href="https://www.google.com/search?q=${encodeURIComponent(symbol + " stock news")}" target="_blank" rel="noopener">Google News Search</a>
+      </div>
+      <div class="c2-info-note">External news references only; FCN decisions remain based on the left MM cards.</div>
+    `;
+  }
+
+  function updateSelectedFcnInfo(row) {
+    const el = document.getElementById("c2-selected-fcn-info");
+    if (!el) return;
+    if (!row) {
+      el.innerHTML = "<div class='c2-info-empty'>Selected stock FCN info is not available.</div>";
+      return;
+    }
+    el.innerHTML = `
+      <div class="c2-info-head">
+        <b>Selected Stock FCN Info / 該股 FCN 訊息與曝險</b>
+        <span>${esc(row.symbol)}</span>
+      </div>
+      <div class="c2-fcn-grid">
+        <div><span>Source</span><b>${esc(row.source)}</b></div>
+        <div><span>FCN View</span><b>${esc(row.fcnView)}</b></div>
+        <div><span>Invested</span><b>${num(row.invested, 0)}</b></div>
+        <div><span>Target</span><b>${num(row.target, 0)}</b></div>
+        <div><span>Available</span><b>${row.available < 0 ? `Over ${num(Math.abs(row.available), 0)}` : num(row.available, 0)}</b></div>
+        <div><span>M1 / M7</span><b>${num(row.m1, 1)} / ${num(row.m7, 1)}</b></div>
+        <div><span>Price</span><b>${num(row.price)}</b></div>
+        <div><span>Today</span><b class="${moveClass(row.deltaPct)}">${pct(row.deltaPct)}</b></div>
+      </div>
+    `;
+  }
+
+  function updateSelectedRightBlocks() {
+    const row = selectedRow();
+    updateSelectedNews(row);
+    updateSelectedFcnInfo(row);
+  }
+
   function setSelectedSymbol(symbol) {
     SELECTED_SYMBOL = normalizeSymbol(symbol || "NVDA") || "NVDA";
     window.MM_SELECTED_SYMBOL = SELECTED_SYMBOL;
@@ -771,6 +825,7 @@
     if (link) link.href = url;
     if (label) label.textContent = chartSymbol(SELECTED_SYMBOL);
     renderTradingViewWidget(SELECTED_SYMBOL);
+    updateSelectedRightBlocks();
     document.querySelectorAll(".c2-pool-card").forEach(card => {
       card.classList.toggle("selected", card.dataset.symbol === SELECTED_SYMBOL);
     });
@@ -865,7 +920,9 @@
         .c2-card-delta{margin-top:6px;font-weight:900}
         .c2-card-line{margin-top:6px;color:#475569;font-size:12px;font-weight:800}
         .c2-card-line em{font-style:normal;border:1px solid #d0d5dd;border-radius:999px;padding:2px 7px;color:#334155;background:#f8fafc}
-        .c2-chart-panel{border:1px solid #d8e4ef;border-radius:16px;background:#fff;overflow:hidden;min-height:620px}
+        .c2-right-stack{display:grid;gap:12px}
+        .c2-chart-panel,.c2-info-panel{border:1px solid #d8e4ef;border-radius:16px;background:#fff;overflow:hidden}
+        .c2-chart-panel{min-height:620px}
         .c2-chart-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;border-bottom:1px solid #e4edf6;background:#f8fbff}
         .c2-chart-head b{font-size:15px}
         .c2-chart-head a{border:1px solid #d0d5dd;background:#fff;color:#111827;border-radius:8px;padding:7px 10px;font-size:12px;font-weight:900;text-decoration:none}
@@ -874,6 +931,17 @@
         .c2-tv-frame{width:100%;height:620px;border:0;display:block;background:#fff}
         .c2-tv-side-label{position:absolute;top:10px;right:12px;z-index:2;max-width:260px;padding:6px 9px;border:1px solid #f5c66b;border-radius:10px;background:rgba(255,247,230,.96);color:#7a4b00;font-size:12px;font-weight:900;line-height:1.35;box-shadow:0 2px 8px rgba(122,75,0,.12);pointer-events:none}
         .c2-tv-blocked{display:flex;align-items:center;justify-content:center;min-height:620px;padding:24px;color:#667085;font-weight:900;text-align:center;background:#f8fafc}
+        .c2-info-panel{padding:12px}
+        .c2-info-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+        .c2-info-head b{font-size:15px}
+        .c2-info-head span{border:1px solid #d0d5dd;border-radius:999px;background:#f8fafc;color:#334155;font-size:12px;font-weight:900;padding:3px 8px}
+        .c2-news-links{display:flex;flex-wrap:wrap;gap:8px}
+        .c2-news-links a{border:1px solid #d0d5dd;border-radius:8px;background:#fff;color:#111827;font-size:12px;font-weight:900;padding:7px 10px;text-decoration:none}
+        .c2-info-note,.c2-info-empty{margin-top:8px;color:#667085;font-size:12px;font-weight:800}
+        .c2-fcn-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+        .c2-fcn-grid div{border:1px solid #e5e7eb;border-radius:10px;background:#f8fafc;padding:8px}
+        .c2-fcn-grid span{display:block;color:#667085;font-size:11px;font-weight:800;margin-bottom:4px}
+        .c2-fcn-grid b{font-size:13px;font-weight:950;color:#111827}
         .c2-all-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:14px 0 10px;padding-top:14px;border-top:1px solid #e5e7eb}
         .c2-all-head h3{margin:0;font-size:16px}
         .c2-all-toggle{border:1px solid #d0d5dd;background:#fff;color:#111827;border-radius:8px;padding:7px 10px;font-size:12px;font-weight:900;cursor:pointer}
@@ -893,21 +961,26 @@
         .c2-risk-note{margin-top:3px;color:#be3f3f;font-size:11px;font-weight:900;white-space:nowrap}
         @media(max-width:1040px){.c2-market-watch{grid-template-columns:1fr}.c2-pool-list{grid-template-columns:repeat(2,minmax(0,1fr));max-height:none}}
         @media(max-width:1180px){.c2-filter-bar,.c2-filter-row{grid-template-columns:1fr 1fr}}
-        @media(max-width:680px){.c2-pool-list{grid-template-columns:1fr}.c2-chart-head,.c2-all-head{align-items:flex-start;flex-direction:column}}
+        @media(max-width:860px){.c2-fcn-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+        @media(max-width:680px){.c2-pool-list{grid-template-columns:1fr}.c2-chart-head,.c2-all-head,.c2-info-head{align-items:flex-start;flex-direction:column}.c2-fcn-grid{grid-template-columns:1fr}}
       </style>
       <div class="c2-market-watch">
         <div class="c2-pool-list" aria-label="FCN Pool stocks">
           ${watchRows.map(renderPoolCard).join("") || "<div class='c2-tv-empty'>No FCN Pool stocks.</div>"}
         </div>
-        <div class="c2-chart-panel">
+        <div class="c2-right-stack">
+          <div class="c2-chart-panel">
           <div class="c2-chart-head">
-            <b>C2-0 FCN Basket Market Watch | <span id="c2-tv-selected">${esc(chartSymbol(SELECTED_SYMBOL))}</span></b>
+            <b>TradingView Today Technical View / 今日技術圖 | <span id="c2-tv-selected">${esc(chartSymbol(SELECTED_SYMBOL))}</span></b>
             <a id="c2-tv-link" href="${esc(tradingViewChartUrl(SELECTED_SYMBOL))}" target="_blank" rel="noopener">Open TradingView for selected symbol</a>
           </div>
           <div class="c2-tv-note">⚠ TradingView 外部市場視窗｜右側排行榜 / watchlist / market info 由 TradingView 自動產生，可能顯示市場排行或非本股票資料；FCN 判斷請以左側 MM 小卡為準：Price / 1W / 1M / M1 / M7 / FCN View。</div>
           <div id="c2-tv-widget" class="c2-tv-widget">
             <div class="c2-tv-side-label">TradingView 外部資訊<br>非 MM / FCN 判斷資料</div>
           </div>
+          </div>
+          <div id="c2-selected-news" class="c2-info-panel"></div>
+          <div id="c2-selected-fcn-info" class="c2-info-panel"></div>
         </div>
       </div>
       <div class="c2-all-head">
@@ -987,3 +1060,4 @@
     render();
   });
 })();
+
