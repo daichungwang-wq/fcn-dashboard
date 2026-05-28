@@ -755,6 +755,11 @@
       container.innerHTML = "<div class='c2-tv-blocked'>TradingView widget was blocked. Use the link above to open the selected symbol.</div>";
     };
     container.appendChild(frame);
+
+    const label = document.createElement("div");
+    label.className = "c2-tv-side-label";
+    label.innerHTML = "TradingView 外部資訊<br>非 MM / FCN 判斷資料";
+    container.appendChild(label);
   }
 
   function setSelectedSymbol(symbol) {
@@ -865,8 +870,9 @@
         .c2-chart-head b{font-size:15px}
         .c2-chart-head a{border:1px solid #d0d5dd;background:#fff;color:#111827;border-radius:8px;padding:7px 10px;font-size:12px;font-weight:900;text-decoration:none}
         .c2-tv-note{display:block;margin:8px 0;padding:8px 10px;border:1px solid #f5c66b;border-radius:10px;background:#fff7e6;color:#7a4b00;font-size:12px;font-weight:800;line-height:1.5}
-        .c2-tv-widget{height:620px;min-height:620px}
+        .c2-tv-widget{position:relative;height:620px;min-height:620px}
         .c2-tv-frame{width:100%;height:620px;border:0;display:block;background:#fff}
+        .c2-tv-side-label{position:absolute;top:10px;right:12px;z-index:2;max-width:260px;padding:6px 9px;border:1px solid #f5c66b;border-radius:10px;background:rgba(255,247,230,.96);color:#7a4b00;font-size:12px;font-weight:900;line-height:1.35;box-shadow:0 2px 8px rgba(122,75,0,.12);pointer-events:none}
         .c2-tv-blocked{display:flex;align-items:center;justify-content:center;min-height:620px;padding:24px;color:#667085;font-weight:900;text-align:center;background:#f8fafc}
         .c2-all-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:14px 0 10px;padding-top:14px;border-top:1px solid #e5e7eb}
         .c2-all-head h3{margin:0;font-size:16px}
@@ -899,7 +905,9 @@
             <a id="c2-tv-link" href="${esc(tradingViewChartUrl(SELECTED_SYMBOL))}" target="_blank" rel="noopener">Open TradingView for selected symbol</a>
           </div>
           <div class="c2-tv-note">⚠ TradingView 外部市場視窗｜右側排行榜 / watchlist / market info 由 TradingView 自動產生，可能顯示市場排行或非本股票資料；FCN 判斷請以左側 MM 小卡為準：Price / 1W / 1M / M1 / M7 / FCN View。</div>
-          <div id="c2-tv-widget" class="c2-tv-widget"></div>
+          <div id="c2-tv-widget" class="c2-tv-widget">
+            <div class="c2-tv-side-label">TradingView 外部資訊<br>非 MM / FCN 判斷資料</div>
+          </div>
         </div>
       </div>
       <div class="c2-all-head">
@@ -979,6 +987,4 @@
     render();
   });
 })();
-
-
 
