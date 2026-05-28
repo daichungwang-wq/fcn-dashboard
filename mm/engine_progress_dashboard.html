@@ -86,12 +86,6 @@ input,select{
   color:#fff;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.15);
   padding:7px 10px;border-radius:999px;font-size:12px;
 }
-.hero-links a.mm-operation-link{
-  background:linear-gradient(135deg,#ffb020,#ff6b00);
-  color:#11283f;
-  border-color:rgba(255,255,255,.45);
-  box-shadow:0 6px 16px rgba(255,107,0,.28);
-}
 
 /* SECTION */
 .section{
@@ -454,7 +448,6 @@ th{background:#f8fafc}
       <a href="../m6.html">M6</a>
       <a href="./m7.html">M7</a>
       <a href="./formula_test.html">Formula Test</a>
-      <a href="./mm_operation_queue_dashboard.html" class="mm-operation-link">MM Operation</a>
       <span id="mm-warning-badge"></span>
     </div>
   </section>
@@ -467,14 +460,11 @@ th{background:#f8fafc}
         <details class="mm-a-card">
           <summary><span>A1 全球股市</span><span class="mm-status-pill gray">Market Pulse</span></summary>
           <div class="mm-a-card-body">
-            <div class="mm-a-lines">
-              <div class="mm-a-line"><span>美股（S&P500）</span><b>↑ +0.8%</b></div>
-              <div class="mm-a-line"><span>NASDAQ</span><b>↑ +1.2%</b></div>
-              <div class="mm-a-line"><span>費半 / SMH</span><b>↑ +2.1%</b></div>
-              <div class="mm-a-line"><span>道瓊</span><b>↑ +0.4%</b></div>
-              <div class="mm-a-line"><span>台股</span><b>↓ -0.3%</b></div>
+            <div id="a1-market-pulse" class="mm-a-lines">
+              <div class="mm-a-line"><span>Market Pulse</span><b>Loading...</b></div>
             </div>
             <div class="mm-a-detail">
+              <div id="a1-market-runtime-note" class="mm-a-note">source：data/market_runtime.json</div>
               <div class="mm-a-note">其他市場：歐洲、日本、中國、香港等可後續接資料後放在展開區。</div>
             </div>
           </div>
@@ -483,13 +473,11 @@ th{background:#f8fafc}
         <details class="mm-a-card">
           <summary><span>A2 總經指標</span><span class="mm-status-pill yellow">Macro</span></summary>
           <div class="mm-a-card-body">
-            <div class="mm-a-lines">
-              <div class="mm-a-line"><span>VIX</span><b>待接資料</b></div>
-              <div class="mm-a-line"><span>10Y Yield</span><b>待接資料</b></div>
-              <div class="mm-a-line"><span>USD/TWD</span><b>待接資料</b></div>
-              <div class="mm-a-line"><span>USD/JPY</span><b>待接資料</b></div>
+            <div id="a2-macro-pulse" class="mm-a-lines">
+              <div class="mm-a-line"><span>Macro Runtime</span><b>Loading...</b></div>
             </div>
             <div class="mm-a-detail">
+              <div id="a2-market-runtime-note" class="mm-a-note">source：data/market_runtime.json</div>
               <div class="mm-a-note">展開後放：2Y / 10Y、DXY、MOVE、HY/IG spread、其他匯率。</div>
             </div>
           </div>
@@ -548,6 +536,9 @@ th{background:#f8fafc}
 
       <!-- B LEFT -->
       <aside class="left-summary">
+        <!-- B Zone v3 / Portfolio Brain -->
+        <div id="b-zone"></div>
+
         <div class="module-card compact-module">
           <h3>B1 M2 / FCN 全貌</h3>
           <div id="b1-m2-summary"></div>
@@ -676,8 +667,8 @@ th{background:#f8fafc}
   </details>
 
   <!-- C2 -->
-  <details class="section" open>
-    <summary>C2. FCN Basket Market Watch / 全股票雷達</summary>
+  <details class="section">
+    <summary>C2. All Stocks Radar / 全股票雷達</summary>
     <div class="section-body">
       <div class="radar-wrap" id="c2-all-stock-radar">
         <div class="sub">資料載入後顯示 alerts、M7 ranking、M1/M7/exposure filters。</div>
@@ -816,6 +807,7 @@ th{background:#f8fafc}
 <script src="../js/mm/core/mm_ui_helpers.js"></script>
 
 <script src="../js/mm/modules/mm_top_dashboard.js"></script>
+<script src="../js/mm/modules/mm_m2_cashflow_engine.js"></script>  
 <script src="../js/mm/modules/mm_m2_summary.js"></script>
 <script src="../js/mm/modules/mm_m6_summary.js"></script>
 <script src="../js/mm/modules/mm_m3_summary.js"></script>
@@ -825,5 +817,30 @@ th{background:#f8fafc}
 <script src="../js/mm/modules/mm_alert_engine.js"></script>
 <script src="../js/mm/modules/mm_all_stock_radar.js"></script>
 <script src="../js/mm/modules/mm_dashboard_app.js"></script>
+<script src="../js/mm/modules/mm_b_zone_v3.js"></script>
+<script src="../js/mm/modules/mm_macro_context.js"></script>
+
+<script>
+(function(){
+  function pickData(){
+    const mm = window.MM_DATA || window.MM_DASHBOARD_DATA || window.mmDashboardData || {};
+    return {
+      fcn_pool: mm.fcn_pool || mm.fcnPool || mm.FCN_POOL || window.fcn_pool_data || [],
+      m1_scores: mm.m1_scores || mm.m1Scores || window.m1_scores_data || {}
+    };
+  }
+
+  function runBZone(){
+    if (typeof window.renderBZone !== "function") return;
+    window.renderBZone(pickData());
+  }
+
+  document.addEventListener("DOMContentLoaded", function(){
+    runBZone();
+    setTimeout(runBZone, 500);
+    setTimeout(runBZone, 1500);
+  });
+})();
+</script>
 </body>
 </html>
