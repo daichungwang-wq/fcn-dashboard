@@ -707,16 +707,47 @@
     return `https://www.tradingview.com/chart/?symbol=${encodeURIComponent(chartSymbol(symbol))}`;
   }
 
+  function renderTradingViewWidget(symbol) {
+    const container = document.getElementById("c2-tv-widget");
+    if (!container) return;
+    const selectedTvSymbol = chartSymbol(symbol);
+    container.innerHTML = "";
+
+    const widget = document.createElement("div");
+    widget.className = "tradingview-widget-container__widget";
+    container.appendChild(widget);
+
+    const script = document.createElement("script");
+    script.type = "text/javascript";
+    script.async = true;
+    script.src = "https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js";
+    script.textContent = JSON.stringify({
+      autosize: true,
+      symbol: selectedTvSymbol,
+      interval: "D",
+      timezone: "Asia/Taipei",
+      theme: "light",
+      style: "1",
+      locale: "en",
+      allow_symbol_change: true,
+      calendar: false,
+      support_host: "https://www.tradingview.com"
+    });
+    script.onerror = () => {
+      container.innerHTML = "<div class='c2-tv-blocked'>TradingView widget was blocked. Use the link above to open the selected symbol.</div>";
+    };
+    container.appendChild(script);
+  }
+
   function setSelectedSymbol(symbol) {
     SELECTED_SYMBOL = normalizeSymbol(symbol || "NVDA") || "NVDA";
     window.MM_SELECTED_SYMBOL = SELECTED_SYMBOL;
     const url = tradingViewChartUrl(SELECTED_SYMBOL);
-    const frame = document.getElementById("c2-tv-frame");
     const link = document.getElementById("c2-tv-link");
     const label = document.getElementById("c2-tv-selected");
-    if (frame) frame.src = url;
     if (link) link.href = url;
     if (label) label.textContent = chartSymbol(SELECTED_SYMBOL);
+    renderTradingViewWidget(SELECTED_SYMBOL);
     document.querySelectorAll(".c2-pool-card").forEach(card => {
       card.classList.toggle("selected", card.dataset.symbol === SELECTED_SYMBOL);
     });
@@ -815,7 +846,9 @@
         .c2-chart-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;border-bottom:1px solid #e4edf6;background:#f8fbff}
         .c2-chart-head b{font-size:15px}
         .c2-chart-head a{border:1px solid #d0d5dd;background:#fff;color:#111827;border-radius:8px;padding:7px 10px;font-size:12px;font-weight:900;text-decoration:none}
-        .c2-tv-frame{width:100%;height:620px;border:0;display:block}
+        .c2-tv-widget{height:620px;min-height:620px}
+        .c2-tv-widget .tradingview-widget-container__widget{height:100%}
+        .c2-tv-blocked{display:flex;align-items:center;justify-content:center;min-height:620px;padding:24px;color:#667085;font-weight:900;text-align:center;background:#f8fafc}
         .c2-all-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:14px 0 10px;padding-top:14px;border-top:1px solid #e5e7eb}
         .c2-all-head h3{margin:0;font-size:16px}
         .c2-all-toggle{border:1px solid #d0d5dd;background:#fff;color:#111827;border-radius:8px;padding:7px 10px;font-size:12px;font-weight:900;cursor:pointer}
@@ -835,7 +868,7 @@
         .c2-risk-note{margin-top:3px;color:#be3f3f;font-size:11px;font-weight:900;white-space:nowrap}
         @media(max-width:1040px){.c2-market-watch{grid-template-columns:1fr}.c2-pool-list{grid-template-columns:repeat(2,minmax(0,1fr));max-height:none}}
         @media(max-width:1180px){.c2-filter-bar,.c2-filter-row{grid-template-columns:1fr 1fr}}
-        @media(max-width:680px){.c2-pool-list{grid-template-columns:1fr}.c2-chart-head,.c2-all-head{align-items:flex-start;flex-direction:column}.c2-tv-frame{height:560px}}
+        @media(max-width:680px){.c2-pool-list{grid-template-columns:1fr}.c2-chart-head,.c2-all-head{align-items:flex-start;flex-direction:column}}
       </style>
       <div class="c2-market-watch">
         <div class="c2-pool-list" aria-label="FCN Pool stocks">
@@ -846,7 +879,7 @@
             <b>C2-0 FCN Basket Market Watch | <span id="c2-tv-selected">${esc(chartSymbol(SELECTED_SYMBOL))}</span></b>
             <a id="c2-tv-link" href="${esc(tradingViewChartUrl(SELECTED_SYMBOL))}" target="_blank" rel="noopener">Open TradingView for selected symbol</a>
           </div>
-          <iframe id="c2-tv-frame" class="c2-tv-frame" src="${esc(tradingViewChartUrl(SELECTED_SYMBOL))}" title="TradingView Full Chart View"></iframe>
+          <div id="c2-tv-widget" class="c2-tv-widget"></div>
         </div>
       </div>
       <div class="c2-all-head">
@@ -926,3 +959,4 @@
     render();
   });
 })();
+
