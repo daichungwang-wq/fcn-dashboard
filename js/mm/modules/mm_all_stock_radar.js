@@ -20,6 +20,53 @@
     MMUI.q('radar-alerts').textContent = `movers: ${alerts.movers.join(', ')} | high exposure: ${alerts.warnings.join(', ')}`;
     el.querySelectorAll('.radar-expand').forEach(b=>b.onclick=()=>{const x=MMUI.q(`x-${b.dataset.symbol}`); x.style.display=x.style.display==='none'?'table-row':'none';});
     ['radar-category','radar-m7min','radar-m1min','radar-maxexp'].forEach(id=>MMUI.q(id)?.addEventListener('change',()=>MMState.set({radar:{...MMState.get().radar,category:MMUI.q('radar-category').value,m7min:MMUI.q('radar-m7min').value,m1min:MMUI.q('radar-m1min').value,maxExposure:MMUI.q('radar-maxexp').value}})));
+    openC2Section();
+    collapseAllStocksArea(el);
+  }
+
+  function openC2Section(){
+    const container = document.getElementById('c2-all-stock-radar');
+    const section = container?.closest('details.section');
+    if(section) section.open = true;
+    const summary = section?.querySelector(':scope > summary');
+    if(summary && summary.textContent.includes('All Stocks Radar')) {
+      summary.textContent = 'C2. FCN Basket Market Watch / 全股票雷達';
+    }
+  }
+
+  function ensureCollapseStyles(){
+    if(document.getElementById('c2-collapse-style')) return;
+    const style = document.createElement('style');
+    style.id = 'c2-collapse-style';
+    style.textContent = `
+      .c2-all-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:12px 0 10px;padding-top:12px;border-top:1px solid #e5e7eb}
+      .c2-all-head h3{margin:0;font-size:16px}.c2-all-toggle{border:1px solid #d0d5dd;background:#fff;color:#111827;border-radius:8px;padding:7px 10px;font-size:12px;font-weight:900;cursor:pointer}
+      .c2-all-panel[hidden]{display:none}@media(max-width:680px){.c2-all-head{align-items:flex-start;flex-direction:column}}
+    `;
+    document.head.appendChild(style);
+  }
+
+  function collapseAllStocksArea(container){
+    if(!container || container.querySelector('#c2-all-stocks-toggle')) return;
+    const firstTable = container.querySelector('.table-wrap');
+    if(!firstTable) return;
+    ensureCollapseStyles();
+    const header = document.createElement('div');
+    header.className = 'c2-all-head';
+    header.innerHTML = `<div><h3>All Stocks Radar / 全股票區</h3><div class="sub">預設隱藏，需要時一鍵展開檢查全部股票。</div></div><button id="c2-all-stocks-toggle" class="c2-all-toggle" type="button" aria-expanded="false">展開全股票區</button>`;
+    const panel = document.createElement('div');
+    panel.id = 'c2-all-stocks-panel';
+    panel.className = 'c2-all-panel';
+    panel.hidden = true;
+    container.insertBefore(header, firstTable);
+    container.insertBefore(panel, firstTable);
+    while(panel.nextSibling) panel.appendChild(panel.nextSibling);
+    const toggle = header.querySelector('#c2-all-stocks-toggle');
+    toggle?.addEventListener('click', () => {
+      panel.hidden = !panel.hidden;
+      toggle.setAttribute('aria-expanded', String(!panel.hidden));
+      toggle.textContent = panel.hidden ? '展開全股票區' : '收合全股票區';
+    });
   }
 
   function hasV2Script(){
@@ -73,9 +120,11 @@
   }
 
   function render(state){
+    openC2Section();
     ensureV2((loaded) => {
       if(loaded && window.MMModuleRadarV2?.render) {
         window.MMModuleRadarV2.render(state);
+        collapseAllStocksArea(document.getElementById('c2-all-stock-radar'));
       }
     });
   }
@@ -89,6 +138,7 @@
 
   window.MMModuleRadar = { render, legacyRender };
   window.addEventListener('DOMContentLoaded', () => {
+    openC2Section();
     if(document.getElementById('c2-all-stock-radar')) {
       setTimeout(renderFromCurrentState, 250);
     }
