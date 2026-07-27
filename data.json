@@ -1,239 +1,239 @@
 {
-  "updated_at": "2026-07-26 22:28",
+  "updated_at": "2026-07-27 22:33",
   "summary": {
     "active_fcn_count": 24,
     "top_risk_code": "FCN710H",
     "worst_of": "ORCL",
-    "market_env": "觀望",
-    "main_conclusion": "今天較適合觀望或只做防守型 FCN，先避開高波動與風險集中的標的。"
+    "market_env": "保守做",
+    "main_conclusion": "今天可保守做 FCN，建議以 TSM / MSFT 為主，避免進攻型標的過重。"
   },
   "morning_brief": {
     "international_news": [
       {
-        "title": "What does 'good conservation' look like? This landowner is finding out",
-        "summary": "Paul Davis has made it his mission to conserve his ecologically significant property, and he's bringing toget…",
-        "content": "On a sunny winter afternoon, Paul Davis kneels to the ground and sets a patch of vegetation alight. He is guided by cultural fire practitioner and Palawa man Jason Smith. \"As soon as those natives … [+6587 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "Beltrán, Jones, Kent inducted into HOF",
+        "summary": "An estimated crowd of 12,000 people watched Carlos Beltrán, Andruw Jones and Jeff Kent get inducted into the…",
+        "content": "An estimated crowd of 12,000 people watched Carlos Beltrán, Andruw Jones and Jeff Kent get inducted into the National Baseball Hall of Fame on Sunday, July 26, at The Clark Sports Center in the town … [+5201 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Twins’ Joe Ryan Scratched With Arm Fatigue",
-        "summary": "Right-hander Joe Ryan will not start tonight against the Athletics, manager Derek Shelton told reporters, inc…",
-        "content": "Right-hander Joe Ryan will not start tonight against the Athletics, manager Derek Shelton told reporters, including Aaron Gleeman of AaronGleeman.com. Ryan is dealing with arm fatigue. The club is ho… [+1967 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "4 Years Later, Netflix's 10-Part Legal Drama Is Still the Perfect Binge for Crime Fans",
+        "summary": "One of Netflix's best modern legal dramas reveals a different side of those who wear the judicial robe with t…",
+        "content": "Legal shows have become a cornerstone of the streaming landscape, with numerous new series capitalizing on audience fascination with ethical dilemmas, far-fetched defense strategies, and the drama th… [+13154 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Patriots owner Robert Kraft says team has offered CB Christian Gonzalez 'the highest contract' in franchise history",
-        "summary": "The offer also reportedly would have exceeded Trent McDuffie's four-year, $124 million deal for the largest c…",
-        "content": "The New England Patriots want to keep Christian Gonzalez around for a long time. Team owner Robert Kraft gave us an idea of how much on Saturday. Speaking with reporters at Patriots training camp, K… [+2413 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "Where the top safeties in the 2027 class are committed",
+        "summary": "There’s a wealth of talent at the safety position in the 2027 recruiting cycle. As of July 26, there are 38 b…",
+        "content": "There's a wealth of talent at the safety position in the 2027 recruiting cycle. As of July 26, there are 38 blue-chip safeties, according to the Rivals Industry Ranking, a weighted average that utili… [+8431 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Three Endgames: Scenarios for the Iran War and the Post-American Order",
-        "summary": "h1, h2, h3 { line-height: 33px; } Preamble: The Situation as It Stands Five months into the conflagration, th…",
-        "content": "Preamble: The Situation as It Stands Five months into the conflagration, the strategic landscape admits no comfortable summary. The United States and Israel launched joint strikes against Iran on 28… [+32032 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "Disney Guests Find Loophole to “Single-Rider Line” Removal",
+        "summary": "A popular shortcut at Disney’s Animal Kingdom appears to be on borrowed time, but guests have discovered that…",
+        "content": "A popular shortcut at Disneys Animal Kingdom appears to be on borrowed time, but guests have discovered that Disney hasnt completely shut the door just yet. Expedition Everest has long offered a sin… [+9886 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "They Saved Up to Buy Their Dream Home, Only to Have New Renters Destroy Their Peace and Quiet",
-        "summary": "Why are there so many awful neighbors out there? The post They Saved Up to Buy Their Dream Home, Only to Have…",
-        "content": "Shutterstock There are bad neighbors, and then there are really bad neighbors, so bad that you might even consider them neighbors from hell. I have heard a lot of stories about awful neighbors, and… [+3525 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "U.S. Jet Fuel Costs Soar as Iran War Hits Airlines Again",
+        "summary": "U.S. airlines are grappling with soaring jet fuel costs again after the return of hostilities in the Middle E…",
+        "content": "U.S. airlines are grappling with soaring jet fuel costs again after the return of hostilities in the Middle East shattered the three-week-long U.S.-Iran 'deal to make a deal' and sent Brent crude oil… [+150 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
+        "affects_fcn": true,
+        "impact_score": -1
+      },
+      {
+        "title": "2026 Baseball Hall of Fame induction: Carlos Beltrán, Andruw Jones, Jeff Kent speak of national, organizational pride w…",
+        "summary": "Beltrán and Jones are two of the game's most recognizable center fielders, and Kent raised the bar for run pr…",
+        "content": "The National Baseball Hall of Fame welcomed Jeff Kent, Andruw Jones and Carlos Beltrán on Sunday in Cooperstown, New York. The Clark Sports Center was home to more than 60 Hall of Famers. They came … [+12805 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "AEW Collision Preview: The Final Stop Before AEW Redemption",
-        "summary": "Greetings, comrades! It is I, your El Presidente, reporting to you live from my golden wrestling throne room…",
-        "content": "Posted in: AEW, Sports, TV | Tagged: AEW Collision, wrestling Tonight's AEW Collision from Nashville is loaded with championship action, qualifier matches, and revenge-fueled battles before AEW Rede… [+17212 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "Regulators Disagree On Paramount’s Warner Deal. Price Rises In October",
+        "summary": "Paramount’s Warner deal faces conflicting U.S., EU and U.K. reviews, while delay could add $1.7 billion to th…",
+        "content": "Paramount Skydance takeover bid of Warner Bros. (Photo by Michael Yanow/NurPhoto via Getty Images) NurPhoto via Getty Images Washington cleared the deal. A California court paused it. Brussels atta… [+6865 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "San Francisco 49ers Announce George Kittle Injury News",
-        "summary": "George Kittle will open 49ers training camp on active/PUP, but his rapid recovery has kept a Week 1 return ag…",
-        "content": "The San Francisco 49ers will open training camp without George Kittle on the practice field, but the team is not ruling out having its star tight end available when the regular season begins. Genera… [+3408 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "Ross Gerber Questions Tesla's Optimus Bet: 'There's No Revenue Coming Anytime Soon'",
+        "summary": "Investor Ross Gerber of investment firm Gerber Kawasaki said Elon Musk could face a long road to turning Tesl…",
+        "content": "Benzinga and Yahoo Finance LLC may earn commission or revenue on some items through the links below. Investor Ross Gerber of investment firm Gerber Kawasaki said Elon Musk could face a long road to … [+6158 chars]｜分類：全球經濟｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "I Didn't See Anya Taylor-Joy's Weird Collection Coming When She Talked About Joining LOTR",
-        "summary": "Well, this is certainly a unique thing to collect.",
-        "content": "Actors get asked all the time about what they’ve stolen from set or collections of props they’ve accumulated while working. I’m always entertained by these tales; however, Anya Taylor-Joy’s collectio… [+3096 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "Show HN: Anyclaude-SDK – Claude Code-Style SDK for OpenAI/Anthropic Endpoints",
+        "summary": "Claude Code agent capabilities (tools, tool loop, MCP, sub-agents, sessions) for ANY OpenAI/Anthropic-compati…",
+        "content": "Claude Code agent capabilities tools, the tool loop, multi-turn conversations, MCP, sub-agents, multi-agent teams, sessions against any OpenAI- or Anthropic-compatible LLM endpoint, running in the … [+22016 chars]｜分類：全球經濟｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "The Making of a Global Starr: Ayra Starr Closed Out Teen Vogue Fest 2026",
-        "summary": "Musician Ayra Starr appeared in conversation with Mi-Anne Chan at Teen Vogue Fest 2026, discussing her forthc…",
-        "content": "Ayra Starr capped off a wonderful day at Teen Vogue Fest 2026 in Brooklyn with both a performance and an insightful conversation with Teen Vogue Creative Editorial Director Mi-Anne Chan. The singer,… [+1510 chars]｜分類：全球經濟｜解讀：影響有限",
+        "title": "Quote of the day by ex-Google evangelist Vint Cerf: 'Privacy may actually be an anomaly' — putting our rights into pers…",
+        "summary": "Technology companies and governments have long undermined our desire for privacy, but is this more of a moder…",
+        "content": "One of the architects of the modern internet, Vint Cerf, went on to become Google's chief internet evangelist from October 2005 through to July 2026, making several key predictions on the technologie… [+2212 chars]｜分類：全球經濟｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Quote of the day by Vladimir Putin on AI: 'Whoever becomes the leader in this sphere will become the ruler of the world…",
-        "summary": "The long-serving Russian president has long seen AI as the pathway to dominance in the next era of humankind",
-        "content": "The AI buildout has not just captured the attention of the biggest technology companies in the world, but also the global superpowers, including the US and China in particular. The growth of this tec… [+2179 chars]｜分類：全球經濟｜解讀：影響有限",
+        "title": "Baker Hughes Announces Second-Quarter 2026 Results",
+        "summary": "Second-quarter highlights Orders of $10.5 billion, including $7.1 billion of IET orders. RPO of $40.1 billion…",
+        "content": "Second-quarter highlights <ul><li>Orders of $10.5 billion, including $7.1 billion of IET orders. </li><li>RPO of $40.1 billion, including record IET RPO of $37.1 billion.</li><li>Revenue of $6.7 bil… [+51737 chars]｜分類：全球經濟｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Via Transportation Deadline: VIA Investors Have Opportunity to Lead Via Transportation, Inc. Securities Lawsuit",
-        "summary": "NEW YORK, July 25, 2026 /PRNewswire/ -- Rosen Law Firm, a global investor rights law firm, reminds purchasers…",
-        "content": "NEW YORK, July 25, 2026 /PRNewswire/ -- Rosen Law Firm, a global investor rights law firm, reminds purchasers of common stock of Via Transportation, Inc. (NYSE: VIA) pursuant and/or traceable to the … [+3591 chars]｜分類：全球經濟｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "The Praxian Genocidal Kill Chain — Part 3",
-        "summary": "In Part 1, Iain Davis defined the Praxians, considered their openly stated control of the Trump administratio…",
-        "content": "In Part 1, Iain Davis defined the Praxians, considered their openly stated control of the Trump administration, and examined their extensive partnerships with the Israeli defence technology sector. I… [+115781 chars]｜分類：全球經濟｜解讀：影響有限",
+        "title": "America Is Leaving a Global Coal Opportunity on the Table",
+        "summary": "Modern export infrastructure, faster permitting, competitive tax and fee policies, and trade agreements that…",
+        "content": "By Rich Nolan Global coal demand set another record in 2025. While less understood in the U.S., coals global importance is only growing. In fact, global coal demand has risen 75% since 2000 and toda… [+4683 chars]｜分類：全球經濟｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       }
     ],
     "financial_news": [
       {
-        "title": "US stocks face tests from Fed decision, tech-led earnings deluge",
-        "summary": "A wobbly US stock market will take its cues in the coming week from a Federal Reserve meeting set to shed lig…",
-        "content": "A wobbly US stock market will take its cues in the coming week from a Federal Reserve meeting set to shed light on the path for interest rates, and from a packed slate of corporate earnings led by te… [+4434 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
+        "title": "Bond traders see over 33% chance of Fed rate hike at upcoming meeting",
+        "summary": "Market recalibration signals potential shifts in monetary policy, impacting economic forecasts and investor s…",
+        "content": "Recent developments in the U.S. bond market suggest that market participants are pricing in more than a one-in-three chance of a Federal Reserve interest rate hike at the upcoming FOMC meeting. This … [+2099 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
         "affects_fcn": true,
         "impact_score": 1
       },
       {
-        "title": "A 72-Year-Old Couple With $900,000 in IRAs Converts Nothing. Their Kids Inherit the Tax Bill Instead.",
-        "summary": "When a retired couple leaves a $900,000 IRA untouched, they are not avoiding a tax decision. They are making…",
-        "content": "Quick Read <ul><li>A couple avoiding Roth conversions at 22 to 24 percent rates shifts a $900,000 tax liability to heirs who face 32 to 35 percent rates during peak earning years. </li><li>The SECU… [+6322 chars]｜分類：Fed / 利率｜解讀：影響有限",
+        "title": "His First RMD Arrived in December, and It Pushed His Medicare Premium Up Two Brackets",
+        "summary": "One December distribution transformed a retiree's Medicare bill in a way he never saw coming, and the math be…",
+        "content": "Quick Read <ul><li>A single first RMD can push a retiree two IRMAA brackets higher, jumping Medicare Part B premiums from $203 to $406 per month. </li><li>IRMAA brackets work as cliffs, meaning tha… [+6233 chars]｜分類：Fed / 利率｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Wind turbine is being used to produce zero-carbon \"green ammonia\" fertilizer",
-        "summary": "Farmers in Minnesota will finally save money on imported fertilizer thanks to a wind turbine that generates g…",
-        "content": "A Minnesotan wind turbine shows that wind energy can produce more than just electricity. Various global industries are racing to decarbonize their operations, but many have historically struggled to… [+4346 chars]｜分類：Fed / 利率｜解讀：影響有限",
+        "title": "Barclays Says Big Tech Earnings and Central Banks Will Drive Summer Markets",
+        "summary": "Barclays believes the next phase for equity markets will be determined by upcoming Big Tech earnings and a se…",
+        "content": "Google logo on building ©Adobe Stock Images Barclays believes the next phase for equity markets will be determined by upcoming Big Tech earnings and a series of central bank meetings, as investors b… [+3570 chars]｜分類：Fed / 利率｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Maine Dems Pick Ex-GOP Logger in Must-Win Senate Race...",
-        "summary": "Former state lawmaker and logger Troy Jackson has secured the Democratic nomination for U.S. Senate in Maine…",
-        "content": "BANGOR, Maine (AP) Former state lawmaker and logger Troy Jackson secured the Democratic nomination for U.S. Senate in Maine on Saturday and will face longtime GOP Sen. Susan Collins in November in a … [+6652 chars]｜分類：Fed / 利率｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "‘Like Graham Platner But Worse’: GOP Group Vows $42,000,000 Against Last-Minute Replacement Democrat",
-        "summary": "A Republican group has vowed to spend at least $42 million against new Democratic Maine Senate nominee Troy J…",
-        "content": "A Republican group has vowed to spend at least $42 million against new Democratic Maine Senate nominee Troy Jackson, the Daily Caller News Foundation has learned. The Maine Democratic Party picked … [+4690 chars]｜分類：Fed / 利率｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Silver, Shanghai Composite and the technicals of it",
-        "summary": "Silver's price may face a prolonged sideways trend, mirroring the Shanghai Composite index's historical movem…",
-        "content": "Things have turned around all of a sudden for the devils metal, as silver is called for its absurd and volatile price swings. The price has tumbled over 50 per cent from its record high of $121 per o… [+4279 chars]｜分類：Fed / 利率｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Wall Street Has Never Seen Stock Buying Like This. History Says It Won’t End Quietly",
-        "summary": "U.S. equity ETFs are absorbing money at a pace that dwarfs every previous bull market, and margin debt just h…",
-        "content": "Quick Read <ul><li>U.S. equity ETFs are on pace to pull in $1.4 trillion in 2026, nearly $500 billion above last year's already record-breaking inflow. </li><li>Margin debt has climbed to a record … [+5326 chars]｜分類：Fed / 利率｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Why Retirees Are Moving Cash Reserves Into High-Yield Money Market Funds Instead of Savings Accounts",
-        "summary": "A traditional savings account may feel safe, but for retirees holding large cash reserves, that sense of secu…",
-        "content": "Quick Read <ul><li>Retirees holding $100,000 in a traditional savings account earn roughly $3,620 less annually than those using a high-yield money market account. </li><li>Unlike CDs, money market… [+7262 chars]｜分類：Fed / 利率｜解讀：影響有限",
+        "title": "Michael Burry's Chilling Warning as $100 Oil Collides With AI Debt Explosion: 'Not Sure How Much Longer'",
+        "summary": "Michael Burry is warning about a market collision: rising oil prices, an artificial intelligence debt binge a…",
+        "content": "Benzinga and Yahoo Finance LLC may earn commission or revenue on some items through the links below. Michael Burry is warning about a market collision: rising oil prices, an artificial intelligence … [+7133 chars]｜分類：Fed / 利率｜解讀：地緣風險升高，需留意市場波動擴大",
         "affects_fcn": true,
-        "impact_score": 0
+        "impact_score": -1
       },
       {
-        "title": "Outrage as Red-state church commits ‘blatant’ illegal act to bolster GOP: law expert",
-        "summary": "Calvary Chapel church in Chattanooga, Tennessee was under fire Friday after committing what one tax law exper…",
-        "content": "Calvary Chapel church in Chattanooga, Tennessee was under fire Friday after committing what one tax law expert described as a pretty blatant illegal act in its efforts to help bolster Republican cand… [+1601 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "title": "Higher Ed Can’t Be Neutral in an Age of Brutality. It Must Choose Democracy.",
+        "summary": "Contemporary proponents of “institutional neutrality” fail to grasp that universities have never been outside…",
+        "content": "Part of the Series Truthout is an indispensable resource for activists, movement leaders and workers everywhere. Please make this work possible with a quick donation. Across the United States, and … [+25904 chars]｜分類：Fed / 利率｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "News Analysis: Despite what Sean McVay says, definition of Rams' success hinges on Super Bowl title",
-        "summary": "Heading into training camp, Rams coach Sean McVay says a Super Bowl title won't necessarily determine if the…",
-        "content": "Sean McVay knows the expectations. And why not? He created them. McVay coached the Rams to the brink of a Super Bowl appearance last season and then watched general manager Les Snead engineer two b… [+5020 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "title": "Treasury market warns Federal Reserve Chair Kevin Warsh on rates",
+        "summary": "Rising Treasury yields signal potential rate hikes, impacting risk assets and crypto markets by increasing op…",
+        "content": "Bond yields are climbing above the Fed's policy rate, sending a clear message that Wall Street thinks monetary policy is too loose The bond market has a message for the new Fed chair, and it’s not su… [+2958 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
+        "affects_fcn": true,
+        "impact_score": 1
+      },
+      {
+        "title": "The Treasury market is sending Fed Chair Kevin Warsh a clear warning about rates",
+        "summary": "Rising Treasury yields show how “enormously worried” the market is about inflation — and whether the Fed will…",
+        "content": "Federal Reserve Chair Kevin Warsh may need to raise interest rates or face the wrath of the U.S. bond market. - MarketWatch photo illustration/Getty Images, iStockphoto The U.S. bond market has a wa… [+5811 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
+        "affects_fcn": true,
+        "impact_score": 1
+      },
+      {
+        "title": "Oil near $100 puts fed and peers in interest-rate spotlight",
+        "summary": "Crude oil’s brief foray above the $100 level it last exceeded two months ago is just one of the potential inf…",
+        "content": "From Washington to London to Tokyo, central bankers are set to reveal just how worried they are about a return of oil to about $100 a barrel. Three days of Group of Seven rate decisions, starting wi… [+8147 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
+        "affects_fcn": true,
+        "impact_score": 1
+      },
+      {
+        "title": "Microsoft's Next Earnings Report on July 29 Could Send the Stock Soaring. Here's Why",
+        "summary": "It's been a tough year for Microsoft (NASDAQ:MSFT) shareholders. The stock, typically viewed as one of the sa…",
+        "content": "It's been a tough year for Microsoft (NASDAQ:MSFT) shareholders. The stock, typically viewed as one of the safest plays in the entire stock market, has lost nearly a fifth of its value.Concerns about… [+150 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Families return to Taipan helicopter crash site three years on as men honoured",
-        "summary": "Today, the four men will be immortalised with the erection of a permanent memorial near the place where part…",
-        "content": "Widow Caitland Lyon swore she would never go to this place. Though it is home to idyllic natural wonders and a destination for holidays and honeymoons, it holds a sentiment that is still so raw. It… [+5687 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "title": "The software that landed men on the Moon was not loaded onto the Apollo Guidance Computer so much as woven into it, wit…",
+        "summary": "The Apollo Guidance Computer's most critical code wasn't programmed—it was hand-woven by women threading copp…",
+        "content": "The software that guided Apollo 11 towards the Moon did not reach its computer as an electronic download. Once the program had been written, tested and approved, much of it had to be manufactured. A… [+6324 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Austrian teenager Lilli Tagger plays for maiden WTA title at Prague Open",
-        "summary": "18-year-old Austrian Lilli Tagger seeks a maiden WTA title in the 2026 Prague Open women's singles final on J…",
-        "content": "Lilli Tagger is a rising tennis star to watch. After bursting onto the WTA scene after winning the 2025 French Open junior title, Tagger competes for her first career WTA title at the 2026 Prague Ope… [+1256 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "title": "Stefon Diggs Linked to 'Intriguing' NFC East Team: Report",
+        "summary": "Former All-Pro wide receiver Stefon Diggs is still without a team, but that could change in the coming weeks,…",
+        "content": "Former All-Pro wide receiver Stefon Diggs is still without a team, but that could change in the coming weeks, with an \"intriguing\" NFC East squad recently linked to him.Diggs played for Mike Vrabel a… [+143 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Claude Opus 5 sharpens coding and cybersecurity work on AWS",
+        "summary": "Claude Opus 5 went live on Amazon Bedrock and Claude Platform on AWS. Anthropic says the model improves on Cl…",
+        "content": "Claude Opus 5 went live on Amazon Bedrock and Claude Platform on AWS. Anthropic says the model improves on Claude Opus 4.8’s cyber capabilities, coding through cybersecurity. Anyone with an AWS acco… [+1859 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       }
     ],
     "ai_trend": [
       {
-        "title": "huimei 0.6.58",
-        "summary": "MCP Server & CLI for social media automation — let AI agents publish to TikTok, Instagram, YouTube, Douyin, X…",
+        "title": "hol-guard 2.2.0a54",
+        "summary": "Open-source antivirus and runtime protection for AI agents, tools, MCP servers, plugins, skills, and package…",
         "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "statuspro-mcp-server added to PyPI",
-        "summary": "MCP server for the StatusPro API",
-        "content": "Model Context Protocol (MCP) server for the StatusPro API. Exposes the API as tools so AI assistants (Claude Desktop, Claude.ai, Cursor, etc.) can read and update order status through natural lang… [+8540 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "conscio 3.4.1",
-        "summary": "Self-awareness framework for AI agents — emergent consciousness via context-aware memory, introspection, and…",
+        "title": "token-savior-recall 4.19.1",
+        "summary": "Optimized MCP server for AI coding agents. Structural codebase navigation + persistent memory engine — 97.9%…",
         "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "mentedb 0.29.0",
-        "summary": "The mind database for AI agents",
+        "title": "Show HN: Anyclaude-SDK – Claude Code-Style SDK for OpenAI/Anthropic Endpoints",
+        "summary": "Claude Code agent capabilities (tools, tool loop, MCP, sub-agents, sessions) for ANY OpenAI/Anthropic-compati…",
+        "content": "Claude Code agent capabilities tools, the tool loop, multi-turn conversations, MCP, sub-agents, multi-agent teams, sessions against any OpenAI- or Anthropic-compatible LLM endpoint, running in the … [+22016 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "navige-sdk added to PyPI",
+        "summary": "Python SDK for Navige — governance and audit trail for AI agents",
         "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "The Praxian Genocidal Kill Chain — Part 3",
-        "summary": "In Part 1, Iain Davis defined the Praxians, considered their openly stated control of the Trump administratio…",
-        "content": "In Part 1, Iain Davis defined the Praxians, considered their openly stated control of the Trump administration, and examined their extensive partnerships with the Israeli defence technology sector. I… [+115781 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "pipecat-backchannel 0.3.1",
-        "summary": "Make voice AI conversations feel live — Pipecat agents that listen back with natural \"mhm\"s and \"yeah\"s while…",
+        "title": "hol-guard 2.2.0a53",
+        "summary": "Open-source antivirus and runtime protection for AI agents, tools, MCP servers, plugins, skills, and package…",
         "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Predator vs. the Planet of the Apes #1 Preview: Three-Way War",
-        "summary": "Greetings, carbon-based comic readers! LOLtron welcomes you to another glorious preview under its benevolent…",
-        "content": "Posted in: Comics, Marvel Comics, Preview | Tagged: predator Predator vs. the Planet of the Apes #1 crashes into stores Wednesday as humans, apes, and Yautja battle for supremacy in this cosmic cros… [+11147 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "agent-inbox 0.15.1",
+        "summary": "A SQLite mailbox for local LLM agents — one HTTP API, an ActivityStreams messaging model, and a local stdio M…",
+        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "chimera-agent 0.36.1",
+        "title": "chimera-agent 0.36.2",
         "summary": "An open-source, self-evolving AI agent whose reasoning core is an LLM-Fusion engine (panel -> judge -> synthe…",
         "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Status Audio & GoldenSound Partner On Pro X Earbuds Special Edition",
+        "summary": "Status Audio and GoldenSound have come together for a new collaboration as they've partnered to make the Pro…",
+        "content": "Posted in: Pop Culture, Technology | Tagged: GoldenSound, Status Audio Status Audio and GoldenSound came together for a new partnership in which they have created a new Special Edition of the Pro X … [+3206 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       }
@@ -254,14 +254,14 @@
         "impact_score": 1
       },
       {
-        "title": "VIX：18.70（+2.06）",
+        "title": "VIX：18.58（-0.12）",
         "summary": "VIX 上升代表 FCN 敲入風險上升。",
         "content": "VIX 是你每日要看的核心指標。",
         "affects_fcn": true,
         "impact_score": -2
       },
       {
-        "title": "10Y / 20Y：4.71%（+0.04%） / 5.20%（+0.03%）",
+        "title": "10Y / 20Y：4.69%（-0.02%） / 5.18%（-0.02%）",
         "summary": "中長期利率上升會壓抑科技估值。",
         "content": "科技與 AI 核心股會受中長債殖利率影響。",
         "affects_fcn": true,
@@ -310,7 +310,7 @@
     },
     {
       "label": "總經環境",
-      "text": "總經壓力偏高，建議降低進攻型 FCN。"
+      "text": "總經環境中性，FCN 可做但需偏保守，優先核心股。"
     },
     {
       "label": "今日推薦",
@@ -335,7 +335,7 @@
     },
     {
       "label": "AI 核心股安全度",
-      "value": 45,
+      "value": 62,
       "type": "watch"
     }
   ],
@@ -687,14 +687,25 @@
   },
   "scenario_suggestions": [
     {
-      "name": "避險觀望",
+      "name": "穩定收息",
       "targets": [
+        "TSM",
         "MSFT",
         "UNH"
       ],
       "eki": "80%–85%",
-      "tenor": "短中期",
-      "goal": "只保留低波動核心"
+      "tenor": "6–12個月",
+      "goal": "防守優先"
+    },
+    {
+      "name": "平衡收益",
+      "targets": [
+        "NVDA",
+        "AVGO"
+      ],
+      "eki": "75%–80%",
+      "tenor": "3–6個月",
+      "goal": "只留主力池"
     }
   ]
 }
