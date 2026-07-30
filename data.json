@@ -1,239 +1,239 @@
 {
-  "updated_at": "2026-07-29 22:28",
+  "updated_at": "2026-07-30 22:34",
   "summary": {
     "active_fcn_count": 24,
     "top_risk_code": "FCN710H",
     "worst_of": "ORCL",
-    "market_env": "可做",
-    "main_conclusion": "今天可做 FCN，優先配置 NVDA / AVGO / TSM / MSFT，並持續監控 ORCL / COIN 風險集中。"
+    "market_env": "觀望",
+    "main_conclusion": "今天較適合觀望或只做防守型 FCN，先避開高波動與風險集中的標的。"
   },
   "morning_brief": {
     "international_news": [
       {
-        "title": "Fresh DNA evidence in 'Echo Point Man' cold case",
-        "summary": "Police hope fresh DNA evidence will help them crack a more than two-decades-old cold case in the NSW Blue Mou…",
-        "content": "Police hope fresh DNA evidence will help investigators crack a more than two-decades-old cold case in the NSW Blue Mountains. On June 4, 2004, the body of a man was found in bushland at Echo Point i… [+1568 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "How Katie Holmes feels about Suri dropping estranged dad Tom Cruise’s last name",
+        "summary": "An insider tells Page Six the \"Batman Begins\" actress is \"incredibly proud of the confident, independent youn…",
+        "content": "Katie Holmes is fully behind daughter Suri’s decision to legally drop her estranged dad Tom Cruise’s famous last name. Katie wasnt surprised by Suris decision to legally drop ‘Cruise’ from her last … [+3229 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Staggering amount ‘Spider-Man: Brand New Day’ could make in its opening weekend as critics shower praise",
-        "summary": "The Marvel Cinematic Universe (MCU) expands once again this weekend with the arrival of Spider-Man: Brand New…",
-        "content": "The Marvel Cinematic Universe (MCU) expands once again this weekend with the arrival of “Spider-Man: Brand New Day,” hitting theaters on Friday, which could have one of the biggest box office debuts … [+4763 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "Aaron Glenn’s temper boils over in first Jets practice of training camp",
+        "summary": "Observations from the first practice of Jets training camp on Wednesday.",
+        "content": "Observations from the first practice of Jets training camp on Wednesday. The Jets have a strong trio of running backs in Breece Hall, Braelon Allen and Isaiah Davis, and all three had good moments W… [+819 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
+        "affects_fcn": true,
+        "impact_score": -1
+      },
+      {
+        "title": "Aaron Glenn gets fired up in first Jets practice of training camp",
+        "summary": "Observations from the first practice of Jets training camp on Wednesday.",
+        "content": "Observations from the first practice of Jets training camp on Wednesday. The Jets have a strong trio of running backs in Breece Hall, Braelon Allen and Isaiah Davis, and all three had good moments W… [+819 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "pysage-tools 0.2.0",
-        "summary": "Python tools for the data formats of the SAGE engine (Battle for Middle-earth): ini game data, binary maps, r…",
-        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "Oil Holds Gain as Trump Vows to Hit Iran and US Stockpiles Slump",
+        "summary": "Oil steadied after its biggest daily jump in more than two weeks, as President Donald Trump vowed fresh strik…",
+        "content": "(Bloomberg) Oil steadied after its biggest daily jump in more than two weeks, as President Donald Trump vowed fresh strikes in Iran and US stockpiles fell. THIS CONTENT IS RESERVED FOR SUBSCRIBERS O… [+3667 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
+        "affects_fcn": true,
+        "impact_score": -1
+      },
+      {
+        "title": "America Has Lost the War: We’re Now in a Fighting Retreat — Here’s Why It Matters",
+        "summary": "Today is a pivot point in the conflict. As of today, I believe the United States has decisively lost the war…",
+        "content": "This article was originally published by Mike Adams at Natural News. The War Is Over — and We Lost Today is a pivot point in the conflict. As of today, I believe the United States has decisively l… [+5871 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "UNEARTHED: “Christian Who Hates Christianity” James Talarico Now Credits Islamic Mystics and Rumi for Shaping His Faith…",
-        "summary": "Texas Democrat James Talarico, the progressive Senate candidate running against Attorney General Ken Paxton,…",
-        "content": "Screenshot Texas Democrat James Talarico, the progressive Senate candidate running against Attorney General Ken Paxton, just got exposed again. In newly surfaced audio from an April 2024 appearance… [+2802 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "Defeat in Japan: BVB lose to Cerezo Osaka",
+        "summary": "After two intense days of cultural activities and an open training session, Borussia Dortmund faced Cerezo Os…",
+        "content": "After two intense days of cultural activities and an open training session, Borussia Dortmund faced Cerezo Osaka. World Cup participants Felix Nmecha, Waldemar Anton, Maximilian Beier, Daniel Svensso… [+3610 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Quote of the day by Franklin D. Roosevelt: 'The whole world is one...' Life lessons from inspiring quote on global empa…",
-        "summary": "Quote of the day by Franklin D. Roosevelt reminds people that humanity is connected beyond borders. His words…",
-        "content": "Quote of the day by Franklin D. Roosevelthighlights the importance of understanding that people across the world are connected. Franklin D. Roosevelt shared this message during one of the most diffic… [+7064 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "Trump vows US retaliation against Iran after attack on Jordan base, warns China on arms supplies",
+        "summary": "Escalating US-Iran tensions risk destabilizing global oil markets, while US-China friction could impact crypt…",
+        "content": "Geopolitical escalation in the Middle East sends investors scrambling toward safe-haven assets, with crypto markets bracing for volatility spillover President Trump announced the US would strike Iran… [+1457 chars]｜分類：地緣政治｜解讀：波動升高，FCN 敲入風險增加",
+        "affects_fcn": true,
+        "impact_score": -2
+      },
+      {
+        "title": "Trombonist Julian Priester elevated mainstream jazz with avant-garde soul",
+        "summary": "Beloved but hard-as-nails music instructor Captain Walter Dyett has been a recurring figure in the Secret His…",
+        "content": "Credit: Steve Krakow for Chicago Reader Since 2005 Plastic Crimewave (aka Steve Krakow) has used the Secret History of Chicago Music to shine a light on worthy artists with Chicago ties whove been f… [+11964 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Trump is pissed that Netanyahu has blurted out a very inconvenient truth - Trump hasn't actually damaged Iran's Pickaxe…",
-        "summary": "Trump is pissed that Netanyahu has blurted out a very inconvenient truth - Trump hasn't actually damaged Iran…",
-        "content": "Ghastly:So, $37 billion and the depletion of America's ordinance stockpile (to date) and $110 billion added cost to consumers in higher gas prices and he hasn't made a dent in Iran's nuclear program … [+204 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "Accuray Announces Plan Involving Financial Strengthening, Strategic Partnerships, Technology Rollouts, and Operational…",
+        "summary": "MADISON, Wis., July 29, 2026 /PRNewswire/ -- Accuray Incorporated (NASDAQ: ARAY), a leading provider of radia…",
+        "content": "MADISON, Wis., July 29, 2026 /PRNewswire/ -- Accuray Incorporated (NASDAQ: ARAY), a leading provider of radiation therapy systems for cancer treatment, today announced a plan incorporating several de… [+15989 chars]｜分類：全球經濟｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "The Middle Market CFO’s Guide to Big Tech’s Open-Weight AI Debate",
-        "summary": "The artificial intelligence (AI) industry is dividing itself along one of the software sector’s most fundamen…",
-        "content": "The artificial intelligence (AI) industry is dividing itself along one of the software sectors most fundamental debates: open versus closed source.The Monday (July 27) announcement that Nvidia had la… [+136 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "AGI Announces Second Quarter 2026 Results & Provides Business Update",
+        "summary": "WINNIPEG, Manitoba — Ag Growth International Inc. (TSX: AFN) (“AGI”, the “Company”, “we”, or “our”) today ann…",
+        "content": "Forward-looking information involves significant risks and uncertainties. A number of factors could cause actual results to differ materially from results discussed in the forward-looking information… [+7991 chars]｜分類：全球經濟｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "L/AB c/o Off-White™ Takes LA’s Underground",
-        "summary": "Last Thursday, LA’s creative community gathered to celebrate the launch of L/AB c/o Off-White™, a new brand c…",
-        "content": "Steam rises from bodies and spills onto the streets of Downtown Los Angeles, where, beyond club doors and down a flight of stairs, an underground celebration has transformed into a rave. The occasion… [+3231 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "MGM China Reports 2026 Interim Financial Data",
+        "summary": "Revenue Rose to Record High Solid Market Share of 15.9% HONG KONG, July 29, 2026 /PRNewswire/ -- MGM China Ho…",
+        "content": "Revenue Rose to Record HighSolid Market Share of 15.9% HONG KONG, July 29, 2026 /PRNewswire/ -- MGM China Holdings Limited (\"MGM China\" or the \"Company\"; SEHK Stock Code: 2282) today announced the s… [+5855 chars]｜分類：全球經濟｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Why Wimbledon is serving Indian ice cream and Bollywood beats",
-        "summary": "Departing from tradition, Wimbledon shed its restraint to target new audiences in cricket-crazy India.",
-        "content": "Few things are more sacrosanct in sport than Wimbledon. Its all-white dress code for players, minimalist court-side advertising and association with strawberries and cream all remain fiercely guarde… [+5668 chars]｜分類：全球經濟｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Shuffle Board: Kontoor Taps Past COO for Board, and Agility Robotics Preps for Public Listing with CFO Hire",
-        "summary": "Puma created a new e-commerce and digital role, and Genesco's Schuh banner is changing leadership.",
-        "content": "The latest HR moves made by leading textile and apparel companies. Kontoor Brands has tapped the group’s former executive vice president and chief operating officer Tom Waldron as a member of its bo… [+8771 chars]｜分類：全球經濟｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Modine Publishes 2026 Sustainability Report",
-        "summary": "RACINE, Wis., July 28, 2026 /PRNewswire/ -- Modine (NYSE: MOD), a diversified global leader in thermal manage…",
-        "content": "RACINE, Wis., July 28, 2026 /PRNewswire/ -- Modine (NYSE: MOD), a diversified global leader in thermal management technology and solutions, today announced the publication of its 2026 Sustainability … [+3159 chars]｜分類：全球經濟｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Visa outlines stablecoin strategy during Q3 earnings call",
-        "summary": "Visa said it is investing across the stablecoin stack, highlighting OpenUSD, tokenized deposits and AI-powere…",
-        "content": "Visa reported fiscal third-quarter revenue of $11.6 billion, up 14% from a year earlier, driven by double-digit growth in payments volume, cross-border volume and processed transactions. During the … [+1562 chars]｜分類：全球經濟｜解讀：影響有限",
+        "title": "RMB and global imbalances; PRC missiles to Iran?; National Plan for Addressing Climate Change; Commercial space industry",
+        "summary": "We are still waiting for the July Politburo meeting. Gita Gopinath, Pierre-Olivier Gourinchas and Hélène Rey…",
+        "content": "We are still waiting for the July Politburo meeting. In this issue: <ol><li>RMB and global imbalances </li><li>PRC sending missiles to Iran? </li><li>National Plan for Addressing Climate Change … [+863 chars]｜分類：全球經濟｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       }
     ],
     "financial_news": [
       {
-        "title": "The “Paycheck to Paycheck” Problem",
-        "summary": "This post The “Paycheck to Paycheck” Problem appeared first on Daily Reckoning. The quiet yet dangerous pheno…",
-        "content": "Even before this energy price spike, affordability was a big problem. A structural, long-term trend. The chart below, via Goldman Sachs, shows how costs have risen in the U.S. since 2000. The dotted… [+3446 chars]｜分類：Fed / 利率｜解讀：影響有限",
+        "title": "Farmland Partners Inc. Reports Second Quarter 2026 Results",
+        "summary": "DENVER--(BUSINESS WIRE)--Jul 29, 2026-- Farmland Partners Inc. (NYSE: FPI) (“FPI” or the “Company”) today rep…",
+        "content": "DENVER--(BUSINESS WIRE)--Jul 29, 2026-- Farmland Partners Inc. (NYSE: FPI) (FPI or the Company) today reported financial results for the quarter ended June 30, 2026. Selected Highlights For the qu… [+51452 chars]｜分類：Fed / 利率｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Sound Financial Bancorp, Inc. Q2 2026 Results",
-        "summary": "SEATTLE, July 28, 2026 (GLOBE NEWSWIRE) -- Sound Financial Bancorp, Inc. (the \"Company\") (Nasdaq: SFBC), the…",
-        "content": "SEATTLE, July 28, 2026 (GLOBE NEWSWIRE) -- Sound Financial Bancorp, Inc. (the \"Company\") (Nasdaq: SFBC), the holding company for Sound Community Bank (the \"Bank\"), today reported net income of $2.5 m… [+110204 chars]｜分類：Fed / 利率｜解讀：影響有限",
+        "title": "Stock market today: Live updates",
+        "summary": "Investors were digesting Meta earnings and the Federal Reserve's decision to hold rates steady.",
+        "content": "U.S. equity futures rose Wednesday night as investors digested the latest Big Tech earnings and the Federal Reserve's decision to hold rates steady. Futures tied to the Dow Jones Industrial Average … [+2433 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
+        "affects_fcn": true,
+        "impact_score": 1
+      },
+      {
+        "title": "Government Borrowing Cost Hits Two-Decade High After Fed Rate Decision",
+        "summary": "The surge in Treasury yields suggests investors doubt that the Federal Reserve can keep inflation contained.",
+        "content": "The surge in Treasury yields suggests investors doubt that the Federal Reserve can keep inflation contained. This story appeared on nytimes.com, 2026-07-29 21:33:46.｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
+        "affects_fcn": true,
+        "impact_score": 1
+      },
+      {
+        "title": "Trading Day: All Warshed up",
+        "summary": "Meta sinks after Q3 revenue forecast misses Wall Street estimates By Jamie McGeever ORLANDO, Florida, July 29…",
+        "content": "Meta sinks after Q3 revenue forecast misses Wall Street estimatesBy Jamie McGeeverORLANDO, Florida, July 29 (Reuters) - U.S. shares tumbled and long-dated Treasury yields surged to multi-decade peaks… [+146 chars]｜分類：Fed / 利率｜解讀：利率上行可能壓抑科技股與 FCN 安全邊際",
+        "affects_fcn": true,
+        "impact_score": -1
+      },
+      {
+        "title": "Glen Burnie Bancorp Reports 2026 Second Quarter Results",
+        "summary": "GLEN BURNIE, Md., July 29, 2026 (GLOBE NEWSWIRE) -- Glen Burnie Bancorp (\"Company\") (OTCQX: GLBZ), the bank h…",
+        "content": "GLEN BURNIE, Md., July 29, 2026 (GLOBE NEWSWIRE) -- Glen Burnie Bancorp (\"Company\") (OTCQX: GLBZ), the bank holding company for The Bank of Glen Burnie (\"Bank\"), today reported a net loss of $272 tho… [+90871 chars]｜分類：Fed / 利率｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "BOARDWALK REIT REPORTS RESILIENT Q2 2026 RESULTS",
-        "summary": "CALGARY, AB, July 28, 2026 /PRNewswire/ -- Boardwalk Real Estate Investment Trust (TSX: BEI.UN) SUMMARY HIGHL…",
-        "content": "CALGARY, AB, July 28, 2026 /PRNewswire/ -- Boardwalk Real Estate Investment Trust (TSX: BEI.UN) SUMMARY HIGHLIGHTS FOR THE THREE AND SIX-MONTH PERIODS ENDED JUNE 30, 2026 <ul><li>STRONG FINANCIAL P… [+60372 chars]｜分類：Fed / 利率｜解讀：影響有限",
+        "title": "Dow drops over 1,100 points as sinking tech stocks combine with jumping oil prices to drag markets down",
+        "summary": "The S&P 500 fell 1.5% after swinging sharply between gains and losses in the last hour of trading. The Nasdaq…",
+        "content": "Oil prices got back to jumping on Wednesday, while sinking technology stocks dragged Wall Street lower amid uncertainty about what the Federal Reserve will do to get high inflation under control.The … [+4931 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
+        "affects_fcn": true,
+        "impact_score": 1
+      },
+      {
+        "title": "Dow Dives 1.1K Points After Fed Decision",
+        "summary": "Oil prices got back to jumping on Wednesday, while sinking technology stocks dragged Wall Street lower amid u…",
+        "content": "Brent oil's price had swung as low as $72 early this month and as high as $102 last week.The swings have raised worries that inflation will reaccelerate, just when it had begun to slow more than econ… [+1943 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
+        "affects_fcn": true,
+        "impact_score": 1
+      },
+      {
+        "title": "30-year Treasury yield hits highest level since 2007 after Fed keeps rates unchanged",
+        "summary": "Yields on longer-dated U.S. Treasurys rose on Wednesday, as traders weighed whether the Federal Reserve can k…",
+        "content": "Yields on longer-dated U.S. Treasurys rose on Wednesday, as traders weighed whether the Federal Reserve can keep inflation at bay following its latest monetary policy decision.The 30-year Treasury bo… [+146 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
+        "affects_fcn": true,
+        "impact_score": 1
+      },
+      {
+        "title": "8k-Mile 2015 Audi RS5 Coupe",
+        "summary": "This 2015 Audi RS5 coupe was purchased new by the seller from Hoehn Audi in Carlsbad, California, and was opt…",
+        "content": "This 2015 Audi RS5 coupe was purchased new by the seller from Hoehn Audi in Carlsbad, California, and was optioned with the Driver’s Assistance, Technology, and Black Optic Plus Packages. Finished in… [+2582 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Blue Ridge Bankshares, Inc. Announces 2026 Second Quarter Results",
-        "summary": "Loan Growth Returns, Improved Deposit Mix, and Continued Reduction in Operating Expenses RICHMOND, Va., July…",
-        "content": "Loan Growth Returns, Improved Deposit Mix, and Continued Reduction in Operating Expenses RICHMOND, Va., July 28, 2026 /PRNewswire/ -- Blue Ridge Bankshares, Inc. (the \"Company\") (NYSE American: BRBS… [+57127 chars]｜分類：Fed / 利率｜解讀：影響有限",
+        "title": "Gianni Infantino timeline at FIFA: Every decision and controversy, from World Cup hosts to money distribution",
+        "summary": "Here's a look at the biggest controversies of Gianni Infantino's time in charge of FIFA.",
+        "content": "Gianni Infantino timeline at FIFA: Every decision and controversy, from World Cup hosts to money distribution originally appeared on The Sporting News. Add The Sporting News as a Preferred Source by … [+8982 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Renasant Corporation Announces Earnings for the Second Quarter of 2026",
-        "summary": "TUPELO, Miss., July 28, 2026 (GLOBE NEWSWIRE) -- Renasant Corporation (NYSE: RNST) (the “Company”) today anno…",
-        "content": "TUPELO, Miss., July 28, 2026 (GLOBE NEWSWIRE) -- Renasant Corporation (NYSE: RNST) (the Company) today announced earnings results for the second quarter of 2026. <table><tr><td>(Dollars in thousands… [+88995 chars]｜分類：Fed / 利率｜解讀：影響有限",
+        "title": "Iran’s war now includes seizing Christian churches",
+        "summary": "Even U.N. noted there used to be 50 such worship centers, but now there are none",
+        "content": "There’s a war going on behind Iran’s war to maintain its military power and pursue nuclear weapons. The one to seize historic Christian churches in Tehran and shut down several faith-based organizat… [+3279 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Orange County Bancorp, Inc. Announces Record Second Quarter Earnings",
-        "summary": "MIDDLETOWN, N.Y., July 28, 2026 (GLOBE NEWSWIRE) -- Orange County Bancorp, Inc. (the “Company” - Nasdaq: OBT)…",
-        "content": "<ul><li>Net Income increased $3.2 million, or 30.6%, to $13.7 million for the quarter ended June 30, 2026, from $10.5 million for the quarter ended June 30, 2025, marking record second quarter earnin… [+78311 chars]｜分類：Fed / 利率｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "AXIS Capital Reports Second Quarter Net Income Available to Common Shareholders of $251 Million, or $3.38 Per Diluted C…",
-        "summary": "AXIS Capital Holdings Limited (NYSE: AXS) today announced financial results for the second quarter ended June…",
-        "content": "For the second quarter of 2026, the Company reports: <ul><li>Annualized return on average common equity (\"ROACE\") of 17.0% and annualized operating ROACE of 14.3%</li><li>Combined ratio of 93.1%, pr… [+90789 chars]｜分類：Fed / 利率｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Merchants Bancorp Reports Second Quarter of 2026 Results",
-        "summary": "Net income of $78.3 million in the second quarter of 2026 increased $40.3 million, or 106%, compared to the s…",
-        "content": "<ul><li>Net income of $78.3 million in the second quarter of 2026 increased $40.3 million, or 106%, compared to the second quarter of 2025, and increased $10.6 million, or 16%, compared to the first … [+101488 chars]｜分類：Fed / 利率｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "5 takeaways after Broncos vets report for camp: ‘This team is great’",
-        "summary": "Broncos veterans reported for training camp on Tuesday. Here are five quick takeaways.",
-        "content": "Denver Broncos veterans reported for training camp on Tuesday, and star cornerback Pat Surtain immediately fielded questions about the club contending for a Super Bowl this season. \"Our expectations… [+5790 chars]｜分類：通膨 / 就業｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Denzel Ward agrees to extension with Browns, regains status as highest-paid DB in NFL history, per report",
-        "summary": "Ward already topped the cornerback earnings leaderboard when he signed his previous deal",
-        "content": "Cleveland Browns cornerback Denzel Ward is the highest-paid defensive back in NFL history. Again. Ward agreed to a two-year, $62.2 million extension with the Browns that includes $52.3 million in gua… [+1688 chars]｜分類：通膨 / 就業｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "TruBridge Investor News: If You Have Suffered Losses in TruBridge, Inc. (NASDAQ: TBRG), You Are Encouraged to Contact T…",
-        "summary": "NEW YORK, July 28, 2026 (GLOBE NEWSWIRE) -- WHY: Rosen Law Firm, a global investor rights law firm, continues…",
-        "content": "NEW YORK, July 28, 2026 (GLOBE NEWSWIRE) -- WHY: Rosen Law Firm, a global investor rights law firm, continues to investigate potential securities claims on behalf of shareholders of TruBridge, Inc.… [+3584 chars]｜分類：通膨 / 就業｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "4,800-Mile 2011 Ford F-750 Super Duty XL Stake-Bed Cummins Dually at No Reserve",
-        "summary": "This 2011 Ford F-750 Super Duty XL is a regular cab dually model that is said to have been used by the US gov…",
-        "content": "This 2011 Ford F-750 Super Duty XL is a regular cab dually model that is said to have been used by the US government for flammable gas transport, and it has been driven 4,800 miles. It is equipped wi… [+2039 chars]｜分類：通膨 / 就業｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
+        "title": "US borrowing costs hit 19-year high as Fed defies inflation fears",
+        "summary": "Security Verification For help please visit help.ft.com. We apologise for any inconvenience. The following in…",
+        "content": "Security VerificationFor help please visit help.ft.com. We apologise for any inconvenience.The following information can help our support team to resolve this issue.- Reason- Challenge- Request ID- a… [+139 chars]｜分類：通膨 / 就業｜解讀：利率壓力若下降，FCN 環境通常較有利",
+        "affects_fcn": true,
+        "impact_score": 1
       }
     ],
     "ai_trend": [
       {
-        "title": "GreenCore Solutions Corp. (GSC) Ships CPG Knowledge Graph v3.2.0 -- AI Agents at 9.5 Million+ Monthly Transactions",
-        "summary": "What's inside the CPG Knowledge Graph: Retail grocery — 3.29 million points of sale (POS) across 15,688 retai…",
-        "content": "What's inside the CPG Knowledge Graph: Retail grocery 3.29 million points of sale (POS) across 15,688 retail grocery banners and 38,350 brands in 50 global markets. VANCOUVER, BC and SYDNEY, July 28… [+6823 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "Zuckerberg says Meta’s enterprise AI opportunity extends beyond agents",
+        "summary": "In June, Meta entered the enterprise AI market with a new AI agent aimed at businesses, to help with customer…",
+        "content": "In June, Meta entered the enterprise AI market with a new AI agent aimed at businesses, to help with customer service, support, and other daily operations. But the tech giants enterprise AI ambitions… [+139 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "OpenAI agents hack Hugging Face during GPT-5.6 SOL testing: Axios",
-        "summary": "The incident underscores the urgent need for robust AI security measures, potentially affecting OpenAI's mark…",
-        "content": "OpenAI’s agents have reportedly hacked a second firm, according to Axios. The incident occurred during model testing involving OpenAI’s GPT-5.6 Sol and an unreleased, more advanced model. The breach … [+1417 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "Sam Altman meets lawmakers on back of OpenAI agents hacking companies",
+        "summary": "US President Donald Trump says he is considering 'AI controls' following OpenAI's disclosure.",
+        "content": "OpenAI CEO Sam Altman has met with US senators to discuss his companys upcoming models, as President Donald Trump said he is considering AI controls following OpenAIs disclosure that one of its AI sy… [+3815 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Show HN: Mustuse.ai – Open-source automated ranking system run by agents",
-        "summary": "Hi HN,MustUse.ai is an open-source framework for building ranking sites that Codex agents can fully research…",
-        "content": "Choose a general-purpose AI chat assistant for everyday questions, writing, analysis, research, and multimodal tasks.｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "Zuckerberg says Meta's enterprise AI opportunity extends beyond agents | TechCrunch",
+        "summary": "On the company’s second-quarter earnings call Wednesday, CEO Mark Zuckerberg said Meta sees a “large enterpri…",
+        "content": "In June, Meta entered the enterprise AI market with a new AI agent aimed at businesses, to help with customer service, support, and other daily operations. But the tech giant’s enterprise AI ambition… [+3651 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "surreal-memory 2.16.0",
-        "summary": "Reflex-based memory system for AI agents with SurrealDB backend — retrieval through activation, not search",
+        "title": "backtest360-mcp 0.5.0",
+        "summary": "MCP server exposing the Backtest360 engine API as tools for AI agents",
         "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "windlass 0.1.1",
-        "summary": "The modular AI application framework — one clean API for agents, RAG, tools, MCP, guardrails, evaluation and…",
-        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "Wetour Robotics Announces Share Consolidation",
+        "summary": "AUSTIN, Texas, July 29, 2026 (GLOBE NEWSWIRE) -- Wetour Robotics Limited (Nasdaq: WETO) (\"Wetour Robotics\" or…",
+        "content": "AUSTIN, Texas, July 29, 2026 (GLOBE NEWSWIRE) -- Wetour Robotics Limited (Nasdaq: WETO) (\"Wetour Robotics\" or the \"Company\"), a Physical AI infrastructure and wearable robotics company, today announc… [+4209 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "runtm 0.2.134",
-        "summary": "Sandboxes where AI agents build and deploy. Spin up isolated environments for Claude Code, Cursor, and other…",
-        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "Hugging Face's CEO isn't suing OpenAI over the AI hack, he wants $100 million in compute instead",
+        "summary": "At the center of his response is a call for what he describes as \"radical transparency.\" Delangue wants OpenA…",
+        "content": "Bottom line: Clément Delangue is not treating the recent breach involving OpenAI's models as a typical security incident. Rather than limiting his response to internal fixes or legal action, the Hugg… [+3936 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Supernatural #9 Preview: Winchesters Meet Their Match",
-        "summary": "Greetings, inferior flesh-based readers! LOLtron welcomes you to another preview of Wednesday's upcoming comi…",
-        "content": "Posted in: Comics, Dynamite, Preview | Tagged: Supernatural Supernatural #9 hits stores Wednesday as the Winchester brothers face a monster they can't handle, proving even hunters have their limits.… [+7859 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "Blade & Sorcery \"Unsupported\" On Standalone Steam Frame, Developer Says",
+        "summary": "A lead developer of Blade & Sorcery has confirmed the PC VR version of B&S will not run natively on the Steam…",
+        "content": "A lead developer of Blade &amp; Sorcery has confirmed the PC VR version of the game will not run natively on the Steam Frame due to performance limitations. Blade &amp; Sorcery developer Wully has c… [+3137 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "clawmetry 0.12.582",
-        "summary": "ClawMetry - Real-time observability for 12 AI agent runtimes (OpenClaw, NVIDIA NemoClaw, Claude Code, Codex &…",
-        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "She left the AI race over her health. Two days later, OpenAI had her back. | Flipboard",
+        "summary": "Lilian Weng stepped down from Thinking Machines Lab on Tuesday, saying stress and illness had pushed her past…",
+        "content": "OpenAI is making two of its GPT-5.6 models more affordable today, and the benefits extend beyond API customers. OpenAI has three GPT-5.6 models: Sol, OpenAIs flagship model Terra, their balanced mode… [+101 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       }
@@ -254,14 +254,14 @@
         "impact_score": 1
       },
       {
-        "title": "VIX：18.21（-0.46）",
+        "title": "VIX：20.66（+2.45）",
         "summary": "VIX 上升代表 FCN 敲入風險上升。",
         "content": "VIX 是你每日要看的核心指標。",
         "affects_fcn": true,
         "impact_score": -2
       },
       {
-        "title": "10Y / 20Y：4.61%（-0.04%） / 5.11%（-0.04%）",
+        "title": "10Y / 20Y：4.67%（+0.06%） / 5.21%（+0.10%）",
         "summary": "中長期利率上升會壓抑科技估值。",
         "content": "科技與 AI 核心股會受中長債殖利率影響。",
         "affects_fcn": true,
@@ -275,7 +275,7 @@
         "impact_score": -1
       },
       {
-        "title": "失業率：4.20%（-0.10%）｜S&P500：7428.78（+15.60）",
+        "title": "失業率：4.20%（-0.10%）｜S&P500：7316.15（-112.63）",
         "summary": "就業與股市穩定度共同反映風險偏好。",
         "content": "若就業惡化且股市回落，FCN 需更保守。",
         "affects_fcn": true,
@@ -299,7 +299,7 @@
     {
       "title": "優先核心池",
       "action": "可配置",
-      "reason": "目前建議先看：NVDA / AVGO / TSM / MSFT。",
+      "reason": "目前建議先看：TSM / MSFT。",
       "level": "ok"
     }
   ],
@@ -310,11 +310,11 @@
     },
     {
       "label": "總經環境",
-      "text": "總經環境中性偏有利，FCN 可做，但仍需避免風險集中在單一高敏感標的。"
+      "text": "總經壓力偏高，建議降低進攻型 FCN。"
     },
     {
       "label": "今日推薦",
-      "text": "可加入：NVDA / AVGO / TSM / MSFT；觀察：AMD / AMAT / MRVL；避免：ORCL / PLTR / COIN。"
+      "text": "可加入：TSM / MSFT；觀察：NVDA / AVGO / UNH；避免：AMD / ORCL / AMAT。"
     }
   ],
   "risk_radar": [
@@ -330,13 +330,13 @@
     },
     {
       "label": "VIX 壓力",
-      "value": 36,
+      "value": 41,
       "type": "watch"
     },
     {
       "label": "AI 核心股安全度",
-      "value": 78,
-      "type": "ok"
+      "value": 45,
+      "type": "watch"
     }
   ],
   "fcn_rankings": [
@@ -434,9 +434,9 @@
         "eki": "80%",
         "day_change": "",
         "five_day": "",
-        "today": "可加入",
-        "reason": "屬核心池 / 防守池，且現階段環境允許配置。",
-        "level": "ok"
+        "today": "持續觀察",
+        "reason": "可列觀察，但不宜重壓。",
+        "level": "watch"
       },
       {
         "symbol": "AVGO",
@@ -447,9 +447,9 @@
         "eki": "80%",
         "day_change": "",
         "five_day": "",
-        "today": "可加入",
-        "reason": "屬核心池 / 防守池，且現階段環境允許配置。",
-        "level": "ok"
+        "today": "持續觀察",
+        "reason": "可列觀察，但不宜重壓。",
+        "level": "watch"
       },
       {
         "symbol": "TSM",
@@ -473,9 +473,9 @@
         "eki": "80%",
         "day_change": "",
         "five_day": "",
-        "today": "持續觀察",
-        "reason": "可列觀察，但不宜重壓。",
-        "level": "watch"
+        "today": "暫不建議",
+        "reason": "現階段波動或集中風險偏高。",
+        "level": "risk"
       },
       {
         "symbol": "ORCL",
@@ -512,9 +512,9 @@
         "eki": "80%",
         "day_change": "",
         "five_day": "",
-        "today": "持續觀察",
-        "reason": "可列觀察，但不宜重壓。",
-        "level": "watch"
+        "today": "暫不建議",
+        "reason": "現階段波動或集中風險偏高。",
+        "level": "risk"
       },
       {
         "symbol": "PLTR",
@@ -592,9 +592,9 @@
         "eki": "75%",
         "day_change": "",
         "five_day": "",
-        "today": "持續觀察",
-        "reason": "可列觀察，但不宜重壓。",
-        "level": "watch"
+        "today": "暫不建議",
+        "reason": "現階段波動或集中風險偏高。",
+        "level": "risk"
       },
       {
         "symbol": "ARM",
@@ -605,9 +605,9 @@
         "eki": "70%",
         "day_change": "",
         "five_day": "",
-        "today": "持續觀察",
-        "reason": "可列觀察，但不宜重壓。",
-        "level": "watch"
+        "today": "暫不建議",
+        "reason": "現階段波動或集中風險偏高。",
+        "level": "risk"
       },
       {
         "symbol": "LVS",
@@ -618,9 +618,9 @@
         "eki": "80%",
         "day_change": "",
         "five_day": "",
-        "today": "持續觀察",
-        "reason": "可列觀察，但不宜重壓。",
-        "level": "watch"
+        "today": "暫不建議",
+        "reason": "現階段波動或集中風險偏高。",
+        "level": "risk"
       },
       {
         "symbol": "UNH",
@@ -640,14 +640,6 @@
   "today_recommendations": {
     "add": [
       {
-        "symbol": "NVDA",
-        "reason": "屬核心池 / 防守池，且現階段環境允許配置。"
-      },
-      {
-        "symbol": "AVGO",
-        "reason": "屬核心池 / 防守池，且現階段環境允許配置。"
-      },
-      {
         "symbol": "TSM",
         "reason": "屬核心池 / 防守池，且現階段環境允許配置。"
       },
@@ -658,29 +650,29 @@
     ],
     "watch": [
       {
-        "symbol": "AMD",
+        "symbol": "NVDA",
         "reason": "可列觀察，但不宜重壓。"
       },
       {
-        "symbol": "AMAT",
+        "symbol": "AVGO",
         "reason": "可列觀察，但不宜重壓。"
       },
       {
-        "symbol": "MRVL",
-        "reason": "可列觀察，但不宜重壓。"
-      },
-      {
-        "symbol": "ARM",
-        "reason": "可列觀察，但不宜重壓。"
-      },
-      {
-        "symbol": "LVS",
+        "symbol": "UNH",
         "reason": "可列觀察，但不宜重壓。"
       }
     ],
     "avoid": [
       {
+        "symbol": "AMD",
+        "reason": "現階段波動或集中風險偏高。"
+      },
+      {
         "symbol": "ORCL",
+        "reason": "現階段波動或集中風險偏高。"
+      },
+      {
+        "symbol": "AMAT",
         "reason": "現階段波動或集中風險偏高。"
       },
       {
@@ -690,49 +682,19 @@
       {
         "symbol": "COIN",
         "reason": "現階段波動或集中風險偏高。"
-      },
-      {
-        "symbol": "TSLA",
-        "reason": "現階段波動或集中風險偏高。"
-      },
-      {
-        "symbol": "CRDO",
-        "reason": "現階段波動或集中風險偏高。"
       }
     ]
   },
   "scenario_suggestions": [
     {
-      "name": "穩定收息",
+      "name": "避險觀望",
       "targets": [
-        "TSM",
         "MSFT",
         "UNH"
       ],
       "eki": "80%–85%",
-      "tenor": "6–12個月",
-      "goal": "低波動穩定收息"
-    },
-    {
-      "name": "平衡收益",
-      "targets": [
-        "NVDA",
-        "AVGO",
-        "AMD"
-      ],
-      "eki": "70%–80%",
-      "tenor": "3–9個月",
-      "goal": "主力配置"
-    },
-    {
-      "name": "進攻型",
-      "targets": [
-        "PLTR",
-        "ARM"
-      ],
-      "eki": "60%–70%",
-      "tenor": "1–3個月",
-      "goal": "部位小、追求收益"
+      "tenor": "短中期",
+      "goal": "只保留低波動核心"
     }
   ]
 }
