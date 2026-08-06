@@ -5013,6 +5013,67 @@
   }
 },
   {
+  "date": "2026-08-04",
+  "fcn_id": "FCN557Q 富邦",
+  "basket": [
+    "AVGO",
+    "MRVL",
+    "AAPL",
+    "SMH",
+    "CCL"
+  ],
+  "tenor": 9,
+  "rate": 23.23,
+  "autocall": 105,
+  "strike": 60,
+  "ki": 50,
+  "eki": true,
+  "bank": "Natixis",
+  "has_position": true,
+  "amt": 50000,
+  "currency": "USD",
+  "status": "active",
+  "tw_bank": "富邦",
+  "created_time": "2026-08-04T16:39",
+  "entry_time": "2026-08-04T16:39",
+  "exit_time": "",
+  "decision_flag": "manual",
+  "is_portfolio": true,
+  "note": "",
+  "entry_prices": {
+    "AVGO": 389.4421,
+    "MRVL": 191.4646,
+    "AAPL": 305.4581,
+    "SMH": 538.811,
+    "CCL": 28.681
+  },
+  "maturity_time": "",
+  "has_ki_breach": false,
+  "first_ki_breach_time": "",
+  "early_exit_record": {
+    "AVGO": {
+      "hit": false,
+      "first_hit_time": ""
+    },
+    "MRVL": {
+      "hit": false,
+      "first_hit_time": ""
+    },
+    "AAPL": {
+      "hit": false,
+      "first_hit_time": ""
+    },
+    "SMH": {
+      "hit": false,
+      "first_hit_time": ""
+    },
+    "CCL": {
+      "hit": false,
+      "first_hit_time": ""
+    }
+  }
+},
+  {
     "date": "2026-03-26",
     "fcn_id": "FCN901M 富邦",
     "basket": [
