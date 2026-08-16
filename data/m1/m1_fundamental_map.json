@@ -1,16 +1,4 @@
 {
-  "AAPL": {
-    "capex_ratio_prev_y": 11,
-    "revenue_growth_q": 20,
-    "operating_income_growth_q": 22,
-    "operating_income_q": 11500
-  },
-  "AMZN": {
-    "capex_ratio_prev_y": 12,
-    "revenue_growth_q": 23,
-    "operating_income_growth_q": 22,
-    "operating_income_q": 11000
-  },
   "ANET": {
     "capex_ratio_prev_y": 11,
     "revenue_growth_q": 18,
@@ -23,29 +11,11 @@
     "operating_income_growth_q": 25,
     "operating_income_q": 11500
   },
-  "AVGO": {
+  "ETN": {
     "capex_ratio_prev_y": 11,
     "revenue_growth_q": 18,
     "operating_income_growth_q": 25,
     "operating_income_q": 11500
-  },
-  "DHR": {
-    "capex_ratio_prev_y": 11,
-    "revenue_growth_q": 18,
-    "operating_income_growth_q": 25,
-    "operating_income_q": 11500
-  },
-  "ECL": {
-    "capex_ratio_prev_y": 11,
-    "revenue_growth_q": 18,
-    "operating_income_growth_q": 25,
-    "operating_income_q": 11500
-  },
-  "LLY": {
-    "capex_ratio_prev_y": 11,
-    "revenue_growth_q": 26,
-    "operating_income_growth_q": 32,
-    "operating_income_q": 9000
   },
   "NVDA": {
     "capex_ratio_prev_y": 16,
@@ -58,12 +28,6 @@
     "revenue_growth_q": 18,
     "operating_income_growth_q": 25,
     "operating_income_q": 11500
-  },
-  "QCOM": {
-    "capex_ratio_prev_y": 11,
-    "revenue_growth_q": 17,
-    "operating_income_growth_q": 22,
-    "operating_income_q": 11000
   },
   "TMO": {
     "capex_ratio_prev_y": 11,
@@ -89,10 +53,16 @@
     "operating_income_growth_q": 28,
     "operating_income_q": 9000
   },
-  "AMAT": {
+  "ABNB": {
+    "capex_ratio_prev_y": 9,
+    "revenue_growth_q": 24,
+    "operating_income_growth_q": 25,
+    "operating_income_q": 4700
+  },
+  "AMD": {
     "capex_ratio_prev_y": 10,
-    "revenue_growth_q": 22,
-    "operating_income_growth_q": 23,
+    "revenue_growth_q": 27,
+    "operating_income_growth_q": 30,
     "operating_income_q": 3000
   },
   "ARM": {
@@ -107,12 +77,6 @@
     "operating_income_growth_q": 26,
     "operating_income_q": 6000
   },
-  "BA": {
-    "capex_ratio_prev_y": 9,
-    "revenue_growth_q": 22,
-    "operating_income_growth_q": 21,
-    "operating_income_q": 2500
-  },
   "BLK": {
     "capex_ratio_prev_y": 3,
     "revenue_growth_q": 5,
@@ -125,22 +89,16 @@
     "operating_income_growth_q": 23,
     "operating_income_q": 3000
   },
-  "COHR": {
-    "capex_ratio_prev_y": 10,
-    "revenue_growth_q": 22,
-    "operating_income_growth_q": 23,
-    "operating_income_q": 3000
-  },
   "CRWD": {
     "capex_ratio_prev_y": 9,
     "revenue_growth_q": 25,
     "operating_income_growth_q": 30,
     "operating_income_q": 3000
   },
-  "DE": {
-    "capex_ratio_prev_y": 9,
-    "revenue_growth_q": 20,
-    "operating_income_growth_q": 24,
+  "DDOG": {
+    "capex_ratio_prev_y": 10,
+    "revenue_growth_q": 27,
+    "operating_income_growth_q": 30,
     "operating_income_q": 3000
   },
   "DIA": {
@@ -148,12 +106,6 @@
     "revenue_growth_q": 0,
     "operating_income_growth_q": 0,
     "operating_income_q": 1001
-  },
-  "ETN": {
-    "capex_ratio_prev_y": 11,
-    "revenue_growth_q": 18,
-    "operating_income_growth_q": 25,
-    "operating_income_q": 11500
   },
   "GE": {
     "capex_ratio_prev_y": 9,
@@ -166,12 +118,6 @@
     "revenue_growth_q": 22,
     "operating_income_growth_q": 23,
     "operating_income_q": 3000
-  },
-  "GS": {
-    "capex_ratio_prev_y": 8,
-    "revenue_growth_q": 20,
-    "operating_income_growth_q": 23,
-    "operating_income_q": 4000
   },
   "INTC": {
     "capex_ratio_prev_y": 9,
@@ -197,12 +143,6 @@
     "operating_income_growth_q": 6,
     "operating_income_q": 7500
   },
-  "KLAC": {
-    "capex_ratio_prev_y": 10,
-    "revenue_growth_q": 22,
-    "operating_income_growth_q": 23,
-    "operating_income_q": 3000
-  },
   "KO": {
     "capex_ratio_prev_y": 2,
     "revenue_growth_q": 5,
@@ -227,12 +167,6 @@
     "operating_income_growth_q": 30,
     "operating_income_q": 3000
   },
-  "MS": {
-    "capex_ratio_prev_y": 8,
-    "revenue_growth_q": 20,
-    "operating_income_growth_q": 23,
-    "operating_income_q": 4000
-  },
   "MU": {
     "capex_ratio_prev_y": 10,
     "revenue_growth_q": 22,
@@ -242,12 +176,6 @@
   "NET": {
     "capex_ratio_prev_y": 10,
     "revenue_growth_q": 27,
-    "operating_income_growth_q": 30,
-    "operating_income_q": 3000
-  },
-  "OKTA": {
-    "capex_ratio_prev_y": 9,
-    "revenue_growth_q": 25,
     "operating_income_growth_q": 30,
     "operating_income_q": 3000
   },
@@ -268,6 +196,12 @@
     "revenue_growth_q": 0,
     "operating_income_growth_q": 0,
     "operating_income_q": 1001
+  },
+  "SBUX": {
+    "capex_ratio_prev_y": 9,
+    "revenue_growth_q": 20,
+    "operating_income_growth_q": 24,
+    "operating_income_q": 3000
   },
   "SCHW": {
     "capex_ratio_prev_y": 10,
@@ -299,6 +233,18 @@
     "operating_income_growth_q": 0,
     "operating_income_q": 1001
   },
+  "VPU": {
+    "capex_ratio_prev_y": 0,
+    "revenue_growth_q": 0,
+    "operating_income_growth_q": 0,
+    "operating_income_q": 1001
+  },
+  "XLE": {
+    "capex_ratio_prev_y": 1,
+    "revenue_growth_q": 3,
+    "operating_income_growth_q": 6,
+    "operating_income_q": 6000
+  },
   "XLF": {
     "capex_ratio_prev_y": 1,
     "revenue_growth_q": 3,
@@ -310,6 +256,12 @@
     "revenue_growth_q": 3,
     "operating_income_growth_q": 6,
     "operating_income_q": 6000
+  },
+  "XLU": {
+    "capex_ratio_prev_y": 0,
+    "revenue_growth_q": 0,
+    "operating_income_growth_q": 0,
+    "operating_income_q": 1001
   },
   "XLV": {
     "capex_ratio_prev_y": 1,
@@ -323,41 +275,17 @@
     "operating_income_growth_q": 24,
     "operating_income_q": 3000
   },
-  "AAL": {
-    "capex_ratio_prev_y": 7,
-    "revenue_growth_q": 13,
-    "operating_income_growth_q": 12,
-    "operating_income_q": 3200
-  },
-  "ABNB": {
-    "capex_ratio_prev_y": 9,
-    "revenue_growth_q": 24,
-    "operating_income_growth_q": 25,
-    "operating_income_q": 4700
-  },
-  "AXP": {
-    "capex_ratio_prev_y": 11,
-    "revenue_growth_q": 18,
-    "operating_income_growth_q": 25,
-    "operating_income_q": 11500
-  },
   "BMY": {
     "capex_ratio_prev_y": 6,
     "revenue_growth_q": 9,
     "operating_income_growth_q": 12,
     "operating_income_q": 5500
   },
-  "CCL": {
+  "CAT": {
     "capex_ratio_prev_y": 7,
-    "revenue_growth_q": 13,
-    "operating_income_growth_q": 12,
-    "operating_income_q": 3200
-  },
-  "CI": {
-    "capex_ratio_prev_y": 6,
-    "revenue_growth_q": 9,
-    "operating_income_growth_q": 12,
-    "operating_income_q": 5500
+    "revenue_growth_q": 12,
+    "operating_income_growth_q": 11,
+    "operating_income_q": 3500
   },
   "COP": {
     "capex_ratio_prev_y": 6,
@@ -365,13 +293,7 @@
     "operating_income_growth_q": 12,
     "operating_income_q": 5500
   },
-  "DAL": {
-    "capex_ratio_prev_y": 7,
-    "revenue_growth_q": 13,
-    "operating_income_growth_q": 12,
-    "operating_income_q": 3200
-  },
-  "ELV": {
+  "CVX": {
     "capex_ratio_prev_y": 6,
     "revenue_growth_q": 9,
     "operating_income_growth_q": 12,
@@ -388,6 +310,12 @@
     "revenue_growth_q": 12,
     "operating_income_growth_q": 9,
     "operating_income_q": 3000
+  },
+  "NEE": {
+    "capex_ratio_prev_y": 2,
+    "revenue_growth_q": 5,
+    "operating_income_growth_q": 6,
+    "operating_income_q": 6500
   },
   "OXY": {
     "capex_ratio_prev_y": 7,
@@ -407,35 +335,23 @@
     "operating_income_growth_q": 15,
     "operating_income_q": 6000
   },
-  "SBUX": {
-    "capex_ratio_prev_y": 9,
-    "revenue_growth_q": 20,
-    "operating_income_growth_q": 24,
-    "operating_income_q": 3000
-  },
   "TGT": {
     "capex_ratio_prev_y": 6,
     "revenue_growth_q": 9,
     "operating_income_growth_q": 12,
     "operating_income_q": 5500
   },
-  "TXN": {
-    "capex_ratio_prev_y": 6,
-    "revenue_growth_q": 9,
-    "operating_income_growth_q": 12,
-    "operating_income_q": 5500
-  },
-  "UAL": {
-    "capex_ratio_prev_y": 7,
-    "revenue_growth_q": 13,
-    "operating_income_growth_q": 12,
-    "operating_income_q": 3200
-  },
   "XOM": {
     "capex_ratio_prev_y": 6,
     "revenue_growth_q": 9,
     "operating_income_growth_q": 12,
     "operating_income_q": 5500
+  },
+  "MA": {
+    "capex_ratio_prev_y": 11,
+    "revenue_growth_q": 20,
+    "operating_income_growth_q": 24,
+    "operating_income_q": 8800
   },
   "MSFT": {
     "capex_ratio_prev_y": 12,
@@ -448,6 +364,18 @@
     "revenue_growth_q": 18,
     "operating_income_growth_q": 22,
     "operating_income_q": 9000
+  },
+  "ON": {
+    "capex_ratio_prev_y": 10,
+    "revenue_growth_q": 22,
+    "operating_income_growth_q": 23,
+    "operating_income_q": 3000
+  },
+  "V": {
+    "capex_ratio_prev_y": 11,
+    "revenue_growth_q": 20,
+    "operating_income_growth_q": 24,
+    "operating_income_q": 8800
   },
   "BKNG": {
     "capex_ratio_prev_y": 9,
@@ -467,19 +395,91 @@
     "operating_income_growth_q": 23,
     "operating_income_q": 2300
   },
+  "ZS": {
+    "capex_ratio_prev_y": 9,
+    "revenue_growth_q": 25,
+    "operating_income_growth_q": 30,
+    "operating_income_q": 3000
+  },
+  "AAPL": {
+    "capex_ratio_prev_y": 11,
+    "revenue_growth_q": 20,
+    "operating_income_growth_q": 22,
+    "operating_income_q": 11500
+  },
+  "AMZN": {
+    "capex_ratio_prev_y": 12,
+    "revenue_growth_q": 23,
+    "operating_income_growth_q": 22,
+    "operating_income_q": 11000
+  },
+  "AVGO": {
+    "capex_ratio_prev_y": 11,
+    "revenue_growth_q": 18,
+    "operating_income_growth_q": 25,
+    "operating_income_q": 11500
+  },
+  "AXP": {
+    "capex_ratio_prev_y": 11,
+    "revenue_growth_q": 18,
+    "operating_income_growth_q": 25,
+    "operating_income_q": 11500
+  },
   "GOOG": {
     "capex_ratio_prev_y": 12,
     "revenue_growth_q": 23,
     "operating_income_growth_q": 22,
     "operating_income_q": 11000
   },
-  "RIVN": {
+  "LLY": {
+    "capex_ratio_prev_y": 11,
+    "revenue_growth_q": 26,
+    "operating_income_growth_q": 32,
+    "operating_income_q": 9000
+  },
+  "MDT": {
+    "capex_ratio_prev_y": 6,
+    "revenue_growth_q": 9,
+    "operating_income_growth_q": 12,
+    "operating_income_q": 5500
+  },
+  "PLD": {
+    "capex_ratio_prev_y": 11,
+    "revenue_growth_q": 18,
+    "operating_income_growth_q": 25,
+    "operating_income_q": 11500
+  },
+  "QCOM": {
+    "capex_ratio_prev_y": 11,
+    "revenue_growth_q": 17,
+    "operating_income_growth_q": 22,
+    "operating_income_q": 11000
+  },
+  "ROKU": {
     "capex_ratio_prev_y": 5,
     "revenue_growth_q": 20,
     "operating_income_growth_q": 22,
     "operating_income_q": 500
   },
+  "TWLO": {
+    "capex_ratio_prev_y": 5,
+    "revenue_growth_q": 20,
+    "operating_income_growth_q": 22,
+    "operating_income_q": 500
+  },
+  "ZAP": {
+    "capex_ratio_prev_y": 3,
+    "revenue_growth_q": 18,
+    "operating_income_growth_q": 22,
+    "operating_income_q": 1500
+  },
   "APLD": {
+    "capex_ratio_prev_y": 5,
+    "revenue_growth_q": 20,
+    "operating_income_growth_q": 22,
+    "operating_income_q": 500
+  },
+  "BE": {
     "capex_ratio_prev_y": 5,
     "revenue_growth_q": 20,
     "operating_income_growth_q": 22,
@@ -503,17 +503,29 @@
     "operating_income_growth_q": 19,
     "operating_income_q": 1
   },
-  "AMD": {
-    "capex_ratio_prev_y": 10,
-    "revenue_growth_q": 27,
-    "operating_income_growth_q": 30,
-    "operating_income_q": 3000
-  },
-  "ON": {
+  "AMAT": {
     "capex_ratio_prev_y": 10,
     "revenue_growth_q": 22,
     "operating_income_growth_q": 23,
     "operating_income_q": 3000
+  },
+  "CLSK": {
+    "capex_ratio_prev_y": 5,
+    "revenue_growth_q": 20,
+    "operating_income_growth_q": 22,
+    "operating_income_q": 500
+  },
+  "COHR": {
+    "capex_ratio_prev_y": 10,
+    "revenue_growth_q": 22,
+    "operating_income_growth_q": 23,
+    "operating_income_q": 3000
+  },
+  "AAL": {
+    "capex_ratio_prev_y": 7,
+    "revenue_growth_q": 13,
+    "operating_income_growth_q": 12,
+    "operating_income_q": 3200
   },
   "UNH": {
     "capex_ratio_prev_y": 6,
@@ -524,18 +536,6 @@
   "ALAB": {
     "capex_ratio_prev_y": 6,
     "revenue_growth_q": 22,
-    "operating_income_growth_q": 22,
-    "operating_income_q": 500
-  },
-  "BE": {
-    "capex_ratio_prev_y": 5,
-    "revenue_growth_q": 20,
-    "operating_income_growth_q": 22,
-    "operating_income_q": 500
-  },
-  "CLSK": {
-    "capex_ratio_prev_y": 5,
-    "revenue_growth_q": 20,
     "operating_income_growth_q": 22,
     "operating_income_q": 500
   },
@@ -557,35 +557,17 @@
     "operating_income_growth_q": 24,
     "operating_income_q": 300
   },
-  "COST": {
-    "capex_ratio_prev_y": 11,
-    "revenue_growth_q": 18,
-    "operating_income_growth_q": 25,
-    "operating_income_q": 11500
-  },
-  "META": {
-    "capex_ratio_prev_y": 11,
-    "revenue_growth_q": 26,
-    "operating_income_growth_q": 32,
-    "operating_income_q": 9000
-  },
-  "SNPS": {
-    "capex_ratio_prev_y": 12,
-    "revenue_growth_q": 20,
-    "operating_income_growth_q": 22,
-    "operating_income_q": 9000
-  },
   "CEG": {
     "capex_ratio_prev_y": 9,
     "revenue_growth_q": 28,
     "operating_income_growth_q": 34,
     "operating_income_q": 3000
   },
-  "ORCL": {
-    "capex_ratio_prev_y": 10,
-    "revenue_growth_q": 24,
-    "operating_income_growth_q": 21,
-    "operating_income_q": 2500
+  "COST": {
+    "capex_ratio_prev_y": 11,
+    "revenue_growth_q": 18,
+    "operating_income_growth_q": 25,
+    "operating_income_q": 11500
   },
   "IBM": {
     "capex_ratio_prev_y": 11,
@@ -593,17 +575,35 @@
     "operating_income_growth_q": 22,
     "operating_income_q": 11000
   },
-  "COIN": {
-    "capex_ratio_prev_y": 5,
-    "revenue_growth_q": 22,
-    "operating_income_growth_q": 24,
-    "operating_income_q": 300
+  "SNPS": {
+    "capex_ratio_prev_y": 12,
+    "revenue_growth_q": 20,
+    "operating_income_growth_q": 22,
+    "operating_income_q": 9000
   },
-  "LQD": {
-    "capex_ratio_prev_y": 2,
-    "revenue_growth_q": 5,
-    "operating_income_growth_q": 6,
-    "operating_income_q": 6500
+  "ORCL": {
+    "capex_ratio_prev_y": 10,
+    "revenue_growth_q": 24,
+    "operating_income_growth_q": 21,
+    "operating_income_q": 2500
+  },
+  "LVS": {
+    "capex_ratio_prev_y": 7,
+    "revenue_growth_q": 12,
+    "operating_income_growth_q": 11,
+    "operating_income_q": 3500
+  },
+  "TSLA": {
+    "capex_ratio_prev_y": 9,
+    "revenue_growth_q": 24,
+    "operating_income_growth_q": 28,
+    "operating_income_q": 2700
+  },
+  "META": {
+    "capex_ratio_prev_y": 11,
+    "revenue_growth_q": 26,
+    "operating_income_growth_q": 32,
+    "operating_income_q": 9000
   },
   "SOFI": {
     "capex_ratio_prev_y": 5,
@@ -617,17 +617,17 @@
     "operating_income_growth_q": 22,
     "operating_income_q": 500
   },
-  "TSLA": {
-    "capex_ratio_prev_y": 9,
-    "revenue_growth_q": 24,
-    "operating_income_growth_q": 28,
-    "operating_income_q": 2700
+  "LQD": {
+    "capex_ratio_prev_y": 2,
+    "revenue_growth_q": 5,
+    "operating_income_growth_q": 6,
+    "operating_income_q": 6500
   },
-  "LVS": {
+  "CCL": {
     "capex_ratio_prev_y": 7,
-    "revenue_growth_q": 12,
-    "operating_income_growth_q": 11,
-    "operating_income_q": 3500
+    "revenue_growth_q": 13,
+    "operating_income_growth_q": 12,
+    "operating_income_q": 3200
   },
   "NKE": {
     "capex_ratio_prev_y": 6,
@@ -640,5 +640,11 @@
     "revenue_growth_q": 20,
     "operating_income_growth_q": 22,
     "operating_income_q": 500
+  },
+  "COIN": {
+    "capex_ratio_prev_y": 5,
+    "revenue_growth_q": 22,
+    "operating_income_growth_q": 24,
+    "operating_income_q": 300
   }
 }
