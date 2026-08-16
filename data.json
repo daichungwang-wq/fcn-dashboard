@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-08-15 21:43",
+  "updated_at": "2026-08-16 21:43",
   "summary": {
     "active_fcn_count": 24,
     "top_risk_code": "FCN710H",
@@ -10,230 +10,230 @@
   "morning_brief": {
     "international_news": [
       {
-        "title": "Stocks slip in cautious trading after weak US retail sales data",
-        "summary": "NEW YORK: Stock markets retreated in sparse summer trading Friday (Aug 14), with the uncertain outlook for th…",
-        "content": "NEW YORK: Stock markets retreated in sparse summer trading Friday (Aug 14), with the uncertain outlook for the Middle East war and the US economy prompting investor caution ahead of the weekend. Oil… [+1589 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
+        "title": "Hormuz Ship Attacks Mount As US Vows To Cripple Iran Economy",
+        "summary": "By Arsalan Shahla, Catherine Lucey and Sara Gharaibeh Aug 15, 2026 (Bloomberg) –More ships have come under at…",
+        "content": "By Arsalan Shahla, Catherine Lucey and Sara Gharaibeh Aug 15, 2026 (Bloomberg) –More ships have come under attack in the Strait of Hormuz as talks to end the war in the Middle East remain stalled an… [+5449 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
         "affects_fcn": true,
         "impact_score": -1
       },
       {
-        "title": "Niskayuna Lisha Kill park expands",
-        "summary": "The Nature Conservancy is reworking parts of the Lisha Kill Natural Area to create a new loop and enhance the…",
-        "content": "NISKAYUNA Following a 5.5-acre land grant, the Nature Conservancy plans to rework parts of the Lisha Kill Natural Area, creating new trail connections for the 145-acre nature park. It hosts over 20,0… [+3626 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "‘Summer House’ Enters A “New Chapter” After Landing Its First Emmy Recognition – Contenders TV Nominees Studio",
+        "summary": "Lindsay Hubbard, one of the stars of Bravo’s Summer House, was doing an on-camera interview for a different r…",
+        "content": "Lindsay Hubbard, one of the stars of Bravo’s Summer House, was doing an on-camera interview for a different reality show when shocking news broke that two of her Summer House castmates had gotten tog… [+4435 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Show HN: Open-Source Paper",
-        "summary": "I was frustrated that paper.design charges for the usage (!) of their MCP, so built open-source alternative.I…",
-        "content": "An MCP server that gives an agent a canvas. The agent pushes HTML frames onto it. A human opens the canvas in a browser, scrolls around, and drops pinned comments on the frames. The agent reads tho… [+15119 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "Florida middle school teacher admits to years of 'inappropriate' conversations with former student: deputies",
+        "summary": "Christian Schneider, a Memorial Middle School teacher, allegedly sent inappropriate messages to a former teen…",
+        "content": "A Florida middle school teacher was arrested after investigators said he exchanged inappropriate messages with a former teenage student and acknowledged communicating inappropriately with the student… [+2663 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Detroit Tigers Move Max Clark in Lineup for Critical White Sox Opener",
-        "summary": "Max Clark is moving to ninth as the Tigers begin their biggest series of the season against the first-place W…",
-        "content": "The Detroit Tigers are changing Max Clark's spot in the batting order for one of their biggest games of the season. Clark will start in center field and bat ninth Friday night as Detroit opens a thr… [+5177 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Inside Page Six’s VRT Out East party at Barlume Beach in Montauk with the OG ‘RHONY’ Housewives, Hilaria Baldwin and mo…",
-        "summary": "\"Virtual Reali-Tea\" took a trip to the Hamptons for the \"VRT Out East\" party at Barlume Beach in Montauk.",
-        "content": "“Virtual Reali-Tea” takes the Hamptons. Celebrities, influencers and a few “Real Housewives of New York City” legends stepped out for Page Six’s VRT Out East party at Barlume Beach in Montauk Thursd… [+4742 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "New deals: Up tp 30% off on Ugreen, Up to 15% on Lenovo and other Back to school specials",
-        "summary": "Here are some new deals: Up to 30% off on Ugreen gear at Ugreen store, Amazon, BHphoto. Back to school specia…",
-        "content": "Disclaimer: 43Rumors has no affiliation with any of the equipment manufacturers mentioned on this site. Please visit their official websites by typing the specific brand name and adding .com after it… [+552 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Bucking The Odds: David Bearman’s Bold Bets Keep Elevating The Industry",
-        "summary": "Sports betting veteran David Bearman's career journey has seen him advance the industry's reach by often taki…",
-        "content": "One late August morning, University of Florida students intrigued by a future in the fantasy and sports betting industries will virtually file in for the first day of Fantasy and Sports Betting Caree… [+12088 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "watcherml added to PyPI",
-        "summary": "Local-first deterministic CUDA OOM forensics and verified recovery campaigns for ML training.",
-        "content": "Recovery and forensics layer for ML experiments WatcherML is a local-first Python SDK and CLI that records ML runs, captures a structured evidence capsule when a run fails, and investigates CUDA out… [+37865 chars]｜分類：全球經濟｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Norway’s sovereign fund reaches record 11,549 BTC exposure without buying more Bitcoin",
-        "summary": "Norway’s sovereign wealth fund ended the first half of 2026 with record indirect Bitcoin exposure and a newly…",
-        "content": "Norways sovereign wealth fund ended the first half of 2026 with record indirect Bitcoin exposure and a newly disclosed stake in the worlds largest Ethereum treasury company. Norges Bank Investment M… [+6090 chars]｜分類：全球經濟｜解讀：影響有限",
+        "title": "Why cheapening Shoah vocabulary threatens American democracy",
+        "summary": "When critics hurl Nazi labels at progressive politicians, they fail to address the actual substance of the th…",
+        "content": "Dr. Alex Grobman is the senior resident scholar at the John C. Danforth Society, a member of the Council of Scholars for Peace in the Middle East and on the advisory board of the National Christian L… [+6038 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
         "affects_fcn": true,
-        "impact_score": 0
+        "impact_score": -1
       },
       {
-        "title": "Exclusive-US to tell partners they must pick sides in AI race with China",
-        "summary": "By Michael Martina WASHINGTON, Aug 14 (Reuters) - The U.S. is preparing to tell dozens of countries they must…",
-        "content": "By Michael Martina WASHINGTON, Aug 14 (Reuters) - The U.S. is preparing to tell dozens of countries they must pick sides in the artificial intelligence race with China, warning they will be excluded… [+4150 chars]｜分類：全球經濟｜解讀：影響有限",
+        "title": "Caden Curry: Hometown Hero or Caesar Rayford 2.0?",
+        "summary": "Was Caden Curry’s performance a taste of what is to come, or was it just a flash against linemen not up to sn…",
+        "content": "Center Grove High School alum Caden Curry made an enormous impact in his first appearance donning his hometown Indianapolis Colts' horseshoe on an NFL field last Thursday. Appearing in the 2nd half o… [+7487 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Investors Sue Selena Gomez Over Mental Health Startup",
-        "summary": "“There was no legitimate enterprise in the works, much less a lucrative one...”",
-        "content": "Authored by Kimberley Hayek via The Epoch Times, Singer and actor Selena Gomez was sued Thursday by investors who say the Only Murders in the Building star committed fraud by failing to fulfill duti… [+2356 chars]｜分類：全球經濟｜解讀：影響有限",
+        "title": "What did we learn from the Giants’ 13-10 loss to the Minnesota Vikings?",
+        "summary": "A couple of bright spots, but not a memorable start.",
+        "content": "Yeah baby, NFL football is back! Well, sort of. We naturally get hyped to see our team on the field again after seven months with no New York Giants football. Three things can be said, though, with … [+6002 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Brand Engagement Network Provides Second Quarter Update",
-        "summary": "Completes $19.5 Million Cataneo Acquisition; Total Assets Nearly Double to $30.7 Million Approximately $3.3 m…",
-        "content": "Completes $19.5 Million Cataneo Acquisition; Total Assets Nearly Double to $30.7 Million Approximately $3.3 million reduction in accounts payable, short-term debt, and warrant liabilities | Shareho… [+8656 chars]｜分類：全球經濟｜解讀：影響有限",
+        "title": "Browns QB battle tracker: How Shedeur Sanders' preseason debut impacts chances to become Cleveland's starter",
+        "summary": "Here's what Cleveland's quarterback situation brought after their first preseason outing against the Chicago…",
+        "content": "Browns QB battle tracker: How Shedeur Sanders' preseason debut impacts chances to become Cleveland's starter originally appeared on The Sporting News. Add The Sporting News as a Preferred Source by c… [+3774 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
+      },
+      {
+        "title": "Haveron laments inability to postpone Coleraine game",
+        "summary": "Larne manager Gary Haveron feels his club should have the same preparation time as their opponents for their…",
+        "content": "Larne manager Gary Haveron has bemoaned the fact that the Northern Ireland Football League [NIFL] is unable to step in and postpone fixtures which he believes would boost the chances of Irish League … [+3998 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Spot DEXs on Solana see $5.8B in trading volume for tokenized stocks",
+        "summary": "Solana's dominance in tokenized stock trading highlights the potential for decentralized finance to revolutio…",
+        "content": "Solana captured roughly 95% of all tokenized equity trading on decentralized exchanges in Q2 2026, with volumes surging 114% from the prior quarter Tokenized stocks just had a breakout quarter on dec… [+2400 chars]｜分類：全球經濟｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "America's surprising new hottest ZIP codes: Our interactive map reveals where buyers are now fighting for homes that di…",
+        "summary": "New research reveals the ten ZIP codes attracting the most attention from homebuyers in 2026, with every mark…",
+        "content": "Forget Florida and California America's hottest housing markets right now are found in suburban communities across the Northeast and Midwest. New research from Realtor.com has revealed the ten ZIP c… [+9843 chars]｜分類：全球經濟｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "What Stellar’s August 27 Protocol 28 Upgrade Means for XLM Token and Soroban Ecosystem",
+        "summary": "The upcoming rollout of Protocol 28 is a big deal for Stellar users, aiming to address network speed and perf…",
+        "content": "Add ZyCrypto News On GoogleThe Stellar network is preparing for a significant update later this month, an improvement expected to bring several important enhancements to the chain. The Stellar Develo… [+2629 chars]｜分類：全球經濟｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "What investors say went wrong at Selena Gomez's mental health startup Wondermind",
+        "summary": "Selena Gomez launched the startup in 2021 alongside her mother, Mandy Teefey, and Daniella Pierson, a busines…",
+        "content": "Wondermind investors named Selena Gomez in a federal lawsuit filed on Thursday.Michael Buckner/2026GG/Penske Media via Getty Images <ul><li>Several Wondermind investors have filed a lawsuit against … [+5540 chars]｜分類：全球經濟｜解讀：利率壓力若下降，FCN 環境通常較有利",
+        "affects_fcn": true,
+        "impact_score": 1
       }
     ],
     "financial_news": [
       {
-        "title": "A liberal journalist just exposed lying Fauci’s toxic relationship with the media",
-        "summary": "Human history is shaped by epic rivalries, and Dr. Anthony Fauci's adversarial relationship with the truth ha…",
-        "content": "Human history is shaped by epic rivalries, and Dr. Anthony Fauci’s adversarial relationship with the truth has proven one such antagonism. Fauci’s pandemic-era fibs about the efficacy of masks and l… [+4313 chars]｜分類：Fed / 利率｜解讀：影響有限",
+        "title": "Social Security Pays the Average Couple $3,120 a Month. Here’s the Portfolio It Takes to Match It.",
+        "summary": "Most retirement plans treat Social Security as a bonus, but pricing out what it actually takes to replace tha…",
+        "content": "Quick Read <ul><li>Replicating the average couple's $3,120 monthly Social Security benefit privately requires a portfolio of roughly $800,000 to $936,000, depending on withdrawal strategy. </li><li… [+6305 chars]｜分類：Fed / 利率｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Nikkei Extends Rally as TOPIX Hits Fresh High",
-        "summary": "Tokyo stocks rose on August 14, with the Nikkei 225 closing at 68,714, up 0.59%, as investors continued buyin…",
-        "content": "TOKYO - Tokyo stocks rose on August 14, with the Nikkei 225 closing at 68,714, up 0.59%, as investors continued buying semiconductor, artificial intelligence and earnings-backed shares, while the b… [+12529 chars]｜分類：Fed / 利率｜解讀：影響有限",
+        "title": "US Economy: Inflation eases but prices remain high, retail sales fall, jobless claims rise",
+        "summary": "Inflation eased last month, but prices remain elevated for American consumers. Retail spending decreased shar…",
+        "content": "The impact of the economy and inflation on the lives of Americans was of main concern over the past week. Shopping at the grocery store and gas station has become more expensive than last year and ri… [+6607 chars]｜分類：Fed / 利率｜解讀：影響有限",
+        "affects_fcn": true,
+        "impact_score": 0
+      },
+      {
+        "title": "American Airlines Insiders Say The Old Strategy Never Died — They’re Half Right, But Not For The Reason They Think",
+        "summary": "Insiders argue American Airlines has reversed disastrous sales and distribution mistake while still running t…",
+        "content": "Insiders argue American Airlines has reversed disastrous sales and distribution mistake while still running the same old strategy that left it weak in major markets. That critique is partly right, bu… [+5845 chars]｜分類：Fed / 利率｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Markets bet on a pause for September, but Fed hawks may not be swayed ahead of Jackson Hole",
-        "summary": "While this week brought welcome inflation news for July, the Fed's puzzle is far from solved.",
-        "content": "When Federal Reserve officials gather in Jackson Hole in two weeks, they will confront a decisive moment for the US economy. While stubborn inflation plagued the first half of the year, last month's … [+7724 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
-        "affects_fcn": true,
-        "impact_score": 1
-      },
-      {
-        "title": "Wall Street scrutinizes Federal Reserve Chairman Kevin Warsh’s remarks on inflation",
-        "summary": "Warsh's firm stance on inflation signals a shift towards tighter monetary policy, impacting interest rate exp…",
-        "content": "The new Fed chair's congressional testimony signals a harder line on the 2% inflation target than markets expected, and traders are recalibrating accordingly. Kevin Warsh has been Fed Chair for a mat… [+2734 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
-        "affects_fcn": true,
-        "impact_score": 1
-      },
-      {
-        "title": "Oil prices rally as global stocks retreat",
-        "summary": "By Chris Prentice and Amanda Cooper NEW YORK/LONDON, Aug 14 (Reuters) - U.S. and European shares fell on Frid…",
-        "content": "By Chris Prentice and Amanda Cooper NEW YORK/LONDON, Aug 14 (Reuters) - U.S. and European shares fell on Friday and oil prices gained as markets monitored tense U.S.-Iran talks and digested new data… [+3513 chars]｜分類：Fed / 利率｜解讀：地緣風險升高，需留意市場波動擴大",
-        "affects_fcn": true,
-        "impact_score": -1
-      },
-      {
-        "title": "We learned 5 important things about the economy this week",
-        "summary": "<em>From inflation, to credit card debt, to who's actually doing the spending: These are key takeaways from t…",
-        "content": "How is inflation showing up on supermarket shelves and at the gas pump? How are families coping? What are they splurging on? These were among some of the insights delivered this week about the econom… [+4823 chars]｜分類：Fed / 利率｜解讀：影響有限",
-        "affects_fcn": true,
-        "impact_score": 0
-      },
-      {
-        "title": "US consumers sour on economy as inflation concerns remain in focus, UMich survey says",
-        "summary": "UMich's Index of Consumer Sentiment fell to 51 from July's 55.2 reading, ending two consecutive months of imp…",
-        "content": "US consumers grew more gloomy about the economy in August as sentiment declined amid the war, higher bond yields, and geopolitical uncertainty, according to a preliminary consumer sentiment reading f… [+2563 chars]｜分類：Fed / 利率｜解讀：地緣風險升高，需留意市場波動擴大",
-        "affects_fcn": true,
-        "impact_score": -1
-      },
-      {
-        "title": "Costliest U.S. bond sale since 2001 is investor warning to Bessent",
-        "summary": "Interest on the public debt continues to be a key driver of the budget deficit. For the fiscal year to date,…",
-        "content": "The US government sold 30-year bonds at the highest interest rate in a quarter century, a testament to investors demand for greater compensation to finance the nations growing deficit.The yield at th… [+6261 chars]｜分類：Fed / 利率｜解讀：影響有限",
-        "affects_fcn": true,
-        "impact_score": 0
-      },
-      {
-        "title": "Strategy has realized over $102 million in losses from 2026 Bitcoin sales. Here is the full report",
-        "summary": "Michael Saylor spent years making the same promise. Never sell your Bitcoin. Not one satoshi. Strategy, the c…",
-        "content": "Michael Saylor spent years making the same promise. Never sell your Bitcoin. Not one satoshi. Strategy, the company he built around that conviction, held 843,775 Bitcoin through bull markets, bear ma… [+149 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "title": "Retirees Can Move $210,000 From an IRA Into a QLAC and Delay RMDs on That Money Until 85. Almost Nobody Has Heard of It.",
+        "summary": "A little-known IRS provision lets retirees legally shelter a large chunk of their IRA from required withdrawa…",
+        "content": "Quick Read <ul><li>Retirees can shelter up to $210,000 of pre-tax IRA funds in a QLAC, removing that money from RMD calculations until age 85. </li><li>Moving $210,000 into a QLAC on a $257,000 IRA… [+5550 chars]｜分類：Fed / 利率｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "The US government wants private companies to start hacking the hackers",
-        "summary": "A new US program will allow private cybersecurity firms to conduct approved cyberattacks and surveillance aga…",
-        "content": "<ul><li>The US is creating a program that lets vetted private companies conduct offensive cyber operations against foreign criminal groups.</li><li>Operations will require federal approval and superv… [+2348 chars]｜分類：通膨 / 就業｜解讀：利率壓力若下降，FCN 環境通常較有利",
+        "title": "Between earn-nothing cash, broken long-term bonds, these are the safety trades of 2026 market",
+        "summary": "Investors have flocked to short-term investments like ultra-short bond funds in anticipation of a stock marke…",
+        "content": "Many investors are turning to short-term investments, particularly ultra-short bond funds, amid persistent concerns that the equity market is headed for an inevitable downturn and long-term bonds lik… [+7335 chars]｜分類：Fed / 利率｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Links 8/15/2026",
+        "summary": "Our delictable daily links: Land art, phytoplankton collapse, France rejects internet-age screens. US 155mm s…",
+        "content": "The awesome work of land art that collapses time and space Aeon (Chuck L) Paleontology rocked by organic molecules found in 66-million-year-old dinosaur bones Science Daily (Kevin W) Freud in the A… [+13170 chars]｜分類：Fed / 利率｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Americans added $21B to credit cards — now 20%+ interest is crushing budgets. Time to use Dave Ramsey’s escape hatch?",
+        "summary": "The first step towards independence starts small.",
+        "content": "Michael Kovac/ Getty Images Moneywise and Yahoo Finance LLC may earn commission or revenue through links in the content below. Debt has become a daily source of anxiety for nearly a quarter of Amer… [+10696 chars]｜分類：Fed / 利率｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Wall St Week Ahead: With US Fed silent on next move, investors look to earnings to keep stocks afloat",
+        "summary": "Investors focus on corporate earnings to offset economic risks and rate concerns. Strong results, particularl…",
+        "content": "Investors head into next week weighing familiar concerns over interest rates, inflation and geopolitical tensions against another robust earnings season that continues to keep stocks supported. With … [+4348 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
         "affects_fcn": true,
         "impact_score": 1
       },
       {
-        "title": "Stocks slip in cautious trading after weak US retail sales data",
-        "summary": "NEW YORK: Stock markets retreated in sparse summer trading Friday (Aug 14), with the uncertain outlook for th…",
-        "content": "NEW YORK: Stock markets retreated in sparse summer trading Friday (Aug 14), with the uncertain outlook for the Middle East war and the US economy prompting investor caution ahead of the weekend. Oil… [+1589 chars]｜分類：通膨 / 就業｜解讀：地緣風險升高，需留意市場波動擴大",
-        "affects_fcn": true,
-        "impact_score": -1
+        "title": "2 Reasons to Like CR and 1 to Stay Skeptical",
+        "summary": "Crane has followed the market's trajectory closely, rising in tandem with the S&P 500 over the past six month…",
+        "content": "Crane has followed the market's trajectory closely, rising in tandem with the S&amp;P 500 over the past six months. The stock has climbed by 11.2% to $222.95 per share while the index has gained 13%.… [+152 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
       },
       {
-        "title": "Joslin workers describe tears, chaos after learning Tyson plant shutting down permanently",
-        "summary": "Tyson Foods is permanently closing its beef processing plant in Joslin, leaving more than 2,700 workers witho…",
-        "content": "Tyson Foods is permanently closing its beef processing plant in Joslin, leaving more than 2,700 workers without jobs. Workers received letters confirming the closure when they arrived for their shift… [+145 chars]｜分類：通膨 / 就業｜解讀：影響有限",
-        "affects_fcn": true,
+        "title": "Jim Cramer Said DoorDash, Inc. (NASDAQ:DASH) Was Shorted On Uber Which Was A Bad Trade",
+        "summary": "DoorDash, Inc. (NASDAQ:DASH)'s shares are down by 12.5% over the past year and by 1.3% year-to-date. On Augus…",
+        "content": "DoorDash, Inc. (NASDAQ:DASH)'s shares are down by 12.5% over the past year and by 1.3% year-to-date. On August 6th, the shares closed 2.9% higher after the firm's second quarter earnings report on th… [+150 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "1999 Jeep Wrangler Sahara 4.0 at No Reserve",
+        "summary": "This 1999 Jeep Wrangler Sahara is said to have spent time with three generations of the same family in Arizon…",
+        "content": "This 1999 Jeep Wrangler Sahara is said to have spent time with three generations of the same family in Arizona, Colorado, and Florida and now has 55k miles. It is finished in Forest Green Pearl Coat … [+2423 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Woman claims her stepfather used Grok to transform childhood photo into explicit imagery",
+        "summary": "A woman identified as Jane Doe 4 has joined a lawsuit filed by three Tennessee teenagers against Elon Musk’s…",
+        "content": "A woman identified as Jane Doe 4 has joined a lawsuit filed by three Tennessee teenagers against Elon Musks xAI over the role the companys chatbot Grok allegedly played in creating child sexual abuse… [+142 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "affects_fcn": false,
         "impact_score": 0
       }
     ],
     "ai_trend": [
       {
-        "title": "Show HN: A sandbox for AI agents using nothing but Go's standard library",
-        "summary": "Article URL: https://towardsdev.com/i-built-an-ai-agent-sandbox-from-the-go-standard-library-350ecac5d578?sk=…",
-        "content": "Last week, a frontier lab announced that one of its AI agents escaped its test environment, found a previously unknown security flaw, escalated its own privileges, reached the public internet, and ha… [+870 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "Tracking down a Zsh history data loss bug",
+        "summary": "For many years, I sometimes discovered that commands I was sure I had run were no longer present in my Z shel…",
+        "content": "Table of contents For many years, I sometimes discovered that commands I was sure I had run were no longer present in my Z shell history file (~/.zsh_history). In this article, I will show you how… [+34640 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Why Customer Journey Continuity Mattered at eTail Boston 2026",
-        "summary": "Retailers have spent decades perfecting the journey they control. AI is now redistributing discovery, decisio…",
-        "content": "<ul><li>Discovery is moving upstream.AI assistants increasingly influence which products and brands customers consider before they reach a retailer's website.</li><li>The customer journey is becoming… [+8402 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "datahub-agent-context 1.7.0.4",
-        "summary": "MCP tools for AI agents to search and query your DataHub metadata catalog — works with Claude, Cursor, Copilo…",
+        "title": "dxrk 0.1.1",
+        "summary": "Dxrk Ecosystem Configurator — supercharge AI coding agents",
         "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "fastaiagent 1.47.0",
-        "summary": "Build, debug, evaluate, and operate AI agents. The only SDK with fork-and-rerun Agent Replay.",
+        "title": "Is Your Organization Measuring Autonomous Agents the Wrong Way?",
+        "summary": "Appropriate-decision rate, escalation precision and four other metrics that matter more than uptime. Continue…",
+        "content": "<ul><li>What changes when AI stops recommending and starts deciding?The scorecard has to shift from acceptance rate to decision correctness, business impact and customer recovery outcomes.</li><li>Is… [+10754 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "contextlake 7.8.0",
+        "summary": "A local context layer for AI tools: mirror your repositories, index them into a knowledge graph, and serve it…",
         "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "mindroom 2026.8.66",
-        "summary": "A universal interface for AI agents with persistent memory, where every conversation has a home",
+        "title": "arcaeon-once added to PyPI",
+        "summary": "Executed-once receipts for non-idempotent agent side effects. Refuses silent double-fires, flags crash-window…",
+        "content": "Kybernis-shaped enforcement stops the double-fire. arcaeon-once is the evidence layer: a tamper-evident receipt proving a side effect ran exactly once or an honest flag when it didn't know. Agents… [+9593 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "codevira 4.0.1",
+        "summary": "Cross-IDE decision enforcement for AI coding agents. 1 MB per project, in your repo, no cloud, no vectors. Cl…",
         "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "datahub-agent-context 1.7.0.4rc1",
-        "summary": "MCP tools for AI agents to search and query your DataHub metadata catalog — works with Claude, Cursor, Copilo…",
-        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "Deals: Pixel 11 series goes on pre-order, Galaxy Z8 foldables and S26 models drop prices",
+        "summary": "Google launched its new Pixel 11 series earlier this week – there is a new vanilla, two new Pro and one new f…",
+        "content": "Google launched its new Pixel 11 series earlier this week there is a new vanilla, two new Pro and one new foldable model. All thats missing now is an affordable a-phone. The massive increase in RAM … [+6288 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Ryanair co-founder Tony Ryan bought a 951-acre Kentucky horse farm for $14 million in 2001; his family is now asking $5…",
-        "summary": "Ryanair co-founder Tony Ryan bought Kentucky’s historic Castleton Farm for $14 million in 2001. Now, his fami…",
-        "content": "<ul><li>News</li> <li>Real Estate News</li> <li>Ryanair co-founder Tony Ryan bought a 951-acre Kentucky horse farm for $14 million in 2001; his family is now asking $57.5 million</li></ul> Follow … [+1893 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：ARM｜建議：觀察池",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "New York City Lawmakers Push to ‘Ban the Scan’ at MSG",
-        "summary": "At a press conference outside Madison Square Garden, politicians, musicians, and privacy advocates argued for…",
-        "content": "Privacy advocates and musicians rallied outside Madison Square Garden on Friday, pushing for new legislation to prevent facial-recognition technology at the venue and other public spaces in New York … [+2465 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "Anthropic Is Watermarking Text Generated By Claude To Comply With EU Law",
+        "summary": "Anthropic is watermarking text generated by Claude to comply with EU law Other AI companies are also required…",
+        "content": "Anthropic is watermarking text generated by Claude to comply with EU lawOther AI companies are also required to watermark content.Anthropic has revealed how it's watermarking text generated by Claude… [+152 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       }
