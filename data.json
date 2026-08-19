@@ -1,239 +1,239 @@
 {
-  "updated_at": "2026-08-18 21:46",
+  "updated_at": "2026-08-19 21:48",
   "summary": {
     "active_fcn_count": 24,
     "top_risk_code": "FCN710H",
     "worst_of": "ORCL",
-    "market_env": "觀望",
-    "main_conclusion": "今天較適合觀望或只做防守型 FCN，先避開高波動與風險集中的標的。"
+    "market_env": "保守做",
+    "main_conclusion": "今天可保守做 FCN，建議以 TSM / MSFT 為主，避免進攻型標的過重。"
   },
   "morning_brief": {
     "international_news": [
       {
-        "title": "Latest developments in US-Iran war",
-        "summary": "US President Donald Trump threatened on Monday to bomb Oman, as a 60-day deadline to end the war with Iran ex…",
-        "content": "US President Donald Trump threatened on Monday to bomb Oman, as a 60-day deadline to end the war with Iran expired.Here are the latest developments in the Middle East conflict:- 'Positive' US-Iran ta… [+139 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
+        "title": "Meet Katie, the new female eagle spending time with Jackie’s mate Shadow",
+        "summary": "Shadow's former mate, Jackie, died earlier this month.",
+        "content": "There's a new face at Big Bear's famous bald eagle nest in Southern California, and viewers are already invested. A young female eagle known as KD1, or \"Katie\" to some fans, has recently been seen a… [+2821 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Report: Dodgers closer Edwin Díaz added to IL with 'upper-body injury'",
+        "summary": "Díaz has an 11.85 ERA with four blown saves so far this season.",
+        "content": "The Los Angeles Dodgers are reportedly adding closer Edwin Díaz to the injured list, per The Athletic's Katie Woo. Notably, he is being added with an \"upper-body\" injury, per Woo, and the Dodgers don… [+1816 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Dodgers reportedly add struggling closer Edwin Díaz to IL",
+        "summary": "Díaz has an 11.85 ERA with four blown saves so far this season.",
+        "content": "The Los Angeles Dodgers are reportedly adding closer Edwin Díaz to the injured list, per The Athletic's Katie Woo. Notably, he is being added with an \"upper-body\" injury, per Woo, and the Dodgers don… [+1817 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "US Sanctioning ICC Prosecutor Who Reportedly Worked on Warrant for Netanyahu",
+        "summary": "The Trump administration has sanctioned numerous ICC figures who have worked on cases against Israeli officia…",
+        "content": "Truthout is a vital news source and a living history of political struggle. If you think our work is valuable, support us with a donation of any size. Secretary of State Marco Rubio announced on Tue… [+3006 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Red Sox look for Ranger Suarez to round back into form against the D-Backs",
+        "summary": "Tonight’s game will feature a pair of pitchers who’ve been persistently unpredictable all season.",
+        "content": "It's been a strange couple of months for Ranger Suarez. He missed a few turns in the rotation back in the middle of July with a groin strain, and even though this will be his fifth start back since t… [+2121 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Papers: Barca midfielder rejects chance to join Man Utd",
+        "summary": "Latest transfer news and headlines as Crystal Palace star Adam Wharton emerges as a Man City midfield target;…",
+        "content": "The top stories and transfer rumours from Wednesday's newspapers... PREMIER LEAGUE Barcelona and Spain midfielder Gavi has rejected the chance to join Manchester United - The Mirror Marcus Rashfor… [+2339 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Rainbow Wahine’s Joshua Walker era begins with sweep of Chaminade",
+        "summary": "First-year Hawaii women’s volleyball coach Joshua Walker got to see all 15 of his players on the floor Monday…",
+        "content": "First-year Hawaii women's volleyball coach Joshua Walker got to see all 15 of his players on the floor Monday night. A rare fall exhibition for the Rainbow Wahine ended in a 25-20, 25-16, 25-10 swee… [+3258 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Dodgers make decision on Edwin Diaz, will promote Triple-A starter",
+        "summary": "Diaz has four blown saves and an 11.85 ERA since signing a $69 million contract with the Dodgers.",
+        "content": "The Los Angeles Dodgers will place struggling closer Edwin Diazon the injured list and promote Triple-A right-hander Emmet Sheehan, according to separate reports Tuesday. In 95.1 innings across 20 s… [+2037 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "What is the purpose of software",
+        "summary": "Practical and existential questions for IT Design and Development.",
+        "content": "I first asked myself this question for a bit of a laugh. This was at the dawn of 2023, during the rise of the LLM. Doomsayers and prophets alike said AI will allow us to produce so much more, so much… [+29246 chars]｜分類：全球經濟｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Live: ASX to fall ahead of inflation data",
+        "summary": "The Australian share market is likely to fall in morning trade, following another weak session on Wall Street…",
+        "content": "Share markets in the US and Europe fell overnight due, in part, to concerns about elevated oil prices and persistently high inflation across the world. That, in turn, led to several governments' lon… [+1906 chars]｜分類：全球經濟｜解讀：地緣風險升高，需留意市場波動擴大",
         "affects_fcn": true,
         "impact_score": -1
       },
       {
-        "title": "Caitlin Clark or Kelsey Mitchell: Which Fever player is a WNBA MVP candidate?",
-        "summary": "Following Aliyah Boston and Candace Parker naming Kelsey Mitchell an MVP candidate, we broke down the debate…",
-        "content": "A player's name being in the mix for the MVP award is the highest type of praise, short of winning it, in the sports world. But two players from the same team potentially being in that conversation? … [+5535 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "NZX appoints Hishaam Mirza as next chief executive",
+        "summary": "Hishaam Mirza will become NZX chief executive on September 14.",
+        "content": "The board is delighted with Hishaams appointment, and we look forward to working with him in delivering NZXs growth strategy to elevate the performance of NZX and New Zealands capital markets. Mirza… [+1466 chars]｜分類：全球經濟｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Florida football coach Jon Sumrall says he wants 'traditional colors' for uniforms",
-        "summary": "Florida football coach Jon Sumrall he's all for trying new uniform combos, provided use traditional school co…",
-        "content": "Florida football coach Jon Sumrall is all for new uniform combinations, as long as they stick to school colors. The Florida Gators unveiled some new uniform looks on their social media accounts, whi… [+1965 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Donald Trump Promised to Keep Us Out of Protracted Wars of Choice in the Middle East. We Are Now in a Protracted War of…",
-        "summary": "Thanks, Donald",
-        "content": "This story is adapted from the Slatest newsletter. You can sign up here to get it in your inbox every day. On paper, Donald Trumps war in Iran seems like it could be close to over. The U.S. has paus… [+6734 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
-        "affects_fcn": true,
-        "impact_score": -1
-      },
-      {
-        "title": "Trump Downplayed USS Lincoln Conditions Because He’s Been ‘Sitting On Gold Toilets,' Democrat Says",
-        "summary": "Sen. Mark Kelly also railed at Trump for having a “lack of interest in any kind of accountability in trying t…",
-        "content": "Sen. Mark Kelly (D-Ariz.) slammed President Donald Trump for dismissing concerns about the record-breaking deployment of the USS Abraham Lincoln as the service members on board face ongoing hardships… [+2565 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
-        "affects_fcn": true,
-        "impact_score": -1
-      },
-      {
-        "title": "Disney Confirms Another Frontierland Change, Overhaul Confirmed for Magic Kingdom",
-        "summary": "Frontierland at Magic Kingdom is becoming a very different place. Some of the changes are enormous. Entire at…",
-        "content": "Frontierland at Magic Kingdom is becoming a very different place. Some of the changes are enormous. Entire attractions and landscapes have disappeared, major construction is underway, and Disney is … [+9786 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Pilots and Flight Attendants Are Bombarded by Cosmic Radiation—And Getting Deadly Cancers From It",
-        "summary": "New research finds that pilots and flight attendants are the occupations with the highest risk of dying from…",
-        "content": "The pilots and flight attendants who help us travel through the sky might be taking on more danger than advertised. Research out today finds that people with these jobs have a noticeably greater risk… [+6915 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": true,
-        "impact_score": 0
-      },
-      {
-        "title": "Trump’s Bombing Threats Have a Golf Course Problem",
-        "summary": "On Monday morning, President Donald Trump issued a blunt warning to America’s erstwhile ally: “If Oman gets i…",
-        "content": "Oman's Deputy Prime Minister Sayyid Asaad Tariq Taimur al-Said (left) and US President Donald Trump attend a Gulf Cooperation Council summit in Riyadh on May 14, 2025.Brendan Smialowski/AFP/Getty Ge… [+5891 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Predicate Uses Voice & Vital Signs to Spot Health Risks",
-        "summary": "WILMINGTON, NORTH CAROLINA, August 17 (Hypepotamus) - Is your voice the key to unlocking your health? Doctor-…",
-        "content": "WILMINGTON, NORTH CAROLINA, August 17 (Hypepotamus) - Is your voice the key to unlocking your health? Doctor-turned-entrepreneur Morris Nguyen thinks so. A patients voice is one of the health sig… [+9437 chars]｜分類：全球經濟｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "ASU announces naming partner for football practice facility",
-        "summary": "A new practice facility has been in the works. Now it has a naming rights partner.",
-        "content": "When Arizona State football coach Kenny Dillingham has asked for something, he has generally gotten it. When he asked for big donors to step up, they have. The school has announced Align Technology… [+3287 chars]｜分類：全球經濟｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Swiss Water Announces TSX Approval for Share Buyback under an NCIB",
-        "summary": "VANCOUVER, British Columbia, Aug. 17, 2026 (GLOBE NEWSWIRE) — Swiss Water Decaffeinated Coffee Inc. (TSX:SWP)…",
-        "content": "Forward-LookingStatements Certain statements in this press release may constitute forward-looking statements that involve known and unknown risks, uncertainties and other factors that may cause the … [+1808 chars]｜分類：全球經濟｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Kulicke and Soffa Industries, Inc. Appoints Dr. Raj Talluri as President and CEO",
-        "summary": "SINGAPORE, Aug. 17, 2026 /PRNewswire/ -- Kulicke and Soffa Industries, Inc. (NASDAQ: KLIC) (\"Kulicke & Soffa\"…",
-        "content": "SINGAPORE, Aug. 17, 2026 /PRNewswire/ -- Kulicke and Soffa Industries, Inc. (NASDAQ: KLIC) (\"Kulicke &amp; Soffa\", \"K&amp;S\", \"we\" or the \"Company\") today announced that it has named Dr. Raj Talluri … [+3003 chars]｜分類：全球經濟｜解讀：影響有限",
+        "title": "Trump admin to rescind decades-long roadless rule for national forests — enrages environmentalists nationwide",
+        "summary": "The U.S. Forest Service is filing a proposal that would scrap the so called roadless rule adopted in the last…",
+        "content": "The Trump administration announced Tuesday it is moving ahead with plans to rescind a quarter-century-old rule that blocked logging, road building and other development on national forest lands, draw… [+4448 chars]｜分類：全球經濟｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       }
     ],
     "financial_news": [
       {
-        "title": "Stocks Decline as Oil Prices Rise",
-        "summary": "U.S. stocks edged further from their record heights on Monday after rising oil prices cranked up the pressure…",
-        "content": "Wall Street's losses solidified in the afternoon when oil prices accelerated upward, the AP reports. The price for a barrel of Brent crude, the international standard, rose 2.7% to $90.87. It's been … [+1452 chars]｜分類：Fed / 利率｜解讀：地緣風險升高，需留意市場波動擴大",
+        "title": "30-year Treasury yield hits highest level since 2007 amid inflation concerns",
+        "summary": "Rising Treasury yields may prompt shifts in monetary policy, affecting borrowing costs and economic strategie…",
+        "content": "The yield on the 30-year U.S. Treasury bond has surged above 5.3%, reaching its highest level since 2007. This increase marks a significant shift in the bond market, with yields rising due to a combi… [+1595 chars]｜分類：Fed / 利率｜解讀：利率上行可能壓抑科技股與 FCN 安全邊際",
         "affects_fcn": true,
         "impact_score": -1
       },
       {
-        "title": "U.S. bond selloff drives 30-year yields to highest since 2007",
-        "summary": "The yield on 30-year U.S. Treasuries hit the highest in almost two decades, reflecting investor angst over su…",
-        "content": "The yield on 30-year U.S. Treasuries hit the highest in almost two decades, reflecting investor angst over surging government spending, a flood of long-dated bond sales, and inflation thats been stuc… [+153 chars]｜分類：Fed / 利率｜解讀：波動升高，FCN 敲入風險增加",
+        "title": "US stocks: Tech selloff weighs down Wall Street as bond yields climb",
+        "summary": "Wall Street faced a downturn as escalating tensions in the Middle East triggered a surge in bond yields. A st…",
+        "content": "Wall Street closed lower on Tuesday with semiconductors leading technology declines as Middle East uncertainty pushed bond yields to multiyear peaks, feeding concerns about borrowing costs and inflat… [+2922 chars]｜分類：Fed / 利率｜解讀：波動升高，FCN 敲入風險增加",
         "affects_fcn": true,
         "impact_score": -2
       },
       {
-        "title": "AI-driven borrowing by tech firms pushes US Treasury yields above 5%: Bloomberg",
-        "summary": "Rising Treasury yields due to tech firms' AI investments may lead to increased borrowing costs and influence…",
-        "content": "Recent developments suggest that artificial intelligence (AI) investments are contributing to rising U.S. Treasury yields, as reported by Bloomberg. The surge in yields is attributed to increased bor… [+1393 chars]｜分類：Fed / 利率｜解讀：利率上行可能壓抑科技股與 FCN 安全邊際",
+        "title": "US Treasury yields hit 2007 highs amid bond sell-off, gold demand eyed",
+        "summary": "Rising U.S. Treasury yields may increase borrowing costs and drive investors towards gold, impacting financia…",
+        "content": "The global bond market is experiencing a significant sell-off, with the spotlight on America’s increasing debt. U.S. Treasury yields have reached levels not seen since 2007, with the 30-year yield ri… [+1810 chars]｜分類：Fed / 利率｜解讀：利率上行可能壓抑科技股與 FCN 安全邊際",
         "affects_fcn": true,
         "impact_score": -1
       },
       {
-        "title": "30-year Treasury yield tops 5.31%, the highest in 19 years",
-        "summary": "Treasury yields were higher on Monday as traders looked ahead to the latest FOMC minutes due later in the wee…",
-        "content": "Skip to comments. 30-year Treasury yield tops 5.31%, the highest in 19 yearsCNBC ^ | August 17,2026 | Hugh Leask and Sean Conlon Posted on 08/17/2026 11:25:40 AM PDT by Miami Rebel Treasury yi… [+2667 chars]｜分類：Fed / 利率｜解讀：利率上行可能壓抑科技股與 FCN 安全邊際",
+        "title": "With the national debt nearing $40 trillion, Bank of America has a warning for bond investors",
+        "summary": "Bank of America strategist Michael Hartnett warns against investing in bonds as the U.S. continues to run lar…",
+        "content": "The U.S. national debt is hurtling toward $40 trillion, and Bank of America Research strategist Michael Hartnett's \"Anything but Bonds\" framework is becoming ever more applicable. Boiled down, Hartne… [+3829 chars]｜分類：Fed / 利率｜解讀：地緣風險升高，需留意市場波動擴大",
         "affects_fcn": true,
         "impact_score": -1
       },
       {
-        "title": "US 30-year bond yield hits highest level in over 19 years",
-        "summary": "Rising long-term bond yields may prompt the Federal Reserve to adopt a more hawkish stance, impacting future…",
-        "content": "The yield on the US 30-year Treasury bond has reached its highest level in more than 19 years, with recent data showing an intraday level of about 5.26%. This rise in long-term interest rates reflect… [+1674 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
+        "title": "Federal Reserve minutes gain importance as Warsh limits communication",
+        "summary": "Warsh's communication shift at the Fed increases market uncertainty, making FOMC minutes crucial for traders…",
+        "content": "The new Fed chair's tight-lipped approach is forcing markets to read between the lines of every official document Warsh, who took the helm as Fed Chair in May 2026, has systematically dismantled the … [+2557 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
         "affects_fcn": true,
         "impact_score": 1
       },
       {
-        "title": "What rising Treasury yields are telling us",
-        "summary": "Yields on U.S. government bonds — known as Treasurys — continue to climb, thanks to groaning federal deficits…",
-        "content": "Yields on U.S. government bonds known as Treasurys continue to climb, thanks to groaning federal deficits, bonkers corporate borrowing and uncertainty about monetary policy under Federal Reserve chai… [+139 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
-        "affects_fcn": true,
-        "impact_score": 1
-      },
-      {
-        "title": "30-year US Treasuries yield hits two-decade high amid debt concerns",
-        "summary": "Rising long-term Treasury yields could strain borrowing costs across sectors, prompting a reevaluation of fis…",
-        "content": "The benchmark long bond climbed to 5.28%, a level not seen since 2007, as fiscal deficits and sticky inflation push investors to demand more compensation for holding US debt. The 30-year US Treasury … [+2466 chars]｜分類：Fed / 利率｜解讀：利率上行可能壓抑科技股與 FCN 安全邊際",
-        "affects_fcn": true,
-        "impact_score": -1
-      },
-      {
-        "title": "Top Business & Market Headlines Today — BL Morning Report, August 18, 2026",
-        "summary": "BL Morning Report, August 18, 2026: Get today’s top business news, market headlines about key market insights…",
-        "content": "Welcome to The Morning Report, brought to you by Renil S Vargheseyour quick dive into the top stories shaping the business world today. Fast, insightful, and to the point. 1. One in five Nifty 50 CE… [+2977 chars]｜分類：Fed / 利率｜解讀：影響有限",
+        "title": "Sinking AI stocks pull Wall Street further from its record",
+        "summary": "Wall Street is pulling further from its all-time high on Tuesday as AI stocks get back to sinking.",
+        "content": "NEW YORK Wall Street is pulling further from its all-time high on Tuesday as AI stocks get back to sinking. The S&amp;P 500 fell 0.6% and is on track for a third straight modest loss since setting i… [+3822 chars]｜分類：Fed / 利率｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Texas A&M basketball favorites to land talented Texas transfer guard",
-        "summary": "After the recent ruling granting players from 2022 an extra year of eligibility, a talented Texas guard could…",
-        "content": "According to a report from a basketball insider, Texas A&amp;M is the favorite to land a talented Texas transfer after recent court rulings provided him with extra eligibility. Longhorns guard Jorda… [+1918 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "title": "Former Trump adviser drools on live TV in talk about midterm 'momentum'",
+        "summary": "Stephen Moore, a former senior economic adviser to Donald Trump, drooled on live television Tuesday while pit…",
+        "content": "Stephen Moore, a former senior economic adviser to Donald Trump, drooled on live television Tuesday while pitching Republican midterm 'momentum.' The incident unfolded on Fox Business during a segme… [+1517 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Aston Villa Face €35m Race For 28-Year-Old Forward: Do They Need Him?",
-        "summary": "Aston Villa have entered the chase for a 28-year-old forward, Christopher Nkunku, available from AC Milan for…",
-        "content": "Aston Villa have entered the chase for a 28-year-old forward, Christopher Nkunku, available from AC Milan for 35m, with Newcastle United making contact too. According to a report from Calciomercato j… [+2466 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "title": "Why BMW Is Recalling 27,720 Cars Over a Rare Rollaway Risk",
+        "summary": "BMW is recalling 27,720 vehicles over a driveshaft connection that can wear out badly enough to cut power to…",
+        "content": "BMW is recalling 27,720 vehicles over a driveshaft connection that can wear out badly enough to cut power to the rear wheels, or in rare cases, let the car roll away on its own. The recall covers the… [+1327 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Buss Family Selling Lakers Stake Following Walter’s Departure",
-        "summary": "Longtime Los Angeles Lakers owners the Buss family are selling their remaining stake in the team amid Mark Wa…",
-        "content": "The Buss family era of the Los Angeles Lakers is officially coming to an end. The six siblings of the family Jeanie, Jim, Johnny, Janie, Joey and Jesse voted to sell their family trust's 17.8% owne… [+2363 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "title": "5 Compact Speakers That Deliver More Powerful Sound Than Your Phone",
+        "summary": "If you're listening to music on the go and don't want to use headphones, these compact speakers may be just w…",
+        "content": "If you're not familiar with Soundcore, you may be familiar with its parent company, Anker, which is typically known for building a variety of peripherals (though Anker is likely ditching the Soundcor… [+1231 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "DOJ Investigating Billionaire-Led Andreessen Horowitz—Despite Its Trump Ties, Report Says",
-        "summary": "Topline The Justice Department is investigating venture capital firm Andreessen Horowitz for potential antitr…",
-        "content": "ToplineThe Justice Department is investigating venture capital firm Andreessen Horowitz for potential antitrust violations, Bloomberg reported Monday, a rare instance of the Trump administration look… [+150 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "title": "Report: Dodgers closer Edwin Díaz added to IL with 'upper-body injury'",
+        "summary": "Díaz has an 11.85 ERA with four blown saves so far this season.",
+        "content": "The Los Angeles Dodgers are reportedly adding closer Edwin Díaz to the injured list, per The Athletic's Katie Woo. Notably, he is being added with an \"upper-body\" injury, per Woo, and the Dodgers don… [+1816 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Canadian defence companies eye idle auto plants for growth plans",
+        "summary": "Dominion Dynamics and Roshel are among the firms working on bids to take over unused auto manufacturing spaces",
+        "content": "Open this photo in gallery:Roshel armoured vehicles at the Canadian Association of Defence and Security Industries annual trade show in Ottawa in May, 2025. The company is a finalist in the competiti… [+6210 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "14 subtle (and not so subtle) signs you’re in a “silent divorce”",
+        "summary": "Nobody schedules one. It accumulates, in increments small enough that neither person can point to a week when…",
+        "content": "Products are curated by Style Girlfriend editors. Purchases through our links may earn us an affiliate commission. Nobody schedules one. It accumulates, in increments small enough that neither perso… [+10080 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       }
     ],
     "ai_trend": [
       {
-        "title": "Higgsfield raised $400mn at $5.4bn, four times its January valuation",
-        "summary": "Higgsfield has raised $400mn at a $5.4bn valuation. DST Global led the round. Goldman Sachs, Intel Capital, a…",
-        "content": "Higgsfield has raised $400mn at a $5.4bn valuation. DST Global led the round. Goldman Sachs, Intel Capital, and Liberty Global Tech Ventures all took part, alongside Tribe Capital, Smash Capital, Fif… [+5472 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Almost nobody pays attention to web standards anymore",
-        "summary": "Screen readers suffer as nearly 90% of top websites tested contain HTML spec violations",
-        "content": "Are web coders losing their respect for standards? A recent review of the worlds largest sites suggests so. ValidateHTML, a project by independent French developer Théo Ducreux, examined the cont… [+4676 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "contextspy 0.3.4",
-        "summary": "Context profiler for LLMs and AI agents - used to inspect context conents and reduce token costs",
+        "title": "ag2-sparrow 0.3.1",
+        "summary": "A channel-neutral local delivery runtime for AI agents: durable task and event transport, plus a transactiona…",
         "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "AI automation startup Relay shuts down, staff joins Google's Chrome team | TechCrunch",
-        "summary": "\"We have some really ambitious plans to help you work with AI in Chrome to get things done, and I’ll have mor…",
-        "content": "Relay, an AI-powered workflow automation tool that was launched in 2021 with the goal of becoming the new Zapier, is shutting down, and some of its staff including its top executive are joining Googl… [+2301 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "kladde added to PyPI",
+        "summary": "CLI for a local markdown notebook, built for coding agents: daily notes, generic notes, and section-aware app…",
+        "content": "Kladde (KLAH-duh) - German: a rough notebook for quick first jottings, where a merchant recorded transactions before posting them to the ledger. A concurrency-safe markdown notebook CLI, intended p… [+2616 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "OpenAI disbanded the team that assessed catastrophic model risks",
-        "summary": "OpenAI shut down its preparedness team at the end of July, the Financial Times reports. The team existed to w…",
-        "content": "OpenAI shut down its preparedness team at the end of July, the Financial Times reports. The team existed to work out whether OpenAIs models posed catastrophic risks. It also designed the ways to cont… [+5389 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "mnemonn 1.3.3",
-        "summary": "Persistent project memory and knowledge graph for AI coding agents",
+        "title": "klaviyo-cli 0.4.0",
+        "summary": "Unofficial Klaviyo CLI: campaigns, segments, flows, metrics, scheduling. Built for humans and AI agents.",
         "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Google May Have Leaked Its Next Fitbit—Or Let AI Hallucinate It",
-        "summary": "Some ads for the company's new Pixel 11 series include a mysterious new wearable that might be the Fitbit Cha…",
-        "content": "Google may have accidentally leaked the first images of its next Fitbit wearable. In ads for the Pixel 11 series spotted by users on Reddit, the company included an unannounced fitness tracker or sma… [+2586 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "mlx-memo 4.13.1",
+        "summary": "Local-first semantic memory for AI agents — time-travel, contradiction radar, automatic synthesis. MLX (Apple…",
+        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "How Scottish FA used AI in selecting new Scotland boss Pocognoli",
-        "summary": "The days of board members sifting through applicants and picking the best are long gone thanks to football an…",
-        "content": "Around 20 people made it known to the Scottish FA that they wanted to be considered to replace Steve Clarke as Scotland's new head coach. Not one of them was interviewed. Not because they weren't c… [+3832 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "zeit-graph added to PyPI",
+        "summary": "Most knowledge graphs overwrite when facts change. zeit expires the old fact instead, so you can search what'…",
+        "content": "zeit is a Python library for building LLM applications. It turns notes, chats, and events into a knowledge graph your model can search. Those sources contradict each other. Most stores overwrite t… [+4748 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Exclusive: Accounting AI startup Rillet reaches unicorn status with $1 billion valuation. Its founder says he wants to…",
+        "summary": "\"Our message is not that we're coming after jobs,\" Rillet CEO Nicolas Kopp told Fortune. \"That's just not cor…",
+        "content": "Rillet, a two-year-old startup building what it calls the first truly AI-native accounting platform, has raised a $100 million Series C at a $1 billion valuation, the company told Fortune exclusively… [+5970 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "affects_fcn": true,
+        "impact_score": 0
+      },
+      {
+        "title": "Accounting AI startup Rillet reaches unicorn status with $1 billion valuation. Its founder says he wants to give CFOs b…",
+        "summary": "Rillet, a two-year-old startup building what it calls the first truly AI-native accounting platform, has rais…",
+        "content": "Rillet, a two-year-old startup building what it calls the first truly AI-native accounting platform, has raised a $100 million Series C at a $1 billion valuation, the company told Fortune exclusively… [+142 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Apple Releases Fourth Public Betas of iOS 27, iPadOS 27, macOS 27, and tvOS 27",
+        "summary": "Apple has released the fourth public betas of iOS 27, iPadOS 27, tvOS 27, and macOS 27 Golden Gate.Read More.…",
+        "content": "Apple has released the fourth public betas of iOS 27, iPadOS 27, tvOS 27, and macOS 27 Golden Gate. The fourth betas come a week after Apple seeded the third betas. iOS 27 and iPadOS 27 Registered … [+3236 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       }
@@ -254,28 +254,28 @@
         "impact_score": 1
       },
       {
-        "title": "VIX：15.19（+0.94）",
+        "title": "VIX：15.84（+0.65）",
         "summary": "VIX 上升代表 FCN 敲入風險上升。",
         "content": "VIX 是你每日要看的核心指標。",
         "affects_fcn": true,
         "impact_score": -2
       },
       {
-        "title": "10Y / 20Y：4.72%（+0.04%） / 5.30%（+0.05%）",
+        "title": "10Y / 20Y：4.71%（-0.01%） / 5.28%（-0.02%）",
         "summary": "中長期利率上升會壓抑科技估值。",
         "content": "科技與 AI 核心股會受中長債殖利率影響。",
         "affects_fcn": true,
         "impact_score": -1
       },
       {
-        "title": "油價 / 黃金：84.77（+1.01） / N/A",
+        "title": "油價 / 黃金：86.48（+0.44） / N/A",
         "summary": "油價與黃金反映通膨與避險情緒。",
         "content": "若兩者同步走升，通常代表市場更保守。",
         "affects_fcn": true,
         "impact_score": -1
       },
       {
-        "title": "失業率：4.10%（-0.10%）｜S&P500：7745.06（-40.70）",
+        "title": "失業率：4.10%（-0.10%）｜S&P500：7691.76（-53.30）",
         "summary": "就業與股市穩定度共同反映風險偏好。",
         "content": "若就業惡化且股市回落，FCN 需更保守。",
         "affects_fcn": true,
@@ -310,7 +310,7 @@
     },
     {
       "label": "總經環境",
-      "text": "總經壓力偏高，建議降低進攻型 FCN。"
+      "text": "總經環境中性，FCN 可做但需偏保守，優先核心股。"
     },
     {
       "label": "今日推薦",
@@ -330,12 +330,12 @@
     },
     {
       "label": "VIX 壓力",
-      "value": 30,
+      "value": 31,
       "type": "watch"
     },
     {
       "label": "AI 核心股安全度",
-      "value": 45,
+      "value": 62,
       "type": "watch"
     }
   ],
@@ -687,14 +687,25 @@
   },
   "scenario_suggestions": [
     {
-      "name": "避險觀望",
+      "name": "穩定收息",
       "targets": [
+        "TSM",
         "MSFT",
         "UNH"
       ],
       "eki": "80%–85%",
-      "tenor": "短中期",
-      "goal": "只保留低波動核心"
+      "tenor": "6–12個月",
+      "goal": "防守優先"
+    },
+    {
+      "name": "平衡收益",
+      "targets": [
+        "NVDA",
+        "AVGO"
+      ],
+      "eki": "75%–80%",
+      "tenor": "3–6個月",
+      "goal": "只留主力池"
     }
   ]
 }
