@@ -1,239 +1,239 @@
 {
-  "updated_at": "2026-08-20 21:56",
+  "updated_at": "2026-08-21 21:47",
   "summary": {
     "active_fcn_count": 24,
     "top_risk_code": "FCN710H",
     "worst_of": "ORCL",
-    "market_env": "可做",
-    "main_conclusion": "今天可做 FCN，優先配置 NVDA / AVGO / TSM / MSFT，並持續監控 ORCL / COIN 風險集中。"
+    "market_env": "觀望",
+    "main_conclusion": "今天較適合觀望或只做防守型 FCN，先避開高波動與風險集中的標的。"
   },
   "morning_brief": {
     "international_news": [
       {
-        "title": "awdk added to PyPI",
-        "summary": "Build AI agents with real memory + faculties on any backend, local or cloud. Open-core: free local runtime wi…",
-        "content": "3 lines of code. Any backend. Local or cloud. Zero lock-in. Aither ADK is a Python SDK + CLI for building AI agents that run on your hardware a single helpful agent or a coordinated fleet that deleg… [+33469 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "Introducing cross-Region inference for OpenAI GPT-5.6 models on Amazon Bedrock",
+        "summary": "Amazon Bedrock now offers OpenAI GPT-5.6 models (Sol, Terra, and Luna) in more than 25 AWS Regions with cross…",
+        "content": "This post is co-written with Chris Dickens from OpenAI. Amazon Bedrock now offers OpenAI GPT-5.6 models on Amazon Bedrock in more than 25 AWS Regions, with cross-Region inference. Three GPT-5.6 vari… [+27383 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "‘Flashing Red Warning Sign’ for Lawmakers: Poll Shows Voters Reject US-Israel Military Integration",
-        "summary": "A new poll of US voters published on Tuesday offers a warning for congressional lawmakers backing a plan to d…",
-        "content": "A new poll of US voters published on Tuesday offers a warning for congressional lawmakers backing a plan to deepen military ties between the United States and Israel, finding that a clear majority of… [+5124 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "Shamrock Rovers feel a quiet kind of pain as KuPS strike late for draw in Euro play-off",
+        "summary": "Hoops took lead in Uefa Conference League play-off through Enda Stevens but must find a way to come out on to…",
+        "content": "Uefa Conference League play-off, first leg Shamrock Rovers 1 KuPS 1 THIS FELT LIKE a quiet kind of pain after a noisy week for Shamrock Rovers. In a strange way, the subdued nature of this Uefa C… [+4981 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "2027 Denza Z Coupe",
-        "summary": "The combined maximum system output for all versions of the car is 1604PS and 1240Nm of torque. That is enough…",
-        "content": "DENZA, the premium technology-oriented automotive brand of the BYD Group, presented an all-new, all-electric supercar that redefines what can be experienced in a performance vehicle: the DENZA Z.Equi… [+19540 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "Trump’s Tech Tensions",
+        "summary": "The administration’s latest strategy document tries to balance technological competition with cooperation.",
+        "content": "Welcome back to Foreign Policys Situation Report. Heres whats on tap for the day: The Trump administration releases a new national security tech strategy, continues to shift the Iran war goalposts, … [+9262 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Hudson River Trading posts $11.4B trading windfall amid market tumult",
-        "summary": "HRT's record profits amid market volatility highlight the growing influence and potential regulatory scrutiny…",
-        "content": "The quantitative market maker's second-quarter haul nearly matched its entire 2025 revenue in just three months Hudson River Trading pulled in $11.4 billion in trading revenue during the second quart… [+2275 chars]｜分類：地緣政治｜解讀：波動升高，FCN 敲入風險增加",
+        "title": "With one dead and hundreds seriously ill, a national outbreak of Salmonella has been declared. But here experts explain…",
+        "summary": "Health officials have declared a national salmonella outbreak after one person died and more than 200 people…",
+        "content": "Boiled with dippy soldiers, slathered with mayonnaise in sandwiches or whisked into fluffy omelettes, eggs are one of Britain's great food obsessions. But this week, they're in the headlines for a l… [+7084 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
         "affects_fcn": true,
-        "impact_score": -2
+        "impact_score": -1
       },
       {
-        "title": "Why isn’t Rodrigo De Paul playing for Inter Miami vs Philadelphia Union in the 2026 MLS?",
-        "summary": "Inter Miami take on the Philadelphia Union in the 2026 MLS, where they won't be able to count on Rodrigo De P…",
-        "content": "Rodrigo De Paul will be a notable absence when Inter Miami travel to face the Philadelphia Union for the 2026MLS season. The Argentine midfielder has racked up enough yellow cards over the course of … [+1611 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "Harry and Meghan Are Returning to the U.K. The Timing Couldn’t Be Darker.",
+        "summary": "Why now? Wrong question.",
+        "content": "Sign up for the Slatest to get the most insightful analysis, criticism, and advice out there, delivered to your inbox daily. The prodigal son returns. This week, six years after they upped sticks an… [+4290 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Gleb Savchenko's Daughter Can Share Her Custody Preference, Expert Says",
-        "summary": "This week on Legally Us, Rachael Bennett, a certified family law specialist and senior attorney at Sullivan L…",
-        "content": "This week on Legally Us, Rachael Bennett, a certified family law specialist and senior attorney at Sullivan Law &amp; Associates, breaks down Gleb Savchenko and ex-wife Elena Samodanova’sinternationa… [+3726 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "Darth Vader comes out in favor of Flock cameras (Video of this at URL for the public San Diego Committee meeting)",
+        "summary": "Darth Vader comes out in favor of Flock cameras ...",
+        "content": "Skip to comments. Darth Vader comes out in favor of Flock cameras (Video of this at URL for the public San Diego Committee meeting)X.com ^ | 8/20/2026 | Orwell Day Posted on 08/20/2026 2:33:43 … [+2069 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "16-year-old girl faces charges after storming field, tackling middle school football player",
-        "summary": "A 16-year-old faces charges and bans after rushing a Tennessee middle school football field and tackling a pl…",
-        "content": "A teenage girl from Tennessee is facing multiple charges after she ran onto the field during a middle school football game and tackled a player on Tuesday night. The incident occurred during a game… [+2031 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "Live: US markets down amid plan to 'collapse' Iran's economy, ASX to follow",
+        "summary": "The US is urging allies to join it in a bid to \"collapse\" Iran's economy to end the Middle East conflict. Fol…",
+        "content": "ASX 200 futures: -0.2% to 9,001 points Australian dollar: -0.2% to 71.07 US cents Dow Jones: -1.3% to 52,759 points S&amp;P 500: -0.8% to 7,641 points Nasdaq: -1% to 26,067 points FTSE: flat at… [+255 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
+        "affects_fcn": true,
+        "impact_score": -1
+      },
+      {
+        "title": "Royal High investigates incident involving football coach and player",
+        "summary": "Video shows the Highlanders football coach Adam Brubaker kicking a ball toward student and hitting him in gro…",
+        "content": "Video obtained by The Times shows Royal High football coach Adam Brubaker kicking a football toward a student and hitting him in the groin area, which has resulted in the school beginning an investig… [+558 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Texas Rangers lineup for August 19, 2026",
-        "summary": "Texas against the Nationals, again",
-        "content": "Texas Rangers lineup for August 19, 2026 against the Washington Nationals: starting pitchers are Kumar Rocker for the Rangers and Cade Cavalli for the Nationals. Texas plays the middle game of a thr… [+274 chars]｜分類：地緣政治｜解讀：影響有限",
+        "title": "Apple bucks downward trend as reports show global smartphone shipment and sales declines",
+        "summary": "Four Counterpoint Research reports published this week reveal drops in smartphone sales and shipments in Indi…",
+        "content": "Four Counterpoint Research reports published this week reveal drops in smartphone sales and shipments in India, Latin America, Europe, and China. Here are the reports. While the slowdown in smartpho… [+2576 chars]｜分類：全球經濟｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "The US National Debt Soars To $40 Trillion",
-        "summary": "The milestone highlights the impact of defense costs, social programs and interest on the deficit.",
-        "content": "WASHINGTON (AP) The national debt surpassed a record $40 trillion on Wednesday, a staggering milestone as defense costs, social programs like Social Security and Medicare and interest on the burgeoni… [+2270 chars]｜分類：全球經濟｜解讀：影響有限",
+        "title": "Top Business & Market Headlines Today — BL Morning Report, August 21, 2026",
+        "summary": "BL Morning Report, August 21, 2026: Get today’s top business news, market headlines about key market insights…",
+        "content": "Welcome to The Morning Report, brought to you by Renil S Vargheseyour quick dive into the top stories shaping the business world today. Fast, insightful, and to the point. 1. SC scraps worker-friend… [+3296 chars]｜分類：全球經濟｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "How Uzbekistan and Kyrgyzstan Could Unlock Circular Production",
-        "summary": "The United Nations Development Programme released a new report on the potential for circular textile value ch…",
-        "content": "The textile and garment sectors have been important drivers of economic growth in both Uzbekistan and Kyrgyzstan, but more work is needed to sustain that momentum. As the European Union and other glo… [+4210 chars]｜分類：全球經濟｜解讀：影響有限",
+        "title": "Blue Moon Metals Secures Water Pollution Control Permit, Approval of Construction for the Tailings Storage Facility, an…",
+        "summary": "TORONTO, Aug. 20, 2026 /PRNewswire/ -- Blue Moon Metals Inc. (\"Blue Moon\" or the \"Company\") (TSXV: MOON) (NAS…",
+        "content": "TORONTO, Aug. 20, 2026 /PRNewswire/ -- Blue Moon Metals Inc. (\"Blue Moon\" or the \"Company\") (TSXV: MOON) (NASDAQ: BMM) is pleased to announce that the Nevada Division of Environmental Protection (\"ND… [+6110 chars]｜分類：全球經濟｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Coty Ends Fiscal Year on Positive Sales Note Despite Gucci License Loss, Taps New CFO for Next Growth Phase",
-        "summary": "Coty Q4 2026 earnings are in: Surpasses expectations with a 1% revenue increase, outlines post-Gucci strategi…",
-        "content": "Despite losing its crown jewel Gucci Beauty license, Coty ended the fiscal year on a positive note, topping Wall Street revenue estimates. Coty’s net revenue rose 1 percent to $1.26 billion in the t… [+3447 chars]｜分類：全球經濟｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "US national debt hits a record $40 trillion",
-        "summary": "The national debt has surpassed a record $40 trillion, highlighting the impact of defense costs, social progr…",
-        "content": "WASHINGTON (AP) The national debt surpassed a record $40 trillion on Wednesday, a staggering milestone as defense costs, social programs like Social Security and Medicare and interest on the burgeoni… [+3051 chars]｜分類：全球經濟｜解讀：影響有限",
+        "title": "News of the day: Big bank valuation, Ben McKenzie’s crypto crusade, Ottawa’s new drone marketplace, World Cup travel bo…",
+        "summary": "It’s Thursday, August 20. Here are the top stories we’re following today.",
+        "content": "Its Thursday, August 20. Here are the top stories were following today. THIS CONTENT IS RESERVED FOR SUBSCRIBERS ONLY Subscribe now to read the latest news in your city and across Canada. <ul><li>… [+3706 chars]｜分類：全球經濟｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       }
     ],
     "financial_news": [
       {
-        "title": "US national debt exceeds $40tn, govt data shows",
-        "summary": "US national debt has surpassed $40 trillion, driven by increased borrowing and rising interest payments. Lear…",
-        "content": "The US gross national debt has surged past $40 trillion, government data showed Wednesday, outstripping earlier forecasts at a pace fuelled in part by President Donald Trump’s invalidated tariffs. T… [+1618 chars]｜分類：Fed / 利率｜解讀：地緣風險升高，需留意市場波動擴大",
+        "title": "AI\"s Bar Mitzvah Moment: From Hype & Hope to Business Questions!",
+        "summary": "影響有限",
+        "content": "In a world where AI enters almost every conversation, it takes effort to remember that its breakout moment was less than four years ago, when, on November 30, 2022, ChatGPT was unveiled to the public… [+48430 chars]｜分類：Fed / 利率｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Citigroup strategists bearish on US dollar amid Fed, Treasury moves",
+        "summary": "A weaker US dollar could boost gold prices, reflecting market anticipation of shifts in US monetary policy an…",
+        "content": "Citigroup’s currency strategists have expressed a negative outlook on the US dollar, influenced by expectations of a less aggressive Federal Reserve, the approaching midterm elections, and the US Tre… [+2161 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
+        "affects_fcn": true,
+        "impact_score": 1
+      },
+      {
+        "title": "Trading Day: Can't get no relief",
+        "summary": "ORLANDO, Florida, Aug 20 : That didn't last long. U.S. bond yields rose on Thursday, retracing much of the pr…",
+        "content": "ORLANDO, Florida, Aug 20 : That didn't last long. U.S. bond yields rose on Thursday, retracing much of the previous day's decline on Treasury's surprise buyback announcement and pushing Wall Street t… [+5061 chars]｜分類：Fed / 利率｜解讀：影響有限",
+        "affects_fcn": true,
+        "impact_score": 0
+      },
+      {
+        "title": "Walmart's Worst Day in 4 Years Helps Drive Broader Stock Drop",
+        "summary": "The relief that swept the bond market just a day earlier disappeared on Thursday as oil prices, worries about…",
+        "content": "The bond market remains the center of the action after yields charged higher through the summer, the AP reports. The Treasury Department made a surprise move Wednesday that brought temporary relief, … [+1351 chars]｜分類：Fed / 利率｜解讀：地緣風險升高，需留意市場波動擴大",
         "affects_fcn": true,
         "impact_score": -1
       },
       {
-        "title": "US Treasury yields rise as federal borrowing increases",
-        "summary": "Rising Treasury yields could lead to higher borrowing costs, impacting consumer loans and shifting investor f…",
-        "content": "Treasury yields in the United States are on the rise as the federal government increases its borrowing through bond issuance, according to a recent article from the New York Times. This development m… [+2196 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
+        "title": "What's Next for Bitcoin After Historic Rally? Experts Weigh In",
+        "summary": "Bitcoin's surge above $72,000 wiped out billions in bearish bets, but analysts say fresh buying will be neede…",
+        "content": "In brief <ul><li>Bitcoin climbed above $72,000 Thursday after gaining nearly 15% since Monday.</li><li>Analysts pointed to Treasury bond purchases, policy headlines, and a massive short squeeze as d… [+6950 chars]｜分類：Fed / 利率｜解讀：影響有限",
+        "affects_fcn": true,
+        "impact_score": 0
+      },
+      {
+        "title": "Warsh faces Fed independence test as Bessent moves in on central bank's turf",
+        "summary": "If Treasury Secretary Scott Bessent truly wants to bring the full force of the federal government to bear on…",
+        "content": "If Treasury Secretary Scott Bessent truly wants to bring the full force of the federal government to bear on what he sees as a misbehaving bond market, he can't go it alone. A sustained effort to bri… [+139 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
         "affects_fcn": true,
         "impact_score": 1
       },
       {
-        "title": "Why Treasury Yields Are Rising, and What That Means for the Economy",
-        "summary": "In the U.S. government bond market, the borrower is the federal government and the bonds are called Treasurie…",
-        "content": "In the U.S. government bond market, the borrower is the federal government and the bonds are called Treasuries. This story appeared on nytimes.com, 2026-08-19 21:16:20.｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
-        "affects_fcn": true,
-        "impact_score": 1
-      },
-      {
-        "title": "US national debt surpasses $40T as Trump faces criticism over fiscal discipline",
-        "summary": "Rising US debt limits fiscal flexibility, potentially increasing borrowing costs and impacting economic stabi…",
-        "content": "Gross federal debt crossed $40 trillion on August 18, months ahead of projections, driven by soaring interest costs and lost tariff revenue. The United States government officially owes more than $40… [+2223 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
-        "affects_fcn": true,
-        "impact_score": 1
-      },
-      {
-        "title": "U.S. debt crosses $40 trillion threshold after doubling under Trump and Biden",
-        "summary": "Total U.S. debt has topped $40 trillion for the first time, the Treasury Department said on Wednesday, drawin…",
-        "content": "Total U.S. debt has topped $40 trillion for the first time, the Treasury Department said on Wednesday, drawing fresh warnings that a fiscal crisis is brewing as ballooning costs for social safety-net… [+5655 chars]｜分類：Fed / 利率｜解讀：影響有限",
+        "title": "Bessent's efforts in the Treasury market so far haven't worked. Here's what else he can try",
+        "summary": "Market experts showed skepticism at whether the push would succeed against a bevy of factors working against…",
+        "content": "Scott Bessent, US treasury secretary, speaks to members of the media outside the White House in Washington, DC, US, on Thursday, Aug. 20, 2026. Treasury Secretary Scott Bessent insisted Thursday th… [+7095 chars]｜分類：Fed / 利率｜解讀：影響有限",
         "affects_fcn": true,
         "impact_score": 0
       },
       {
-        "title": "US debt tops $40tn threshold after doubling up under Trump and Biden",
-        "summary": "Budget watchdog groups have been anticipating the news for weeks, with some issuing stark warnings of a debt…",
-        "content": "Total US debt has topped $40 trillion (34.25 trillion) for the first time, the US Treasury Department said on Wednesday, drawing fresh warnings that a fiscal crisis is brewing as ballooning costs for… [+5656 chars]｜分類：Fed / 利率｜解讀：影響有限",
-        "affects_fcn": true,
-        "impact_score": 0
-      },
-      {
-        "title": "US Treasury doubles down on buybacks to tame surging long-dated bond yields",
-        "summary": "The Treasury's buyback strategy aims to stabilize bond markets, potentially easing borrowing costs and suppor…",
-        "content": "The Treasury is at least doubling the size of its liquidity-support buyback operations for 10- to 30-year securities, effective September 9 The US Treasury just pulled one of the bigger levers in its… [+3108 chars]｜分類：Fed / 利率｜解讀：影響有限",
-        "affects_fcn": true,
-        "impact_score": 0
-      },
-      {
-        "title": "Original-Owner 1994 Toyota Land Cruiser FZJ80",
-        "summary": "This 1994 Toyota Land Cruiser was acquired new by the seller in Florida and underwent a cosmetic refurbishmen…",
-        "content": "This 1994 Toyota Land Cruiser was acquired new by the seller in Florida and underwent a cosmetic refurbishment in 2023. Work involved repainting the body Dark Emerald Pearl, retrofitting ARB front an… [+2318 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "title": "Introducing cross-Region inference for OpenAI GPT-5.6 models on Amazon Bedrock",
+        "summary": "Amazon Bedrock now offers OpenAI GPT-5.6 models (Sol, Terra, and Luna) in more than 25 AWS Regions with cross…",
+        "content": "This post is co-written with Chris Dickens from OpenAI. Amazon Bedrock now offers OpenAI GPT-5.6 models on Amazon Bedrock in more than 25 AWS Regions, with cross-Region inference. Three GPT-5.6 vari… [+27383 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Down 50% on crypto and burning $8 million in cash, this Nasdaq firm just pivoted to event robots to survive",
-        "summary": "Its holdings were valued at $5.21 million on June 30, while order economics and sale timing remain undisclose…",
-        "content": "AIxCrypto Holdings, a Nasdaq-listed company shifting from a digital-asset treasury toward robot rentals, plans an orderly exit from its crypto holdings after reporting $577,328 in cash at June 30. T… [+3209 chars]｜分類：通膨 / 就業｜解讀：影響有限",
-        "affects_fcn": true,
-        "impact_score": 0
-      },
-      {
-        "title": "August 2026 — Cooper’s lead over Whatley grows to 12.5 points",
-        "summary": "More than half of North Carolina’s 115 school boards are elected in partisan races, and voters are split on t…",
-        "content": "Democrat Roy Cooper now holds a 12.5-point lead over Republican Michael Whatley in the race for North Carolina’s open US Senate seat, according to the latest Carolina Journal Poll of 600 likely gener… [+6330 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "title": "Brian Hickerson's attorney issues statement after Hayden Panettiere's death",
+        "summary": "An investigation into the late actress's death is ongoing.",
+        "content": "Brian Hickerson's attorney is speaking out on his behalf following Hayden Panettiere's death. Hickerson was with the late actress at the time of her death, according to a police report obtained by A… [+490 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "4,400-Mile 1999 Chevrolet Camaro SS Coupe",
-        "summary": "This 1999 Chevrolet Camaro SS coupe was initially delivered to Suburban Chevrolet of Eden Prairie, Minnesota,…",
-        "content": "This 1999 Chevrolet Camaro SS coupe was initially delivered to Suburban Chevrolet of Eden Prairie, Minnesota, and now has 4,400 miles. The car was specified in Bright Red over Dark Gray cloth, and it… [+2152 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "title": "Apple bucks downward trend as reports show global smartphone shipment and sales declines",
+        "summary": "Four Counterpoint Research reports published this week reveal drops in smartphone sales and shipments in Indi…",
+        "content": "Four Counterpoint Research reports published this week reveal drops in smartphone sales and shipments in India, Latin America, Europe, and China. Here are the reports. While the slowdown in smartpho… [+2576 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "29k-Mile 2011 Jaguar XFR",
-        "summary": "This 2011 Jaguar XFR is finished in Liquid Silver Metallic over Warm Charcoal leather, and it is powered by a…",
-        "content": "This 2011 Jaguar XFR is finished in Liquid Silver Metallic over Warm Charcoal leather, and it is powered by a supercharged 5.0-liter V8 linked with a six-speed automatic transmission and an active el… [+1769 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "title": "23k-Mile 2019 Lincoln Navigator Black Label 4×4",
+        "summary": "This 2019 Lincoln Navigator is a Black Label 4x4 that is powered by a twin-turbocharged 3.5-liter V6 rated at…",
+        "content": "This 2019 Lincoln Navigator is a Black Label 4×4 that is powered by a twin-turbocharged 3.5-liter V6 rated at 450 horsepower. Finished in Rhapsody Blue Metallic over Alpine Venetian leather, it featu… [+2736 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Sacramento’s Mad Legislative Dash To Fix Tax Credits SNAFU, Get Post-Production Incentive Passed, Or Not",
+        "summary": "EXCLUSIVE: With a very hard out of less than two weeks, state legislators in Sacramento are either going to b…",
+        "content": "EXCLUSIVE: With a very hard out of less than two weeks, state legislators in Sacramento are either going to be Scrooge or Santa with California’s film and TV tax incentives for the near moribund L.A.… [+6583 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       }
     ],
     "ai_trend": [
       {
-        "title": "awdk added to PyPI",
-        "summary": "Build AI agents with real memory + faculties on any backend, local or cloud. Open-core: free local runtime wi…",
-        "content": "3 lines of code. Any backend. Local or cloud. Zero lock-in. Aither ADK is a Python SDK + CLI for building AI agents that run on your hardware a single helpful agent or a coordinated fleet that deleg… [+33469 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "Show HN: Let your coding agents set up your test coverage",
+        "summary": "The new Setup Coverage Skill detects your test setup, generates coverage in a format Codacy accepts, and adds…",
+        "content": "Codacy tracks four metrics on a repository: issues, duplication, complexity, and coverage. Three of them we work out by analysing the code. Coverage is the one we cannot, because knowing which line… [+4717 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "awdk 3.6.0",
-        "summary": "Build AI agents with real memory + faculties on any backend, local or cloud. Open-core: free local runtime wi…",
+        "title": "mesedi 0.5.1",
+        "summary": "Mesedi SDK — guardians for autonomous AI agents. Detect failures, halt runaways, escalate first occurrence.",
         "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "memnoth-core added to PyPI",
-        "summary": "memnoth core — temporal knowledge-graph memory engine for AI agents. Name reservation placeholder.",
+        "title": "aparta 0.6.3",
+        "summary": "Isolate your dev accounts (git, gh, gcloud, AWS, SSH) per project folder and make terminal AI agents use the…",
         "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "memnoth 0.0.1",
-        "summary": "memnoth — temporal knowledge-graph memory for AI agents. Name reservation placeholder.",
-        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "GitHub - Ahmet2001/BrowserAgent: Ethosoft — AI marketing, social content, browser automation, and Agent Studio control…",
+        "summary": "GitHub - Ahmet2001/BrowserAgent: Ethosoft — AI marketing, social content, browser automation, and Agent Studi…",
+        "content": "AI-powered social media management, content creation, browser automation, and Agent Studio control panel. Türkçe | English git clone https://github.com/Ahmet2001/BrowserAgent.git cd BrowserAgent … [+2603 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "memnoth added to PyPI",
-        "summary": "memnoth — temporal knowledge-graph memory for AI agents. Name reservation placeholder.",
-        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "Citizen Devs: Everyone is an engineer now",
+        "summary": "Half your company is already routing around IT. The citizen developer has been around since Lotus 1-2-3, and…",
+        "content": "You may not have heard the term citizen developer yet, but they exist, and they've been here for a long time. In the nineties, it was the person in accounts payable who bought accounting software of… [+11867 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "areev 1.3.0",
-        "summary": "Python bindings for Areev, the embedded memory engine for AI agents.",
-        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "AI Music Generator Mureka Launches V9.5 and O3: Music Models That (Hopefully) Sound Human",
+        "summary": "AI music generator Mureka is launching V9.5 and previewing the upcoming O3 model this week, which the company…",
+        "content": "If you purchase an independently reviewed product or service through a link on our website, Variety may receive an affiliate commission. AI music generator Mureka is launching V9.5 and previewing th… [+5555 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "As Vine’s successor opens its doors to the public, chalupas may make all the difference",
-        "summary": "If you've been waiting for Vine to return ever since its demise a decade ago, get ready for some DiVine inter…",
-        "content": "If you’ve been waiting for Vine to return ever since its demise a decade ago, get ready for some Divine intervention. A new video sharing service backed by former Twitter chief Jack Dorsey is now ope… [+3881 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "The Green New Deal Is Back. Its Next Target: AI",
+        "summary": "Three candidates running on a platform of blocking, restricting, or seizing control of artificial intelligenc…",
+        "content": "In Michigan, three candidates running on a platform of blocking, restricting, or seizing control of artificial intelligence companies swept their Democratic primaries. In Wisconsin, another data cent… [+5342 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Forced Out of $5.6B in Sandisk, Leopold’s Bull Case Is Still Alive. Here’s How You Should Play It",
-        "summary": "When a high-profile investor suddenly exits a stock, people immediately assume something is wrong with the co…",
-        "content": "When a high-profile investor suddenly exits a stock, people immediately assume something is wrong with the company. In Sandisks (SNDK) case, the opposite appears to be true. A new regulatory filing s… [+136 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "Introducing cross-Region inference for OpenAI GPT-5.6 models on Amazon Bedrock",
+        "summary": "Amazon Bedrock now offers OpenAI GPT-5.6 models (Sol, Terra, and Luna) in more than 25 AWS Regions with cross…",
+        "content": "This post is co-written with Chris Dickens from OpenAI. Amazon Bedrock now offers OpenAI GPT-5.6 models on Amazon Bedrock in more than 25 AWS Regions, with cross-Region inference. Three GPT-5.6 vari… [+27383 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       }
@@ -254,14 +254,14 @@
         "impact_score": 1
       },
       {
-        "title": "VIX：14.89（-0.95）",
+        "title": "VIX：16.01（+1.12）",
         "summary": "VIX 上升代表 FCN 敲入風險上升。",
         "content": "VIX 是你每日要看的核心指標。",
         "affects_fcn": true,
         "impact_score": -2
       },
       {
-        "title": "10Y / 20Y：4.65%（-0.06%） / 5.17%（-0.11%）",
+        "title": "10Y / 20Y：4.69%（+0.04%） / 5.20%（+0.03%）",
         "summary": "中長期利率上升會壓抑科技估值。",
         "content": "科技與 AI 核心股會受中長債殖利率影響。",
         "affects_fcn": true,
@@ -275,7 +275,7 @@
         "impact_score": -1
       },
       {
-        "title": "失業率：4.10%（-0.10%）｜S&P500：7707.98（+16.22）",
+        "title": "失業率：4.10%（-0.10%）｜S&P500：7641.16（-66.82）",
         "summary": "就業與股市穩定度共同反映風險偏好。",
         "content": "若就業惡化且股市回落，FCN 需更保守。",
         "affects_fcn": true,
@@ -299,7 +299,7 @@
     {
       "title": "優先核心池",
       "action": "可配置",
-      "reason": "目前建議先看：NVDA / AVGO / TSM / MSFT。",
+      "reason": "目前建議先看：TSM / MSFT。",
       "level": "ok"
     }
   ],
@@ -310,11 +310,11 @@
     },
     {
       "label": "總經環境",
-      "text": "總經環境中性偏有利，FCN 可做，但仍需避免風險集中在單一高敏感標的。"
+      "text": "總經壓力偏高，建議降低進攻型 FCN。"
     },
     {
       "label": "今日推薦",
-      "text": "可加入：NVDA / AVGO / TSM / MSFT；觀察：AMD / AMAT / MRVL；避免：ORCL / PLTR / COIN。"
+      "text": "可加入：TSM / MSFT；觀察：NVDA / AVGO / UNH；避免：AMD / ORCL / AMAT。"
     }
   ],
   "risk_radar": [
@@ -330,13 +330,13 @@
     },
     {
       "label": "VIX 壓力",
-      "value": 29,
+      "value": 32,
       "type": "watch"
     },
     {
       "label": "AI 核心股安全度",
-      "value": 78,
-      "type": "ok"
+      "value": 45,
+      "type": "watch"
     }
   ],
   "fcn_rankings": [
@@ -434,9 +434,9 @@
         "eki": "80%",
         "day_change": "",
         "five_day": "",
-        "today": "可加入",
-        "reason": "屬核心池 / 防守池，且現階段環境允許配置。",
-        "level": "ok"
+        "today": "持續觀察",
+        "reason": "可列觀察，但不宜重壓。",
+        "level": "watch"
       },
       {
         "symbol": "AVGO",
@@ -447,9 +447,9 @@
         "eki": "80%",
         "day_change": "",
         "five_day": "",
-        "today": "可加入",
-        "reason": "屬核心池 / 防守池，且現階段環境允許配置。",
-        "level": "ok"
+        "today": "持續觀察",
+        "reason": "可列觀察，但不宜重壓。",
+        "level": "watch"
       },
       {
         "symbol": "TSM",
@@ -473,9 +473,9 @@
         "eki": "80%",
         "day_change": "",
         "five_day": "",
-        "today": "持續觀察",
-        "reason": "可列觀察，但不宜重壓。",
-        "level": "watch"
+        "today": "暫不建議",
+        "reason": "現階段波動或集中風險偏高。",
+        "level": "risk"
       },
       {
         "symbol": "ORCL",
@@ -512,9 +512,9 @@
         "eki": "80%",
         "day_change": "",
         "five_day": "",
-        "today": "持續觀察",
-        "reason": "可列觀察，但不宜重壓。",
-        "level": "watch"
+        "today": "暫不建議",
+        "reason": "現階段波動或集中風險偏高。",
+        "level": "risk"
       },
       {
         "symbol": "PLTR",
@@ -592,9 +592,9 @@
         "eki": "75%",
         "day_change": "",
         "five_day": "",
-        "today": "持續觀察",
-        "reason": "可列觀察，但不宜重壓。",
-        "level": "watch"
+        "today": "暫不建議",
+        "reason": "現階段波動或集中風險偏高。",
+        "level": "risk"
       },
       {
         "symbol": "ARM",
@@ -605,9 +605,9 @@
         "eki": "70%",
         "day_change": "",
         "five_day": "",
-        "today": "持續觀察",
-        "reason": "可列觀察，但不宜重壓。",
-        "level": "watch"
+        "today": "暫不建議",
+        "reason": "現階段波動或集中風險偏高。",
+        "level": "risk"
       },
       {
         "symbol": "LVS",
@@ -618,9 +618,9 @@
         "eki": "80%",
         "day_change": "",
         "five_day": "",
-        "today": "持續觀察",
-        "reason": "可列觀察，但不宜重壓。",
-        "level": "watch"
+        "today": "暫不建議",
+        "reason": "現階段波動或集中風險偏高。",
+        "level": "risk"
       },
       {
         "symbol": "UNH",
@@ -640,14 +640,6 @@
   "today_recommendations": {
     "add": [
       {
-        "symbol": "NVDA",
-        "reason": "屬核心池 / 防守池，且現階段環境允許配置。"
-      },
-      {
-        "symbol": "AVGO",
-        "reason": "屬核心池 / 防守池，且現階段環境允許配置。"
-      },
-      {
         "symbol": "TSM",
         "reason": "屬核心池 / 防守池，且現階段環境允許配置。"
       },
@@ -658,29 +650,29 @@
     ],
     "watch": [
       {
-        "symbol": "AMD",
+        "symbol": "NVDA",
         "reason": "可列觀察，但不宜重壓。"
       },
       {
-        "symbol": "AMAT",
+        "symbol": "AVGO",
         "reason": "可列觀察，但不宜重壓。"
       },
       {
-        "symbol": "MRVL",
-        "reason": "可列觀察，但不宜重壓。"
-      },
-      {
-        "symbol": "ARM",
-        "reason": "可列觀察，但不宜重壓。"
-      },
-      {
-        "symbol": "LVS",
+        "symbol": "UNH",
         "reason": "可列觀察，但不宜重壓。"
       }
     ],
     "avoid": [
       {
+        "symbol": "AMD",
+        "reason": "現階段波動或集中風險偏高。"
+      },
+      {
         "symbol": "ORCL",
+        "reason": "現階段波動或集中風險偏高。"
+      },
+      {
+        "symbol": "AMAT",
         "reason": "現階段波動或集中風險偏高。"
       },
       {
@@ -690,49 +682,19 @@
       {
         "symbol": "COIN",
         "reason": "現階段波動或集中風險偏高。"
-      },
-      {
-        "symbol": "TSLA",
-        "reason": "現階段波動或集中風險偏高。"
-      },
-      {
-        "symbol": "CRDO",
-        "reason": "現階段波動或集中風險偏高。"
       }
     ]
   },
   "scenario_suggestions": [
     {
-      "name": "穩定收息",
+      "name": "避險觀望",
       "targets": [
-        "TSM",
         "MSFT",
         "UNH"
       ],
       "eki": "80%–85%",
-      "tenor": "6–12個月",
-      "goal": "低波動穩定收息"
-    },
-    {
-      "name": "平衡收益",
-      "targets": [
-        "NVDA",
-        "AVGO",
-        "AMD"
-      ],
-      "eki": "70%–80%",
-      "tenor": "3–9個月",
-      "goal": "主力配置"
-    },
-    {
-      "name": "進攻型",
-      "targets": [
-        "PLTR",
-        "ARM"
-      ],
-      "eki": "60%–70%",
-      "tenor": "1–3個月",
-      "goal": "部位小、追求收益"
+      "tenor": "短中期",
+      "goal": "只保留低波動核心"
     }
   ]
 }
