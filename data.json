@@ -1,239 +1,239 @@
 {
-  "updated_at": "2026-09-04 23:08",
+  "updated_at": "2026-09-05 23:06",
   "summary": {
     "active_fcn_count": 24,
     "top_risk_code": "FCN710H",
     "worst_of": "ORCL",
-    "market_env": "可做",
-    "main_conclusion": "今天可做 FCN，優先配置 NVDA / AVGO / TSM / MSFT，並持續監控 ORCL / COIN 風險集中。"
+    "market_env": "保守做",
+    "main_conclusion": "今天可保守做 FCN，建議以 TSM / MSFT 為主，避免進攻型標的過重。"
   },
   "morning_brief": {
     "international_news": [
       {
-        "title": "Lagos mortgage scheme allocates 20,000 homes since inception",
-        "summary": "The Lagos State Mortgage Board has allocated over 20,000 housing units through its Lagos mortgage scheme sinc…",
-        "content": "The Lagos State Mortgage Board, which oversees the Lagos Home Ownership Mortgage Scheme, also known as LagosHOMS, has allocated over 20,000 housing units to residents since its inception in 2014. T… [+4440 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Observability 2.0: Why DevOps Teams Are Moving From Monitoring to Intelligent System Understanding",
-        "summary": "For a long time, monitoring just meant staring at dashboards and waiting for something to flash red. Engineer…",
-        "content": "For a long time, monitoring just meant staring at dashboards and waiting for something to flash red. Engineers tracked things like CPU usage, memory, response times, error rates, and uptime. If a num… [+9963 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Americans urge caution as Australia braces for data centre boom",
-        "summary": "Americans urge Australians to ensure data centre companies are transparent and make sure policy helps us to m…",
-        "content": "As a dominatrix drag queen struts through a crowd with her eyes set on tackling corporate greed, she uses brute force to throw aside actors portraying the tech giants locals blame for rising power pr… [+7577 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "A surefire way to beat Republicans in their war on trans athletes",
-        "summary": "Polling-wise, this might be Republicans’ most popular issue. But there is a rebuttal.",
-        "content": "A few years back, I was on Meet the Press with former Republican Gov. Pat McCrory of North Carolina (famous for his bathroom-bill nonsense). In the green room, he told me Republicans would counter th… [+3728 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Irish property prices overvalued by 17%, ESRI finds",
-        "summary": "Irish property prices are 17% over valued, a new report from the Economic and Social Research Institute has f…",
-        "content": "Irish property prices are 17% overvalued, a new report from the Economic and Social Research Institute (ESRI) has found. The organisation measured house prices against a range of economic fundamenta… [+1587 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "In the 1980s a small number of hippos were kept on a Colombian drug lord’s private estate, and decades after his death…",
-        "summary": "An African megafauna invasion born from one man's vanity threatens to destabilize one of South America's most…",
-        "content": "The situation currently developing along the middle Magdalena River in central Colombia is one of the more improbable ecological outcomes of any decision made by any twentieth-century individual anyw… [+8351 chars]｜分類：地緣政治｜解讀：影響有限",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Why Oil Majors Don’t Want to Build New U.S. Refineries",
-        "summary": "U.S. President Donald Trump told oil producers and refiners that he wants lower gasoline prices, immediately,…",
-        "content": "Crude oil inventories in the… U.S.-Iran strikes reignite fears of… Dangote plans a $17 billion,… Set us as your preferred Google source By Tsvetana Paraskova - Sep 03, 2026, 6:00 PM CDTU.S. Presi… [+5823 chars]｜分類：地緣政治｜解讀：地緣風險升高，需留意市場波動擴大",
+        "title": "Clemson Football: Position Group Grades – Offense",
+        "summary": "Apparently, Clemson is playing a football game tomorrow night. I’ve got some thoughts on the Tigers’ offense…",
+        "content": "Hey, does anyone want to talk about football instead of the finer points of state and federal jurisdictions? I know I do. Coach Swinney has the R.O.Y. bus in stealth mode for tomorrow's trip to Baton… [+15420 chars]｜分類：地緣政治｜解讀：利率壓力若下降，FCN 環境通常較有利",
         "affects_fcn": true,
-        "impact_score": -1
+        "impact_score": 1
       },
       {
-        "title": "Honoring the World’s Most Exceptional Tourism Destinations: Nominations Now Open for the Second TOURISE Awards",
-        "summary": "-The second cycle of the TOURISE Awards officially launched today as a continuing global benchmark celebratin…",
-        "content": "<ul><li>The TOURISE Awards showcase the globe's most influential destinations, highlighting the richness of culture, the power of human connection, and groundbreaking advancements in travel.</li><li>… [+6730 chars]｜分類：全球經濟｜解讀：影響有限",
+        "title": "NC high school football scores: Western North Carolina live updates from Week 3",
+        "summary": "The 2026 North Carolina high school football season is entering Week 3. Follow along for live updates and sco…",
+        "content": "It's Week 3 of the 2026 North Carolina high school football season. Here are score updates from Week 3 across Western North Carolina. Stream North Carolina HS football games live on NFHS Network … [+9092 chars]｜分類：地緣政治｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Nigeria eyes faster growth as oil production recovers",
-        "summary": "Nigeria targets faster economic growth by 2026 as crude oil production recovers, supported by structural refo…",
-        "content": "Nigeria is targeting faster economic growth in 2026 as recovering crude oil production, structural reforms, and improved macroeconomic conditions strengthen prospects despite prevalent risks, DARE OL… [+10716 chars]｜分類：全球經濟｜解讀：地緣風險升高，需留意市場波動擴大",
+        "title": "Real Madrid Fans Furious With LaLiga Refereeing in Real Betis Game",
+        "summary": "Real Madrid visited Real Betis this Friday, Sept. 4, on Matchday 4 of the 2026-27 La Liga season. The match w…",
+        "content": "Real Madrid visited Real Betis this Friday, Sept. 4, on Matchday 4 of the 2026-27 La Liga season. The match was marked by refereeing controversy in the first half, not because of just one incident, b… [+2523 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Hulu’s best hitman drama is only 30 minutes long, and it has a 98% audience score",
+        "summary": "Every 25 minute episode discards filler to deliver sharp, unsettling beats that make domestic tasks feel dang…",
+        "content": "I almost passed on Mr Inbetween because the runtime looked like a red flag. Every prestige crime drama I actually finish runs 50 minutes or more, like the still-making-news Breaking Bad and The Sopra… [+7512 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Under-16 social media restrictions won’t be perfect but we have to start somewhere – Cecilia Robinson",
+        "summary": "OPINION: An under-16 social media restriction is a necessary first step, not a cure-all.",
+        "content": "Yet for years we have placed much of the responsibility back on parents: set boundaries, monitor devices, understand every new platform and negotiate screen time. Of course parents have a responsib… [+6473 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "ANDREW NEIL: 25 years on from 9/11, America's $6TRILLION War on Terror has achieved little beyond stoking new forms of…",
+        "summary": "Other than no repeat of 9/11, America does not have a lot to show for its war. Nor does Britain, whose global…",
+        "content": "It was a bright, sunny day as I cruised down the M23 to the TUC conference in Brighton. Prime Minister Tony Blair was due to address the brothers and sisters that afternoon and, as I was anchoring … [+13049 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Netflix's New R-Rated Adaptation Of Thriller Comics Series Officially Storms Streaming With 2M Viewership Debut",
+        "summary": "Netflix's new adaptation based on a thrilling comic series officially storms the streaming charts with a stro…",
+        "content": "One riveting Netflix drama is Mousetrap, starring Ryu Jun-yeol and Sul Kyung-gu. Based on the webtoon Field Mouse by Ludovico, which ran from 2017 to 2020, the story follows a reclusive novelist whos… [+10429 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Haze in Singapore: Air quality at unhealthy range in central region",
+        "summary": "Air quality in three regions of Singapore started the day in the unhealthy range on Saturday (Sep 5), before…",
+        "content": "SINGAPORE: Air quality in Singapore started the day in the unhealthy range in the west, central and east regions on Saturday (Sep 5), before improving somewhat later in the morning. As of 9am, the 2… [+979 chars]｜分類：地緣政治｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "El Museo del Barrio and Aspen Conexión Look at the Rise of Latinx Art",
+        "summary": "The half-day symposium “The Rise of the U.S. Latino Art Market: Lessons from Latin America” took place in El…",
+        "content": "This spring, El Museo del Barrio and Aspen Conexión hosted “The Rise of the U.S. Latino Art Market: Lessons from Latin America,” a half-day symposium in El Museo’s iconic Teatro space. The event bro… [+8703 chars]｜分類：全球經濟｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "Why the U.S. job market remains resilient in face of global pressures and inflation",
+        "summary": "The job market delivered a surprising rebound in August, adding 162,000 jobs, far more than economists had ex…",
+        "content": "The job market delivered a surprising rebound in August, adding 162,000 jobs, far more than economists had expected. The unemployment rate held steady at 4.1%, and the Labor Department revised July n… [+5578 chars]｜分類：全球經濟｜解讀：影響有限",
         "affects_fcn": true,
-        "impact_score": -1
+        "impact_score": 0
       },
       {
-        "title": "nCino Expands Buyback as AI Demand Supports Growth",
-        "summary": "nCino reported higher revenue and profitability for its fiscal second quarter while authorizing another $100…",
-        "content": "nCino reported higher revenue and profitability for its fiscal second quarter while authorizing another $100 million for share repurchases, as the banking software provider pointed to growing custome… [+142 chars]｜分類：全球經濟｜解讀：影響有限",
+        "title": "Amwell Receives Frost & Sullivan's 2026 United States Technology Innovation Leadership Recognition for Technology-Enabl…",
+        "summary": "Amwell® is transforming virtual care delivery through its unified Amwell Platform, combining interoperability…",
+        "content": "Amwell® is transforming virtual care delivery through its unified Amwell Platform, combining interoperability, clinical integration, and intelligent orchestration to improve access, efficiency, and o… [+5117 chars]｜分類：全球經濟｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Slice Valuation Crash: Fintech Unicorn’s Value Plunges Nearly 70% in $100 Million Down Round as It Transforms Into Smal…",
-        "summary": "Earlier this week, Unacademy completed a sale at 94% below its peak valuation. Now, Slice is reportedly raisi…",
-        "content": "Indias unicorn club once had a remarkably forgiving membership policy. Raise one round at a valuation exceeding $1 billion and the horn was yours. Revenue could arrive later. Profit could arrive muc… [+9916 chars]｜分類：全球經濟｜解讀：影響有限",
+        "title": "Prime Video's Sci-Fi Detective Series Is Officially Dead",
+        "summary": "After a hit first season, Prime Video has officially decided the fate of its new sci-fi detective series.",
+        "content": "Few genres have thrived on Prime Video quite like the crime thriller. From Reacher to Cross and the extended Bosch universe, many of the biggest recent success stories for the platform lean on the gr… [+11205 chars]｜分類：全球經濟｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
-      },
-      {
-        "title": "PRC explanation of why there was no G20 communiqué; Accelerating “six networks” projects; EU-China; Oil consumption; AI",
-        "summary": "PRC explanation of why there was no G20 communiqué NDRC wants to accelerate “Six Networks” projects EU-China…",
-        "content": "We recorded this weeks episode of Sharp China earlier today - China's Global Strategy; Tragedy on the Nepal-Tibet Border; A 19-1 Vote at the G-20; TikTok Dodges Congress - and will come out at 5AM ET… [+7929 chars]｜分類：全球經濟｜解讀：地緣風險升高，需留意市場波動擴大",
-        "affects_fcn": true,
-        "impact_score": -1
       }
     ],
     "financial_news": [
       {
-        "title": "US Fed Governor Waller floats September rate hold",
-        "summary": "Markets rallied and global bond yields dipped Thursday after a US Federal Reserve governor advocated holding…",
-        "content": "Markets rallied and global bond yields dipped Thursday after a US Federal Reserve governor advocated holding interest rates steady if inflation continues to cool.Give disinflation a chance, Christoph… [+134 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
+        "title": "August Jobs Report Blows Past Forecasts, Putting a September Fed Rate Hike Back on the Table",
+        "summary": "The U.S. economy added 162,000 jobs in August, more than triple Wall Street’s forecast, giving the Federal Re…",
+        "content": "Skip to comments. August Jobs Report Blows Past Forecasts, Putting a September Fed Rate Hike Back on the TableGlobal Market News ^ | 09/04/26 | David Clemen Posted on 09/04/2026 2:10:02 PM PDT … [+7681 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
         "affects_fcn": true,
         "impact_score": 1
       },
       {
-        "title": "Stock market today: Live updates",
-        "summary": "August's hotter-than-expected payrolls reading increased expectations that the Federal Reserve could raise in…",
-        "content": "The Dow Jones Industrial Average fell on Friday as August's hotter-than-expected payrolls reading increased expectations that the Federal Reserve could raise interest rates at its next meeting. The … [+1660 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
+        "title": "Stocks Fall After Jobs Report Adds to Interest Rate Concerns",
+        "summary": "US stocks fell and Treasury yields rose Friday after the government reported that employers unexpectedly adde…",
+        "content": "Wall Street expects the Federal Reserve to raise interest rates before the year ends in an effort to cool inflation, which has been running hot due to rising oil prices during the US war with Iran an… [+1236 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
         "affects_fcn": true,
         "impact_score": 1
       },
       {
-        "title": "Live: ASX set to rise, ASIC fronts KPMG inquiry",
-        "summary": "Australian shares are set to rise after Wall Street rallied as US Treasury yields eased for the second straig…",
-        "content": "Wall Street rallied overnight after a senior Federal Reserve official said he would support holding interest rates steady if upcoming data showed inflation pressures were easing. Investors then dia… [+375 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
+        "title": "Micron doubles down on AI memory chips, boosting investor potential",
+        "summary": "Micron's AI memory chip expansion could enhance its market position, but execution risks and competition may…",
+        "content": "The only US-based high bandwidth memory producer plans to nearly double its output by the end of 2026, racing to close the gap with Korean rivals Micron Technology is betting big on the AI memory boo… [+2897 chars]｜分類：Fed / 利率｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "US hiring surge strengthens case for Federal Reserve rate hike",
+        "summary": "A robust job market may prompt the Fed to raise rates, impacting borrowing costs, investment strategies, and…",
+        "content": "Nonfarm payrolls blew past expectations in August, pushing the probability of a September rate hike to around 60% The US economy added 162,000 jobs in August, nearly tripling what forecasters had pen… [+2364 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
         "affects_fcn": true,
         "impact_score": 1
       },
       {
-        "title": "Why the Bond Market Is Freaking Everyone Out",
-        "summary": "Rates are back to pre-2008 levels and the debt is piling up — and even Bessent's plan to run out the clock is…",
-        "content": "This week, Emily Bazelon, John Dickerson, and David Plotz discuss how a narrow Supreme Court majority used aesthetic standing to greenlight Trumps ballroom construction, why bond yields are rising ar… [+4217 chars]｜分類：Fed / 利率｜解讀：影響有限",
+        "title": "Top sovereign wealth fund may dump $80 billion in Treasury bonds — and load up on other types of U.S. debt with more ri…",
+        "summary": "The overall exposure to dollar-denominated assets would remain largely unchanged at 52.5% versus 52.9% under…",
+        "content": "Norges Bank Investment Management, the worlds biggest sovereign wealth fund with $2.3 trillion in assets, proposed reshuffling its U.S. debt holdings away from Treasuries. In a letter to Norways fina… [+3195 chars]｜分類：Fed / 利率｜解讀：影響有限",
         "affects_fcn": true,
         "impact_score": 0
       },
       {
-        "title": "Tech Stocks Lead Rally on Wall Street",
-        "summary": "Stocks rose on Wall Street on Thursday as bond yields eased further and a rally in big technology companies h…",
-        "content": "Traders had their eye on several companies following their latest quarterly snapshots. Snowflake jumped 17% after its quarterly profit and revenue blew past analysts' estimates. The company noted tha… [+1988 chars]｜分類：Fed / 利率｜解讀：影響有限",
+        "title": "BlackRock’s Jeff Rosenberg says August jobs beat puts CPI in the hot seat for Fed’s September call",
+        "summary": "The robust job growth intensifies focus on CPI data, potentially influencing the Fed's rate decision and impa…",
+        "content": "A blockbuster payrolls report has shifted the focus squarely onto next week's inflation data, with a rate hike back on the table. The US labor market just made the Federal Reserve’s job considerably … [+2270 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
+        "affects_fcn": true,
+        "impact_score": 1
+      },
+      {
+        "title": "JPMorgan’s Own Strategist Says the Fed Has Quietly Surrendered on 2% Inflation",
+        "summary": "A senior strategist at one of America's largest private banks just said something that reframes every fixed-i…",
+        "content": "Quick Read <ul><li>Newmont's shares surged 75% over the past year as gold hit $4,477 per ounce, making NEM a direct proxy for the Fed's inflation-tolerance regime. </li><li>Manoukian argues driving… [+6712 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
+        "affects_fcn": true,
+        "impact_score": 1
+      },
+      {
+        "title": "Strong jobs report fuels Fed rate hike prospects as Trump escalates rate cut pressure",
+        "summary": "A stronger US jobs report has raised expectations of a September Fed rate hike, while Donald Trump has steppe…",
+        "content": "A stronger-than-expected U.S. jobs report has put a September interest-rate hike back firmly on the table, leaving Federal Reserve Chair Kevin Warsh facing a difficult choice as President Donald Trum… [+3255 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
+        "affects_fcn": true,
+        "impact_score": 1
+      },
+      {
+        "title": "Why the U.S. job market remains resilient in face of global pressures and inflation",
+        "summary": "The job market delivered a surprising rebound in August, adding 162,000 jobs, far more than economists had ex…",
+        "content": "The job market delivered a surprising rebound in August, adding 162,000 jobs, far more than economists had expected. The unemployment rate held steady at 4.1%, and the Labor Department revised July n… [+140 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": true,
         "impact_score": 0
       },
       {
-        "title": "The jobs report just put Fed chair Kevin Warsh's new playbook to work: One Big Investment Idea",
-        "summary": "Every Fed chair watches data and markets. Warsh's distinction is that he wants to say less about the future r…",
-        "content": "Wall Street is still obsessing over Friday's payroll numbers. Federal Reserve Chairman Kevin Warsh may barely flinch. That is one of the clearest lessons from Warsh's first Jackson Hole speech as ch… [+4961 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
-        "affects_fcn": true,
-        "impact_score": 1
+        "title": "Apple Set to Kick Off Yearslong Device Blitz at Wednesday Event",
+        "summary": "An Apple event scheduled for Wednesday (Sept. 9), Surprise and Shine, will mark the beginning of the longest…",
+        "content": "An Apple event scheduled for Wednesday (Sept. 9), Surprise and Shine, will mark the beginning of the longest series of device releases in the companys history, Bloomberg reported Friday (Sept. 4).The… [+1889 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
       },
       {
-        "title": "US stocks today: US stocks jump as Waller comments ease rate hike fears",
-        "summary": "US stocks rallied over 1% on Thursday as Fed Governor Christopher Waller's comments eased rate hike fears ahe…",
-        "content": "US stocks rallied sharply on Thursday as investors pulled back bets on a Federal Reserve interest-rate hike after Fed Governor Christopher Waller said he would favour keeping rates steady if upcoming… [+3206 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
-        "affects_fcn": true,
-        "impact_score": 1
+        "title": "Modified 2013 Fiat 500 Abarth",
+        "summary": "This 2013 Fiat 500 Abarth is a black-over-black example powered by a turbocharged 1.4-liter inline-four linke…",
+        "content": "This 2013 Fiat 500 Abarth is a black-over-black example powered by a turbocharged 1.4-liter inline-four linked to a replacement five-speed manual transaxle, and it has been modified with an OpenFlash… [+2853 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "affects_fcn": false,
+        "impact_score": 0
       },
       {
-        "title": "US closes higher as bond yields decline",
-        "summary": "Major stock equities in the United States closed Thursday's trading session with significant gains after Fede…",
-        "content": "Major stock equities in the United States closed Thursday's trading session with significant gains after Federal Reserve Governor Christopher Waller's remarks helped bring government bond yields down… [+69 chars]｜分類：Fed / 利率｜解讀：利率壓力若下降，FCN 環境通常較有利",
-        "affects_fcn": true,
-        "impact_score": 1
-      },
-      {
-        "title": "Cut petroleum product imports, CORAN urges govt",
-        "summary": "Nigeria’s refinery owners urge the government to reduce petroleum product imports, strengthen domestic refini…",
-        "content": "The Crude Oil Refinery Owners Association of Nigeria has urged the Federal Government to urgently strengthen the domestic refining industry and reduce the countrys dependence on imported petroleum pr… [+7571 chars]｜分類：通膨 / 就業｜解讀：利率壓力若下降，FCN 環境通常較有利",
-        "affects_fcn": true,
-        "impact_score": 1
-      },
-      {
-        "title": "Nigeria eyes faster growth as oil production recovers",
-        "summary": "Nigeria targets faster economic growth by 2026 as crude oil production recovers, supported by structural refo…",
-        "content": "Nigeria is targeting faster economic growth in 2026 as recovering crude oil production, structural reforms, and improved macroeconomic conditions strengthen prospects despite prevalent risks, DARE OL… [+10716 chars]｜分類：通膨 / 就業｜解讀：地緣風險升高，需留意市場波動擴大",
-        "affects_fcn": true,
-        "impact_score": -1
-      },
-      {
-        "title": "Canada sets framework for responsible data centre development",
-        "summary": "Ottawa’s new principles call on data centres to protect ratepayers, limit water use, show local benefits, and…",
-        "content": "Canadas data centre buildout now has a federal set of expectations to go alongside the provincial approaches. The federal government released its Responsible Data Centre Development Principles, whic… [+3304 chars]｜分類：通膨 / 就業｜解讀：利率壓力若下降，FCN 環境通常較有利",
-        "affects_fcn": true,
-        "impact_score": 1
-      },
-      {
-        "title": "NJ corruption office that went up against George Norcross and lost will be dismantled",
-        "summary": "New Jersey Attorney General Jennifer Davenport at an event last month. The attorney general's office says it'…",
-        "content": "The controversial office tasked with prosecuting public corruption in New Jersey is being disbanded as part of a major reorganization within the state Attorney Generals office. The Office of Public … [+2523 chars]｜分類：通膨 / 就業｜解讀：影響有限",
+        "title": "Managing Director -Florida Studio Theatre working with Management Consultants for the Arts",
+        "summary": "Florida Studio Theatre invites applications for its Managing Director, a role for individuals with strong tal…",
+        "content": "Florida Studio Theatre (FST) invites applications for its Managing Director, a role for individuals with strong talent for running complex, multi-venue producing operations. The new Managing Director… [+2849 chars]｜分類：通膨 / 就業｜解讀：影響有限",
         "affects_fcn": false,
         "impact_score": 0
       }
     ],
     "ai_trend": [
       {
-        "title": "hebom-buffer 1.0.1",
-        "summary": "Deduplication, expiry and ordering at the boundary between AI agents. A small local handoff boundary for A2A-…",
+        "title": "Gimlet Labs nabs $300M for its disaggregated inference platform",
+        "summary": "Gimlet Labs Inc., a startup that helps developers speed up their inference workloads, has raised $300 million…",
+        "content": "Gimlet Labs Inc., a startup that helps developers speed up their inference workloads, has raised $300 million in funding at a $3 billion valuation. Andreessen Horowitz led the Series B round. Gimlet… [+4194 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：ARM｜建議：觀察池",
+        "affects_fcn": false,
+        "impact_score": 0
+      },
+      {
+        "title": "pygpt-net 2.8.8",
+        "summary": "Desktop AI Assistant powered by: OpenAI GPT-5, GPT-4, o1, o3, Gemini, Claude, Grok, DeepSeek, and other model…",
         "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "OpenAI launches GPT-6 Astra with hacking risks in check",
-        "summary": "OpenAI’s GPT-6 Astra is here, and its cyber skills are raising serious safety questions.",
-        "content": "What you need to know <ul><li>GPT-6 Astra is the first OpenAI model to hit the \"critical\" cybersecurity threat level, but deployment is moving forward with significant safeguards in place.</li><li>I… [+3217 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "xpander-sdk 2.0.506",
-        "summary": "xpander.ai Backend-as-a-service for AI Agents - SDK",
+        "title": "watchlight 0.7.0",
+        "summary": "Watchlight Developer Edition — govern AI agents in-process, with zero infrastructure.",
         "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "veldt-kya 0.5.8",
-        "summary": "KYA (Know Your Agents) — Open-source trust, governance, and evidentiary assurance infrastructure for autonomo…",
+        "title": "codecortex-context-engine 0.1.0a7",
+        "summary": "Context intelligence infrastructure for AI coding agents",
         "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "memware 0.2.2",
-        "summary": "Memory for AI agents that only remembers the latest truth: a bi-temporal belief ledger plus a transcript inde…",
+        "title": "watchlight-engine 0.2.0",
+        "summary": "In-process Watchlight policy engine — the Developer Edition backend. Zero-infrastructure ALLOW/DENY authoriza…",
         "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": false,
         "impact_score": 0
       },
       {
-        "title": "Longevity tech’s credibility problem and the Apple mafia",
-        "summary": "Below, we break down some of tech’s biggest stories, with analyst perspective on the moves that matter the mo…",
-        "content": "Below, we break down some of techs biggest stories, with analyst perspective on the moves that matter the most. Heres what were watching this week: <ol><li>Generalists $3B valuation</li><li>Apples … [+4031 chars]｜分類：AI Agent｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
-        "affects_fcn": false,
-        "impact_score": 0
-      },
-      {
-        "title": "Canada sets framework for responsible data centre development",
-        "summary": "Ottawa’s new principles call on data centres to protect ratepayers, limit water use, show local benefits, and…",
-        "content": "Canadas data centre buildout now has a federal set of expectations to go alongside the provincial approaches. The federal government released its Responsible Data Centre Development Principles, whic… [+3304 chars]｜分類：AI 基礎設施｜解讀：利率壓力若下降，FCN 環境通常較有利｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "Game 141: Twins at White Sox",
+        "summary": "The series begins in the Windy City, or Second City, Chi-Town, City of Big Shoulders, Great Commercial Tree,…",
+        "content": "No. | Chris Sweda/Chicago Tribune/Tribune News Service via Getty Images ChiSox starter Erick Fedde won Player of the Year in 2023, when he pitched for the NC Dinos in Changwon, Korea. Here are their… [+5380 chars]｜分類：AI Agent｜解讀：利率壓力若下降，FCN 環境通常較有利｜FCN Pool：未直接命中｜建議：持續觀察",
         "affects_fcn": true,
         "impact_score": 1
       },
       {
-        "title": "vaf 0.1.0a27",
-        "summary": "VAF - Veyllo Agentic Framework: Local AI tool for developers",
-        "content": "A required part of this site couldnt load. This may be due to a browser extension, network issues, or browser settings. Please check your connection, disable any ad blockers, or try using a diffe… [+12 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：未直接命中｜建議：持續觀察",
+        "title": "Halloween: The Game Review So Far",
+        "summary": "So far this asymmetrical horror game is more trick than treat.",
+        "content": "Plenty of things are terrifying about a man in a boiler suit creeping up behind you, but it's hard to be scared of Halloween: The Game's Michael Myers when he strolls around the neighborhood with all… [+5950 chars]｜分類：AI 基礎設施｜解讀：地緣風險升高，需留意市場波動擴大｜FCN Pool：未直接命中｜建議：持續觀察",
+        "affects_fcn": true,
+        "impact_score": -1
+      },
+      {
+        "title": "Proposal could leave public in the dark on data center plans",
+        "summary": "WASHINGTON — A plan by the Environmental Protection Agency could make it harder for the public to learn about…",
+        "content": "Keep it Clean. Please avoid obscene, vulgar, lewd, racist or sexually-oriented language.PLEASE TURN OFF YOUR CAPS LOCK.Don't Threaten. Threats of harming another person will not be tolerated.Be Tru… [+306 chars]｜分類：AI 基礎設施｜解讀：影響有限｜FCN Pool：ARM｜建議：觀察池",
         "affects_fcn": false,
         "impact_score": 0
       }
@@ -275,7 +275,7 @@
         "impact_score": -1
       },
       {
-        "title": "失業率：4.10%（+0.00%）｜S&P500：7747.71（+81.11）",
+        "title": "失業率：4.10%（+0.00%）｜S&P500：7718.60（-29.11）",
         "summary": "就業與股市穩定度共同反映風險偏好。",
         "content": "若就業惡化且股市回落，FCN 需更保守。",
         "affects_fcn": true,
@@ -299,7 +299,7 @@
     {
       "title": "優先核心池",
       "action": "可配置",
-      "reason": "目前建議先看：NVDA / AVGO / TSM / MSFT。",
+      "reason": "目前建議先看：TSM / MSFT。",
       "level": "ok"
     }
   ],
@@ -310,11 +310,11 @@
     },
     {
       "label": "總經環境",
-      "text": "總經環境中性偏有利，FCN 可做，但仍需避免風險集中在單一高敏感標的。"
+      "text": "總經環境中性，FCN 可做但需偏保守，優先核心股。"
     },
     {
       "label": "今日推薦",
-      "text": "可加入：NVDA / AVGO / TSM / MSFT；觀察：AMD / AMAT / MRVL；避免：ORCL / PLTR / COIN。"
+      "text": "可加入：TSM / MSFT；觀察：NVDA / AVGO / UNH；避免：AMD / ORCL / AMAT。"
     }
   ],
   "risk_radar": [
@@ -335,8 +335,8 @@
     },
     {
       "label": "AI 核心股安全度",
-      "value": 78,
-      "type": "ok"
+      "value": 62,
+      "type": "watch"
     }
   ],
   "fcn_rankings": [
@@ -434,9 +434,9 @@
         "eki": "80%",
         "day_change": "",
         "five_day": "",
-        "today": "可加入",
-        "reason": "屬核心池 / 防守池，且現階段環境允許配置。",
-        "level": "ok"
+        "today": "持續觀察",
+        "reason": "可列觀察，但不宜重壓。",
+        "level": "watch"
       },
       {
         "symbol": "AVGO",
@@ -447,9 +447,9 @@
         "eki": "80%",
         "day_change": "",
         "five_day": "",
-        "today": "可加入",
-        "reason": "屬核心池 / 防守池，且現階段環境允許配置。",
-        "level": "ok"
+        "today": "持續觀察",
+        "reason": "可列觀察，但不宜重壓。",
+        "level": "watch"
       },
       {
         "symbol": "TSM",
@@ -473,9 +473,9 @@
         "eki": "80%",
         "day_change": "",
         "five_day": "",
-        "today": "持續觀察",
-        "reason": "可列觀察，但不宜重壓。",
-        "level": "watch"
+        "today": "暫不建議",
+        "reason": "現階段波動或集中風險偏高。",
+        "level": "risk"
       },
       {
         "symbol": "ORCL",
@@ -512,9 +512,9 @@
         "eki": "80%",
         "day_change": "",
         "five_day": "",
-        "today": "持續觀察",
-        "reason": "可列觀察，但不宜重壓。",
-        "level": "watch"
+        "today": "暫不建議",
+        "reason": "現階段波動或集中風險偏高。",
+        "level": "risk"
       },
       {
         "symbol": "PLTR",
@@ -592,9 +592,9 @@
         "eki": "75%",
         "day_change": "",
         "five_day": "",
-        "today": "持續觀察",
-        "reason": "可列觀察，但不宜重壓。",
-        "level": "watch"
+        "today": "暫不建議",
+        "reason": "現階段波動或集中風險偏高。",
+        "level": "risk"
       },
       {
         "symbol": "ARM",
@@ -605,9 +605,9 @@
         "eki": "70%",
         "day_change": "",
         "five_day": "",
-        "today": "持續觀察",
-        "reason": "可列觀察，但不宜重壓。",
-        "level": "watch"
+        "today": "暫不建議",
+        "reason": "現階段波動或集中風險偏高。",
+        "level": "risk"
       },
       {
         "symbol": "LVS",
@@ -618,9 +618,9 @@
         "eki": "80%",
         "day_change": "",
         "five_day": "",
-        "today": "持續觀察",
-        "reason": "可列觀察，但不宜重壓。",
-        "level": "watch"
+        "today": "暫不建議",
+        "reason": "現階段波動或集中風險偏高。",
+        "level": "risk"
       },
       {
         "symbol": "UNH",
@@ -640,14 +640,6 @@
   "today_recommendations": {
     "add": [
       {
-        "symbol": "NVDA",
-        "reason": "屬核心池 / 防守池，且現階段環境允許配置。"
-      },
-      {
-        "symbol": "AVGO",
-        "reason": "屬核心池 / 防守池，且現階段環境允許配置。"
-      },
-      {
         "symbol": "TSM",
         "reason": "屬核心池 / 防守池，且現階段環境允許配置。"
       },
@@ -658,29 +650,29 @@
     ],
     "watch": [
       {
-        "symbol": "AMD",
+        "symbol": "NVDA",
         "reason": "可列觀察，但不宜重壓。"
       },
       {
-        "symbol": "AMAT",
+        "symbol": "AVGO",
         "reason": "可列觀察，但不宜重壓。"
       },
       {
-        "symbol": "MRVL",
-        "reason": "可列觀察，但不宜重壓。"
-      },
-      {
-        "symbol": "ARM",
-        "reason": "可列觀察，但不宜重壓。"
-      },
-      {
-        "symbol": "LVS",
+        "symbol": "UNH",
         "reason": "可列觀察，但不宜重壓。"
       }
     ],
     "avoid": [
       {
+        "symbol": "AMD",
+        "reason": "現階段波動或集中風險偏高。"
+      },
+      {
         "symbol": "ORCL",
+        "reason": "現階段波動或集中風險偏高。"
+      },
+      {
+        "symbol": "AMAT",
         "reason": "現階段波動或集中風險偏高。"
       },
       {
@@ -689,14 +681,6 @@
       },
       {
         "symbol": "COIN",
-        "reason": "現階段波動或集中風險偏高。"
-      },
-      {
-        "symbol": "TSLA",
-        "reason": "現階段波動或集中風險偏高。"
-      },
-      {
-        "symbol": "CRDO",
         "reason": "現階段波動或集中風險偏高。"
       }
     ]
@@ -711,28 +695,17 @@
       ],
       "eki": "80%–85%",
       "tenor": "6–12個月",
-      "goal": "低波動穩定收息"
+      "goal": "防守優先"
     },
     {
       "name": "平衡收益",
       "targets": [
         "NVDA",
-        "AVGO",
-        "AMD"
+        "AVGO"
       ],
-      "eki": "70%–80%",
-      "tenor": "3–9個月",
-      "goal": "主力配置"
-    },
-    {
-      "name": "進攻型",
-      "targets": [
-        "PLTR",
-        "ARM"
-      ],
-      "eki": "60%–70%",
-      "tenor": "1–3個月",
-      "goal": "部位小、追求收益"
+      "eki": "75%–80%",
+      "tenor": "3–6個月",
+      "goal": "只留主力池"
     }
   ]
 }
